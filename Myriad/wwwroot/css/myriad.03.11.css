@@ -1,0 +1,507 @@
+/*FONTS AND COLORS*/
+body{font-size:87.5%;font-size:14px;font-weight:400;line-height:1.5em;color:#64605d;text-rendering:optimizeLegibility;font-family:'Segoe UI', Roboto, Lato, 'Helvetica Neue', Arial, sans-serif;}
+h1, h2, h3 {font-family:'Droid Serif', "Palatino Linotype", Cambria, Cochin, Georgia,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
+.sidenote h3{font-family:"Calibri", Roboto, Lato, Arial, sans-serif;}
+.sidenote p{font-family:"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
+.textquote p{font-family:"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
+mark{background-color:#ffc;font-family:"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
+article{font-size:1.2rem;}
+/*Hyperlinks*/
+a{text-decoration:none;color:#4477a1;font-family:inherit;}
+a:not(.ni):hover{color:#4477a1;text-decoration:underline;}
+p.nav a, p.definitionnav a, p.versenav a{padding-right:1rem;}
+a.target{background-color:#ff8}
+.suppressed a.target{background-color:#dd8;}
+a.error{color:red;}
+/*Ruby*/
+ruby{font-family:Lato, "Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
+rt {
+    font-size: .65em;
+    text-align: center;
+    margin-right: .25em;
+}
+
+.versetext p {
+    line-height: 2em;
+}
+
+/* SPECIAL CLASSES */
+.invalid {color:red;}
+.scripture-comment p{margin-left:0;margin-right:0;}
+
+.ellipsis {max-height: 1.5rem;position: absolute;top: 5rem;right: 20rem;opacity:.5;}
+
+#modal-image-box {
+	position: fixed; /* Stay in place */
+	z-index: 1100; /* Sit on top */
+	padding-top: 100px; /* Location of the box */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+.zoom {
+	animation-name: zoom;
+	animation-duration: 0.6s;
+}
+
+#modal-image {
+	margin: auto;
+	margin-top:1.5em;
+	min-width: 75%;
+}
+@keyframes zoom {
+	from {
+		transform: scale(0)
+	}
+
+	to {
+		transform: scale(1)
+	}
+}
+/* The Close Button */
+.zoomclose {
+	position: fixed;
+	z-index:1200;
+	top: 5rem;
+	right: 4rem;
+	color: #f1f1f1;
+	font-size: 40px;
+	font-weight: bold;
+	transition: 0.3s;
+}
+.zoomclose:hover,
+.zoomclose:focus {
+	color: #f88;
+	text-decoration: none;
+	cursor: pointer;
+}
+.clear{clear:both;}
+p.suppressed, .suppressed p {padding-left: .5em; padding-top: .25em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color:#eee;}
+.hidden, .marker{display:none;}
+.hiddendetail span{display: none;}
+.hiddendetail::before {content: "...";color: #4477a1;background-color: whiteSmoke;}
+.hiddendetail + .hiddendetail::before{content:"";}
+.editparagraph {color:#4477a1; font-size:small;cursor: pointer;   vertical-align: baseline;position: relative;top: -0.4em;}
+.dropcap {float: left;font-size: 3em;line-height: 0.5;margin: 0.205em 0 0 0;padding-bottom: .287em;}
+
+/* Tables */
+table{margin-bottom:1rem;}
+th,td{padding:.25rem;}
+table,th,td{border: 1px solid black;border-collapse: collapse;}
+th.left,td.left{text-align:left;}
+th.center,td.center{text-align: center;}
+th.right,td.right{text-align: right;}
+
+/*VERTICAL SPACING */
+html, body{height:100%;}
+sup, sub {vertical-align: baseline; position: relative;top:-0.4em;}
+sub {top: 0.4em;}
+
+div.sidenote{margin-bottom:.75em;}
+h2{font-size:1.75em;line-height: 1.25em;margin-bottom:.25rem;}
+h3{font-size:1.4em;margin-bottom:.25rem;margin-top:.4rem;line-height:1.4em;}
+ul, li, ol, dl{list-style:none;padding:0;}
+p{line-height:1.5em;padding-bottom:.5em;line-height:1.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
+.sidenote p{padding-bottom: .5em;}
+.sidenote details p{padding-bottom:.1em;}
+.scripture h3{margin-bottom:0.5em;}
+article{padding-top:5em;padding-bottom:3em;min-height:40rem;}
+/*article section{display:block;width:100%;align-items:stretch;}*/
+.sidenote{margin-top:.7rem;}
+.introduction{border-bottom:2px solid grey;margin-bottom:2em;}
+div+section.scripture{margin-top:1.5rem;}
+div.crossrefs details summary+p{margin-top:.4em;}
+section{display:block;align-items:stretch;}
+
+
+/*HORIZONTAL SPACING */
+article{width:60rem;padding-left:10rem;}
+figure{-webkit-margin-start:0;-webkit-margin-end:0;}
+figure.portrait, figure.square, .sidenote{display:block;float:right;width:26rem; border-left:2px solid #d3d3d3;}
+.crossrefs+.sidenote{float:none;border:0;}
+.rightside {margin-left:1%;}
+img.sibling.landscape {margin-right:0; display:inline;}
+ul.tabs, .definitionBlock div, .searchResults{width:48rem;}
+.definitionBlock div{display:block;}
+img.landscape{display:block;}
+/*Left*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:8rem;}
+table {margin-left:8.5rem;}
+div.textquote table {margin-left:1.5rem;}
+.searchTabs .tab li {
+    margin-left: 2rem;
+}
+.nav{margin-left:.5rem;}
+.versenav{margin-left:9rem;}
+.textquote {margin-left:10rem;}
+.menu{margin-left: 20rem;}
+figure.portrait, figure.square, .sidenote{margin-left:2rem;}
+div .crossrefs+div.sidenote{padding-left:0;}
+img.landscape{margin-left:auto;}
+img.landscape.rightside{margin-left:1%;}
+.sidenote p, .sidenote h3, #comments .sidenote p, #comments .sidenote h3 {
+    margin-left: 2rem; margin-right: 0;
+}
+/*Right*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:8rem;}
+.searchTabs .tab li {margin-right:2rem;}
+.textquote{margin-right:10rem;}
+img.landscape{margin-right:auto;}
+.sidenote p, .sidenote h3{margin-right:0;}
+
+/*EDIT FORM*/
+.editText{margin-bottom:-.5em;margin-top:-1em;}
+textarea {
+    font-family: monospace;
+    font-size: 1.1em;
+    width: 95%;
+    padding: .5em;
+}
+
+.editbutton{display:block;padding-right:0px;}
+.scrollBox {height:8em;overflow-y:scroll;margin-bottom:.5em; padding:.2em; border:1px solid black;}
+#Heading{margin-top:-1em;}
+.info {
+    float: right;
+    margin: -13rem;
+    margin-top: -.25rem;
+    display: block;
+    width: 13rem;
+}
+
+/*HEADER */
+.icon img, #search {
+    zoom: 60%;
+}
+.indexicon img{max-height:1.5rem;position:absolute;bottom:.25rem;right: 20rem;}
+header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#1A237E;opacity:.9;z-index:100000;align-content: center;}
+#searchbar{padding:0;float:left;z-index:2000}
+#searchField{font-size: 1.5rem;padding-top: .5rem;background-color: #1A237E; color: white;}
+#searchbar input{border: 0;border-bottom: 1px solid #d3d3d3;}
+#searchbar input:focus{outline: none;}
+/*input[type="search"]::-webkit-search-cancel-button {-webkit-appearance: none; }*/
+#search:hover {
+    border-bottom: 1px solid #d3d3d3;
+}
+#toolbarSearchField{float:left;padding-right: 1rem;}
+#toolbarSearchButton{float:left;padding-right: .5rem;margin-top:.5rem;}
+#toolbarSearchButton button{background-color: #1A237E;border:0;height:3rem;}
+#search{color:transparent;padding:0;background-position:center center;background-repeat:no-repeat;background-image:url(../Images/search.png);border-bottom: 1px solid #555;}
+.menu{display: block;padding-top:.5rem;z-index:2000}
+.menu ul{margin:0;display: inline-block;margin-top:.5rem;margin-left:.5rem;}
+.menu li{float:left;position: relative;width: 3rem;margin:0 0 1rem 0;padding: 0;border-bottom: 1px solid #1A237E;}
+.menu li:hover{border-bottom: 1px solid #d3d3d3;top: -1px}
+.menu li ul{display:none;width:12em;border-top:0px;overflow:auto;overflow-x:hidden;position:absolute;margin:0;padding:0;}
+.menu li:hover li{float:none;}
+#menuPrevious {display:block; opacity: 0; position:  absolute;top: 0;left: 0;width: 5rem;}
+#menuPrevious:hover {background-color: black;opacity: .1;z-index:1010;}
+#menuPrevious img{position: absolute; top:50%;}
+#menuNext {float: right; display:block; opacity: 0; position:  absolute;top: 0; right:0;width: 5rem;}
+#menuNext:hover {background-color: black;opacity: .1;z-index:1010;}
+#menuNext img{position: absolute; top:50%; right:1rem;}
+#menuNext.hidden {display:none;}
+#menuTOC{z-index:2000;}
+#toc{max-height:85%;overflow-y:auto;overflow-x:hidden;}
+#toc.hidden{visibility:hidden;opacity: 0;z-index: 990;}
+#toc.visible{visibility:visible;opacity:1;display:block;background-color:white;border-radius: 10px;max-height: 100%-7rem; z-index: 1010; width:20rem;
+position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-50%,-50%);}
+#toc li {float: none; display: block; width: auto; opacity:1;border: 0;padding: .5rem 1.5rem .5rem 1.5rem;margin:0;}
+#toc li:hover{background-color: #ffc;top:0px;}
+#toc li:first-of-type{padding-top: 1rem;}
+#toc li:last-of-type{padding-bottom: 1rem;}
+#toc li a:hover{text-decoration: none;}
+#modal-overlay{visibility:hidden; opacity: 0; position:absolute; top: 0;left: 0;width: 100%;transition:visibility 0s, opacity 0.2s linear;}
+#bibleindex {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: 4rem;
+    left: 0;
+    width: 100%;
+    transition: visibility 0s, opacity 0.2s linear;
+}
+#modal-overlay img {
+        position: absolute;
+        top: 50%;
+    }
+#modal-overlay.show {visibility:visible;background-color: black;opacity: .4;transition:display .2s;z-index:2;transition:visibility 0s, opacity 0.2s linear;}
+#bibleindex.show {
+    visibility: visible;
+    background-color: black;
+    opacity: .7;
+    transition: display .2s;
+    z-index: 2;
+    transition: visibility 0s, opacity 0.2s linear;
+}
+.blur {
+    filter: blur(5px);
+    transition: filter .1s;
+    -webkit-filter: blur(5px)
+}
+
+#indexscripture {font-size: 3rem;}
+.buttongrid {display: grid;grid-template-columns: 1fr 1fr 1fr;grid-row-gap: .25rem;grid-column-gap: .25rem;padding-bottom: 1.5rem;padding-left:2rem;padding-right:2rem;padding-top:.5rem;}
+#possibilities {height: 18rem;}
+.indexbutton {height: 3rem;padding-left: .25rem;padding-right: .25rem;padding-top: .5rem;padding-bottom: .5rem;background-color: #fff;border-radius: 3px;border: 1px solid #c4c4c4;font-size: 2rem;color: #333;background-image: linear-gradient(to bottom,transparent,transparent 50%,rgba(0,0,0,.04));box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), inset 0 1px 0 0 rgba(255,255,255,.45), inset 0 -1px 0 0 rgba(255,255,255,.15), 0 1px 0 0 rgba(255,255,255,.15);text-shadow: 0 1px rgba(255,255,255,.4);}
+.indexbutton:hover {background-color: #eaeaea;}
+
+/*SCRIPTURE TABS*/
+.scripture ul.tabs{background:none;vertical-align:top;border-bottom:1px solid #d3d3d3;display:inline-block;}
+.scripture ul.tabs li{padding:.4em 5px 0;background:none;font-size:.75em;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #d3d3d3;border-right:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;margin:.1em 0 0;height:28px;float:left;cursor:pointer;}
+.scripture ul.tabs li + li{border-left:0px;}
+.scripture ul.tabs li:last-child{border-bottom:0;}
+.scripture ul.tabs li:hover{background:lightyellow;}
+.scripture ul.tabs li.active{background-color:whiteSmoke;}
+.scripture ul.tab{list-style-type:none;margin:0;padding:0;}
+.scripture ul.tab li{display:none;}
+.scripture ul.tab li.active{display:block;}
+/*SCRIPTURE SECTION TABS*/
+.scripture-section ul.tabs{background:none;vertical-align:top;border-bottom:1px solid #d3d3d3;display:inline-block;}
+.scripture-section ul.tabs li{padding:.4em 5px 0;background:none;background-color:whiteSmoke;font-size:.75em;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #d3d3d3;border-right:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;margin:.1em 0 0;height:28px;float:left;cursor:pointer;}
+.scripture-section ul.tabs li + li{border-left:0px;}
+.scripture-section ul.tabs li:last-child{border-bottom:0;}
+.scripture-section ul.tabs li:hover{background:lightyellow;}
+.scripture-section ul.tabs li.active{background-color:white;}
+.scripture-section ul.tab{list-style-type:none;margin:0;padding:0;}
+.scripture-section ul.tab li{display:none;}
+.scripture-section ul.tab li.active{display:block;}
+/*SEARCH TABS*/
+.searchTabs{display:flex;margin-bottom:1rem;position:relative;z-index:0;}
+.definitionsheader{float:left;width:10rem;position:relative;z-index:-2;}
+.definitions{background:white; position:relative;z-index:2;width:50rem;margin-top:-3px; border-top:1px solid #d3d3d3;border-bottom:1px solid #d3d3d3;border-right:1px solid #d3d3d3;padding-bottom:1rem;}
+.definitionsheader {margin-left:-3em;border-right:1px solid #d3d3d3;}
+.definitionsheader ul.tabs {width:100%;margin-top:0;position:relative;z-index:0}
+.definitionsheader ul.tabs li {width:9.55rem;height:auto;padding:.2rem;background-color:whiteSmoke;font-size:.75em;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;cursor:pointer;}
+.definitionsheader ul.tabs li:hover{background:lightyellow;}
+.definitionsheader ul.tabs li.active{width:100%;border-right:0;z-index:5;border-left:2px solid #d3d3d3;border-bottom:2px solid #d3d3d3;background-color:white;font-weight:bold;margin-bottom:1px;margin-top:-3px;}
+.definitionsheader ul.tabs li{border-bottom:0;}
+.definitionsheader ul li:last-child {border-bottom:1px solid #d3d3d3;}
+.definitionsheader ul{border-bottom:0;background:none;vertical-align:top;}
+
+.definitions ul.tab{position:relative;z-index:1;}
+.definitions ul.tab li{display:none;}
+.definitions ul.tab li.active{display:block;margin-bottom:2rem;}
+
+@media only screen and (min-width:1025px) and (max-width:1280px){
+
+/*HORIZONTAL SPACING */
+article{width:55rem;padding-left:5rem;}
+figure.portrait, figure.square, .sidenote{width:26rem}
+.searchResults{width:40rem;}
+.definitionBlock div, ul.tabs{width:50rem;}
+.indexicon img{right: 10rem;}
+.ellipsis{right:10rem;}
+/*Left*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:5rem;}
+table{margin-left:5.25rem;}
+.searchTabs .tab li {margin-left:1rem;}
+.nav{margin-left:.5rem;}
+.versenav{margin-left:6rem;}
+.textquote{margin-left:8rem;}
+    .menu {margin-left: 12rem;}
+/*Right*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:5rem;}
+.searchTabs .tab li {margin-right:1rem;}
+.textquote{margin-right:8rem;}
+
+    #possibilities {
+        height: 12rem;
+    }
+    #keys {
+        height: 24rem;
+    }
+}
+
+@media only screen and (min-width:900px) and (max-width:1024px){
+
+/*HORIZONTAL SPACING */
+article{width:50rem;padding-left:3rem;}
+figure.portrait, figure.square, .sidenote{width:21rem}
+.searchResults{width:46rem;}
+.indexicon img {right: 5rem;}
+.ellipsis{right:5rem;}
+/*Left*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:3rem;}
+    table {
+        margin-left: 3.25rem;
+    }
+.menu {margin-left: 9rem;}
+.searchTabs .tab li {margin-left:1rem;}
+.nav{margin-left:.5rem;}
+.versenav{margin-left:4rem;}
+.textquote{margin-left:5rem;}
+.definitionsheader{margin-left:-1em;}
+/*Right*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:3rem;}
+.searchTabs .tab li {margin-right:1rem;}
+.textquote{margin-right:5rem;}
+}
+
+/*iPAD*/
+@media only screen and (min-width:768px) and (max-width:899px){
+
+/*HORIZONTAL SPACING */
+article{width:45rem;padding-left:1rem;}
+figure.portrait, figure.square, .sidenote{width:21rem}
+.definitionBlock div, .searchResults{width:38rem;}
+ul.tabs{width:38rem;}
+#menuPrevious {width: 3rem;}
+#menuNext {width: 3rem;}
+.indexicon img {right: 5rem;}
+.ellipsis{right:5rem;}
+.indexbutton {
+        height:2rem;
+        font-size: 1.5rem;
+    }
+/*Left*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:3rem;}
+    table {
+        margin-left: 3.25rem;
+    }
+    div.textquote table {
+        margin-left: 1rem;
+    }
+.searchTabs .tab li {margin-left:1rem;}
+.nav{margin-left:.5rem;}
+.versenav{margin-left:4rem;}
+.menu{margin-left: 4rem;}
+.textquote{margin-left:4rem;}
+.definitionsheader{margin-left:0;}
+/*Right*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:3rem;}
+.searchTabs .tab li {margin-right:1rem;}
+.textquote{margin-right:5rem;}
+}
+
+@media only screen and (min-width:480px) and (max-width:767px){
+body{text-rendering:optimizeSpeed;}
+/*--Menu--*/
+.icon img, #search{zoom: 50%;}
+#searchField{width: 15rem;}
+.indexbutton {
+        font-size: 1.5rem;
+        height:2.5rem;
+    }
+#possibilities {
+        height: 15rem;
+    }
+.definitionsheader ul{margin-bottom:0;}
+.definitionsheader{border-right:0;}
+.definitions{border-left:1px solid #d3d3d3;margin-top:2px;}
+/*HORIZONTAL SPACING */
+article{width:33rem;padding-left:1rem;font-size:1.15rem;}
+figure.portrait, figure.square {float:none;width:28rem; padding-left: 0; border-left:none;}
+.sidenote{float:none;width:28rem;}
+ul.tabs, .searchResults{width:32rem;}
+ul.tabs {display:inline-block;}
+#menuPrevious {width: 2rem;}
+#menuNext {width: 2rem;}
+.indexicon img {right:1rem;}
+.ellipsis{right:1rem;}
+.searchTabs{display:block;width:32rem;}
+.definitionsheader{margin-left:0;width:100%;float:none;}
+.definitionsheader ul{width:100%;}
+.definitionsheader ul.tabs li{width:100%;border-right:1px solid #d3d3d3;}
+.definitionsheader ul.tabs li{border-bottom:0;}
+.definitionsheader ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
+.definitionsheader ul.tabs li.active{border-right:1px solid #d3d3d3;}
+.definitionsheader ul.tabs li:last-child.active{border-bottom:2px solid #d3d3d3;}
+.definitions{width:32.25rem;}
+.definitions ul{width:30rem;}
+.definitionnav p{width:30rem;}
+/*Left*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:1rem;}
+    table {
+        margin-left: 1.1rem;
+    }
+    div.textquote table {
+        margin-left: .75rem;
+    }
+.searchTabs .tab li {margin-left:.5rem;}
+.nav{margin-left:.5rem;}
+.versenav{margin-left:3rem;}
+.menu{margin-left: 3rem;}
+.textquote,.sidenote.crossrefs{margin-left:3rem;}
+.sidenote.crossrefs{margin-left: 2rem;}
+.sidenote{margin-left:4rem;border-left:2px solid #d3d3d3;}
+.definitions{margin-left:0;}
+
+/*Right*/
+.comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:1rem;}
+.searchTabs .tab li {margin-right:0rem;}
+.textquote{margin-right:3rem;}
+.sidenote{margin-right:4rem;}
+.definitions ul li{width:100%;margin-right:0;}
+}
+
+@media only screen and (max-width:480px){
+body{text-rendering:optimizeSpeed;}
+
+.icon img, #search{zoom: 50%;}
+#searchField{width: 10rem;}
+.menu li{width: 2.5rem;margin:0 0 .7rem 0;}
+.buttongrid {
+        padding-bottom: 1rem;
+    }
+/*HORIZONTAL SPACING */
+article{width:20rem;padding-left:1em;font-size:1rem;}
+figure.portrait, figure.square, .sidenote{float:none;width:16rem; border-left:none;}
+figure.portrait, figure.square{padding-left: 0;}
+.sidenote.crossrefs{width:18rem;}
+ul.tabs, .definitionBlock div, .searchResults{width:16rem;}
+#menuPrevious {width: 1rem;}
+#menuNext {width: 1rem;}
+.indexicon img {right: 1rem;}
+.ellipsis{right:1rem;}
+.indexbutton {
+        height:2rem;
+        font-size: 1rem;
+    }
+    #possibilities {
+        height: 15rem;
+    }
+ .scripture ul.tabs li {width:100%;height:1.5rem;border-left:1px solid #d3d3d3;}
+.scripture ul.tabs li + li {width:100%;height:1.5rem;border-left:1px solid #d3d3d3;}
+.scripture ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
+.scripture ul.tabs{border-bottom:0;display:inline-block;}
+.searchTabs{display:block;width:18rem;}
+.definitionsheader{margin-left:0;width:100%;float:none;}
+.definitionsheader ul{width:100%;margin-bottom:0;}
+.definitions{width:18.25rem;margin-left:0;margin-top:1px;}
+.definitions ul{width:18rem;}
+.definitionsheader ul.tabs li{width:100%;border-right:1px solid #d3d3d3;}
+.definitionsheader ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
+.definitionsheader ul.tabs li.active{border-right:1px solid #d3d3d3;}
+.definitionsheader ul.tabs li:last-child.active{border-bottom:2px solid #d3d3d3;}
+.definitionnav p{width:20rem;}
+.definitionsheader{border-right:0;}
+.definitions{border-left:1px solid #d3d3d3;}
+/*Left*/
+.comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-left:.5rem;}
+    table {
+        margin-left: .6rem;
+    }
+    div.textquote table {
+        margin-left: .25rem;
+    }
+.searchTabs .tab li {margin-left:0;}
+.searchTabs.tab ul.li {margin-left:0;}
+.textquote, .nav{margin-left:.5rem;}
+.versenav{margin-left:1rem;}
+.menu{margin-left: .3rem;}
+.sidenote{margin-left:2rem;}
+definitionBlock details,.sidenote.crossrefs{margin-left:0}
+.definitions ul{margin-left:.4rem;}
+/*Right*/
+.comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-right:.5rem;}
+.searchTabs .tab li {margin-right:1rem;}
+.searchTabs.tab ul.li {margin-right:1rem;}
+.textquote{margin-right:1rem;}
+.sidenote{margin-right:1rem;}
+.definitionBlock details{margin-right:0;}
+.sidenote.crossrefs{margin-right:0}
+}
