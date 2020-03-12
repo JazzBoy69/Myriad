@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Myriad", "Myriad\Myriad.csproj", "{79121A22-7A9E-490F-823B-98B87422718C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79121A22-7A9E-490F-823B-98B87422718C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79121A22-7A9E-490F-823B-98B87422718C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79121A22-7A9E-490F-823B-98B87422718C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79121A22-7A9E-490F-823B-98B87422718C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BDDF7A12-9F22-4B8D-808D-BCFFB01D2AC2}
+	EndGlobalSection
+EndGlobal
