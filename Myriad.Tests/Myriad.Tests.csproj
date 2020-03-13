@@ -13,4 +13,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Myriad\Myriad.csproj" />
+  </ItemGroup>
+
 </Project>
