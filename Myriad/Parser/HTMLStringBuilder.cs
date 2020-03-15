@@ -95,5 +95,47 @@ namespace Myriad.Parser
         {
             Builder.Append(number);
         }
+
+        internal void EndDiv()
+        {
+            Builder.Append("</div>");
+        }
+
+        internal void StartDivWithClass(string className)
+        {
+            Builder.Append("<div class='");
+            Builder.Append(className);
+            Builder.Append("'>");
+        }
+
+        internal void StartHeader()
+        {
+            Builder.Append("<h3>");
+        }
+
+        internal void EndHeader()
+        {
+            Builder.Append("</h3>");
+        }
+
+        internal void StartFigure(string className)
+        {
+            Builder.Append("<figure class='");
+            Builder.Append(className);
+            Builder.Append("'>");        }
+
+        internal void StartIMG(string path)
+        {
+            Builder.Append("<img src='");
+            Builder.Append(path);
+            Builder.Append("'");
+        }
+
+        internal void AppendIMGWidth(string widthString)
+        {
+            Builder.Append(" width='");
+            Builder.Append(widthString);
+            Builder.Append("'");
+        }
     }
 }

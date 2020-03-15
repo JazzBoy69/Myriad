@@ -1,13 +1,21 @@
 ﻿using Myriad.Library;
 
-namespace Myriad.AppliedClasses
+namespace Myriad.Parser
 {
     public class StringRange
     {
         int start = Ordinals.first;
         int end = Ordinals.first;
         int max;
-
+        internal static StringRange InvalidRange
+        {
+            get
+            {
+                StringRange result = new StringRange();
+                result.Invalidate();
+                return result;
+            }
+        }
         internal void MoveStartTo(int start)
         {
             this.Start1 = start;
