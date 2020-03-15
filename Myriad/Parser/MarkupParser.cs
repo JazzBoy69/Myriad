@@ -14,7 +14,7 @@ namespace Myriad.Parser
             this.text = text;
         }
 
-        internal static List<MarkedUpParagraph> Create(List<string> paragraphs)
+        internal static List<MarkedUpParagraph> CreateFrom(List<string> paragraphs)
         {
             List<MarkedUpParagraph> result = new List<MarkedUpParagraph>();
             foreach (string paragraph in paragraphs)

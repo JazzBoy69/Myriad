@@ -7,9 +7,10 @@ namespace Myriad.Benchmark
     public class Benchmarker
     {
         [Benchmark]
-        public void Run()
+        public void GetHomeData()
         {
-            Thread.Sleep(50);
+            IndexModel indexModel = new IndexModel();
+            var paragraphs = indexModel.GetPageParagraphs();
         }
     }
     class Program

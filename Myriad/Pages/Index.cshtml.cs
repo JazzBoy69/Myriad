@@ -22,7 +22,7 @@ namespace Myriad
 
         public void RenderPage()
         {
-            List<MarkedUpParagraph> markupParagraphs = MarkedUpParagraph.Create(
+            List<MarkedUpParagraph> markupParagraphs = MarkedUpParagraph.CreateFrom(
                 GetPageParagraphs());
             Parse(markupParagraphs as List<MarkedUpParagraph>);
         }

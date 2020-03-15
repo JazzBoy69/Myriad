@@ -18,16 +18,17 @@ namespace Myriad.Data.Implementation
 
         public List<T> GetData<T>(DataOperation operation, string key)
         {
-            SqlConnection connection = GetConnection();
+            using var connection = GetConnection();
             connection.Open();
-            SqlCommand command = new SqlCommand(selectors[operation], connection);
+            using var command = new SqlCommand(selectors[operation], connection);
             command.Parameters.AddWithValue("@key", key);
-            SqlDataReader reader = command.ExecuteReader();
+            using var reader = command.ExecuteReader();
             List<T> results = new List<T>();
             while (reader.Read())
             {
                 results.Add((T)reader.GetValue(Ordinals.first));
             }
+            connection.Close();
             return results;
         }
 
