@@ -16,8 +16,7 @@ namespace Myriad.Tests
         {
             IndexModel indexModel = new IndexModel();
             var paragraphs = indexModel.GetPageParagraphs();
-            List<MarkedUpParagraph> result = paragraphs as List<MarkedUpParagraph>;
-            Assert.That(result.Count > Numbers.nothing);
+            Assert.That(paragraphs.Count > Numbers.nothing);
         }
         [Test]
         public void CanParseParagraph()

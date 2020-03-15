@@ -2,35 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Myriad.Data.Implementation;
 
 namespace Myriad.Data
 {
-    enum DataOperation { ReadNavigationPage }
-    public class DataReader
+    public enum DataOperation { ReadNavigationPage }
+    public interface DataReader
     {
-        internal static object GetData(DataOperation operation, string key)
+        public abstract List<T> GetData<T>(DataOperation operation, string key);
+    }
+
+    public static class ReaderProvider
+    {
+        public static DataReader Reader()
         {
-            throw new NotImplementedException();
+            return new SqlServerDataReader();
         }
     }
 
-
-    public class IDataResultList<T> 
-    {
-        List<T> result = new List<T>();
-        public List<T> Result { get { return result; } }
-
-        public int Count
-        {
-            get
-            {
-                return result.Count;
-            }
-        }
-
-        public void Add(T item)
-        {
-            result.Add(item);
-        }
-    }
 }

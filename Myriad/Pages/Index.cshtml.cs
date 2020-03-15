@@ -22,12 +22,14 @@ namespace Myriad
 
         public void RenderPage()
         {
-            object markupParagraphs = GetPageParagraphs();
+            List<MarkedUpParagraph> markupParagraphs = MarkedUpParagraph.Create(
+                GetPageParagraphs());
             Parse(markupParagraphs as List<MarkedUpParagraph>);
         }
-        public object GetPageParagraphs()
-        {
-            return DataReader.GetData(DataOperation.ReadNavigationPage, home); 
+        public List<string> GetPageParagraphs()
+        {   
+            return ReaderProvider.Reader()
+                .GetData<string>(DataOperation.ReadNavigationPage, home); 
         }
         public void Parse(List<MarkedUpParagraph> markupParagraphs)
         {

@@ -13,6 +13,16 @@ namespace Myriad.Parser
         {
             this.text = text;
         }
+
+        internal static List<MarkedUpParagraph> Create(List<string> paragraphs)
+        {
+            List<MarkedUpParagraph> result = new List<MarkedUpParagraph>();
+            foreach (string paragraph in paragraphs)
+            {
+                result.Add(new MarkedUpParagraph(paragraph));
+            }
+            return result;
+        }
     }
     public class MarkupParser
     {
