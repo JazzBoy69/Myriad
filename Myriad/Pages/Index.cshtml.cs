@@ -5,14 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text;
-using Myriad.FromApplied;
-using Myriad.ToApplied;
+using Myriad.Parser;
+using Myriad.Data;
 
 namespace Myriad
 {
-    public class IndexModel : DataParserPageModel
+    public class IndexModel 
     {
+        const string home = "home";
         public StringBuilder PageBody;
+
         public void OnGet()
         {
             RenderPage();
@@ -20,17 +22,16 @@ namespace Myriad
 
         public void RenderPage()
         {
-            List<string> markupParagraphs = GetPageParagraphs();
-            Parse(markupParagraphs);
+            object markupParagraphs = GetPageParagraphs();
+            Parse(markupParagraphs as List<MarkedUpParagraph>);
         }
-        public List<string> GetPageParagraphs()
+        public object GetPageParagraphs()
         {
-            DataReader reader = GetDataReader(NavigationPages.selector);
-            return reader.GetData(NavigationPages.homepage);
+            return DataReader.GetData(DataOperation.ReadNavigationPage, home); 
         }
-        public void Parse(List<string> markupParagraphs)
+        public void Parse(List<MarkedUpParagraph> markupParagraphs)
         {
-            MarkupParser parser = GetMarkupParser();
+            MarkupParser parser = new MarkupParser();
             parser.Parse(markupParagraphs);
             PageBody = parser.ParsedText;
         }
