@@ -137,5 +137,42 @@ namespace Myriad.Parser
             Builder.Append(widthString);
             Builder.Append("'");
         }
+
+        internal void StartSuper()
+        {
+            Builder.Append("<sup>");
+        }
+
+        internal void EndSuper()
+        {
+            Builder.Append("</sup>");
+        }
+
+        internal void StartBold()
+        {
+            Builder.Append("<b>");
+        }
+
+        internal void EndBold()
+        {
+            Builder.Append("</b>");
+        }
+
+        internal void AppendClass(string className)
+        {
+            Builder.Append(" class='");
+            Builder.Append(className);
+            Builder.Append("'");
+        }
+
+        internal void EndSingleTag()
+        {
+            Builder.Append(" />");
+        }
+
+        internal void EndFigure()
+        {
+            Builder.Append("</figure>");
+        }
     }
 }
