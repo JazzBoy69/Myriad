@@ -5,9 +5,9 @@ namespace Myriad.Parser
     internal class CitationHandler
     {
         private StringRange mainRange;
-        private MarkedUpParagraph currentParagraph;
+        private IMarkedUpParagraph currentParagraph;
 
-        public CitationHandler(StringRange mainRange, MarkedUpParagraph currentParagraph)
+        public CitationHandler(StringRange mainRange, IMarkedUpParagraph currentParagraph)
         {
             this.mainRange = mainRange;
             this.currentParagraph = currentParagraph;

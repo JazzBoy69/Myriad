@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
+using Myriad.Library;
 
 namespace Myriad.Parser
 {
-    public class MarkupParser : BasicMarkupParser
+    public class MarkupParser<T> : BasicMarkupParser<T> where T: IMarkedUpParagraph
     {
         bool detail;
         bool bold;
@@ -15,14 +16,14 @@ namespace Myriad.Parser
         bool heading;
         readonly PageFormatter formatter;
 
-        static readonly char[] tokens = new char[] { '*', '^', '/', '=', '(', '[', '{', ')', ']', '}', '~', '#', '|', '_', '+' };
+        new static readonly char[] tokens = new char[] { '*', '^', '/', '=', '(', '[', '{', ')', ']', '}', '~', '#', '|', '_', '+' };
         public StringBuilder ParsedText { get { return formatter.Result; } }
         public MarkupParser()
         {
             formatter = new PageFormatter(mainRange, currentParagraph);
         }
 
-        new void HandleToken()
+        new public void HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             char charAfterToken = currentParagraph.CharAt(mainRange.End + 1);
@@ -116,6 +117,15 @@ namespace Myriad.Parser
         new void HandleCitations()
         {
             formatter.AppendString(citationLevel);
+        }
+
+        protected void MoveIndexToEndOfWord()
+        {
+            mainRange.BumpEnd();
+            while ((!mainRange.AtLimit) &&
+                (Symbols.IsPartOfWord(currentParagraph.CharAt(mainRange.End))))
+                mainRange.BumpEnd();
+            mainRange.PullEnd();
         }
     }
 

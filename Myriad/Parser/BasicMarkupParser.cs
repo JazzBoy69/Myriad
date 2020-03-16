@@ -1,30 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using Myriad.Library;
-using Range = Myriad.Library.Range;
-
 
 namespace Myriad.Parser
 
 {
-    public class BasicMarkupParser
+    public interface IParser<T>
+    {
+        abstract void Parse(List<T> paragraphs);
+        abstract void ParseParagraph();
+
+        abstract void MoveToFirstToken();
+        abstract void MoveToNextToken();
+        abstract void HandleToken();
+        abstract int IncreaseCitationLevel(char token);
+        abstract int DecreaseCitationLevel();
+        abstract void HandleCitations();
+
+    }
+    public class BasicMarkupParser<T> : IParser<T> where T: IMarkedUpParagraph
     {
         protected int citationLevel = 0;
-        protected MarkedUpParagraph currentParagraph;
+        protected T currentParagraph;
         protected StringRange mainRange;
-        static readonly char[] tokens = new char[] {'(', '[', '{', ')', ']', '}'};
+        protected static readonly char[] tokens = new char[] {'(', '[', '{', ')', ']', '}'};
         static readonly char[] brackettokens = new char[] { '|', '}' };
 
-        public void Parse(List<MarkedUpParagraph> paragraphs)
+        public void Parse(List<T> paragraphs)
         {
-            foreach (MarkedUpParagraph paragraph in paragraphs)
+            foreach (T paragraph in paragraphs)
             {
                 currentParagraph = paragraph;
                 ParseParagraph();
             }
         }
 
-        protected void ParseParagraph()
+        public void ParseParagraph()
         {
             MoveToFirstToken();
             while (mainRange.Valid)
@@ -34,7 +45,7 @@ namespace Myriad.Parser
             }
         }
 
-        private void MoveToFirstToken()
+        public void MoveToFirstToken()
         {
             if (currentParagraph.Length == Numbers.nothing)
             {
@@ -44,7 +55,7 @@ namespace Myriad.Parser
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(tokens, mainRange.Start));
         }
 
-        internal void MoveToNextToken()
+        public void MoveToNextToken()
         {
             if (mainRange.Start > currentParagraph.Length)
                 return;
@@ -56,7 +67,7 @@ namespace Myriad.Parser
                 MoveToNextToken();
             }
         }
-        protected void HandleToken()
+        public void HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             char charAfterToken = currentParagraph.CharAt(mainRange.End + 1);
@@ -96,16 +107,7 @@ namespace Myriad.Parser
             mainRange.MoveEndTo(currentParagraph.IndexOf('}', mainRange.Start - 1));
         }
 
-        protected void MoveIndexToEndOfWord()
-        {
-            mainRange.BumpEnd();
-            while ((!mainRange.AtLimit) &&
-                (Symbols.IsPartOfWord(currentParagraph.CharAt(mainRange.End))))
-                mainRange.BumpEnd();
-            mainRange.PullEnd();
-        }
-
-        protected int IncreaseCitationLevel(char token)
+        public int IncreaseCitationLevel(char token)
         {
             HandleCitations();
             citationLevel++;
@@ -116,7 +118,7 @@ namespace Myriad.Parser
             }
             return citationLevel;
         }
-        protected int DecreaseCitationLevel()
+        public int DecreaseCitationLevel()
         {
             HandleCitations();
             if (citationLevel > 0)
@@ -124,7 +126,7 @@ namespace Myriad.Parser
             return citationLevel;
         }
 
-        protected void HandleCitations()
+        public void HandleCitations()
         {
             throw new NotImplementedException();
         }
@@ -134,7 +136,7 @@ namespace Myriad.Parser
             citationLevel = 0;
         }
 
-        internal void MoveIndexToNextBracketToken()
+        protected void MoveIndexToNextBracketToken()
         {
             if (mainRange.Start > currentParagraph.Length)
                 return;

@@ -19,7 +19,7 @@ namespace Myriad.Parser
             {'_', "&nbsp;" }, {'^',"" }, {'+', ""}
         };
         private readonly StringRange mainRange;
-        private readonly MarkedUpParagraph currentParagraph;
+        private readonly IMarkedUpParagraph currentParagraph;
         readonly HTMLStringBuilder builder = new HTMLStringBuilder();
         readonly CitationHandler citationHandler;
         internal bool LabelExists
@@ -32,7 +32,7 @@ namespace Myriad.Parser
 
         public StringBuilder Result { get { return builder.Builder; } }
 
-        public PageFormatter(StringRange mainRange, MarkedUpParagraph currentParagraph)
+        public PageFormatter(StringRange mainRange, IMarkedUpParagraph currentParagraph)
         {
             this.mainRange = mainRange;
             this.currentParagraph = currentParagraph;
