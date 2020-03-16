@@ -7,7 +7,7 @@ using Myriad.Library;
 
 namespace Myriad.Parser
 {
-    public class MarkupParser<T> : BasicMarkupParser<T> where T: IMarkedUpParagraph
+    public class MarkupParser<T> : BasicMarkupParser<T> where T: MarkedUpParagraph
     {
         bool detail;
         bool bold;

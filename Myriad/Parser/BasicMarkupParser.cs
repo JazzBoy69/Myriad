@@ -8,7 +8,6 @@ namespace Myriad.Parser
     public interface IParser<T>
     {
         abstract void Parse(List<T> paragraphs);
-        abstract void ParseParagraph();
 
         abstract void MoveToFirstToken();
         abstract void MoveToNextToken();
@@ -18,7 +17,7 @@ namespace Myriad.Parser
         abstract void HandleCitations();
 
     }
-    public class BasicMarkupParser<T> : IParser<T> where T: IMarkedUpParagraph
+    public class BasicMarkupParser<T> : IParser<T> where T: MarkedUpParagraph
     {
         protected int citationLevel = 0;
         protected T currentParagraph;
@@ -35,7 +34,7 @@ namespace Myriad.Parser
             }
         }
 
-        public void ParseParagraph()
+        protected void ParseParagraph()
         {
             MoveToFirstToken();
             while (mainRange.Valid)

@@ -5,51 +5,30 @@ using System.Threading.Tasks;
 
 namespace Myriad.Parser
 {
-    public class MarkedupParagraphList<T> where T: IMarkedUpParagraph
+    public class MarkedupParagraphList<T> where T: MarkedUpParagraph, new()
     {
-        internal static List<T> CreateFrom(List<string> paragraphs)
+        public static List<T> CreateFrom(List<string> paragraphs)
         {
             List<T> result = new List<T>();
             foreach (string paragraph in paragraphs)
             {
-                result.Add((T)Activator.CreateInstance(typeof(T), paragraph));
+                var markedupParagraph = new T();
+                markedupParagraph.Text = paragraph;
             }
             return result;
         }
     }
 
 
-    public interface IMarkedUpParagraph
-    {
-        public string Text { get; }
 
-        public int Length { get; }
 
-        public abstract IMarkedUpParagraph Create(string text);
-        public abstract int IndexOfAny(char[] tokens, int start);
-
-        public abstract int IndexOf(char token, int start);
-
-        public abstract int IndexOf(char token, int start, int end);
-
-        public abstract char CharAt(int index);
-
-        public abstract string StringAt(int start, int end);
-    }
-
-    public class MarkedUpParagraphString : IMarkedUpParagraph
+    public class MarkedUpParagraph
     {
         string text;
         public int Length { get { return text.Length; } }
 
-        public string Text { get { return text; } }
+        public string Text { get { return text; } internal set { text = value; } }
 
-        public IMarkedUpParagraph Create(string text)
-        {
-            MarkedUpParagraphString newParagraph = new MarkedUpParagraphString();
-            newParagraph.text = text;
-            return newParagraph;
-        }
         public int IndexOfAny(char[] tokens, int start)
         {
             return text.IndexOfAny(tokens, start);

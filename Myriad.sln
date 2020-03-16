@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad", "Myriad\Myriad.csproj", "{79121A22-7A9E-490F-823B-98B87422718C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Myriad.Tests", "Myriad.Tests\Myriad.Tests.csproj", "{66B61255-F2A8-457F-97CE-17E6C9917F4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad.Tests", "Myriad.Tests\Myriad.Tests.csproj", "{66B61255-F2A8-457F-97CE-17E6C9917F4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Myriad.Benchmark", "Myriad.Benchmark\Myriad.Benchmark.csproj", "{214EFC21-D67C-4CFE-9679-E9B0736C2969}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad.Benchmark", "Myriad.Benchmark\Myriad.Benchmark.csproj", "{214EFC21-D67C-4CFE-9679-E9B0736C2969}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
