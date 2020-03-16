@@ -36,7 +36,7 @@ namespace Myriad.Parser
         {
             this.mainRange = mainRange;
             this.currentParagraph = currentParagraph;
-            citationHandler = new CitationHandler(mainRange, currentParagraph);
+            citationHandler = new CitationHandler();
         }
 
         internal bool ToggleBold(bool bold, int citationLevel)
@@ -256,7 +256,7 @@ namespace Myriad.Parser
         {
             if (citationLevel > 0)
             {
-                citationHandler.AppendCitations();
+                citationHandler.ParseCitations();
             }
             else
             {
@@ -303,7 +303,16 @@ namespace Myriad.Parser
             builder.EndSingleTag();
             builder.EndFigure();
         }
-
+        internal void AppendNextStartCharacter()
+        {
+            builder.Append(currentParagraph.CharAt(mainRange.Start));
+            mainRange.BumpStart();
+        }
+        internal void AppendNextCharacter()
+        {
+            builder.Append(currentParagraph.CharAt(mainRange.Start));
+            mainRange.BumpStart();
+        }
         internal void SetLabel(int citationLevel)
         {
             if (citationLevel > 0)

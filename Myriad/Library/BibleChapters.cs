@@ -31,7 +31,7 @@ namespace Myriad.Library
             "HEBREWS", "JAMES", "1 PETER", "2 PETER", "1 JOHN", "2 JOHN",
             "3 JOHN", "JUDE", "REVELATION"
         };
-        internal static Dictionary<string, int> BibleNamesTitleCase = new Dictionary<string, int>
+        internal static Dictionary<string, int> NamesTitleCaseIndex = new Dictionary<string, int>
         {
             {"Ge", 0 }, {"Ex", 1 }, {"Le", 2 }, {"Nu", 3 }, { "De",4 }, { "Jos", 5 }, { "Jg", 6 }, { "Ru",7 },    //0-7
             { "1Sa", 8 }, { "2Sa", 9}, {"1Ki", 10}, { "2Ki", 11}, {"1Ch", 12}, {"2Ch", 13}, {"Ezr", 14},    //8-14
@@ -70,7 +70,7 @@ namespace Myriad.Library
             { "1 Tim.", 53 }, {"2 Tim.", 54}, { "Philem.",56}, { "Heb.", 57}, {"Jas.", 58}, {"1 Pet.", 59},           //53-59
             { "2 Pet.",60}, { "Rev.", 65}
     };
-        internal static Dictionary<string, int> BibleNames = new Dictionary<string, int>
+        internal static Dictionary<string, int> NamesIndex = new Dictionary<string, int>
         {
             {"GE", 0 }, {"EX", 1 }, {"LE", 2 }, {"NU", 3 }, { "DE",4 }, { "JOS", 5 }, { "JG", 6 }, { "RU",7 },    //0-7
             { "1SA", 8 }, { "2SA", 9}, {"1KI", 10}, { "2KI", 11}, {"1CH", 12}, {"2CH", 13}, {"EZR", 14},    //8-14
@@ -182,7 +182,7 @@ namespace Myriad.Library
         {
             "See", "see", "Read", "compare", "Compare", "also", "at"
         };
-        internal static List<string> Names = new List<string> {
+        internal static List<string> NamesAllCaps = new List<string> {
             "GENESIS", "EXODUS", "LEVITICUS", "NUMBERS", "DEUTERONOMY",
             "JOSHUA", "JUDGES", "RUTH", "1 SAMUEL", "2 SAMUEL", "1 KINGS",
             "2 KINGS", "1 CHRONICLES", "2 CHRONICLES", "EZRA", "NEHEMIAH",

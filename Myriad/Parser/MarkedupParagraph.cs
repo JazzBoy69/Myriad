@@ -30,6 +30,8 @@ namespace Myriad.Parser
 
         public abstract int IndexOf(char token, int start);
 
+        public abstract int IndexOf(char token, int start, int end);
+
         public abstract char CharAt(int index);
 
         public abstract string StringAt(int start, int end);
@@ -67,6 +69,11 @@ namespace Myriad.Parser
         public string StringAt(int start, int end)
         {
             return text[start..end];
+        }
+
+        public int IndexOf(char token, int start, int end)
+        {
+            return StringAt(start, end).IndexOf(token) + start;
         }
     }
 }

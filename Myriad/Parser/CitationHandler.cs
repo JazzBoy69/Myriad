@@ -1,22 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using Myriad.Library;
 
 namespace Myriad.Parser
 {
     internal class CitationHandler
     {
-        private StringRange mainRange;
-        private IMarkedUpParagraph currentParagraph;
+        const int findChapter = 0;
+        const int secondPart = 1;
+        const int findVerse = 2;
+        const int afterComma = 3;
+        const int findWordIndex = 4;
+        const int findLastWordIndex = 5;
 
-        public CitationHandler(StringRange mainRange, IMarkedUpParagraph currentParagraph)
+        internal void ParseCitations()
         {
-            this.mainRange = mainRange;
-            this.currentParagraph = currentParagraph;
         }
-
-        internal void AppendCitations()
-        {
-            //Todo: implement append citations
-            throw new NotImplementedException();
-        }
+ 
     }
 }
