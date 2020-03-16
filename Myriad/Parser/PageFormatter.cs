@@ -1,5 +1,6 @@
 ﻿using Myriad.Library;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Myriad.Parser
 {
@@ -8,6 +9,7 @@ namespace Myriad.Parser
         bool editable;
         bool figure;
         bool labelExists = false;
+        readonly bool hideDetails = false;
         readonly Library.Range extendedTarget;
         readonly StringRange labelRange = new StringRange();
         static readonly Dictionary<char, string> tokenToString = new Dictionary<char, string>
@@ -18,7 +20,8 @@ namespace Myriad.Parser
         };
         private readonly StringRange mainRange;
         private readonly MarkedUpParagraph currentParagraph;
-        private readonly HTMLStringBuilder builder;
+        readonly HTMLStringBuilder builder = new HTMLStringBuilder();
+        readonly CitationHandler citationHandler;
         internal bool LabelExists
         {
             get
@@ -26,11 +29,14 @@ namespace Myriad.Parser
                 return labelExists;
             }
         }
-        public PageFormatter(StringRange mainRange, MarkedUpParagraph currentParagraph, HTMLStringBuilder builder)
+
+        public StringBuilder Result { get { return builder.Builder; } }
+
+        public PageFormatter(StringRange mainRange, MarkedUpParagraph currentParagraph)
         {
             this.mainRange = mainRange;
             this.currentParagraph = currentParagraph;
-            this.builder = builder;
+            citationHandler = new CitationHandler(mainRange, currentParagraph);
         }
 
         internal bool ToggleBold(bool bold, int citationLevel)
@@ -86,19 +92,24 @@ namespace Myriad.Parser
             return italic;
         }
 
-        internal bool ToggleHeading(bool heading)
+        internal bool ToggleHeading(bool heading, char charAfterToken)
         {
-            editable = false;
-            if (heading)
+            if (charAfterToken == '=')
             {
-                builder.EndHeader();
-                mainRange.BumpStart();
-                return false;
-            }
-            builder.StartHeader();
+                editable = false;
+                if (heading)
+                {
+                    builder.EndHeader();
+                    mainRange.BumpStart();
+                    return false;
+                }
+                builder.StartHeader();
 
-            mainRange.BumpStart();
-            return true;
+                mainRange.BumpStart();
+                return true;
+            }
+            else builder.Append('=');
+            return heading;
         }
 
 
@@ -124,6 +135,39 @@ namespace Myriad.Parser
             builder.EndDiv();
             editable = false;
         }
+
+        internal bool HandleDetails(bool detail, int citationLevel)
+        {
+            bool startSpan = false;
+            if (((hideDetails) && (!detail)) && (mainRange.Length > 1))
+            {
+                builder.StartSpan();
+                startSpan = true;
+            }
+            AppendString(citationLevel);
+            if (hideDetails)
+            {
+                if (detail)
+                {
+                    detail = false;
+                    builder.EndSpan();
+                    builder.EndSpan();
+                }
+                else
+                {
+                    detail = true;
+                    if (startSpan)
+                    {
+                        builder.EndSpan();
+                    }
+                    builder.StartSpan("hiddendetail");
+                    builder.StartSpan();
+                }
+            }
+            return detail;
+        }
+
+
         internal void AppendTag()
         {
             labelExists = false;
@@ -212,7 +256,7 @@ namespace Myriad.Parser
         {
             if (citationLevel > 0)
             {
-                AppendCitations();
+                citationHandler.AppendCitations();
             }
             else
             {
