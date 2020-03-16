@@ -8,7 +8,7 @@ namespace Myriad.Parser
         bool editable;
         bool figure;
         bool labelExists = false;
-        Library.Range extendedTarget;
+        readonly Library.Range extendedTarget;
         readonly StringRange labelRange = new StringRange();
         static readonly Dictionary<char, string> tokenToString = new Dictionary<char, string>
         {
@@ -16,9 +16,9 @@ namespace Myriad.Parser
             {')', ")" }, {']', "]" }, {'}', ""}, {'~', "—"}, {'#', "" }, {' ', " " },
             {'_', "&nbsp;" }, {'^',"" }, {'+', ""}
         };
-        private StringRange mainRange;
-        private MarkedUpParagraph currentParagraph;
-        private HTMLStringBuilder builder;
+        private readonly StringRange mainRange;
+        private readonly MarkedUpParagraph currentParagraph;
+        private readonly HTMLStringBuilder builder;
         internal bool LabelExists
         {
             get
@@ -127,9 +127,6 @@ namespace Myriad.Parser
         internal void AppendTag()
         {
             labelExists = false;
-            string tag = currentParagraph.StringAt(mainRange.Start, mainRange.End);
-            tag = tag.Replace("#", "");
-            tag = tag.Replace("}", "");
             if (labelRange.Valid)
             {
                 builder.StartAnchor("link");
@@ -177,12 +174,6 @@ namespace Myriad.Parser
             if (tokenToString.ContainsKey(token))
                 builder.Append(tokenToString[token]);
             else builder.Append(token);
-        }
-
-
-        internal void HandleTag(int citationLevel)
-        {
-
         }
 
         private void AppendTagStringAnchored()

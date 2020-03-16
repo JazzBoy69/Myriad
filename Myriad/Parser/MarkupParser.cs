@@ -15,20 +15,17 @@ namespace Myriad.Parser
         bool super;
         bool italic;
         bool heading;
-        bool sidenote;
-
-        bool hideDetails = false;
+        readonly bool hideDetails = false;
 
         int citationLevel = 0;
         MarkedUpParagraph currentParagraph;
         StringRange mainRange;
 
         static readonly char[] tokens = new char[] { '*', '^', '/', '=', '(', '[', '{', ')', ']', '}', '~', '#', '|', '_', '+' };
-        static readonly char[] brackettokens = new char[] { '|', '}' }; 
-
-        HTMLStringBuilder builder = new HTMLStringBuilder();
-        PageFormatter formatter;
-        CitationHandler citationHandler;
+        static readonly char[] brackettokens = new char[] { '|', '}' };
+        readonly HTMLStringBuilder builder = new HTMLStringBuilder();
+        readonly PageFormatter formatter;
+        readonly CitationHandler citationHandler;
         public StringBuilder ParsedText { get { return builder.Builder; } }
 
         public MarkupParser()

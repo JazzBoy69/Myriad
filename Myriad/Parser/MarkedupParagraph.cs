@@ -7,7 +7,7 @@ namespace Myriad.Parser
 {
     public class MarkedUpParagraph
     {
-        private string text;
+        private readonly string text;
         public MarkedUpParagraph(string text)
         {
             this.text = text;
