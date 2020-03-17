@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Myriad
 {
-    public class VerseModel
+    public class VerseModel : PageModel
     {
         public const string pageURL = "/Verse";
         public const string queryKeyVerse = "verse=";

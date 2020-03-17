@@ -21,12 +21,14 @@ namespace Myriad.Tests
         [Test]
         public void ParserTests()
         {
-            var parser = new MarkupParser<MarkedUpParagraph>();
+            var parser = new MarkupParser();
+            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             var paragraphs = new List<string>();
             paragraphs.Add("**bold**");
-            var list = MarkedupParagraphList<MarkedUpParagraph>.CreateFrom(paragraphs);
-            parser.Parse(list);
-            Assert.That(parser.ParsedText.ToString() == "<b>bold</b>", () => { return parser.ParsedText.ToString(); });
+            parser.Parse(paragraphs);
+            string result = parser.ParsedText.ToString();
+            Console.WriteLine(result);
+            Assert.AreEqual("<b>bold</b>", result);
         }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Myriad
 {
-    public class ChapterModel
+    public class ChapterModel : PageModel
     {
         public const string pageURL = "/Chapter";
         public const string queryKeyStartVerse = "startverse=";

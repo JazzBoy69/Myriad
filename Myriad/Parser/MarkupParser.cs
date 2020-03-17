@@ -7,7 +7,7 @@ using Myriad.Library;
 
 namespace Myriad.Parser
 {
-    public class MarkupParser<T> : BasicMarkupParser<T> where T: MarkedUpParagraph
+    public class MarkupParser : BasicMarkupParser
     {
         bool detail;
         bool bold;
@@ -16,14 +16,24 @@ namespace Myriad.Parser
         bool heading;
         readonly PageFormatter formatter;
 
-        new static readonly char[] tokens = new char[] { '*', '^', '/', '=', '(', '[', '{', ')', ']', '}', '~', '#', '|', '_', '+' };
-        public StringBuilder ParsedText { get { return formatter.Result; } }
         public MarkupParser()
         {
-            formatter = new PageFormatter(mainRange, currentParagraph);
+            formatter = new PageFormatter(this);
         }
 
-        new public void HandleToken()
+        public StringBuilder ParsedText { get { return formatter.Result; } }
+
+        protected override void HandleEnd()
+        {
+            mainRange.MoveEndToLimit();
+            formatter.AppendString(citationLevel);
+        }
+
+        public override void SearchForToken()
+        {
+            mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));
+        }
+        override public void HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             char charAfterToken = currentParagraph.CharAt(mainRange.End + 1);

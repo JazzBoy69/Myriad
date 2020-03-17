@@ -10,7 +10,7 @@ using Myriad.Data;
 
 namespace Myriad
 {
-    public class IndexModel 
+    public class IndexModel : PageModel
     {
         const string home = "home";
         public StringBuilder PageBody;
@@ -22,16 +22,24 @@ namespace Myriad
 
         public void RenderPage()
         {
-            List<string> paragraphs = GetPageParagraphs();
-            var markupParagraphs = MarkedupParagraphList<MarkedUpParagraph>
-                .CreateFrom(paragraphs);
-            var parser = new MarkupParser<MarkedUpParagraph>();
-            parser.Parse(markupParagraphs);
+            var paragraphs = GetPageParagraphs();
+            var parser = new MarkupParser();
+            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
+            parser.Parse(paragraphs);
+            PageBody = parser.ParsedText;
         }
         public List<string> GetPageParagraphs()
-        {   
+        {
+            return TestParagraphs();
             return ReaderProvider.Reader()
                 .GetData<string>(DataOperation.ReadNavigationPage, home); 
+        }
+
+        private List<string> TestParagraphs()
+        {
+            var results = new List<string>();
+            results.Add("**bold**");
+            return results;
         }
 
     }

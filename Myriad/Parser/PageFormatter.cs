@@ -18,9 +18,8 @@ namespace Myriad.Parser
             {')', ")" }, {']', "]" }, {'}', ""}, {'~', "—"}, {'#', "" }, {' ', " " },
             {'_', "&nbsp;" }, {'^',"" }, {'+', ""}
         };
-        private readonly StringRange mainRange;
-        private readonly MarkedUpParagraph currentParagraph;
         readonly HTMLStringBuilder builder = new HTMLStringBuilder();
+        private readonly IParser parser;
         readonly CitationHandler citationHandler;
         internal bool LabelExists
         {
@@ -32,10 +31,9 @@ namespace Myriad.Parser
 
         public StringBuilder Result { get { return builder.Builder; } }
 
-        public PageFormatter(StringRange mainRange, MarkedUpParagraph currentParagraph)
+        public PageFormatter(IParser parser)
         {
-            this.mainRange = mainRange;
-            this.currentParagraph = currentParagraph;
+            this.parser = parser;
             citationHandler = new CitationHandler();
         }
 
@@ -100,12 +98,12 @@ namespace Myriad.Parser
                 if (heading)
                 {
                     builder.EndHeader();
-                    mainRange.BumpStart();
+                    parser.MainRange.BumpStart();
                     return false;
                 }
                 builder.StartHeader();
 
-                mainRange.BumpStart();
+                parser.MainRange.BumpStart();
                 return true;
             }
             else builder.Append('=');
@@ -115,7 +113,7 @@ namespace Myriad.Parser
 
         internal bool StartSidenote(bool heading)
         {
-            if (currentParagraph.Length > 2)
+            if (parser.CurrentParagraph.Length > 2)
             {
                 builder.StartDivWithClass("sidenote");
                 builder.StartHeader();
@@ -128,7 +126,7 @@ namespace Myriad.Parser
 
         internal void EndSidenote(int citationLevel)
         {
-            mainRange.PullEnd();
+            parser.MainRange.PullEnd();
             AppendString(citationLevel);
             editable = false;
             builder.EndParagraph();
@@ -139,7 +137,7 @@ namespace Myriad.Parser
         internal bool HandleDetails(bool detail, int citationLevel)
         {
             bool startSpan = false;
-            if (((hideDetails) && (!detail)) && (mainRange.Length > 1))
+            if (((hideDetails) && (!detail)) && (parser.MainRange.Length > 1))
             {
                 builder.StartSpan();
                 startSpan = true;
@@ -177,13 +175,13 @@ namespace Myriad.Parser
                 builder.AppendHREF(ArticleModel.pageURL);
                 builder.StartQuery();
                 builder.Append(ArticleModel.queryKeyTitle);
-                mainRange.BumpStart();
+                parser.MainRange.BumpStart();
                 AppendTagString();
                 AppendExtendedTarget();
                 builder.EndHTMLTag();
                 AppendLabel();
                 builder.EndAnchor();
-                mainRange.MoveStartTo(mainRange.End + 1);
+                parser.MainRange.MoveStartTo(parser.MainRange.End + 1);
                 labelRange.Invalidate();
             }
             else
@@ -202,19 +200,19 @@ namespace Myriad.Parser
         }
         private void AppendStringAsLabel()
         {
-            builder.Append(currentParagraph.
-                StringAt(mainRange.Start, mainRange.End).Replace('_', ' '));
-            mainRange.GoToNextStartPosition();
+            builder.Append(parser.CurrentParagraph.
+                StringAt(parser.MainRange.Start, parser.MainRange.End).Replace('_', ' '));
+            parser.MainRange.GoToNextStartPosition();
         }
         private void AppendLabel()
         {
-            builder.Append(currentParagraph.StringAt(labelRange.Start, labelRange.End).Replace('_', ' '));
+            builder.Append(parser.CurrentParagraph.StringAt(labelRange.Start, labelRange.End).Replace('_', ' '));
         }
         private void AppendTagString()
         {
-            if (mainRange.End < mainRange.Start) return;
-            AppendTagStringExclusive(mainRange.End);
-            char token = currentParagraph.CharAt(mainRange.End);
+            if (parser.MainRange.End < parser.MainRange.Start) return;
+            AppendTagStringExclusive(parser.MainRange.End);
+            char token = parser.CurrentParagraph.CharAt(parser.MainRange.End);
             if (tokenToString.ContainsKey(token))
                 builder.Append(tokenToString[token]);
             else builder.Append(token);
@@ -222,21 +220,21 @@ namespace Myriad.Parser
 
         private void AppendTagStringAnchored()
         {
-            if (mainRange.End <= mainRange.Start) return;
-            builder.Append(currentParagraph.
-                StringAt(mainRange.Start, mainRange.End).Replace(' ', '+').
+            if (parser.MainRange.End <= parser.MainRange.Start) return;
+            builder.Append(parser.CurrentParagraph.
+                StringAt(parser.MainRange.Start, parser.MainRange.End).Replace(' ', '+').
                 Replace('[', '(').Replace(']', ')'));
         }
         private void AppendTagStringExclusive(int end)
         {
-            if (end <= mainRange.Start)
+            if (end <= parser.MainRange.Start)
             {
-                mainRange.MoveStartTo(end + 1);
+                parser.MainRange.MoveStartTo(end + 1);
                 return;
             }
-            builder.Append(currentParagraph.StringAt(mainRange.Start, end)
+            builder.Append(parser.CurrentParagraph.StringAt(parser.MainRange.Start, end)
                 .Replace('_', '+').Replace('[', '(').Replace(']', ')'));
-            mainRange.MoveStartTo(end + 1);
+            parser.MainRange.MoveStartTo(end + 1);
         }
 
 
@@ -266,24 +264,24 @@ namespace Myriad.Parser
 
         internal void AppendString()
         {
-            if (mainRange.End < mainRange.Start) return;
-            AppendStringExclusive(mainRange.End);
-            if (mainRange.End < currentParagraph.Length)
+            if (parser.MainRange.End < parser.MainRange.Start) return;
+            AppendStringExclusive(parser.MainRange.End);
+            if (parser.MainRange.End < parser.CurrentParagraph.Length)
             {
-                if (tokenToString.ContainsKey(currentParagraph.CharAt(mainRange.End)))
-                    builder.Append(tokenToString[currentParagraph.CharAt(mainRange.End)]);
-                else builder.Append(currentParagraph.CharAt(mainRange.End));
+                if (tokenToString.ContainsKey(parser.CurrentParagraph.CharAt(parser.MainRange.End)))
+                    builder.Append(tokenToString[parser.CurrentParagraph.CharAt(parser.MainRange.End)]);
+                else builder.Append(parser.CurrentParagraph.CharAt(parser.MainRange.End));
             }
         }
         private void AppendStringExclusive(int end)
         {
-            if (end <= mainRange.Start)
+            if (end <= parser.MainRange.Start)
             {
-                mainRange.MoveStartTo(end + 1);
+                parser.MainRange.MoveStartTo(end + 1);
                 return;
             }
-            builder.Append(currentParagraph.StringAt(mainRange.Start, end));
-            mainRange.MoveStartTo(end + 1);
+            builder.Append(parser.CurrentParagraph.StringAt(parser.MainRange.Start, end));
+            parser.MainRange.MoveStartTo(end + 1);
         }
 
         internal void AppendFigure(string par)
@@ -305,20 +303,20 @@ namespace Myriad.Parser
         }
         internal void AppendNextStartCharacter()
         {
-            builder.Append(currentParagraph.CharAt(mainRange.Start));
-            mainRange.BumpStart();
+            builder.Append(parser.CurrentParagraph.CharAt(parser.MainRange.Start));
+            parser.MainRange.BumpStart();
         }
         internal void AppendNextCharacter()
         {
-            builder.Append(currentParagraph.CharAt(mainRange.Start));
-            mainRange.BumpStart();
+            builder.Append(parser.CurrentParagraph.CharAt(parser.MainRange.Start));
+            parser.MainRange.BumpStart();
         }
         internal void SetLabel(int citationLevel)
         {
             if (citationLevel > 0)
             {
-                labelRange.Copy(mainRange);
-                mainRange.GoToNextStartPosition();
+                labelRange.Copy(parser.MainRange);
+                parser.MainRange.GoToNextStartPosition();
                 labelExists = true;
             }
         }

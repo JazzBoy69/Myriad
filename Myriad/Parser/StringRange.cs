@@ -18,39 +18,39 @@ namespace Myriad.Parser
         }
         internal void MoveStartTo(int start)
         {
-            this.Start1 = start;
+            this.start = start;
         }
 
         internal void BumpStart()
         {
-            Start1++;
+            start++;
         }
 
         internal void MoveEndTo(int end)
         {
-            this.End1 = end;
+            this.end = end;
         }
 
         internal void BumpEnd()
         {
-            End1++;
+            end++;
         }
 
         internal void GoToNextStartPosition()
         {
-            Start1 = End1 + 1;
+            start= end + 1;
         }
 
         internal void Reset()
         {
-            Start1 = Ordinals.first;
-            End1 = Ordinals.first;
+            start = Ordinals.first;
+            end = Ordinals.first;
         }
 
         internal void SetLimit(int max)
         {
-            Start1 = Ordinals.first;
-            End1 = Ordinals.first;
+            start = Ordinals.first;
+            end = Ordinals.first;
             this.Max = max;
         }
 
@@ -58,7 +58,7 @@ namespace Myriad.Parser
         {
             get
             {
-                return ((Start1 >= End1) || (Start1 < 0) || (End1 < 0)) || ((Start1 > Max) || (End1 > Max));
+                return !Valid;
             }
         }
 
@@ -66,7 +66,7 @@ namespace Myriad.Parser
         {
             get
             {
-                return (Start1 <= End1) && (Start1 >= 0) && (End1 >= 0) && (Start1 <= Max) && (End1 <= Max);
+                return (start <= end) && (start >= 0) && (end >= 0) && (start <= Max) && (end <= Max);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Myriad.Parser
         {
             get
             {
-                return Start1;
+                return start;
             }
         }
 
@@ -82,7 +82,7 @@ namespace Myriad.Parser
         {
             get
             {
-                return End1;
+                return end;
             }
         }
 
@@ -90,7 +90,7 @@ namespace Myriad.Parser
         {
             get
             {
-                return End1 - Start1 + 1;
+                return end - start + 1;
             }
         }
 
@@ -98,7 +98,7 @@ namespace Myriad.Parser
         {
             get
             {
-                return End1 - Start1;
+                return end - start;
             }
         }
 
@@ -106,7 +106,7 @@ namespace Myriad.Parser
         {
             get
             {
-                return Max - End1;
+                return Max - end;
             }
         }
 
@@ -114,34 +114,32 @@ namespace Myriad.Parser
         {
             get
             {
-                return End1 >= Max;
+                return end >= Max;
             }
         }
 
-        public int Start1 { get => start; set => start = value; }
-        public int End1 { get => end; set => end = value; }
         public int Max { get => max; set => max = value; }
 
         internal void Copy(StringRange source)
         {
-            this.Start1 = source.Start1;
-            this.End1 = source.End1;
-            this.Max = source.Max;
+            this.start = source.start;
+            this.end = source.end;
+            this.max = source.max;
         }
 
         internal void MoveEndToLimit()
         {
-            End1 = Max;
+            end = max;
         }
 
         internal void Invalidate()
         {
-            Start1 = -1;
+            start = -1;
         }
 
         internal void PullEnd()
         {
-            End1--;
+            end--;
         }
     }
 

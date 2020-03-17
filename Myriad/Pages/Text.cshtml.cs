@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Myriad
 {
-    public class TextModel
+    public class TextModel : PageModel
     {
         public const string queryKeyTGStart = "tgstart=";
         public const string queryKeyTGEnd = "tgend=";
