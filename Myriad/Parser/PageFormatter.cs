@@ -18,7 +18,7 @@ namespace Myriad.Parser
             {')', ")" }, {']', "]" }, {'}', ""}, {'~', "—"}, {'#', "" }, {' ', " " },
             {'_', "&nbsp;" }, {'^',"" }, {'+', ""}
         };
-        readonly HTMLStringBuilder builder = new HTMLStringBuilder();
+        readonly HTMLResponse builder;
         private readonly IParser parser;
         readonly CitationHandler citationHandler;
         internal bool LabelExists
@@ -29,11 +29,12 @@ namespace Myriad.Parser
             }
         }
 
-        public StringBuilder Result { get { return builder.Builder; } }
+        public string Result { get { return builder.Response(); } }
 
-        public PageFormatter(IParser parser)
+        public PageFormatter(IParser parser, HTMLResponse builder)
         {
             this.parser = parser;
+            this.builder = builder;
             citationHandler = new CitationHandler();
         }
 
@@ -42,12 +43,12 @@ namespace Myriad.Parser
             AppendString(citationLevel);
             if (bold)
             {
-                builder.EndBold();
+                builder.Append(HTMLTags.EndBold);
                 bold = false;
             }
             else
             {
-                builder.StartBold();
+                builder.Append(HTMLTags.StartBold);
                 bold = true;
             }
             return bold;
@@ -58,12 +59,12 @@ namespace Myriad.Parser
             AppendString(citationLevel);
             if (super)
             {
-                builder.EndSuper();
+                builder.Append(HTMLTags.EndSuper);
                 super = false;
             }
             else
             {
-                builder.StartSuper();
+                builder.Append(HTMLTags.StartSuper);
                 super = true;
             }
             return super;
@@ -77,12 +78,12 @@ namespace Myriad.Parser
             {
                 if (italic)
                 {
-                    builder.Append("</i>");
+                    builder.Append(HTMLTags.EndItalic);
                     italic = false;
                 }
                 else
                 {
-                    builder.Append("<i>");
+                    builder.Append(HTMLTags.StartItalic);
                     italic = true;
                 }
             }
@@ -97,11 +98,11 @@ namespace Myriad.Parser
                 editable = false;
                 if (heading)
                 {
-                    builder.EndHeader();
+                    builder.Append(HTMLTags.EndHeader);
                     parser.MainRange.BumpStart();
                     return false;
                 }
-                builder.StartHeader();
+                builder.Append(HTMLTags.StartHeader);
 
                 parser.MainRange.BumpStart();
                 return true;
@@ -116,7 +117,7 @@ namespace Myriad.Parser
             if (parser.CurrentParagraph.Length > 2)
             {
                 builder.StartDivWithClass("sidenote");
-                builder.StartHeader();
+                builder.Append(HTMLTags.StartHeader);
                 heading = true;
             }
             else builder.StartDivWithClass("sidenote");
@@ -129,8 +130,8 @@ namespace Myriad.Parser
             parser.MainRange.PullEnd();
             AppendString(citationLevel);
             editable = false;
-            builder.EndParagraph();
-            builder.EndDiv();
+            builder.Append(HTMLTags.EndParagraph);
+            builder.Append(HTMLTags.EndDiv);
             editable = false;
         }
 
@@ -139,7 +140,7 @@ namespace Myriad.Parser
             bool startSpan = false;
             if (((hideDetails) && (!detail)) && (parser.MainRange.Length > 1))
             {
-                builder.StartSpan();
+                builder.Append(HTMLTags.StartSpan);
                 startSpan = true;
             }
             AppendString(citationLevel);
@@ -148,18 +149,18 @@ namespace Myriad.Parser
                 if (detail)
                 {
                     detail = false;
-                    builder.EndSpan();
-                    builder.EndSpan();
+                    builder.Append(HTMLTags.EndSpan);
+                    builder.Append(HTMLTags.EndSpan);
                 }
                 else
                 {
                     detail = true;
                     if (startSpan)
                     {
-                        builder.EndSpan();
+                        builder.Append(HTMLTags.EndSpan);
                     }
                     builder.StartSpan("hiddendetail");
-                    builder.StartSpan();
+                    builder.Append(HTMLTags.StartSpan);
                 }
             }
             return detail;
@@ -173,14 +174,14 @@ namespace Myriad.Parser
             {
                 builder.StartAnchor("link");
                 builder.AppendHREF(ArticleModel.pageURL);
-                builder.StartQuery();
+                builder.Append(HTMLTags.StartQuery);
                 builder.Append(ArticleModel.queryKeyTitle);
                 parser.MainRange.BumpStart();
                 AppendTagString();
                 AppendExtendedTarget();
-                builder.EndHTMLTag();
+                builder.Append(HTMLTags.EndTag);
                 AppendLabel();
-                builder.EndAnchor();
+                builder.Append(HTMLTags.EndAnchor);
                 parser.MainRange.MoveStartTo(parser.MainRange.End + 1);
                 labelRange.Invalidate();
             }
@@ -188,14 +189,14 @@ namespace Myriad.Parser
             {
                 builder.StartAnchor("link");
                 builder.AppendHREF(ArticleModel.pageURL);
-                builder.StartQuery();
+                builder.Append(HTMLTags.StartQuery);
                 builder.Append(ArticleModel.queryKeyTitle);
                 AppendTagStringAnchored();
                 AppendExtendedTarget();
 
-                builder.EndHTMLTag();
+                builder.Append(HTMLTags.EndTag);
                 AppendStringAsLabel();
-                builder.EndAnchor();
+                builder.Append(HTMLTags.EndAnchor);
             }
         }
         private void AppendStringAsLabel()
@@ -242,10 +243,10 @@ namespace Myriad.Parser
         {
             if (extendedTarget != null)
             {
-                builder.AppendAmpersand();
+                builder.Append(HTMLTags.Ampersand);
                 builder.Append(TextModel.queryKeyTGStart);
                 builder.Append(extendedTarget.StartID);
-                builder.AppendAmpersand();
+                builder.Append(HTMLTags.Ampersand);
                 builder.Append(TextModel.queryKeyTGEnd);
                 builder.Append(extendedTarget.EndID);
             }
@@ -298,8 +299,8 @@ namespace Myriad.Parser
             builder.StartIMG(image.Path);
             builder.AppendIMGWidth(ImageElement.WidthString);
             builder.AppendClass(image.Class);
-            builder.EndSingleTag();
-            builder.EndFigure();
+            builder.Append(HTMLTags.EndSingleTag);
+            builder.Append(HTMLTags.EndFigure);
         }
         internal void AppendNextStartCharacter()
         {

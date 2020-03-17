@@ -21,7 +21,7 @@ namespace Myriad.Tests
         [Test]
         public void ParserTests()
         {
-            var parser = new MarkupParser();
+            var parser = new MarkupParser(new HTMLStringBuilder());
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             var paragraphs = new List<string>();
             paragraphs.Add("testing **bold**");

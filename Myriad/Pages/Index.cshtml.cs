@@ -13,7 +13,7 @@ namespace Myriad
     public class IndexModel : PageModel
     {
         const string home = "home";
-        public StringBuilder PageBody;
+        public string PageBody;
 
         public void OnGet()
         {
@@ -23,7 +23,7 @@ namespace Myriad
         public void RenderPage()
         {
             var paragraphs = GetPageParagraphs();
-            var parser = new MarkupParser();
+            var parser = new MarkupParser(new HTMLStringBuilder());
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.Parse(paragraphs);
             PageBody = parser.ParsedText;

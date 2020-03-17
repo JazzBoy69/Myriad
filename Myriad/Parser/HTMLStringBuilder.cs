@@ -12,6 +12,7 @@ namespace Myriad.Parser
         internal const string StartSpan = "<span>";
         internal const string StartSpanWithClass = "<span class='";
         internal const string StartBold = "<b>";
+        internal const string StartItalic = "<i>";
         internal const string StartSuper = "<sup>";
         internal const string StartAnchor = "<a";
         internal const string StartAnchorWithClass = "<a class='";
@@ -23,6 +24,7 @@ namespace Myriad.Parser
         internal const string EndSpan = "</span>";
         internal const string EndHeader = "</h3>";
         internal const string EndBold = "</b>";
+        internal const string EndItalic = "</i>";
         internal const string EndSuper = "</sup>";
         internal const string EndDiv = "</div>";
         internal const string EndFigure = "</figure>";
@@ -35,172 +37,99 @@ namespace Myriad.Parser
         internal const string StartQuery = "?";
         internal const string Ampersand = "&";
     }
-    public class HTMLStringBuilder
+
+    public interface HTMLResponse
+    {
+        public void StartSpan(string className);
+        public void StartAnchor(string className);
+        public void StartDivWithClass(string className);
+        public void StartFigure(string className);
+        public void StartIMG(string path);
+        public void Append(char c);
+        public void Append(string stringToAppend);
+        public void Append(int number);
+        public void AppendHREF(string pageName);
+        public void AppendIMGWidth(string widthString);
+        public void AppendClass(string className);
+        public string Response();
+    }
+    public class HTMLStringBuilder : HTMLResponse
     {
 
-        internal StringBuilder Builder { get; } = new StringBuilder();
+        private StringBuilder Builder { get; } = new StringBuilder();
 
-        internal void StartSection()
+        public string Response()
         {
-            Builder.Append(HTMLTags.StartSection);
+            return Builder.ToString();
         }
-
-        internal void StartParagraph()
-        {
-            Builder.Append(HTMLTags.StartParagraph);
-        }
-
-        internal void EndSpan()
-        {
-            Builder.Append(HTMLTags.EndSpan);
-        }
-
-        internal void EndParagraph()
-        {
-            Builder.Append(HTMLTags.EndParagraph);
-        }
-
-        internal void StartSpan()
-        {
-            Builder.Append(HTMLTags.StartSpan);
-        }
-
-        internal void StartSpan(string className)
+        public void StartSpan(string className)
         {
             Builder.Append(HTMLTags.StartSpanWithClass);
             Builder.Append(className);
             Builder.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        internal void StartAnchor(string className)
+        public void StartAnchor(string className)
         {
             Builder.Append(HTMLTags.StartAnchorWithClass);
             Builder.Append(className);
             Builder.Append(HTMLTags.CloseQuote);
         }
-        internal void StartAnchor()
-        {
-            Builder.Append(HTMLTags.StartAnchor);
-        }
 
-        internal void StartQuery()
-        {
-            Builder.Append(HTMLTags.StartQuery);
-        }
-
-        internal void Append(char c)
+        public void Append(char c)
         {
             Builder.Append(c);
         }
 
-        internal void AppendAmpersand()
-        {
-            Builder.Append(HTMLTags.Ampersand);
-        }
-
-        internal void AppendHREF(string pageName)
+        public void AppendHREF(string pageName)
         {
             Builder.Append(HTMLTags.HREF);
             Builder.Append(pageName);
         }
 
-        internal void Append(string stringToAppend)
+        public void Append(string stringToAppend)
         {
             Builder.Append(stringToAppend);
         }
 
-        internal void EndAnchor()
-        {
-            Builder.Append(HTMLTags.EndAnchor);
-        }
-
-        internal void EndHTMLTag()
-        {
-            Builder.Append(HTMLTags.EndTag);
-        }
-
-        internal void Append(int number)
+        public void Append(int number)
         {
             Builder.Append(number);
         }
 
-        internal void EndDiv()
-        {
-            Builder.Append(HTMLTags.EndDiv);
-        }
-
-        internal void StartDivWithClass(string className)
+        public void StartDivWithClass(string className)
         {
             Builder.Append(HTMLTags.StartDivWithClass);
             Builder.Append(className);
             Builder.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        internal void StartHeader()
-        {
-            Builder.Append(HTMLTags.StartHeader);
-        }
-
-        internal void EndHeader()
-        {
-            Builder.Append(HTMLTags.EndHeader);
-        }
-
-        internal void StartFigure(string className)
+        public void StartFigure(string className)
         {
             Builder.Append(HTMLTags.StartFigureWithClass);
             Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuoteEndTag);        }
+            Builder.Append(HTMLTags.CloseQuoteEndTag);        
+        }
 
-        internal void StartIMG(string path)
+        public void StartIMG(string path)
         {
             Builder.Append(HTMLTags.StartImg);
             Builder.Append(path);
             Builder.Append(HTMLTags.CloseQuote);
         }
 
-        internal void AppendIMGWidth(string widthString)
+        public void AppendIMGWidth(string widthString)
         {
             Builder.Append(HTMLTags.Width);
             Builder.Append(widthString);
             Builder.Append(HTMLTags.CloseQuote);
         }
 
-        internal void StartSuper()
-        {
-            Builder.Append(HTMLTags.StartSuper);
-        }
-
-        internal void EndSuper()
-        {
-            Builder.Append(HTMLTags.EndSuper);
-        }
-
-        internal void StartBold()
-        {
-            Builder.Append(HTMLTags.StartBold);
-        }
-
-        internal void EndBold()
-        {
-            Builder.Append(HTMLTags.EndBold);
-        }
-
-        internal void AppendClass(string className)
+        public void AppendClass(string className)
         {
             Builder.Append(HTMLTags.Class);
             Builder.Append(className);
             Builder.Append(HTMLTags.CloseQuote);
-        }
-
-        internal void EndSingleTag()
-        {
-            Builder.Append(HTMLTags.EndSingleTag);
-        }
-
-        internal void EndFigure()
-        {
-            Builder.Append(HTMLTags.EndFigure);
         }
     }
 }

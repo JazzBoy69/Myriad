@@ -16,12 +16,12 @@ namespace Myriad.Parser
         bool heading;
         readonly PageFormatter formatter;
 
-        public MarkupParser()
+        public MarkupParser(HTMLResponse builder)
         {
-            formatter = new PageFormatter(this);
+            formatter = new PageFormatter(this, builder);
         }
 
-        public StringBuilder ParsedText { get { return formatter.Result; } }
+        public string ParsedText { get { return formatter.Result; } }
 
         protected override void HandleEnd()
         {
