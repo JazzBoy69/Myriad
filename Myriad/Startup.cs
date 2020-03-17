@@ -32,9 +32,9 @@ namespace Myriad
             app.UseSession();
             app.UseStaticFiles();
 
-         /*   app.Run(async context =>
+            app.Run(async context =>
                 await context.Response.WriteAsync("test of writer")
-            ); */
+            ); 
 
             app.UseRouting();
 
