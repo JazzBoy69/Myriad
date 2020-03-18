@@ -74,6 +74,7 @@ namespace Myriad.Parser
             int count = 0;
             int chapter = TextReference.invalidChapter;
             bool foundZero = false;
+            
             citation.Label.BumpEnd();
             while (citation.Label.End < mainRange.End)
             {
@@ -163,7 +164,23 @@ namespace Myriad.Parser
                 if ((count != 0) || (foundZero))
                     SetTextCitation(book, chapter, count);
             }
+            if (mode == findChapter)
+            {
+                if ((chapter == TextReference.invalidChapter) && (count > 0))
+                {
+                    if (TextReference.IsShortBook(book))
+                        SetTextCitation(book, 1, count);
+                    else
+                        SetChapterCitation(book, count);
+                }
+            }
             return citation;
+        }
+
+        private void SetChapterCitation(int book, int chapter)
+        {
+            citation.CitationRange.Set(book, chapter);
+            citation.CitationType = CitationTypes.Chapter;
         }
 
         private void SetTextCitation(int book, int chapter, int count)

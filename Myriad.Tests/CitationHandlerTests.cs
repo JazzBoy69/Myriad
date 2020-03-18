@@ -13,7 +13,7 @@ namespace Myriad.Tests
         public void CitationBook()
         {
             CitationHandler citationHandler = new CitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            MarkedUpParagraph  paragraph = new MarkedUpParagraph();
             paragraph.Text = "(Mt 24:14)";
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(1);
@@ -26,9 +26,9 @@ namespace Myriad.Tests
             Assert.That(citation.CitationType == CitationTypes.Text);
         }
         [Test]
-        public void CitationSetup()
+        public void TestCitationSetup()
         {
-            List<Citation> citations = SetupSimpleCitation();
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupSimpleCitation();
             Assert.That((citations.Count > 0), () => { return "no citations returned"; });
             if (citations.Count > 0)
             {
@@ -38,22 +38,10 @@ namespace Myriad.Tests
             }
         }
 
-        private static List<Citation> SetupSimpleCitation()
-        {
-            CitationHandler citationHandler = new CitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            paragraph.Text = "(Mt 24:14)";
-            StringRange mainRange = new StringRange();
-            mainRange.MoveStartTo(1);
-            mainRange.MoveEndTo(9);
-            var citations = citationHandler.ParseCitations(mainRange, paragraph);
-            return citations;
-        }
-
         [Test]
         public void SimpleCitation()
         {
-            List<Citation> citations = SetupSimpleCitation();
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupSimpleCitation();
             if (citations.Count > 0)
             {
                 var firstCitation = citations[Ordinals.first];
@@ -62,7 +50,56 @@ namespace Myriad.Tests
                 int verse = firstCitation.CitationRange.FirstVerse;
                 Assert.That(book == 39 && chapter == 24 && verse == 14, () =>
                 { return "book =" + book + " chapter=" + chapter + " verse=" + verse; });
+                string label = paragraph.StringAt(firstCitation.Label);
+                Assert.AreEqual("Mt 24:14", label);
             }
+
+        }
+
+        [Test]
+        public void ChapterCitation()
+        {
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupChapterCitation();
+            Assert.That(citations.Count > 0);
+            if (citations.Count > 0)
+            {
+                var firstCitation = citations[Ordinals.first];
+                var book = firstCitation.CitationRange.Book;
+                int chapter = firstCitation.CitationRange.FirstChapter;
+                int verse = firstCitation.CitationRange.FirstVerse;
+                int lastverse = firstCitation.CitationRange.LastVerse;
+                string label = paragraph.StringAt(firstCitation.Label);
+                Assert.That("Mt 24" == label, () => { return firstCitation.Label.Start+"-"
+                    +firstCitation.Label.End; });
+                Assert.That(firstCitation.CitationRange.Valid);
+                Assert.That((book == 39 && chapter == 24 && verse == 1 && lastverse == 51),
+                    () => { return Bible.NamesTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
+                        + "-" + lastverse.ToString(); });
+            }
+        }
+
+        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupSimpleCitation()
+        {
+            CitationHandler citationHandler = new CitationHandler();
+            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            paragraph.Text = "(Mt 24:14)";
+            StringRange mainRange = new StringRange();
+            mainRange.MoveStartTo(1);
+            mainRange.MoveEndTo(9);
+            var citations = citationHandler.ParseCitations(mainRange, paragraph);
+            return (citations, paragraph);
+        }
+
+        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupChapterCitation()
+        {
+            CitationHandler citationHandler = new CitationHandler();
+            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            paragraph.Text = "(Mt 24)";
+            StringRange mainRange = new StringRange();
+            mainRange.MoveStartTo(1);
+            mainRange.MoveEndTo(6);
+            var citations = citationHandler.ParseCitations(mainRange, paragraph);
+            return (citations, paragraph);
         }
     }
 }

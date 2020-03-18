@@ -57,6 +57,7 @@ namespace Myriad.Parser
 
         public string StringAt(int start, int end)
         {
+            if ((start<0) || (end>=Length) || (end<=start)) return "";
             return text.Substring(start, end-start);
         }
 

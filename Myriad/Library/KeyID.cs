@@ -4,9 +4,11 @@ namespace Myriad.Library
 {
     public class KeyID
     {
-        private const int bookMulitiplier = 256 * 256 * 256;
-        private const int chapterMultiplier = 256 * 256;
-        private const int verseMultiplier = 256;
+        public const int MaxWordIndex = 255;
+
+        const int bookMulitiplier = 256 * 256 * 256;
+        const int chapterMultiplier = 256 * 256;
+        const int verseMultiplier = 256;
         const int bookmask = 127 << 24;
         const int chaptermask = 255 << 16;
         const int versemask = 255 << 8;
@@ -24,7 +26,8 @@ namespace Myriad.Library
 
             public KeyID(int book, int chapter, int verse)
         {
-            id = (book << 24) + (chapter << 16) + (verse << 8) + Ordinals.first;
+            id = (book * bookMulitiplier) + (chapter * chapterMultiplier) + 
+                (verse * verseMultiplier) + Ordinals.first;
         }
 
         public KeyID(int book, int chapter, int verse, int index)
@@ -109,8 +112,9 @@ namespace Myriad.Library
         {
             get
             {
-                //TODO: Implement validity check (exists in keywords)
-                throw new NotImplementedException();
+                return Book >= 0 && Book <= 65 && Chapter >= 1 && Chapter <= Bible.Chapters[Book].Length &&
+                    Verse >= 0 && Verse <= Bible.Chapters[Book][Chapter];
+                
             }
         }
     }

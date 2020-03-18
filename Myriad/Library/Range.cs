@@ -58,6 +58,16 @@ namespace Myriad.Library
             Set(book, chapter, verse);
         }
 
+        internal void Set(int book, int chapter)
+        {
+            if (book > 65)
+            {
+                this.Invalidate();
+                return;
+            }
+            start = new KeyID(book, chapter, 1);
+            end = new KeyID(book, chapter, Bible.Chapters[book][chapter], KeyID.MaxWordIndex);
+        }
         public void Set(int book, int chapter, int verse)
         {
             start = new KeyID(book, chapter, verse);
@@ -135,11 +145,34 @@ namespace Myriad.Library
             }
         }
 
+        public int LastChapter
+        {
+            get
+            {
+                return end.Chapter;
+            }
+        }
+
+        public int LastVerse
+        {
+            get
+            {
+                return end.Verse;
+            }
+        }
         internal void Invalidate()
         {
             start = new KeyID(invalidID);
             end = new KeyID(invalidID);
 
+        }
+
+        public bool Valid
+        {
+            get
+            {
+                return start.Valid;
+            }
         }
 
         internal static bool InRange(CitationRange range, CitationRange targetRange)

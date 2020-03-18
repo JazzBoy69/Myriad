@@ -197,7 +197,7 @@ namespace Myriad.Library
             "HEBREWS", "JAMES", "1 PETER", "2 PETER", "1 JOHN", "2 JOHN",
             "3 JOHN", "JUDE", "REVELATION"
             };
-        internal static List<string> NamesTitleCase = new List<string> {
+        public static List<string> NamesTitleCase = new List<string> {
             "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
             "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings",
             "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah",
