@@ -4,6 +4,9 @@ namespace Myriad.Library
 {
     public class KeyID
     {
+        private const int bookMulitiplier = 256 * 256 * 256;
+        private const int chapterMultiplier = 256 * 256;
+        private const int verseMultiplier = 256;
         const int bookmask = 127 << 24;
         const int chaptermask = 255 << 16;
         const int versemask = 255 << 8;
@@ -80,6 +83,11 @@ namespace Myriad.Library
             {
                 return Tuple.Create(Book, Chapter, Verse);
             }
+        }
+
+        internal void Set(int book, int chapter, int verse)
+        {
+            id = book * bookMulitiplier + chapter * chapterMultiplier + verse * verseMultiplier;
         }
 
         /// <summary>

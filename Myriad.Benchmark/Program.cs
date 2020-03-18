@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using System.Threading;
+using System.Threading.Tasks;
 using Myriad;
 using Microsoft.AspNetCore.Http;
 
@@ -9,17 +9,21 @@ namespace Myriad.Benchmark
 {
     public class Benchmarker
     {
+        private HttpResponse DefaultResponse()
+        {
+            return new DefaultHttpContext().Response;
+        }
         //[Benchmark]
         public void GetHomeData()
         {
-            IndexModel indexModel = new IndexModel();
-            var paragraphs = indexModel.GetPageParagraphs();
+            IndexPage indexPage = new IndexPage(DefaultResponse());
+            var paragraphs = indexPage.GetPageParagraphs();
         }
         [Benchmark]
-        public void RenderIndex()
+        async public Task RenderIndex()
         {
-            Startup startup = new Startup();
-            startup.TestPage(new DefaultHttpContext().Response);
+            IndexPage page = new IndexPage(DefaultResponse());
+            await page.RenderPage();
         }
     }
     class Program

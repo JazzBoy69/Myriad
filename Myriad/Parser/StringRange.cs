@@ -7,7 +7,7 @@ namespace Myriad.Parser
         int start = Ordinals.first;
         int end = Ordinals.first;
         int max;
-        internal static StringRange InvalidRange
+        public static StringRange InvalidRange
         {
             get
             {
@@ -16,45 +16,45 @@ namespace Myriad.Parser
                 return result;
             }
         }
-        internal void MoveStartTo(int start)
+        public void MoveStartTo(int start)
         {
             this.start = start;
         }
 
-        internal void BumpStart()
+        public void BumpStart()
         {
             start++;
         }
 
-        internal void MoveEndTo(int end)
+        public void MoveEndTo(int end)
         {
             this.end = end;
         }
 
-        internal void BumpEnd()
+        public void BumpEnd()
         {
             end++;
         }
 
-        internal void GoToNextStartPosition()
+        public void GoToNextStartPosition()
         {
             start= end + 1;
         }
 
-        internal void Reset()
+        public void Reset()
         {
             start = Ordinals.first;
             end = Ordinals.first;
         }
 
-        internal void SetLimit(int max)
+        public void SetLimit(int max)
         {
             start = Ordinals.first;
             end = Ordinals.first;
             this.Max = max;
         }
 
-        internal bool Invalid
+        public bool Invalid
         {
             get
             {
@@ -62,7 +62,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal bool Valid
+        public bool Valid
         {
             get
             {
@@ -70,7 +70,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal int Start
+        public int Start
         {
             get
             {
@@ -78,7 +78,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal int End
+        public int End
         {
             get
             {
@@ -86,7 +86,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal int Length
+        public int Length
         {
             get
             {
@@ -94,7 +94,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal int ExclusiveLength
+        public int ExclusiveLength
         {
             get
             {
@@ -102,7 +102,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal int Space
+        public int Space
         {
             get
             {
@@ -110,7 +110,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal bool AtLimit
+        public bool AtLimit
         {
             get
             {
@@ -120,24 +120,24 @@ namespace Myriad.Parser
 
         public int Max { get => max; set => max = value; }
 
-        internal void Copy(StringRange source)
+        public void Copy(StringRange source)
         {
             this.start = source.start;
             this.end = source.end;
             this.max = source.max;
         }
 
-        internal void MoveEndToLimit()
+        public void MoveEndToLimit()
         {
             end = max;
         }
 
-        internal void Invalidate()
+        public void Invalidate()
         {
             start = -1;
         }
 
-        internal void PullEnd()
+        public void PullEnd()
         {
             end--;
         }

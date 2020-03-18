@@ -33,11 +33,9 @@ namespace Myriad
             }
             app.UseSession();
             app.UseStaticFiles();
-            app.Run(async context => 
+            app.Run(async context =>
             {
-                await WriteHeader(context.Response);
-                RenderPage(context.Response);
-                await context.Response.WriteAsync(LayoutHTML.close);
+                await LoadIndexPage(context);
             });
 
             app.UseRouting();
@@ -48,28 +46,14 @@ namespace Myriad
             });
         }
 
-        async public void TestPage(HttpResponse response)
+        private async Task LoadIndexPage(HttpContext context)
         {
-            response.Clear();
-            await WriteHeader(response);
-            RenderPage(response);
-            await response.WriteAsync(LayoutHTML.close);
+            IndexPage page = new IndexPage(context.Response);
+            await page.RenderPage();
         }
 
-        private static async Task WriteHeader(HttpResponse response)
-        {
-            await response.WriteAsync(LayoutHTML.startOfPage);
-            await response.WriteAsync("<title>Myriad - Index</title>");
-            await response.WriteAsync(LayoutHTML.header);
-        }
 
-        public void RenderPage(HttpResponse response)
-        {
-            var paragraphs = GetPageParagraphs();
-            var parser = new MarkupParser(new HTMLResponseWriter(response));
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            parser.Parse(paragraphs);
-        }
+
         public List<string> GetPageParagraphs()
         {
             return TestParagraphs();

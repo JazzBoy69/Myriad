@@ -150,14 +150,13 @@ namespace Myriad
 ";
         public const string close = @"</article>
     </div>
-    <script src='~/js/jquery-2.1.3.min.js'></script>
-    <script src='~/js/bootstrap.js'></script>
-    <script src='~/js/bootbox.min.js'></script>
-    <script src='~/js/myriad27.01.20.js'></script>
-    <script src='~/js/Hammer.min.js'></script>
-    <script src='~/js/jquery.hammer.js'></script>
-    <script src='~/js/shortcuts.js'></script>
-</body>
-</html>";
+    <script src='js/jquery-2.1.3.min.js'></script>
+    <script src='js/bootstrap.js'></script>
+    <script src='js/bootbox.min.js'></script>
+    <script src='js/myriad27.01.20.js'></script>
+    <script src='js/Hammer.min.js'></script>
+    <script src='js/jquery.hammer.js'></script>
+    <script src='js/shortcuts.js'></script>";
+        public const string endofBody = "</body></html>";
     }
 }

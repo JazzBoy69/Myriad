@@ -19,6 +19,8 @@ namespace Myriad.Parser
 
         abstract string StringAt(int start, int end);
 
+        abstract string StringAt(StringRange range);
+
         abstract int IndexOf(char token, int start, int end);
 
     }
@@ -26,6 +28,11 @@ namespace Myriad.Parser
     {
         string text;
         public int Length { get { return text.Length; } }
+
+        public string StringAt(StringRange range)
+        {
+            return StringAt(range.Start, range.End);
+        }
 
         public string Text { get { return text; } set { text = value; } }
 

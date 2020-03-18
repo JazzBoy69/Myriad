@@ -4,33 +4,33 @@ using System.Text;
 
 namespace Myriad.Library
 {
-    public class Range
+    public class CitationRange
     {
         public const int invalidID = Numbers.nothing;
-        internal static Range InvalidRange = new Range(invalidID, invalidID);
+        internal static CitationRange InvalidRange = new CitationRange(invalidID, invalidID);
 
         KeyID start;
         KeyID end;
 
-        public Range(int? startID, int? endID)
+        public CitationRange(int? startID, int? endID)
         {
             this.start = new KeyID(startID);
             this.end = new KeyID(endID);
         }
 
-        public Range((int startID, int endID) input)
+        public CitationRange((int startID, int endID) input)
         {
             this.start = new KeyID(input.startID);
             this.end = new KeyID(input.endID);
         }
 
-        internal Range(Tuple<int, int> tuple)
+        internal CitationRange(Tuple<int, int> tuple)
         {
             this.start = new KeyID(tuple.Item1);
             this.end = new KeyID(tuple.Item2);
         }
 
-        public Range(int id)
+        public CitationRange(int id)
         {
             start = new KeyID(id);
             end = new KeyID(id);
@@ -39,7 +39,7 @@ namespace Myriad.Library
         {
             return !((String.IsNullOrEmpty(start)) && (String.IsNullOrEmpty(end)));
         }
-        public Range(string start, string end)
+        public CitationRange(string start, string end)
         {
             if (!GoodStrings(start, end))
             {
@@ -51,6 +51,17 @@ namespace Myriad.Library
                 this.start = new KeyID(start);
                 this.end = new KeyID(end);
             }
+        }
+
+        public CitationRange(int book, int chapter, int verse)
+        {
+            Set(book, chapter, verse);
+        }
+
+        public void Set(int book, int chapter, int verse)
+        {
+            start = new KeyID(book, chapter, verse);
+            end = new KeyID(book, chapter, verse);
         }
 
         public int StartID
@@ -68,7 +79,15 @@ namespace Myriad.Library
             }
         }
 
-        internal bool Contains(Range targetRange)
+        public int Book
+        {
+            get
+            {
+                return start.Book;
+            }
+        }
+
+        internal bool Contains(CitationRange targetRange)
         {
             return (targetRange.start.ID >= start.ID) && (targetRange.end.ID <= end.ID);
         }
@@ -79,7 +98,7 @@ namespace Myriad.Library
         }
 
 
-        internal bool Equals(Range otherRange)
+        internal bool Equals(CitationRange otherRange)
         {
             return start.ID == otherRange.start.ID && end.ID == otherRange.end.ID;
         }
@@ -100,6 +119,22 @@ namespace Myriad.Library
             } 
         }
 
+        public int FirstChapter
+        {
+            get
+            {
+                return start.Chapter;
+            }
+        }
+
+        public int FirstVerse
+        {
+            get
+            {
+                return start.Verse;
+            }
+        }
+
         internal void Invalidate()
         {
             start = new KeyID(invalidID);
@@ -107,10 +142,10 @@ namespace Myriad.Library
 
         }
 
-        internal static bool InRange(Range range, Range targetRange)
+        internal static bool InRange(CitationRange range, CitationRange targetRange)
         {
             if ((range == null) || (targetRange == null)) return false;
             return (targetRange.start.ID <= range.end.ID) && (targetRange.end.ID >= range.start.ID);
-        }  
+        }
     }
 }

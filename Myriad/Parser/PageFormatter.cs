@@ -1,4 +1,5 @@
 ﻿using Myriad.Library;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,11 +7,7 @@ namespace Myriad.Parser
 {
     internal class PageFormatter
     {
-        bool editable;
-        bool figure;
-        bool labelExists = false;
-        readonly bool hideDetails = false;
-        readonly Library.Range extendedTarget;
+        readonly CitationRange extendedTarget;
         readonly StringRange labelRange = new StringRange();
         static readonly Dictionary<char, string> tokenToString = new Dictionary<char, string>
         {
@@ -18,15 +15,15 @@ namespace Myriad.Parser
             {')', ")" }, {']', "]" }, {'}', ""}, {'~', "—"}, {'#', "" }, {' ', " " },
             {'_', "&nbsp;" }, {'^',"" }, {'+', ""}
         };
+
         readonly HTMLResponse builder;
         private readonly IParser parser;
         readonly CitationHandler citationHandler;
-        internal bool LabelExists
+
+        internal void EndSection()
         {
-            get
-            {
-                return labelExists;
-            }
+            builder.Append(HTMLTags.EndParagraph);
+            builder.Append(HTMLTags.EndSection);
         }
 
         public string Result { get { return builder.Response(); } }
@@ -36,6 +33,12 @@ namespace Myriad.Parser
             this.parser = parser;
             this.builder = builder;
             citationHandler = new CitationHandler();
+        }
+
+        internal void StartSection()
+        {
+            builder.Append(HTMLTags.StartSection);
+            builder.Append(HTMLTags.StartParagraph);
         }
 
         internal bool ToggleBold(bool bold, int citationLevel)
@@ -91,12 +94,12 @@ namespace Myriad.Parser
             return italic;
         }
 
-        internal bool ToggleHeading(bool heading, char charAfterToken)
+        internal bool ToggleHeading(Formats formats, char charAfterToken)
         {
             if (charAfterToken == '=')
             {
-                editable = false;
-                if (heading)
+                formats.editable = false;
+                if (formats.heading)
                 {
                     builder.Append(HTMLTags.EndHeader);
                     parser.MainRange.BumpStart();
@@ -108,43 +111,42 @@ namespace Myriad.Parser
                 return true;
             }
             else builder.Append('=');
-            return heading;
+            return formats.heading;
         }
 
 
-        internal bool StartSidenote(bool heading)
+        internal void StartSidenote(Formats formats)
         {
             if (parser.CurrentParagraph.Length > 2)
             {
                 builder.StartDivWithClass("sidenote");
                 builder.Append(HTMLTags.StartHeader);
-                heading = true;
+                formats.heading = true;
             }
             else builder.StartDivWithClass("sidenote");
-            editable = false;
-            return heading;
+            formats.editable = false;
         }
 
-        internal void EndSidenote(int citationLevel)
+        internal void EndSidenote(int citationLevel, Formats formats)
         {
             parser.MainRange.PullEnd();
             AppendString(citationLevel);
-            editable = false;
+            formats.editable = false;
             builder.Append(HTMLTags.EndParagraph);
             builder.Append(HTMLTags.EndDiv);
-            editable = false;
+            formats.editable = false;
         }
 
-        internal bool HandleDetails(bool detail, int citationLevel)
+        internal bool HandleDetails(bool detail, int citationLevel, Formats formats)
         {
             bool startSpan = false;
-            if (((hideDetails) && (!detail)) && (parser.MainRange.Length > 1))
+            if (((formats.hideDetails) && (!detail)) && (parser.MainRange.Length > 1))
             {
                 builder.Append(HTMLTags.StartSpan);
                 startSpan = true;
             }
             AppendString(citationLevel);
-            if (hideDetails)
+            if (formats.hideDetails)
             {
                 if (detail)
                 {
@@ -167,9 +169,9 @@ namespace Myriad.Parser
         }
 
 
-        internal void AppendTag()
+        internal void AppendTag(Formats formats)
         {
-            labelExists = false;
+            formats.labelExists = false;
             if (labelRange.Valid)
             {
                 builder.StartAnchor("link");
@@ -253,13 +255,20 @@ namespace Myriad.Parser
         }
         internal void AppendString(int citationLevel)
         {
-            if (citationLevel > 0)
+            try
             {
-                citationHandler.ParseCitations();
+                if (citationLevel > 0)
+                {
+                    citationHandler.ParseCitations(parser.MainRange, parser.CurrentParagraph);
+                }
+                else
+                {
+                    AppendString();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                AppendString();
+                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -285,11 +294,11 @@ namespace Myriad.Parser
             parser.MainRange.MoveStartTo(end + 1);
         }
 
-        internal void AppendFigure(string par)
+        internal void AppendFigure(string par, Formats formats)
         {
             AppendFigure(new ImageElement(par));
-            figure = true;
-            editable = false;
+            formats.figure = true;
+            formats.editable = false;
         }
 
         internal void AppendFigure(ImageElement image)
@@ -312,13 +321,13 @@ namespace Myriad.Parser
             builder.Append(parser.CurrentParagraph.CharAt(parser.MainRange.Start));
             parser.MainRange.BumpStart();
         }
-        internal void SetLabel(int citationLevel)
+        internal void SetLabel(int citationLevel, Formats formats)
         {
             if (citationLevel > 0)
             {
                 labelRange.Copy(parser.MainRange);
                 parser.MainRange.GoToNextStartPosition();
-                labelExists = true;
+                formats.labelExists = true;
             }
         }
     }

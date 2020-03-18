@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using Myriad;
 using Myriad.Library;
 using Myriad.Parser;
-using Myriad.Data;
 
 namespace Myriad.Tests
 {
     [TestFixture]
     public class HomePageTests
     {
-        //[Test]
-        public void CanGetData()
+        List<string> paragraphs;
+        MarkupParser parser;
+        private HttpResponse DefaultResponse()
         {
-            IndexModel indexModel = new IndexModel();
-            var paragraphs = indexModel.GetPageParagraphs();
-            Assert.That(paragraphs.Count > Numbers.nothing);
+            return new DefaultHttpContext().Response;
         }
         [Test]
-        public void ParserTests()
+        public void CanGetData()
         {
-            var parser = new MarkupParser(new HTMLStringBuilder());
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            var paragraphs = new List<string>();
-            paragraphs.Add("testing **bold**");
-            parser.Parse(paragraphs);
-            string result = parser.ParsedText.ToString();
-            Console.WriteLine(result);
-            Assert.AreEqual("testing <b>bold</b>", result);
+            IndexPage indexPage = new IndexPage(DefaultResponse());
+            paragraphs = indexPage.GetPageParagraphs();
+            Assert.That(paragraphs.Count > Numbers.nothing);
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Myriad.Library;
 
 namespace Myriad.Parser
@@ -13,7 +14,7 @@ namespace Myriad.Parser
     }
     public interface IParser
     {
-        abstract void Parse(List<string> paragraphs);
+        abstract Task Parse(List<string> paragraphs);
 
         IMarkedUpParagraph CurrentParagraph { get; }
 
@@ -22,9 +23,9 @@ namespace Myriad.Parser
         abstract void SetParagraphCreator(IMarkedUpParagraphCreator creator);
        
         abstract void SearchForToken();
-        abstract void HandleToken();
+        abstract Task HandleToken();
         abstract int IncreaseCitationLevel(char token);
-        abstract int DecreaseCitationLevel();
+        abstract Task<int> DecreaseCitationLevel();
         abstract void HandleCitations();
 
     }
@@ -42,26 +43,44 @@ namespace Myriad.Parser
         {
             this.creator = creator;
         }
-        public void Parse(List<string> paragraphs)
+        async public Task Parse(List<string> paragraphs)
         {
-            foreach (string paragraph in paragraphs)
+            try
             {
-                currentParagraph = creator.Create(paragraph);
-                ParseParagraph();
+                foreach (string paragraph in paragraphs)
+                {
+                    currentParagraph = creator.Create(paragraph);
+                    await ParseParagraph();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
-        protected void ParseParagraph()
+        async protected Task ParseParagraph()
         {
-            MoveToFirstToken();
-            while (mainRange.Valid)
+            try
             {
-                HandleToken();
-                MoveToNextToken();
+                HandleStart();
+                MoveToFirstToken();
+                while (mainRange.Valid)
+                {
+                    await HandleToken();
+                    MoveToNextToken();
+                }
+                HandleEnd();
             }
-            HandleEnd();
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
+        virtual protected void HandleStart()
+        {
+        }
         virtual protected void HandleEnd()
         {
 
@@ -96,19 +115,21 @@ namespace Myriad.Parser
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.citationTokens, mainRange.Start));
         }
 
-        virtual public void HandleToken()
+        async virtual public Task HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             char charAfterToken = currentParagraph.CharAt(mainRange.End + 1);
 
             if ((token == ')') && (charAfterToken == ')'))
             {
+                await DecreaseCitationLevel();
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return;
             }
             if ((token == '(') && (charAfterToken == '('))
             {
+                IncreaseCitationLevel(token);
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return;
@@ -124,7 +145,7 @@ namespace Myriad.Parser
             }
             if ((token == ')') || (token == ']') || (token == '}'))
             {
-                citationLevel = DecreaseCitationLevel();
+                citationLevel = await DecreaseCitationLevel();
                 return;
             }
         }
@@ -147,18 +168,24 @@ namespace Myriad.Parser
             }
             return citationLevel;
         }
-        public int DecreaseCitationLevel()
+        async public Task<int> DecreaseCitationLevel()
         {
-            HandleCitations();
+            await HandleCitationsAsync();
             if (citationLevel > 0)
                 citationLevel--;
             return citationLevel;
         }
 
-        public void HandleCitations()
+        async private Task HandleCitationsAsync()
         {
-            //TODO
-            throw new NotImplementedException();
+            await Task.Run(() =>
+            {
+                HandleCitations();
+            });
+        }
+
+        virtual public void HandleCitations()
+        {
         }
 
         protected void ResetCitationLevel()

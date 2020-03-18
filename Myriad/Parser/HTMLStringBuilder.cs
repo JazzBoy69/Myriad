@@ -21,6 +21,7 @@ namespace Myriad.Parser
         internal const string StartFigureWithClass = "<figure class='";
         internal const string StartImg = "<img src='";
         internal const string Width = " width='";
+        internal const string EndSection = "</section>";
         internal const string EndSpan = "</span>";
         internal const string EndHeader = "</h3>";
         internal const string EndBold = "</b>";

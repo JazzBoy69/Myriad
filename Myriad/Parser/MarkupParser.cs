@@ -7,13 +7,22 @@ using Myriad.Library;
 
 namespace Myriad.Parser
 {
+    internal class Formats
+    {
+        internal bool detail = false;
+        internal bool bold = false;
+        internal bool super = false;
+        internal bool italic = false;
+        internal bool heading = false;
+        internal bool editable = true;
+        internal bool figure = false;
+        internal bool labelExists = false;
+        internal bool hideDetails = false;
+
+    }
     public class MarkupParser : BasicMarkupParser
     {
-        bool detail;
-        bool bold;
-        bool super;
-        bool italic;
-        bool heading;
+        readonly Formats formats = new Formats();
         readonly PageFormatter formatter;
 
         public MarkupParser(HTMLResponse builder)
@@ -23,67 +32,72 @@ namespace Myriad.Parser
 
         public string ParsedText { get { return formatter.Result; } }
 
+        protected override void HandleStart()
+        {
+            formatter.StartSection();
+        }
         protected override void HandleEnd()
         {
             mainRange.MoveEndToLimit();
             formatter.AppendString(citationLevel);
+            formatter.EndSection();
         }
 
         public override void SearchForToken()
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));
         }
-        override public void HandleToken()
+        async override public Task HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             char charAfterToken = currentParagraph.CharAt(mainRange.End + 1);
             if ((token == '+') && (charAfterToken == '+'))
             {
-                detail = formatter.HandleDetails(detail, citationLevel);
+                formats.detail = formatter.HandleDetails(formats.detail, citationLevel, formats);
                 mainRange.BumpStart();
                 return;
             }
 
             if ((token == '*') && (charAfterToken == '*'))
             {
-                bold = formatter.ToggleBold(bold, citationLevel);
+                formats.bold = formatter.ToggleBold(formats.bold, citationLevel);
                 mainRange.BumpStart();
                 return;
             }
             if (token == '^')
             {
-                super = formatter.ToggleSuperscription(super, citationLevel);
+                formats.super = formatter.ToggleSuperscription(formats.super, citationLevel);
                 return;
             }
             if (token == '/')
             {
-                italic = formatter.ToggleItalic(italic, citationLevel, charAfterToken);
+                formats.italic = formatter.ToggleItalic(formats.italic, citationLevel, charAfterToken);
                 mainRange.BumpStart();
                 return;
             }
             if ((token == ')') && (charAfterToken == ')'))
             {
-                formatter.EndSidenote(citationLevel);
+                formatter.EndSidenote(citationLevel, formats);
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return;
             }
             if ((token == '(') && (charAfterToken == '('))
             {
-                heading = formatter.StartSidenote(heading);
+                formatter.StartSidenote(formats);
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return;
             }
             if ((token == '[') && (charAfterToken == '['))
             {
-                formatter.AppendFigure(currentParagraph.Text);
+                formatter.AppendFigure(currentParagraph.Text, formats);
                 return;
             }
             if (token == '=')
             {
                 formatter.AppendString();
-                heading = formatter.ToggleHeading(heading, charAfterToken);
+                formats.heading = formatter.ToggleHeading(formats, charAfterToken);
                 return;
             }
             if ((token == '(') || (token == '[') || (token == '{') || (token == '~'))
@@ -93,7 +107,7 @@ namespace Myriad.Parser
             }
             if ((token == ')') || (token == ']') || (token == '}'))
             {
-                citationLevel = DecreaseCitationLevel();
+                citationLevel = await DecreaseCitationLevel();
                 return;
             }
             if (token == '_')
@@ -103,28 +117,28 @@ namespace Myriad.Parser
             }
             if (token == '|')
             {
-                formatter.SetLabel(citationLevel);
+                formatter.SetLabel(citationLevel, formats);
                 return;
             }
             if (token == '#')
             {
-                if (formatter.LabelExists)
+                if (formats.labelExists)
                 {
                     MoveIndexToEndBracket();
                     if (!mainRange.Valid) return;
                     ResetCitationLevel();
-                    formatter.AppendTag();
+                    formatter.AppendTag(formats);
                     return;
                 }
                 formatter.AppendString(citationLevel);
 
                 MoveIndexToEndOfWord();
             }
-            formatter.AppendTag();
+            formatter.AppendTag(formats);
 
             formatter.AppendString();
         }
-        new void HandleCitations()
+        public override void HandleCitations()
         {
             formatter.AppendString(citationLevel);
         }
