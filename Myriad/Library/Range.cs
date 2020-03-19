@@ -35,6 +35,7 @@ namespace Myriad.Library
             start = new KeyID(id);
             end = new KeyID(id);
         }
+
         private static bool GoodStrings(string start, string end)
         {
             return !((String.IsNullOrEmpty(start)) && (String.IsNullOrEmpty(end)));
@@ -71,14 +72,28 @@ namespace Myriad.Library
         public void Set(int book, int chapter, int verse)
         {
             start = new KeyID(book, chapter, verse);
-            end = new KeyID(book, chapter, verse);
+            end = new KeyID(book, chapter, verse, KeyID.MaxWordIndex);
         }
 
+        public void Set(int book, int chapter, int verse, int wordIndex)
+        {
+            start = new KeyID(book, chapter, verse, wordIndex);
+            end = new KeyID(book, chapter, verse, KeyID.MaxWordIndex);
+        }
         internal void Set(int book, int firstChapter, int firstVerse, int lastChapter, int lastVerse)
         {
-            start = new KeyID(book, firstChapter, firstVerse);
-            end = new KeyID(book, lastChapter, lastVerse);
+            start = new KeyID(book, firstChapter, firstVerse, Ordinals.first);
+            end = new KeyID(book, lastChapter, lastVerse, KeyID.MaxWordIndex);
         }
+
+        internal void Set(int book, int firstChapter, int firstVerse, int firstWord,
+            int lastChapter, int lastVerse, int lastWord)
+        {
+            if (firstWord == Result.notfound) firstWord = Ordinals.first;
+            start = new KeyID(book, firstChapter, firstVerse, firstWord);
+            end = new KeyID(book, lastChapter, lastVerse, lastWord);
+        }
+
 
         public int StartID
         {

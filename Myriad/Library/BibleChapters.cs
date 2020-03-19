@@ -6,6 +6,14 @@ namespace Myriad.Library
 {
     public class Bible
     {
+        internal static int IndexOfBook(string p)
+        {
+            if (NamesTitleCaseIndex.TryGetValue(p, out int result))
+                return result;
+            if (NamesIndex.TryGetValue(p.ToUpper(), out result))
+                return result;
+            return Result.error;
+        }
         internal static List<string> BookNames = new List<string>
         {
              "GE", "EX", "LE", "NU", "DE", "JOS", "JG", "RU",    //0-7

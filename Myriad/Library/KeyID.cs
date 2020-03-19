@@ -5,6 +5,8 @@ namespace Myriad.Library
     public class KeyID
     {
         public const int MaxWordIndex = 255;
+        public const int MaxVerse = 255;
+        public const int InvalidBook = Result.error;
 
         const int bookMulitiplier = 256 * 256 * 256;
         const int chapterMultiplier = 256 * 256;
@@ -32,7 +34,8 @@ namespace Myriad.Library
 
         public KeyID(int book, int chapter, int verse, int index)
         {
-            id = (book << 24) + (chapter << 16) + (verse << 8) + index;
+            id = (book * bookMulitiplier) + (chapter * chapterMultiplier) + 
+                (verse * verseMultiplier) + index;
         }
 
         public void Set(int newID)

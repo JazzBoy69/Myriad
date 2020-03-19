@@ -5,136 +5,162 @@ using Myriad.Library;
 
 namespace Myriad.Parser
 {
-    public enum CitationTypes
+    public class CitationHandler
     {
-        Chapter, Text, Verse, Invalid
-    }
-    public class Citation
-    {
-        public StringRange Label = new StringRange();
-        public StringRange LeadingSymbols = new StringRange();
-        public StringRange TrailingSymbols = new StringRange();
-        public CitationRange CitationRange = CitationRange.InvalidRange;
-        public CitationTypes CitationType = CitationTypes.Invalid;
+        int count = 0;
+        char token;
+        char lastToken;
+        char tokenBeforeLast;
+        Citation citation = new Citation();
+        VerseReference firstVerse = new VerseReference();
+        VerseReference secondVerse = new VerseReference();
+        List<Citation> results;
+        StringRange rangeToParse;
+        StringRange labelRange;
+        IMarkedUpParagraph paragraphToParse;
+        bool first = true;
 
-        public Citation()
-        {
-            
-        }
-        public Citation(int book, int chapter, int verse)
-        {
-            CitationRange = new CitationRange(book, chapter, verse);
-            CitationType = CitationTypes.Text;
-        }
-        public static Citation InvalidCitation
+        public Citation Citation
         {
             get
             {
-                var citation = new Citation(-1, -1, -1);
-                citation.CitationType = CitationTypes.Invalid;
                 return citation;
             }
         }
 
-        internal Citation Copy()
+        public VerseReference FirstVerse
         {
-            Citation newCitation = new Citation();
-            newCitation.Label = new StringRange(Label.Start, Label.End);
-            newCitation.CitationRange = new CitationRange(CitationRange.StartID,
-                CitationRange.EndID);
-            newCitation.CitationType = CitationType;
-            newCitation.LeadingSymbols = new StringRange(LeadingSymbols.Start, LeadingSymbols.End);
-            newCitation.TrailingSymbols = new StringRange(TrailingSymbols.Start, TrailingSymbols.End);
-            return newCitation;
-        }
-    }
-    public class CitationHandler
-    {
-        const int findChapter = 0;
-        const int secondPart = 1;
-        const int findVerse = 2;
-        const int afterComma = 3;
-        const int findWordIndex = 4;
-        const int findLastWordIndex = 5;
-
-        StringRange mainRange;
-        Citation citation;
-        bool HasLabel { get; set; }
-
-        public List<Citation> ParseCitations(StringRange mainRange, IMarkedUpParagraph currentParagraph)
-        {
-            this.mainRange = mainRange;
-            var result = new List<Citation>();
-            bool shouldContinue = true;
-            while (shouldContinue)
+            get
             {
-                var citation = ParseCitation(mainRange, currentParagraph);   
-                result.AddRange(citation);
-                shouldContinue = false; //TODO: make loop
+                return firstVerse;
             }
-            return result;
         }
 
-        private List<Citation> ParseCitation(StringRange mainRange, IMarkedUpParagraph paragraph)
+        public List<Citation> Results
         {
-            citation = new Citation();
-            var results = new List<Citation>();
-            citation.Label = GetBookRange(mainRange, paragraph);
-            int book = GetBookIndex(citation.Label, paragraph);
-            if (book == TextReference.invalidBook)
+            get
             {
-                results.Add(Citation.InvalidCitation);
                 return results;
             }
-            int mode = TextReference.IsShortBook(book) ? findVerse : findChapter;
-            int count = 0;
-            int chapter = TextReference.invalidChapter;
-            bool foundZero = false;
-            int firstChapter = TextReference.invalidChapter;
-            int firstVerse = TextReference.invalidVerse;
-            int lastVerse = TextReference.invalidVerse;
-            bool first = true;
-            int commaAt = -1;
+        }
 
-            citation.Label.BumpEnd();
-            while (citation.Label.End < mainRange.End)
+        public int Count
+        {
+            get
             {
-                switch (paragraph.CharAt(citation.Label.End))
+                return count;
+            }
+        }
+        public List<Citation> ParseCitations(StringRange givenRange, IMarkedUpParagraph givenParagraph)
+        {
+            InitializeParser(givenRange, givenParagraph);
+            while (citation.Label.End <= rangeToParse.End)
+            {
+                if (first) SkipLeadingSymbols();
+                GetCount();
+                GetToken();
+                if (count == Result.notfound)
                 {
-                    case ' ':
-                        if (citation.Label.End - mainRange.Start == 0)
-                        {
-                            AppendNextStartCharacter();
-                        }
-                        citation.Label.BumpEnd();
+                    if (FoundBook())
                         continue;
-                    case ':':
-                        chapter = count;
-                        count = 0;
-                        foundZero = false;
-                        citation.Label.BumpEnd();
-                        mode = findVerse;
-                        continue;
-                    case ',':
-                        if (mode == findVerse)
-                        {
-                            firstVerse = count;
-                            count = 0;
-                            foundZero = false;
-                            mode = afterComma;
-                            commaAt = citation.Label.End;
-                            citation.Label.BumpEnd();
-                            continue;
-                        }
-                        citation.Label.BumpEnd();
-                        continue;
+                    else
+                        break;
+                }
+                if ((lastToken == ' ') && (token == ':'))
+                {
+                    SetFirstChapter();
+                    continue;
+                }
+                if ((lastToken == '-') && (token == ':'))
+                {
+                    SetSecondChapter();
+                    continue;
+                }
+                if (LookingForFirstVerse() && ((token == ',') || (token == '-')))
+                {
+                    SetFirstVerse();
+                    continue;
+                }
+                if ((tokenBeforeLast == '-') && (lastToken == ':') && (token == ','))
+                {
+                    SetSecondVerse();
+                    lastToken = ';';
+                    continue;
+                }
+                if ((lastToken == '-') || (lastToken == ','))
+                {
+                    SetSecondVerse();
+                    continue;
+                }
+                if (LookingForFirstVerse() && (token == ';'))
+                {
+                    SetFirstVerse();
+                    AddCitationToResults();
+                    continue;
+                }
+                if (token == ';')
+                {
+                    SetSecondVerse();
+                    AddCitationToResults();
+                    continue;
+                }
+                break;
+            }
+            return results;
+        }
+
+        public bool FoundBook()
+        {
+            labelRange.MoveEndTo(citation.Label.End - 1);
+            if ((lastToken == ';') && (token == ' '))
+            {
+                SetFirstBook();
+                return true;
+            }
+            if ((lastToken == '-') && (token == ' '))
+            {
+                SetSecondBook();
+                return true;
+            }
+            return false;
+        }
+
+        public void GetToken()
+        {
+            bool foundToken = false;
+            while (citation.Label.End <= rangeToParse.End)
+            {
+                token = paragraphToParse.CharAt(citation.Label.End);  //Todo: add !
+                if ((token == ' ') || (token == ':') ||
+                    (token == ',') || (token == '-') ||
+                    (token == '.') || (token == ';'))
+                {
+                    foundToken = true;
+                    break;
+                }
+                citation.Label.BumpEnd();
+            }
+            if (!foundToken)
+            {
+                citation.Label.PullEnd();
+                token = ';';
+            }
+        }
+
+        public void GetCount()
+        {
+            labelRange = new StringRange(citation.Label.Start, citation.Label.Start);
+            bool foundZero = false;
+            bool lookForNumber = true;
+            count = Numbers.nothing;
+            
+            while (lookForNumber && (citation.Label.End <= rangeToParse.End))
+            {
+                char c = paragraphToParse.CharAt(citation.Label.End);
+                switch (c)
+                {
                     case '0':
-                        if (count == 0)
-                        {
-                            foundZero = true;
-                            citation.Label.BumpEnd();
-                            continue;
-                        }
+                        foundZero = true;
                         count *= 10;
                         citation.Label.BumpEnd();
                         continue;
@@ -184,93 +210,179 @@ namespace Myriad.Parser
                         citation.Label.BumpEnd();
                         continue;
                     default:
-                        if ((mode == findWordIndex) || (mode == findLastWordIndex))
-                        {
-                           /* wordLabel += paragraph.CharAt(citationRange.End);
-                            citationRange.BumpEnd(); */
-                            continue;
-                        }
+                        lookForNumber = false;
                         break;
                 }
+                if ((count == 0) && (!foundZero)) count = Result.notfound;
             }
-            if (mode == findVerse)
+        }
+
+        public void SkipLeadingSymbols()
+        {
+            while ((citation.Label.End <= rangeToParse.End) && (paragraphToParse.CharAt(citation.Label.Start) == ' '))
             {
-                if ((count != 0) || (foundZero))
-                    SetTextCitation(book, chapter, count);
+                citation.LeadingSymbols.BumpEnd();
+                citation.Label.BumpStart();
             }
-            if (mode == findChapter)
+        }
+
+        public void InitializeParser(StringRange givenRange, IMarkedUpParagraph givenParagraph)
+        {
+            rangeToParse = givenRange;
+            paragraphToParse = givenParagraph;
+            results = new List<Citation>();
+            citation = new Citation();
+            citation.Label.MoveStartTo(rangeToParse.Start);
+            citation.Label.MoveEndTo(rangeToParse.Start);
+            count = Numbers.nothing;
+            firstVerse.Reset();
+            secondVerse.Reset();
+            tokenBeforeLast = ';';
+            lastToken = ';';
+        }
+
+        private void AddCitationToResults()
+        {
+            if (secondVerse.WordIndex != Result.notfound)
             {
-                if ((chapter == TextReference.invalidChapter) && (count > 0))
+                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                    firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
+                    secondVerse.WordIndex);
+
+                citation.CitationType = CitationTypes.Text;
+                Reset();
+                return;
+            }
+            if (secondVerse.Verse != Result.notfound)
+            {
+                if (firstVerse.WordIndex != Result.notfound)
                 {
-                    if (TextReference.IsShortBook(book))
-                        SetTextCitation(book, 1, count);
-                    else
-                        SetChapterCitation(book, count);
-                }
-            }
-            if (mode == afterComma)
-            {
-                if (count == (firstVerse + 1))
-                {
-                    SetVerseRangeCitation(book, chapter, firstVerse, count);
+                    citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                     firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
+                     KeyID.MaxWordIndex);
                 }
                 else
                 {
-                    SetTextCitation(book, chapter, firstVerse);
-                    Citation firstCitation = citation.Copy();
-                    firstCitation.Label.MoveEndTo(commaAt);
-                    firstCitation.TrailingSymbols.MoveStartTo(commaAt+1);
-                    firstCitation.TrailingSymbols.MoveEndTo(commaAt+1);
-                    results.Add(firstCitation);
-                    citation = new Citation();
-                    citation.Label.MoveStartTo(commaAt+1);
-                    citation.Label.MoveEndTo(mainRange.End);
-                    AppendNextStartCharacter();
-                    if ((count != 0) || (foundZero))
-                        SetTextCitation(book, chapter, count);
+                    citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                     secondVerse.Chapter, secondVerse.Verse);
                 }
+                citation.CitationType = CitationTypes.Text;
+                Reset();
+                return;
             }
-            results.Add(citation);
-            return results;
+            if (secondVerse.Chapter != Result.notfound)
+            {
+                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, Ordinals.first,
+                    secondVerse.Chapter, KeyID.MaxVerse);
+                citation.CitationType = CitationTypes.Text;
+                Reset();
+                return;
+            }
+            if (firstVerse.WordIndex != Result.notfound)
+            {
+                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                    firstVerse.WordIndex);
+                citation.CitationType = CitationTypes.Text;
+                Reset();
+                return;
+            }
+            if (firstVerse.Verse != Result.notfound)
+            {
+                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse);
+                citation.CitationType = CitationTypes.Text; 
+                Reset();
+                return;
+            }
+            if (firstVerse.Chapter != Result.notfound)
+            {
+                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter);
+                citation.CitationType = CitationTypes.Chapter;
+                Reset();
+                return;
+            }
+            EndParsingSession();
         }
 
-        private void SetVerseRangeCitation(int book, int chapter, int firstVerse, int count)
+        private void EndParsingSession()
         {
-            citation.CitationRange.Set(book, chapter, firstVerse, chapter, count);
-            citation.CitationType = CitationTypes.Text;
+            citation.LeadingSymbols.MoveEndTo(rangeToParse.End + 1);
+            citation.Label.MoveEndTo(rangeToParse.End + 1);
         }
 
-        private void SetLongCitation(int book, int firstChapter, int firstVerse, int lastChapter, int count)
+        private void Reset()
         {
-            citation.CitationRange.Set(book, firstChapter, firstVerse, lastChapter, count);
-            citation.CitationType = CitationTypes.Text;
+            int pointer = citation.Label.End;
+            if (citation.Label.End < rangeToParse.End)
+            {
+                citation.TrailingSymbols.MoveStartTo(citation.Label.End);
+                citation.TrailingSymbols.MoveEndTo(citation.Label.End);
+                citation.Label.PullEnd();
+                rangeToParse.MoveStartTo(citation.TrailingSymbols.End);
+                pointer++;
+            }
+            Citation newCitation = citation.Copy();
+            results.Add(newCitation);
+            citation = new Citation();
+            citation.LeadingSymbols.MoveStartTo(pointer);
+            citation.LeadingSymbols.MoveEndTo(pointer);
+            citation.Label.MoveStartTo(pointer);
+            citation.Label.MoveEndTo(pointer);
+            first = true;
         }
 
-        private void SetChapterCitation(int book, int chapter)
+        private bool LookingForFirstVerse()
         {
-            citation.CitationRange.Set(book, chapter);
-            citation.CitationType = CitationTypes.Chapter;
+            return ((tokenBeforeLast == ' ') || (tokenBeforeLast == ';'))
+                    && (lastToken == ':');
         }
 
-        private void SetTextCitation(int book, int chapter, int count)
+        private void SetSecondVerse()
         {
-            citation.CitationRange.Set(book, chapter, count);
-            citation.CitationType = CitationTypes.Text;
+            secondVerse.Verse = count;
+            MoveToNext();
         }
 
-        private void AppendNextStartCharacter()
+        public void SetFirstVerse()
         {
-            citation.LeadingSymbols.BumpEnd();
-            citation.Label.BumpStart();
+            firstVerse.Verse = count;
+            MoveToNext();
         }
 
-        public StringRange GetBookRange(StringRange mainRange, IMarkedUpParagraph paragraph)
+        private void SetSecondChapter()
         {
-            var citationRange = new StringRange();
-            citationRange.Copy(mainRange);
-            citationRange.MoveEndTo(paragraph.IndexOf(' ', mainRange.Start, mainRange.Length));
-            return citationRange;
+            secondVerse.Chapter = count; 
+            MoveToNext();
         }
+
+        public void SetFirstChapter()
+        {
+            firstVerse.Chapter = count;
+            MoveToNext();
+        }
+
+        private void SetSecondBook()
+        {
+            secondVerse.Book = Bible.IndexOfBook(paragraphToParse.StringAt(labelRange));
+            MoveToNext();
+        }
+
+        private void SetFirstBook()
+        {
+            firstVerse.Book = Bible.IndexOfBook(paragraphToParse.StringAt(
+                citation.Label));
+            MoveToNext();
+        }
+
+        public void MoveToNext()
+        {
+            tokenBeforeLast = lastToken;
+            lastToken = token;
+            count = Numbers.nothing;
+            if (citation.Label.End < rangeToParse.End)
+                citation.Label.BumpEnd();
+            first = false;
+        }
+
         public static int GetBookIndex(StringRange range, IMarkedUpParagraph paragraph)
         {
             return TextReference.IndexOfBook(

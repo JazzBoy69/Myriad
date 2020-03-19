@@ -255,21 +255,19 @@ namespace Myriad.Parser
         }
         internal void AppendString(int citationLevel)
         {
-            try
+
+            if (citationLevel > 0)
             {
-                if (citationLevel > 0)
-                {
+                List<Citation> citations =
                     citationHandler.ParseCitations(parser.MainRange, parser.CurrentParagraph);
-                }
-                else
-                {
-                    AppendString();
-                }
+                AppendCitations(citations);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            AppendString();
+        }
+
+        private void AppendCitations(List<Citation> citations)
+        {
+            throw new NotImplementedException();
         }
 
         internal void AppendString()
