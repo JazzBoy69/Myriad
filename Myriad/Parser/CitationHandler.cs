@@ -71,6 +71,12 @@ namespace Myriad.Parser
                     SetFirstChapter();
                     continue;
                 }
+                if ((lastToken == ' ') && (token == ';'))
+                {
+                    SetFirstChapter();
+                    AddCitationToResults();
+                    continue;
+                }
                 if ((lastToken == '-') && (token == ':'))
                 {
                     SetSecondChapter();
@@ -273,7 +279,7 @@ namespace Myriad.Parser
             if (secondVerse.Chapter != Result.notfound)
             {
                 citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, Ordinals.first,
-                    secondVerse.Chapter, KeyID.MaxVerse);
+                    secondVerse.Chapter, Bible.Chapters[firstVerse.Book][secondVerse.Chapter]);
                 citation.CitationType = CitationTypes.Text;
                 Reset();
                 return;

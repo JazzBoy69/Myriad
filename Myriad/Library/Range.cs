@@ -67,7 +67,7 @@ namespace Myriad.Library
                 return;
             }
             start = new KeyID(book, chapter, 1);
-            end = new KeyID(book, chapter, Bible.Chapters[book][chapter], KeyID.MaxWordIndex);
+            end = new KeyID(book, chapter, Bible.Chapters[book][chapter]);
         }
         public void Set(int book, int chapter, int verse)
         {

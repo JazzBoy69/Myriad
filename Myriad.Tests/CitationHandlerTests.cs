@@ -16,19 +16,6 @@ namespace Myriad.Tests
     }
     class CitationHandlerTests
     {
-        //[Test]
-        public void TestCitationSetup()
-        {
-            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation(Citations.SimpleCitation);
-            Assert.That((citations.Count > 0), () => { return "no citations returned"; });
-            if (citations.Count > 0)
-            {
-                var firstCitation = citations[Ordinals.first];
-                Assert.That(firstCitation.CitationType != CitationTypes.Invalid,
-                    () => { return "Invalid citation"; });
-            }
-        }
-
         [Test]
         public void SimpleCitation()
         {
@@ -48,7 +35,7 @@ namespace Myriad.Tests
             }
         }
 
-        //[Test]
+        [Test]
         public void ChapterCitation()
         {
             (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation(Citations.ChapterCitation);
@@ -61,18 +48,16 @@ namespace Myriad.Tests
                 int verse = firstCitation.CitationRange.FirstVerse;
                 int lastverse = firstCitation.CitationRange.LastVerse;
                 string label = paragraph.StringAt(firstCitation.Label);
-                Assert.That(Citations.ChapterCitation == label, () =>
-                {
-                    return firstCitation.Label.Start + "-"
-+ firstCitation.Label.End;
-                });
-                Assert.That(firstCitation.CitationRange.Valid);
+                Assert.AreEqual(Citations.ChapterCitation.Substring(Ordinals.second,
+                    Citations.ChapterCitation.Length-2), label);
+
                 Assert.That((book == 39 && chapter == 24 && verse == 1 && lastverse == 51),
                     () =>
                     {
-                        return Bible.NamesTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
+                        return Bible.AbbreviationsTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
                     + "-" + lastverse.ToString();
                     });
+                Assert.That(firstCitation.CitationRange.Valid);
             }
         }
 
@@ -203,7 +188,41 @@ namespace Myriad.Tests
             {
                 return "verse=" + citationHandler.FirstVerse.Verse;
             });
-            //citationHandler.Citation.Label.PullEnd();
+        }
+
+        [Test]
+        public void TestChapterStepByStep()
+        {
+            CitationHandler citationHandler = new CitationHandler();
+            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            paragraph.Text = Citations.SimpleCitation;
+            StringRange mainRange = new StringRange();
+            mainRange.MoveStartTo(1);
+            mainRange.MoveEndTo(Citations.SimpleCitation.Length - 1);
+            citationHandler.InitializeParser(mainRange, paragraph);
+            citationHandler.SkipLeadingSymbols();
+            citationHandler.GetCount();
+            citationHandler.GetToken();
+            string label = paragraph.StringAt(citationHandler.Citation.Label);
+            Assert.AreEqual("Mt", label);
+            bool foundBook = citationHandler.FoundBook();
+            Assert.True(foundBook);
+            Assert.That(citationHandler.FirstVerse.Book == 39, () =>
+            {
+                return "book=" + citationHandler.FirstVerse.Book;
+            });
+            label = paragraph.StringAt(citationHandler.Citation.Label);
+            Assert.AreEqual("Mt ", label);
+
+            citationHandler.GetCount();
+            citationHandler.GetToken();
+            label = paragraph.StringAt(citationHandler.Citation.Label);
+            Assert.AreEqual("Mt 24", label);
+            citationHandler.SetFirstChapter();
+            Assert.That(citationHandler.FirstVerse.Chapter == 24, () =>
+            {
+                return "chapter=" + citationHandler.FirstVerse.Chapter;
+            });
         }
     }
 }

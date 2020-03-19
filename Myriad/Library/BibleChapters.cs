@@ -172,7 +172,7 @@ namespace Myriad.Library
             "2CO", "GA", "EPH", "PHP", "COL", "1TH", "2TH",     //46-52
             "1TI", "2TI", "TIT", "PHM", "HEB", "JAS", "1PE",    //53-59
             "2PE", "1JO", "2JO", "3JO", "JUDE", "RE"};
-        internal static List<string> AbbreviationsTitleCase = new List<string> {
+        public static List<string> AbbreviationsTitleCase = new List<string> {
             "Ge", "Ex", "Le", "Nu", "De", "Jos", "Jg", "Ru",    //0-7
             "1Sa", "2Sa", "1Ki", "2Ki", "1Ch", "2Ch", "Ezr",    //8-14
             "Ne", "Es", "Job", "Ps", "Pr", "Ec", "Ca", "Isa",   //15-22
