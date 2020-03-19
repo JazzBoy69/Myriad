@@ -7,6 +7,10 @@ using Myriad.Library;
 
 namespace Myriad.Tests
 {
+    public struct Citations
+    {
+        public const string CommaCitation = "(Mt 24:14, 15)";
+    }
     class CitationHandlerTests
     {
         [Test]
@@ -78,6 +82,30 @@ namespace Myriad.Tests
             }
         }
 
+        [Test]
+        public void TestCommaCitation()
+        {
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCommaCitation();
+            Assert.That(citations.Count > 0);
+            if (citations.Count > 0)
+            {
+                var firstCitation = citations[Ordinals.first];
+                var book = firstCitation.CitationRange.Book;
+                int chapter = firstCitation.CitationRange.FirstChapter;
+                int verse = firstCitation.CitationRange.FirstVerse;
+                int lastverse = firstCitation.CitationRange.LastVerse;
+                string label = paragraph.StringAt(firstCitation.Label);
+                Assert.AreEqual(Citations.CommaCitation.Substring(1, Citations.CommaCitation.Length-2)
+                    , label);
+                Assert.That(firstCitation.CitationRange.Valid);
+                Assert.That((book == 39 && chapter == 24 && verse == 14 && lastverse == 15),
+                    () => {
+                        return Bible.NamesTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
+                    + "-" + lastverse.ToString();
+                    });
+            }
+        }
+
         private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupSimpleCitation()
         {
             CitationHandler citationHandler = new CitationHandler();
@@ -98,6 +126,18 @@ namespace Myriad.Tests
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(1);
             mainRange.MoveEndTo(6);
+            var citations = citationHandler.ParseCitations(mainRange, paragraph);
+            return (citations, paragraph);
+        }
+
+        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupCommaCitation()
+        {
+            CitationHandler citationHandler = new CitationHandler();
+            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            paragraph.Text = Citations.CommaCitation;
+            StringRange mainRange = new StringRange();
+            mainRange.MoveStartTo(1);
+            mainRange.MoveEndTo(Citations.CommaCitation.Length -1);
             var citations = citationHandler.ParseCitations(mainRange, paragraph);
             return (citations, paragraph);
         }

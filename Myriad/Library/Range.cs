@@ -74,6 +74,12 @@ namespace Myriad.Library
             end = new KeyID(book, chapter, verse);
         }
 
+        internal void Set(int book, int firstChapter, int firstVerse, int lastChapter, int lastVerse)
+        {
+            start = new KeyID(book, firstChapter, firstVerse);
+            end = new KeyID(book, lastChapter, lastVerse);
+        }
+
         public int StartID
         {
             get
@@ -180,5 +186,7 @@ namespace Myriad.Library
             if ((range == null) || (targetRange == null)) return false;
             return (targetRange.start.ID <= range.end.ID) && (targetRange.end.ID >= range.start.ID);
         }
+
+
     }
 }

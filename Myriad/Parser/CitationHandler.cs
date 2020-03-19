@@ -57,24 +57,32 @@ namespace Myriad.Parser
             while (shouldContinue)
             {
                 var citation = ParseCitation(mainRange, currentParagraph);   
-                result.Add(citation);
+                result.AddRange(citation);
                 shouldContinue = false; //TODO: make loop
             }
             return result;
         }
 
-        private Citation ParseCitation(StringRange mainRange, IMarkedUpParagraph paragraph)
+        private List<Citation> ParseCitation(StringRange mainRange, IMarkedUpParagraph paragraph)
         {
             citation = new Citation();
+            var results = new List<Citation>();
             citation.Label = GetBookRange(mainRange, paragraph);
             int book = GetBookIndex(citation.Label, paragraph);
-            if (book == TextReference.invalidBook) return Citation.InvalidCitation;
-
+            if (book == TextReference.invalidBook)
+            {
+                results.Add(Citation.InvalidCitation);
+                return results;
+            }
             int mode = TextReference.IsShortBook(book) ? findVerse : findChapter;
             int count = 0;
             int chapter = TextReference.invalidChapter;
             bool foundZero = false;
-            
+            int firstChapter = TextReference.invalidChapter;
+            int firstVerse = TextReference.invalidVerse;
+            int lastVerse = TextReference.invalidVerse;
+            bool first = true;
+
             citation.Label.BumpEnd();
             while (citation.Label.End < mainRange.End)
             {
@@ -93,6 +101,19 @@ namespace Myriad.Parser
                         foundZero = false;
                         citation.Label.BumpEnd();
                         mode = findVerse;
+                        continue;
+                    case ',':
+                        if (mode == findVerse)
+                        {
+                            firstVerse = count;
+                            count = 0;
+                            foundZero = false;
+                            mode = afterComma;
+                            //citation.Label.MoveStartTo(citation.Label.End);
+                            citation.Label.BumpEnd();
+                            continue;
+                        }
+                        citation.Label.BumpEnd();
                         continue;
                     case '0':
                         if (count == 0)
@@ -174,7 +195,37 @@ namespace Myriad.Parser
                         SetChapterCitation(book, count);
                 }
             }
-            return citation;
+            if (mode == afterComma)
+            {
+                if (count == (firstVerse + 1))
+                {
+                    SetVerseRangeCitation(book, chapter, firstVerse, count);
+                }
+                else
+                {
+                    SetTextCitation(book, chapter, firstVerse);
+                    results.Add(citation);
+                    citation = new Citation();
+                    citation.Label.Copy(mainRange);
+                    AppendNextStartCharacter();
+                    if ((count != 0) || (foundZero))
+                        SetTextCitation(book, chapter, count);
+                }
+            }
+            results.Add(citation);
+            return results;
+        }
+
+        private void SetVerseRangeCitation(int book, int chapter, int firstVerse, int count)
+        {
+            citation.CitationRange.Set(book, chapter, firstVerse, chapter, count);
+            citation.CitationType = CitationTypes.Text;
+        }
+
+        private void SetLongCitation(int book, int firstChapter, int firstVerse, int lastChapter, int count)
+        {
+            citation.CitationRange.Set(book, firstChapter, firstVerse, lastChapter, count);
+            citation.CitationType = CitationTypes.Text;
         }
 
         private void SetChapterCitation(int book, int chapter)
