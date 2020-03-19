@@ -10,6 +10,7 @@ namespace Myriad.Tests
     public struct Citations
     {
         public const string CommaCitation = "(Mt 24:14, 15)";
+        public const string BrokenCommaCitation = "(Mt 24:14, 16)";
     }
     class CitationHandlerTests
     {
@@ -32,7 +33,7 @@ namespace Myriad.Tests
         [Test]
         public void TestCitationSetup()
         {
-            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupSimpleCitation();
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation("(Mt 24:14)");
             Assert.That((citations.Count > 0), () => { return "no citations returned"; });
             if (citations.Count > 0)
             {
@@ -45,7 +46,7 @@ namespace Myriad.Tests
         [Test]
         public void SimpleCitation()
         {
-            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupSimpleCitation();
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation("(Mt 24:14)");
             if (citations.Count > 0)
             {
                 var firstCitation = citations[Ordinals.first];
@@ -57,13 +58,12 @@ namespace Myriad.Tests
                 string label = paragraph.StringAt(firstCitation.Label);
                 Assert.AreEqual("Mt 24:14", label);
             }
-
         }
 
         [Test]
         public void ChapterCitation()
         {
-            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupChapterCitation();
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation("(Mt 24)");
             Assert.That(citations.Count > 0);
             if (citations.Count > 0)
             {
@@ -85,7 +85,8 @@ namespace Myriad.Tests
         [Test]
         public void TestCommaCitation()
         {
-            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCommaCitation();
+            (List<Citation> citations, MarkedUpParagraph paragraph) = 
+                SetupCitation(Citations.CommaCitation);
             Assert.That(citations.Count > 0);
             if (citations.Count > 0)
             {
@@ -106,38 +107,51 @@ namespace Myriad.Tests
             }
         }
 
-        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupSimpleCitation()
+        [Test]
+        public void TestBrokenCommaCitation()
         {
-            CitationHandler citationHandler = new CitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            paragraph.Text = "(Mt 24:14)";
-            StringRange mainRange = new StringRange();
-            mainRange.MoveStartTo(1);
-            mainRange.MoveEndTo(9);
-            var citations = citationHandler.ParseCitations(mainRange, paragraph);
-            return (citations, paragraph);
+            (List<Citation> citations, MarkedUpParagraph paragraph) =
+                SetupCitation(Citations.BrokenCommaCitation);
+            Assert.That(citations.Count > 0);
+            if (citations.Count > 0)
+            {
+                var secondCitation = citations[Ordinals.second];
+                int book = secondCitation.CitationRange.Book;
+                int chapter = secondCitation.CitationRange.FirstChapter;
+                int verse = secondCitation.CitationRange.FirstVerse;
+                int lastverse = secondCitation.CitationRange.LastVerse;
+                string label = paragraph.StringAt(secondCitation.Label);
+                Assert.AreEqual("16", label);
+                Assert.That(secondCitation.CitationRange.Valid);
+                Assert.That((book == 39 && chapter == 24 && verse == 16 && lastverse == 16),
+                    () => {
+                        return Bible.NamesTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
+                    + "-" + lastverse.ToString();
+                    });
+                var firstCitation = citations[Ordinals.first];
+                 book = firstCitation.CitationRange.Book;
+                 chapter = firstCitation.CitationRange.FirstChapter;
+                 verse = firstCitation.CitationRange.FirstVerse;
+                 lastverse = firstCitation.CitationRange.LastVerse;
+                 label = paragraph.StringAt(firstCitation.Label);
+                Assert.AreEqual("Mt 24:14", label);
+                Assert.That(firstCitation.CitationRange.Valid);
+                Assert.That((book == 39 && chapter == 24 && verse == 14 && lastverse == 14),
+                    () => {
+                        return Bible.NamesTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
+                    + "-" + lastverse.ToString();
+                    });
+            }
         }
 
-        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupChapterCitation()
+        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupCitation(string textOfCitation)
         {
             CitationHandler citationHandler = new CitationHandler();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            paragraph.Text = "(Mt 24)";
+            paragraph.Text = textOfCitation;
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(1);
-            mainRange.MoveEndTo(6);
-            var citations = citationHandler.ParseCitations(mainRange, paragraph);
-            return (citations, paragraph);
-        }
-
-        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupCommaCitation()
-        {
-            CitationHandler citationHandler = new CitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            paragraph.Text = Citations.CommaCitation;
-            StringRange mainRange = new StringRange();
-            mainRange.MoveStartTo(1);
-            mainRange.MoveEndTo(Citations.CommaCitation.Length -1);
+            mainRange.MoveEndTo(textOfCitation.Length-1);
             var citations = citationHandler.ParseCitations(mainRange, paragraph);
             return (citations, paragraph);
         }

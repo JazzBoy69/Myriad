@@ -7,6 +7,14 @@ namespace Myriad.Parser
         int start = Ordinals.first;
         int end = Ordinals.first;
         int max;
+        public StringRange()
+        {
+        }
+        public StringRange(int start, int end)
+        {
+            this.start = start;
+            this.end = end;
+        }
         public static StringRange InvalidRange
         {
             get

@@ -35,6 +35,18 @@ namespace Myriad.Parser
                 return citation;
             }
         }
+
+        internal Citation Copy()
+        {
+            Citation newCitation = new Citation();
+            newCitation.Label = new StringRange(Label.Start, Label.End);
+            newCitation.CitationRange = new CitationRange(CitationRange.StartID,
+                CitationRange.EndID);
+            newCitation.CitationType = CitationType;
+            newCitation.LeadingSymbols = new StringRange(LeadingSymbols.Start, LeadingSymbols.End);
+            newCitation.TrailingSymbols = new StringRange(TrailingSymbols.Start, TrailingSymbols.End);
+            return newCitation;
+        }
     }
     public class CitationHandler
     {
@@ -82,6 +94,7 @@ namespace Myriad.Parser
             int firstVerse = TextReference.invalidVerse;
             int lastVerse = TextReference.invalidVerse;
             bool first = true;
+            int commaAt = -1;
 
             citation.Label.BumpEnd();
             while (citation.Label.End < mainRange.End)
@@ -109,7 +122,7 @@ namespace Myriad.Parser
                             count = 0;
                             foundZero = false;
                             mode = afterComma;
-                            //citation.Label.MoveStartTo(citation.Label.End);
+                            commaAt = citation.Label.End;
                             citation.Label.BumpEnd();
                             continue;
                         }
@@ -204,9 +217,14 @@ namespace Myriad.Parser
                 else
                 {
                     SetTextCitation(book, chapter, firstVerse);
-                    results.Add(citation);
+                    Citation firstCitation = citation.Copy();
+                    firstCitation.Label.MoveEndTo(commaAt);
+                    firstCitation.TrailingSymbols.MoveStartTo(commaAt+1);
+                    firstCitation.TrailingSymbols.MoveEndTo(commaAt+1);
+                    results.Add(firstCitation);
                     citation = new Citation();
-                    citation.Label.Copy(mainRange);
+                    citation.Label.MoveStartTo(commaAt+1);
+                    citation.Label.MoveEndTo(mainRange.End);
                     AppendNextStartCharacter();
                     if ((count != 0) || (foundZero))
                         SetTextCitation(book, chapter, count);
