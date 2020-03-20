@@ -59,97 +59,33 @@ namespace Myriad.Parser
                 if (first) SkipLeadingSymbols();
                 GetCount();
                 GetToken();
-                if (count == Result.notfound)
-                {
-                    if (FoundBook())
-                        continue;
-                    else
-                        break;
-                }
-                if ((lastToken == ' ') && (token == ':'))
-                {
-                    verse.First.Chapter = count;
-                    MoveToNext();
-                    continue;
-                }
-                if ((lastToken == ' ') && (token == ';'))
-                {
-                    verse.First.Chapter = count;
-                    AddCitationToResults();
-                    continue;
-                }
-                if ((lastToken == '-') && (token == ':'))
-                {
-                    verse.Second.Chapter = count;
-                    MoveToNext();
-                    continue;
-                }
-                if (LookingForFirstVerse() && (token == ','))
-                {
-                    verse.First.Verse = count;
-                    commaAt = citation.Label.End;
-                    citation.Label.BumpEnd();
-                    MoveToNext();
-                    continue;
-                }
-                if ((tokenBeforeLast == '-') && (lastToken == ':') && (token == ','))
-                {
-                    verse.Second.Verse = count;
-                    MoveToNext();
-                    lastToken = ';';
-                    continue;
-                }
-                if ((lastToken == ':') && (token == '-'))
-                {
-                    verse.First.Verse = count;
-                    MoveToNext();
-                    continue;
-                }
-                if (((lastToken == '-') || (lastToken == ',')) && (token == ';'))
-                {
-                    verse.Second.Verse = count;
-                    AddCitationToResults();
-                    continue;
-                }
-                if ((lastToken == '-') || (lastToken == ','))
-                {
-                    verse.Second.Verse = count;
-                    MoveToNext();
-                    continue;
-                }
-                if (LookingForFirstVerse() && (token == ';'))
-                {
-                    verse.First.Verse = count;
-                    AddCitationToResults();
-                    continue;
-                }
-                if (token == ';')
-                {
-                    verse.First.Verse = count;
-                    AddCitationToResults();
-                    continue;
-                }
-                break;
+                bool success = TakeAction();
+                if (!success) break;
             }
             return results;
         }
 
-        public bool FoundBook()
+        private bool TakeAction()
         {
-            labelRange.MoveEndTo(citation.Label.End);
-            if ((lastToken == ';') && (token == ' '))
+            int action = TokenDictionary.Lookup(tokenBeforeLast, lastToken, token, count);
+            if (action == Result.notfound) return false;
+            if (count == Result.notfound) count =
+                    Bible.IndexOfBook(paragraphToParse.StringAt(citation.Label));
+            if (count == Result.notfound) return false;
+            verse.Set(action & 7, count);
+            if (action > 0xF)
             {
-                verse.First.Book = Bible.IndexOfBook(paragraphToParse.StringAt(labelRange));
-                MoveToNext();
-                return true;
+                AddCitationToResults();
+                if (citation.CitationType == CitationTypes.Invalid)
+                {
+                    EndParsingSession();
+                    return true;
+                }
+                Reset();
             }
-            if ((lastToken == '-') && (token == ' '))
-            {
-                verse.Second.Book = Bible.IndexOfBook(paragraphToParse.StringAt(labelRange));
+            else
                 MoveToNext();
-                return true;
-            }
-            return false;
+            return true;
         }
 
         public void GetToken()
@@ -288,12 +224,6 @@ namespace Myriad.Parser
             {
                 verse.Second.Verse = stashVerse;
             }
-            if (citation.CitationType == CitationTypes.Invalid)
-            {
-                EndParsingSession();
-                return;
-            }
-            Reset();
         }
 
         private void EndParsingSession()
@@ -329,6 +259,7 @@ namespace Myriad.Parser
             results.Add(newCitation);
             citation = new Citation();
             pointer++;
+            //if (lastToken == ',') pointer++;
             citation.LeadingSymbols.MoveStartTo(pointer);
             citation.LeadingSymbols.MoveEndTo(pointer);
             citation.Label.MoveStartTo(pointer);
@@ -336,26 +267,18 @@ namespace Myriad.Parser
             first = true;
         }
 
-        private bool LookingForFirstVerse()
-        {
-            return ((tokenBeforeLast == ' ') || (tokenBeforeLast == ';'))
-                    && (lastToken == ':');
-        }
-
-
         public void MoveToNext()
         {
             tokenBeforeLast = lastToken;
             lastToken = token;
             count = Numbers.nothing;
             citation.Label.BumpEnd();
+            if (lastToken == ',')
+            {
+                commaAt = citation.Label.End-1;
+                citation.Label.BumpEnd();
+            }
             first = false;
-        }
-
-        public static int GetBookIndex(StringRange range, IMarkedUpParagraph paragraph)
-        {
-            return TextReference.IndexOfBook(
-                paragraph.StringAt(range));
         }
     }
 }
