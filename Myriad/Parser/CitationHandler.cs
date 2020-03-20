@@ -288,8 +288,20 @@ namespace Myriad.Parser
                 }
                 else
                 {
-                    citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                     secondVerse.Chapter, secondVerse.Verse);
+                    if ((lastToken == ',') && (firstVerse.Verse + 1 != secondVerse.Verse))
+                    {
+                        if (firstVerse.Verse == secondVerse.Verse)
+                        {
+                            lastToken = ';';
+                        }
+                        citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter,
+                          firstVerse.Verse);
+                    }
+                    else
+                    {
+                        citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                         secondVerse.Chapter, secondVerse.Verse);
+                    }
                 }
                 citation.CitationType = CitationTypes.Text;
                 Reset();
@@ -347,6 +359,18 @@ namespace Myriad.Parser
         private void Reset()
         {
             int pointer = citation.Label.End;
+            if ((lastToken == ',') && (firstVerse.Verse + 1 != secondVerse.Verse))
+            {
+                firstVerse.Verse = secondVerse.Verse;
+                secondVerse.Reset();
+                pointer = commaAt;
+                citation.Label.MoveEndTo(commaAt+1);
+            }
+            else
+            {
+                firstVerse.Reset();
+                secondVerse.Reset();
+            }
             if (pointer < rangeToParse.End)
             {
                 citation.TrailingSymbols.MoveStartTo(pointer);

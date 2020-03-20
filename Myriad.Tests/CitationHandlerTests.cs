@@ -114,7 +114,7 @@ namespace Myriad.Tests
             }
         }
 
-        //[Test]
+        [Test]
         public void TestBrokenCommaCitation()
         {
             (List<Citation> citations, MarkedUpParagraph paragraph) =
@@ -142,7 +142,6 @@ namespace Myriad.Tests
                 verse = firstCitation.CitationRange.FirstVerse;
                 lastverse = firstCitation.CitationRange.LastVerse;
                 label = paragraph.StringAt(firstCitation.Label);
-                Assert.AreEqual("Mt 24:14", label);
                 Assert.That(firstCitation.CitationRange.Valid);
                 Assert.That((book == 39 && chapter == 24 && verse == 14 && lastverse == 14),
                     () =>
@@ -150,6 +149,7 @@ namespace Myriad.Tests
                         return Bible.NamesTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
                     + "-" + lastverse.ToString();
                     });
+                Assert.AreEqual("Mt 24:14", label);
             }
         }
 
