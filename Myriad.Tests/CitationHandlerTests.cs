@@ -88,7 +88,7 @@ namespace Myriad.Tests
             }
         }
 
-        //[Test]
+        [Test]
         public void TestCommaCitation()
         {
             (List<Citation> citations, MarkedUpParagraph paragraph) =

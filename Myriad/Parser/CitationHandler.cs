@@ -19,6 +19,7 @@ namespace Myriad.Parser
         StringRange labelRange;
         IMarkedUpParagraph paragraphToParse;
         bool first = true;
+        int commaAt = Result.notfound;
 
         public Citation Citation
         {
@@ -84,9 +85,11 @@ namespace Myriad.Parser
                     MoveToNext();
                     continue;
                 }
-                if (LookingForFirstVerse() && ((token == ',') || (token == '-')))
+                if (LookingForFirstVerse() && (token == ','))
                 {
                     firstVerse.Verse = count;
+                    commaAt = citation.Label.End;
+                    citation.Label.BumpEnd();
                     MoveToNext();
                     continue;
                 }
@@ -95,6 +98,12 @@ namespace Myriad.Parser
                     secondVerse.Verse = count;
                     MoveToNext();
                     lastToken = ';';
+                    continue;
+                }
+                if (((lastToken == '-') || (lastToken == ',')) && (token == ';'))
+                {
+                    secondVerse.Verse = count;
+                    AddCitationToResults();
                     continue;
                 }
                 if ((lastToken == '-') || (lastToken == ','))
