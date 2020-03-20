@@ -201,7 +201,5 @@ namespace Myriad.Library
             if ((range == null) || (targetRange == null)) return false;
             return (targetRange.start.ID <= range.end.ID) && (targetRange.end.ID >= range.start.ID);
         }
-
-
     }
 }

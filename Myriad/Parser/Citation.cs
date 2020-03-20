@@ -48,6 +48,60 @@ namespace Myriad.Parser
             newCitation.TrailingSymbols = new StringRange(TrailingSymbols.Start, TrailingSymbols.End);
             return newCitation;
         }
+
+        internal void Set(VerseReference firstVerse, VerseReference secondVerse)
+        {
+            if (secondVerse.WordIndex != Result.notfound)
+            {
+                CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                    firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
+                    secondVerse.WordIndex);
+
+                CitationType = CitationTypes.Text;
+            }
+            if (secondVerse.Verse != Result.notfound)
+            {
+                if (firstVerse.WordIndex != Result.notfound)
+                {
+                    CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                     firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
+                     KeyID.MaxWordIndex);
+                }
+                else
+                {
+                    CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                     secondVerse.Chapter, secondVerse.Verse);
+                }
+                CitationType = CitationTypes.Text;
+                return;
+            }
+            if (secondVerse.Chapter != Result.notfound)
+            {
+                CitationRange.Set(firstVerse.Book, firstVerse.Chapter, Ordinals.first,
+                    secondVerse.Chapter, Bible.Chapters[firstVerse.Book][secondVerse.Chapter]);
+                CitationType = CitationTypes.Text;
+                return;
+            }
+            if (firstVerse.WordIndex != Result.notfound)
+            {
+                CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                    firstVerse.WordIndex);
+                CitationType = CitationTypes.Text;
+                return;
+            }
+            if (firstVerse.Verse != Result.notfound)
+            {
+                CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse);
+                CitationType = CitationTypes.Text;
+                return;
+            }
+            if (firstVerse.Chapter != Result.notfound)
+            {
+                CitationRange.Set(firstVerse.Book, firstVerse.Chapter);
+                CitationType = CitationTypes.Chapter;
+                return;
+            }
+        }
     }
 
     public class VerseReference

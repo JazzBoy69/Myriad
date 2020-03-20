@@ -7,7 +7,7 @@ namespace TestStub
     {
         static void Main(string[] args)
         {
-            string textOfCitation = "(Mt 24:45-47)";
+            string textOfCitation = "(Mt 24:14, 16)";
             CitationHandler citationHandler = new CitationHandler();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
             paragraph.Text = textOfCitation;

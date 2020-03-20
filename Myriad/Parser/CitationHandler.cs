@@ -273,77 +273,28 @@ namespace Myriad.Parser
 
         private void AddCitationToResults()
         {
-            
-            if (secondVerse.WordIndex != Result.notfound)
-            {
-                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                    firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
-                    secondVerse.WordIndex);
-
-                citation.CitationType = CitationTypes.Text;
-                Reset();
-                return;
-            }
-            if (secondVerse.Verse != Result.notfound)
-            {
-                if (firstVerse.WordIndex != Result.notfound)
+            int stashVerse = Result.notfound;
+            if ((secondVerse.Verse != Result.notfound) &&
+                ((lastToken == ',') && (firstVerse.Verse + 1 != secondVerse.Verse)))
+             {
+                if (firstVerse.Verse == secondVerse.Verse)
                 {
-                    citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                     firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
-                     KeyID.MaxWordIndex);
+                    lastToken = ';';
                 }
-                else
-                {
-                    if ((lastToken == ',') && (firstVerse.Verse + 1 != secondVerse.Verse))
-                    {
-                        if (firstVerse.Verse == secondVerse.Verse)
-                        {
-                            lastToken = ';';
-                        }
-                        citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter,
-                          firstVerse.Verse);
-                    }
-                    else
-                    {
-                        citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                         secondVerse.Chapter, secondVerse.Verse);
-                    }
-                }
-                citation.CitationType = CitationTypes.Text;
-                Reset();
-                return;
+                stashVerse = secondVerse.Verse;
+                secondVerse.Reset();
             }
-            if (secondVerse.Chapter != Result.notfound)
+            citation.Set(firstVerse, secondVerse);
+            if (stashVerse != Result.notfound)
             {
-                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, Ordinals.first,
-                    secondVerse.Chapter, Bible.Chapters[firstVerse.Book][secondVerse.Chapter]);
-                citation.CitationType = CitationTypes.Text;
-                Reset();
-                return;
+                secondVerse.Verse = stashVerse;
             }
-            if (firstVerse.WordIndex != Result.notfound)
+            if (citation.CitationType == CitationTypes.Invalid)
             {
-                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                    firstVerse.WordIndex);
-                citation.CitationType = CitationTypes.Text;
-                Reset();
+                EndParsingSession();
                 return;
             }
-            if (firstVerse.Verse != Result.notfound)
-            {
-                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse);
-                citation.CitationType = CitationTypes.Text; 
-                Reset();
-                return;
-            }
-            if (firstVerse.Chapter != Result.notfound)
-            {
-                citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter);
-                citation.CitationType = CitationTypes.Chapter;
-                Reset();
-                return;
-            }
-            EndParsingSession();
+            Reset();
         }
 
         public void SetFirstVerse()
