@@ -15,6 +15,7 @@ namespace Myriad.Tests
         public const string ChapterCitation = "(Mt 24)";
         public const string NumberedBookCitation = "(1Jo 5:3)";
         public const string RangeCitation = "(Mt 24:45-47)";
+        public const string BangCitation = "(Mr 2:1!)";
     }
     class CitationHandlerTests
     {
@@ -62,7 +63,30 @@ namespace Myriad.Tests
                   citationText.Length - 2), label);
             }
         }
+        [Test]
+        public void BangCitation()
+        {
+            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation(Citations.BangCitation);
+            Assert.That(citations.Count > 0);
+            if (citations.Count > 0)
+            {
+                var firstCitation = citations[Ordinals.first];
+                var book = firstCitation.CitationRange.Book;
+                int chapter = firstCitation.CitationRange.FirstChapter;
+                int verse = firstCitation.CitationRange.FirstVerse;
+                string label = paragraph.StringAt(firstCitation.Label);
+                Assert.AreEqual(Citations.BangCitation.Substring(Ordinals.second,
+                    Citations.ChapterCitation.Length - 2), label);
 
+                Assert.That((book == 40 && chapter == 2 && verse == 1),
+                    () =>
+                    {
+                        return Bible.AbbreviationsTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
+                    ;
+                    });
+                Assert.That(firstCitation.CitationType == CitationTypes.Verse);
+            }
+        }
         [Test]
         public void ChapterCitation()
         {

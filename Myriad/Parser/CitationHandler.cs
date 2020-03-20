@@ -96,7 +96,8 @@ namespace Myriad.Parser
                 token = paragraphToParse.CharAt(citation.Label.End);  //Todo: add !
                 if ((token == ' ') || (token == ':') ||
                     (token == ',') || (token == '-') ||
-                    (token == '.') || (token == ';'))
+                    (token == '.') || (token == ';') ||
+                    (token == '!'))
                 {
                     foundToken = true;
                     break;
@@ -220,6 +221,8 @@ namespace Myriad.Parser
                 verse.Second.Reset();
             }
             citation.Set(verse.First, verse.Second);
+            if ((token == '!') && (citation.CitationType == CitationTypes.Text))
+                citation.CitationType = CitationTypes.Verse;
             if (stashVerse != Result.notfound)
             {
                 verse.Second.Verse = stashVerse;
