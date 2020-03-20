@@ -6,7 +6,7 @@ namespace Myriad.Library
 {
     public class Bible
     {
-        internal static int IndexOfBook(string p)
+        public static int IndexOfBook(string p)
         {
             if (NamesTitleCaseIndex.TryGetValue(p, out int result))
                 return result;

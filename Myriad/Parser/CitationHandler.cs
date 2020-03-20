@@ -68,45 +68,50 @@ namespace Myriad.Parser
                 }
                 if ((lastToken == ' ') && (token == ':'))
                 {
-                    SetFirstChapter();
+                    firstVerse.Chapter = count;
+                    MoveToNext();
                     continue;
                 }
                 if ((lastToken == ' ') && (token == ';'))
                 {
-                    SetFirstChapter();
+                    firstVerse.Chapter = count;
                     AddCitationToResults();
                     continue;
                 }
                 if ((lastToken == '-') && (token == ':'))
                 {
-                    SetSecondChapter();
+                    secondVerse.Chapter = count;
+                    MoveToNext();
                     continue;
                 }
                 if (LookingForFirstVerse() && ((token == ',') || (token == '-')))
                 {
-                    SetFirstVerse();
+                    firstVerse.Verse = count;
+                    MoveToNext();
                     continue;
                 }
                 if ((tokenBeforeLast == '-') && (lastToken == ':') && (token == ','))
-                {
-                    SetSecondVerse();
+                { 
+                    secondVerse.Verse = count;
+                    MoveToNext();
                     lastToken = ';';
                     continue;
                 }
                 if ((lastToken == '-') || (lastToken == ','))
                 {
-                    SetSecondVerse();
+                    secondVerse.Verse = count;
+                    MoveToNext();
                     continue;
                 }
                 if (LookingForFirstVerse() && (token == ';'))
                 {
-                    SetFirstVerse();
+                    firstVerse.Verse = count;
                     AddCitationToResults();
                     continue;
                 }
                 if (token == ';')
                 {
-                    SetSecondVerse();
+                    secondVerse.Verse = count;
                     AddCitationToResults();
                     continue;
                 }
@@ -117,15 +122,17 @@ namespace Myriad.Parser
 
         public bool FoundBook()
         {
-            labelRange.MoveEndTo(citation.Label.End - 1);
+            labelRange.MoveEndTo(citation.Label.End);
             if ((lastToken == ';') && (token == ' '))
             {
-                SetFirstBook();
+                firstVerse.Book = Bible.IndexOfBook(paragraphToParse.StringAt(labelRange));
+                MoveToNext();
                 return true;
             }
             if ((lastToken == '-') && (token == ' '))
             {
-                SetSecondBook();
+                secondVerse.Book = Bible.IndexOfBook(paragraphToParse.StringAt(labelRange));
+                MoveToNext();
                 return true;
             }
             return false;
@@ -144,13 +151,15 @@ namespace Myriad.Parser
                     foundToken = true;
                     break;
                 }
+                if (citation.Label.End<rangeToParse.End) count = Result.notfound;
                 citation.Label.BumpEnd();
             }
             if (!foundToken)
             {
-                citation.Label.PullEnd();
                 token = ';';
             }
+            if (citation.Label.End > rangeToParse.End)
+                citation.Label.MoveEndTo(rangeToParse.End);
         }
 
         public void GetCount()
@@ -249,6 +258,7 @@ namespace Myriad.Parser
 
         private void AddCitationToResults()
         {
+            
             if (secondVerse.WordIndex != Result.notfound)
             {
                 citation.CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
@@ -309,6 +319,16 @@ namespace Myriad.Parser
             EndParsingSession();
         }
 
+        public void SetFirstVerse()
+        {
+            firstVerse.Verse = count;
+        }
+
+        public void SetFirstChapter()
+        {
+            firstVerse.Chapter = count;
+        }
+
         private void EndParsingSession()
         {
             citation.LeadingSymbols.MoveEndTo(rangeToParse.End + 1);
@@ -318,17 +338,18 @@ namespace Myriad.Parser
         private void Reset()
         {
             int pointer = citation.Label.End;
-            if (citation.Label.End < rangeToParse.End)
+            if (pointer < rangeToParse.End)
             {
-                citation.TrailingSymbols.MoveStartTo(citation.Label.End);
-                citation.TrailingSymbols.MoveEndTo(citation.Label.End);
+                citation.TrailingSymbols.MoveStartTo(pointer);
+                citation.TrailingSymbols.MoveEndTo(pointer);
                 citation.Label.PullEnd();
-                rangeToParse.MoveStartTo(citation.TrailingSymbols.End);
+                rangeToParse.MoveStartTo(pointer);
                 pointer++;
             }
             Citation newCitation = citation.Copy();
             results.Add(newCitation);
             citation = new Citation();
+            pointer++;
             citation.LeadingSymbols.MoveStartTo(pointer);
             citation.LeadingSymbols.MoveEndTo(pointer);
             citation.Label.MoveStartTo(pointer);
@@ -342,50 +363,13 @@ namespace Myriad.Parser
                     && (lastToken == ':');
         }
 
-        private void SetSecondVerse()
-        {
-            secondVerse.Verse = count;
-            MoveToNext();
-        }
-
-        public void SetFirstVerse()
-        {
-            firstVerse.Verse = count;
-            MoveToNext();
-        }
-
-        private void SetSecondChapter()
-        {
-            secondVerse.Chapter = count; 
-            MoveToNext();
-        }
-
-        public void SetFirstChapter()
-        {
-            firstVerse.Chapter = count;
-            MoveToNext();
-        }
-
-        private void SetSecondBook()
-        {
-            secondVerse.Book = Bible.IndexOfBook(paragraphToParse.StringAt(labelRange));
-            MoveToNext();
-        }
-
-        private void SetFirstBook()
-        {
-            firstVerse.Book = Bible.IndexOfBook(paragraphToParse.StringAt(
-                citation.Label));
-            MoveToNext();
-        }
 
         public void MoveToNext()
         {
             tokenBeforeLast = lastToken;
             lastToken = token;
             count = Numbers.nothing;
-            if (citation.Label.End < rangeToParse.End)
-                citation.Label.BumpEnd();
+            citation.Label.BumpEnd();
             first = false;
         }
 

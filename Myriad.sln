@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad.Tests", "Myriad.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad.Benchmark", "Myriad.Benchmark\Myriad.Benchmark.csproj", "{214EFC21-D67C-4CFE-9679-E9B0736C2969}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStub", "TestStub\TestStub.csproj", "{7B4C61F0-AA11-43FF-A339-CD0556F0455A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{214EFC21-D67C-4CFE-9679-E9B0736C2969}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{214EFC21-D67C-4CFE-9679-E9B0736C2969}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{214EFC21-D67C-4CFE-9679-E9B0736C2969}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B4C61F0-AA11-43FF-A339-CD0556F0455A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4C61F0-AA11-43FF-A339-CD0556F0455A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B4C61F0-AA11-43FF-A339-CD0556F0455A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B4C61F0-AA11-43FF-A339-CD0556F0455A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
