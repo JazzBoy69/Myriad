@@ -103,20 +103,4 @@ namespace Myriad.Parser
             }
         }
     }
-
-    public class VerseReference
-    {
-        public int Book = Result.notfound;
-        public int Chapter = Result.notfound;
-        public int Verse = Result.notfound;
-        public int WordIndex = Result.notfound;
-        public void Reset()
-        {
-            Book = Result.notfound;
-            Chapter = Result.notfound;
-            Verse = Result.notfound;
-            WordIndex = Result.notfound;
-        }
-    }
-
 }
