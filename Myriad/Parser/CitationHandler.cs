@@ -100,6 +100,12 @@ namespace Myriad.Parser
                     lastToken = ';';
                     continue;
                 }
+                if ((lastToken == ':') && (token == '-'))
+                {
+                    firstVerse.Verse = count;
+                    MoveToNext();
+                    continue;
+                }
                 if (((lastToken == '-') || (lastToken == ',')) && (token == ';'))
                 {
                     secondVerse.Verse = count;

@@ -14,6 +14,7 @@ namespace Myriad.Tests
         public const string SimpleCitation = "(Mr 13:10)";
         public const string ChapterCitation = "(Mt 24)";
         public const string NumberedBookCitation = "(1Jo 5:3)";
+        public const string RangeCitation = "(Mt 24:45-47)";
     }
     class CitationHandlerTests
     {
@@ -113,6 +114,32 @@ namespace Myriad.Tests
                     });
             }
         }
+
+        [Test]
+        public void TestRangeCitation()
+        {
+            (List<Citation> citations, MarkedUpParagraph paragraph) =
+                SetupCitation(Citations.RangeCitation);
+            Assert.That(citations.Count > 0);
+            if (citations.Count > 0)
+            {
+                var firstCitation = citations[Ordinals.first];
+                int book = firstCitation.CitationRange.Book;
+                int chapter = firstCitation.CitationRange.FirstChapter;
+                int verse = firstCitation.CitationRange.FirstVerse;
+                int lastverse = firstCitation.CitationRange.LastVerse;
+                string label = paragraph.StringAt(firstCitation.Label);
+                Assert.That(firstCitation.CitationRange.Valid);
+                Assert.That((book == 39 && chapter == 24 && verse == 45 && lastverse == 47),
+                    () =>
+                    {
+                        return Bible.NamesTitleCase[book] + " " + chapter.ToString() + ":" + verse.ToString()
+                    + "-" + lastverse.ToString();
+                    });
+                Assert.AreEqual("Mt 24:45-47", label);
+            }
+        }
+
 
         [Test]
         public void TestBrokenCommaCitation()
