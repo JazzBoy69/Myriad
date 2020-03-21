@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using Myriad.Library;
 using Myriad.Parser;
+using Myriad.Pages;
 
 namespace Myriad.Tests
 {
@@ -17,12 +18,18 @@ namespace Myriad.Tests
             return new DefaultHttpContext().Response;
         }
         [Test]
-        public void CanGetData()
+         public void CanGetData()
         {
-            IndexPage indexPage = new IndexPage(DefaultResponse());
+            IndexPage indexPage = new IndexPage();
             paragraphs = indexPage.GetPageParagraphs();
             Assert.That(paragraphs.Count > Numbers.nothing);
         }
+        [Test]
+        public void ParseHomePage()
+        {
+
+        }
+
 
     }
 }

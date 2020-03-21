@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
-using Myriad.Parser;
+using Myriad.Pages;
 
 namespace Myriad
 {
@@ -48,23 +48,9 @@ namespace Myriad
 
         private async Task LoadIndexPage(HttpContext context)
         {
-            IndexPage page = new IndexPage(context.Response);
+            IndexPage page = new IndexPage();
+            page.SetResponse(context.Response);
             await page.RenderPage();
-        }
-
-
-
-        public List<string> GetPageParagraphs()
-        {
-            return TestParagraphs();
-        }
-
-        private List<string> TestParagraphs()
-        {
-            var results = new List<string>();
-            results.Add("==Heading==");
-            results.Add("test paragraph **bold** //italic//");
-            return results;
         }
     }
 }

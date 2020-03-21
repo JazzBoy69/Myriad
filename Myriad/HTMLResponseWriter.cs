@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Http;
 namespace Myriad
 {
-    internal class HTMLResponseWriter : HTMLResponse
+    public class HTMLResponseWriter : HTMLResponse
     {
         private HttpResponse response;
 
-        internal HTMLResponseWriter(HttpResponse response)
+        public HTMLResponseWriter(HttpResponse response)
         {
             this.response = response;
         }

@@ -7,7 +7,7 @@ using Myriad.Parser;
 using Myriad.Data;
 
 
-namespace Myriad
+namespace Myriad.Pages
 {
     public struct IndexHTML
     {
@@ -25,15 +25,15 @@ namespace Myriad
 
     public class IndexPage : CommonPage
     {
-        public IndexPage(HttpResponse response) : base(response)
+        const string pageURL = "/Index";
+        public IndexPage() 
         {
-            this.response = response;
         }
 
         async protected override Task RenderBody()
         {
             var paragraphs = GetPageParagraphs();
-            var parser = new MarkupParser(new HTMLResponseWriter(response));
+            var parser = new NavigationParser(new HTMLResponseWriter(response));
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             await parser.Parse(paragraphs);
         }
@@ -52,6 +52,11 @@ namespace Myriad
         protected override string PageScripts()
         {
             return IndexHTML.IndexScripts;
+        }
+
+        public override string GetURL()
+        {
+            return pageURL;
         }
     }
 }

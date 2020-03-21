@@ -1,7 +1,8 @@
-﻿using Myriad.Library;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Myriad.Pages;
+using Myriad.Library;
 
 namespace Myriad.Parser
 {
@@ -175,9 +176,9 @@ namespace Myriad.Parser
             if (labelRange.Valid)
             {
                 builder.StartAnchor("link");
-                builder.AppendHREF(ArticleModel.pageURL);
+                builder.AppendHREF(ArticlePage.pageURL);
                 builder.Append(HTMLTags.StartQuery);
-                builder.Append(ArticleModel.queryKeyTitle);
+                builder.Append(ArticlePage.queryKey);
                 parser.MainRange.BumpStart();
                 AppendTagString();
                 AppendExtendedTarget();
@@ -190,9 +191,9 @@ namespace Myriad.Parser
             else
             {
                 builder.StartAnchor("link");
-                builder.AppendHREF(ArticleModel.pageURL);
+                builder.AppendHREF(ArticlePage.pageURL);
                 builder.Append(HTMLTags.StartQuery);
-                builder.Append(ArticleModel.queryKeyTitle);
+                builder.Append(ArticlePage.queryKey);
                 AppendTagStringAnchored();
                 AppendExtendedTarget();
 
@@ -246,10 +247,10 @@ namespace Myriad.Parser
             if (extendedTarget != null)
             {
                 builder.Append(HTMLTags.Ampersand);
-                builder.Append(TextModel.queryKeyTGStart);
+                builder.Append(ScripturePage.queryKeyTGStart);
                 builder.Append(extendedTarget.StartID);
                 builder.Append(HTMLTags.Ampersand);
-                builder.Append(TextModel.queryKeyTGEnd);
+                builder.Append(ScripturePage.queryKeyTGEnd);
                 builder.Append(extendedTarget.EndID);
             }
         }
@@ -259,7 +260,8 @@ namespace Myriad.Parser
             if (citationLevel > 0)
             {
                 List<Citation> citations =
-                    citationHandler.ParseCitations(parser.MainRange, parser.CurrentParagraph);
+                    citationHandler.ParseCitations(parser.MainRange, 
+                    parser.CurrentParagraph);
                 AppendCitations(citations);
             }
             AppendString();
@@ -267,7 +269,32 @@ namespace Myriad.Parser
 
         private void AppendCitations(List<Citation> citations)
         {
-            throw new NotImplementedException();
+            foreach (var citation in citations)
+            {
+                AppendCitation(citation);
+            }
+        }
+
+        private void AppendCitation(Citation citation)
+        {
+            try
+            {
+                ScripturePage citationPage = PageReferrer.GetPage(citation.CitationType);
+                builder.Append(HTMLTags.StartAnchor);
+                builder.AppendHREF(citationPage.GetURL());
+                builder.Append(HTMLTags.StartQuery);
+                citationPage.AppendQuery(builder, citation);
+                builder.Append(HTMLTags.EndTag);
+                if (citation.DisplayLabel.Valid)
+                    builder.Append(parser.CurrentParagraph.StringAt(citation.DisplayLabel));
+                else
+                    builder.Append(parser.CurrentParagraph.StringAt(citation.Label));
+                builder.Append(HTMLTags.EndAnchor);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         internal void AppendString()

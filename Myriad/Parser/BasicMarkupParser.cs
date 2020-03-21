@@ -43,20 +43,14 @@ namespace Myriad.Parser
         {
             this.creator = creator;
         }
-        async public Task Parse(List<string> paragraphs)
+        async public virtual Task Parse(List<string> paragraphs)
         {
-            try
+            foreach (string paragraph in paragraphs)
             {
-                foreach (string paragraph in paragraphs)
-                {
-                    currentParagraph = creator.Create(paragraph);
-                    await ParseParagraph();
-                }
+                currentParagraph = creator.Create(paragraph);
+                await ParseParagraph();
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+
         }
 
         async protected Task ParseParagraph()

@@ -5,31 +5,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Myriad.Parser;
 
-namespace Myriad
+namespace Myriad.Pages
 {
     public abstract class CommonPage
     {
         protected HttpResponse response;
 
-        public CommonPage(HttpResponse response)
+        public CommonPage()
+        {
+        }
+
+        public void SetResponse(HttpResponse response)
         {
             this.response = response;
         }
-
+        public abstract string GetURL();
         async public Task RenderPage()
         {
-            try
-            {
-                await CommonLayout.WriteHeader(response, GetTitle());
-                await RenderBody();
-                await Write(LayoutHTML.close);
-                AddPageScripts();
-                await Write(LayoutHTML.endofBody);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            await CommonLayout.WriteHeader(response, GetTitle());
+            await RenderBody();
+            await Write(LayoutHTML.close);
+            AddPageScripts();
+            await Write(LayoutHTML.endofBody);
         }
 
         protected abstract string GetTitle();

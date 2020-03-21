@@ -12,6 +12,7 @@ namespace Myriad.Parser
     }
     public class Citation
     {
+        public StringRange DisplayLabel = StringRange.InvalidRange;
         public StringRange Label = new StringRange();
         public StringRange LeadingSymbols = new StringRange();
         public StringRange TrailingSymbols = new StringRange();

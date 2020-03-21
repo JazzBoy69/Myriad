@@ -1,5 +1,9 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using Myriad.Parser;
+using Myriad.Data;
+using Myriad;
 
 namespace TestStub
 {
@@ -7,14 +11,21 @@ namespace TestStub
     {
         static void Main(string[] args)
         {
-            string textOfCitation = "(Mr 2:1!)";
-            CitationHandler citationHandler = new CitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            paragraph.Text = textOfCitation;
-            StringRange mainRange = new StringRange();
-            mainRange.MoveStartTo(1);
-            mainRange.MoveEndTo(textOfCitation.Length - 1);
-            var citations = citationHandler.ParseCitations(mainRange, paragraph);
+            Program program = new Program();
+            program.RunTest();
+        }
+        private HttpResponse DefaultResponse()
+        {
+            return new DefaultHttpContext().Response;
+        }
+        private void RunTest()
+        {
+            List<string> paragraphs = ReaderProvider.Reader()
+                .GetData<string>(DataOperation.ReadNavigationPage, "home");
+            var response = DefaultResponse();
+            var parser = new MarkupParser(new HTMLResponseWriter(response));
+            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
+            parser.Parse(paragraphs);
         }
     }
 }

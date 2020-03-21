@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Myriad
+namespace Myriad.Pages
 {
     public struct LayoutHTML
     {
