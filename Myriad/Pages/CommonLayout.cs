@@ -23,7 +23,7 @@ namespace Myriad.Pages
         async public Task RenderPage()
         {
             await CommonLayout.WriteHeader(response, GetTitle());
-            await RenderBody();
+            RenderBody();
             await Write(LayoutHTML.close);
             AddPageScripts();
             await Write(LayoutHTML.endofBody);
@@ -36,7 +36,7 @@ namespace Myriad.Pages
             await response.WriteAsync(stringToWrite);
         }
 
-        protected abstract Task RenderBody();
+        protected abstract void RenderBody();
 
         async protected void AddPageScripts()
         {

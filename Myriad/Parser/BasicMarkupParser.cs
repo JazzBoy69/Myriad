@@ -8,13 +8,20 @@ namespace Myriad.Parser
 {
     public struct Tokens
     {
+        public const int headingToken = 0x3D3D;
+        public const int startSidenote = 0x2828;
+        public const int endSidenote = 0x2929;
+        public const int picture = 0x5B5B;
+        public const int bold = 0x2A2A;
+        public const int italic = 0x2F2F;
+        public const int detail = 0x2B2B;
         public static readonly char[] citationTokens = new char[] { '(', '[', '{', ')', ']', '}' };
         public static readonly char[] brackettokens = new char[] { '|', '}' };
         public static readonly char[] tokens = new char[] { '*', '^', '/', '=', '(', '[', '{', ')', ']', '}', '~', '#', '|', '_', '+' };
     }
     public interface IParser
     {
-        abstract Task Parse(List<string> paragraphs);
+        abstract void Parse(List<string> paragraphs);
 
         IMarkedUpParagraph CurrentParagraph { get; }
 
@@ -23,9 +30,9 @@ namespace Myriad.Parser
         abstract void SetParagraphCreator(IMarkedUpParagraphCreator creator);
        
         abstract void SearchForToken();
-        abstract Task HandleToken();
-        abstract int IncreaseCitationLevel(char token);
-        abstract Task<int> DecreaseCitationLevel();
+        abstract void HandleToken();
+        abstract int IncreaseCitationLevel();
+        abstract int DecreaseCitationLevel();
         abstract void HandleCitations();
 
     }
@@ -35,6 +42,7 @@ namespace Myriad.Parser
         protected IMarkedUpParagraph currentParagraph;
         protected StringRange mainRange = new StringRange();
         protected IMarkedUpParagraphCreator creator;
+        protected bool foundEndToken;
 
         public IMarkedUpParagraph CurrentParagraph { get => currentParagraph; }
         public StringRange MainRange { get => mainRange;  }
@@ -43,28 +51,31 @@ namespace Myriad.Parser
         {
             this.creator = creator;
         }
-        async public virtual Task Parse(List<string> paragraphs)
+        public virtual void Parse(List<string> paragraphs)
         {
             foreach (string paragraph in paragraphs)
             {
                 currentParagraph = creator.Create(paragraph);
-                await ParseParagraph();
+                ParseParagraph();
             }
 
         }
 
-        async protected Task ParseParagraph()
+        protected void ParseParagraph()
         {
             try
             {
+                if (currentParagraph.Length == Numbers.nothing) return;
                 HandleStart();
                 MoveToFirstToken();
-                while (mainRange.Valid)
+                foundEndToken = false;
+                while (mainRange.Valid) 
                 {
-                    await HandleToken();
+                    HandleToken();
+                    if (foundEndToken) break;
                     MoveToNextToken();
                 }
-                HandleEnd();
+                if (!foundEndToken) HandleEnd();
             }
             catch (Exception ex)
             {
@@ -109,37 +120,46 @@ namespace Myriad.Parser
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.citationTokens, mainRange.Start));
         }
 
-        async virtual public Task HandleToken()
+        virtual public void HandleToken()
         {
+            if (mainRange.End > mainRange.Max - 2) return;
+            int longtoken = currentParagraph.TokenAt(mainRange.End);
             char token = currentParagraph.CharAt(mainRange.End);
-            char charAfterToken = currentParagraph.CharAt(mainRange.End + 1);
+            
 
-            if ((token == ')') && (charAfterToken == ')'))
+            if (token == Tokens.endSidenote)
             {
-                await DecreaseCitationLevel();
+                DecreaseCitationLevel();
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return;
             }
-            if ((token == '(') && (charAfterToken == '('))
+            if (longtoken == Tokens.startSidenote)
             {
-                IncreaseCitationLevel(token);
+                IncreaseCitationLevel();
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return;
             }
-            if ((token == '[') && (charAfterToken == '['))
+            if (longtoken == Tokens.picture)
             {
                 return;
             }
-            if ((token == '(') || (token == '[') || (token == '{') || (token == '~'))
+            if (token == '{')
             {
-                citationLevel = IncreaseCitationLevel(token);
+                citationLevel = IncreaseCitationLevel();
+                MoveIndexToNextBracketToken();
+                mainRange.PullEnd();
+                return;
+            }
+            if ((token == '(') || (token == '[') || (token == '~'))
+            {
+                citationLevel = IncreaseCitationLevel();
                 return;
             }
             if ((token == ')') || (token == ']') || (token == '}'))
             {
-                citationLevel = await DecreaseCitationLevel();
+                citationLevel = DecreaseCitationLevel();
                 return;
             }
         }
@@ -151,20 +171,15 @@ namespace Myriad.Parser
             mainRange.MoveEndTo(currentParagraph.IndexOf('}', mainRange.Start - 1));
         }
 
-        public int IncreaseCitationLevel(char token)
+        public int IncreaseCitationLevel()
         {
             HandleCitations();
             citationLevel++;
-            if (token == '{')
-            {
-                MoveIndexToNextBracketToken();
-                mainRange.PullEnd();
-            }
             return citationLevel;
         }
-        async public Task<int> DecreaseCitationLevel()
+        public int DecreaseCitationLevel()
         {
-            await HandleCitationsAsync();
+            HandleCitations();
             if (citationLevel > 0)
                 citationLevel--;
             return citationLevel;
@@ -180,6 +195,7 @@ namespace Myriad.Parser
 
         virtual public void HandleCitations()
         {
+            //todo
         }
 
         protected void ResetCitationLevel()

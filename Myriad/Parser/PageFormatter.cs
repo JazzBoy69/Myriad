@@ -21,12 +21,6 @@ namespace Myriad.Parser
         private readonly IParser parser;
         readonly CitationHandler citationHandler;
 
-        internal void EndSection()
-        {
-            builder.Append(HTMLTags.EndParagraph);
-            builder.Append(HTMLTags.EndSection);
-        }
-
         public string Result { get { return builder.Response(); } }
 
         public PageFormatter(IParser parser, HTMLResponse builder)
@@ -39,7 +33,6 @@ namespace Myriad.Parser
         internal void StartSection()
         {
             builder.Append(HTMLTags.StartSection);
-            builder.Append(HTMLTags.StartParagraph);
         }
 
         internal bool ToggleBold(bool bold, int citationLevel)
@@ -56,6 +49,17 @@ namespace Myriad.Parser
                 bold = true;
             }
             return bold;
+        }
+
+        internal void StartParagraph()
+        {
+            builder.Append(HTMLTags.StartParagraph);
+        }
+
+        internal void AppendEndString()
+        {
+            if (parser.MainRange.End < parser.MainRange.Start) return;
+            AppendStringExclusive(parser.MainRange.End);
         }
 
         internal bool ToggleSuperscription(bool super, int citationLevel)
@@ -75,44 +79,50 @@ namespace Myriad.Parser
         }
 
 
-        internal bool ToggleItalic(bool italic, int citationLevel, char charAfterToken)
+        internal bool ToggleItalic(bool italic)
         {
-            AppendString(citationLevel);
-            if (charAfterToken == '/')
+            if (italic)
             {
-                if (italic)
-                {
-                    builder.Append(HTMLTags.EndItalic);
-                    italic = false;
-                }
-                else
-                {
-                    builder.Append(HTMLTags.StartItalic);
-                    italic = true;
-                }
+                builder.Append(HTMLTags.EndItalic);
+                italic = false;
             }
-            else builder.Append('/');
+            else
+            {
+                builder.Append(HTMLTags.StartItalic);
+                italic = true;
+            }
             return italic;
         }
 
+        internal void EndParagraph()
+        {
+            builder.Append(HTMLTags.EndParagraph);
+        }
+
+        internal void StartHeading()
+        {
+            builder.Append(HTMLTags.StartHeader);
+        }
+
+        internal void EndHeading()
+        {
+            builder.Append(HTMLTags.EndHeader);
+            builder.Append(HTMLTags.EndSection);
+        }
         internal bool ToggleHeading(Formats formats, char charAfterToken)
         {
-            if (charAfterToken == '=')
+            formats.editable = false;
+            if (formats.heading)
             {
-                formats.editable = false;
-                if (formats.heading)
-                {
-                    builder.Append(HTMLTags.EndHeader);
-                    parser.MainRange.BumpStart();
-                    return false;
-                }
-                builder.Append(HTMLTags.StartHeader);
-
+                builder.Append(HTMLTags.EndHeader);
+                builder.Append(HTMLTags.EndSection);
                 parser.MainRange.BumpStart();
-                return true;
+                return false;
             }
-            else builder.Append('=');
-            return formats.heading;
+            builder.Append(HTMLTags.StartHeader);
+
+            parser.MainRange.BumpStart();
+            return true;
         }
 
 
@@ -125,14 +135,17 @@ namespace Myriad.Parser
                 formats.heading = true;
             }
             else builder.StartDivWithClass("sidenote");
-            formats.editable = false;
+        }
+
+        internal void EndSection()
+        {
+            builder.Append(HTMLTags.EndSection);
         }
 
         internal void EndSidenote(int citationLevel, Formats formats)
         {
             parser.MainRange.PullEnd();
             AppendString(citationLevel);
-            formats.editable = false;
             builder.Append(HTMLTags.EndParagraph);
             builder.Append(HTMLTags.EndDiv);
             formats.editable = false;
@@ -300,12 +313,13 @@ namespace Myriad.Parser
         internal void AppendString()
         {
             if (parser.MainRange.End < parser.MainRange.Start) return;
+            char token = parser.CurrentParagraph.CharAt(parser.MainRange.End);
             AppendStringExclusive(parser.MainRange.End);
             if (parser.MainRange.End < parser.CurrentParagraph.Length)
             {
-                if (tokenToString.ContainsKey(parser.CurrentParagraph.CharAt(parser.MainRange.End)))
-                    builder.Append(tokenToString[parser.CurrentParagraph.CharAt(parser.MainRange.End)]);
-                else builder.Append(parser.CurrentParagraph.CharAt(parser.MainRange.End));
+                if (tokenToString.ContainsKey(token))
+                    builder.Append(tokenToString[token]);
+                else builder.Append(token);
             }
         }
         private void AppendStringExclusive(int end)

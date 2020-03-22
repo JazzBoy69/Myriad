@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 using NUnit.Framework;
 using Myriad.Library;
 using Myriad.Parser;
@@ -27,9 +28,30 @@ namespace Myriad.Tests
         [Test]
         public void ParseHomePage()
         {
+            string directory = "C:\\Users\\joela\\Documents\\Test\\Myriad\\";
+            string name = "Index";
+            paragraphs = new List<string>();
+            using (StreamReader fs = new StreamReader(directory + name+"Markup.txt"))
+            {
 
+                string line;
+                while ((line = fs.ReadLine()) != null)
+                {
+
+                    paragraphs.Add(line);
+                }
+            }
+            var builder = new HTMLStringBuilder();
+            var parser = new MarkupParser(builder);
+            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
+            parser.Parse(paragraphs);
+            string correctResult = "";
+            using (StreamReader fs = new StreamReader(directory + name + "HTML.txt"))
+            {
+                correctResult = fs.ReadLine();
+            }
+            Assert.AreEqual(correctResult, builder.Response());
         }
-
 
     }
 }

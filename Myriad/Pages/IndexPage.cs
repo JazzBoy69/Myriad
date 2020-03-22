@@ -30,12 +30,12 @@ namespace Myriad.Pages
         {
         }
 
-        async protected override Task RenderBody()
+        protected override void RenderBody()
         {
             var paragraphs = GetPageParagraphs();
             var parser = new NavigationParser(new HTMLResponseWriter(response));
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            await parser.Parse(paragraphs);
+            parser.Parse(paragraphs);
         }
 
         public List<string> GetPageParagraphs()

@@ -93,7 +93,7 @@ namespace Myriad.Parser
             bool foundToken = false;
             while (citation.Label.End <= rangeToParse.End)
             {
-                token = paragraphToParse.CharAt(citation.Label.End);  //Todo: add !
+                token = paragraphToParse.CharAt(citation.Label.End);
                 if ((token == ' ') || (token == ':') ||
                     (token == ',') || (token == '-') ||
                     (token == '.') || (token == ';') ||

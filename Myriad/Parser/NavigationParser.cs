@@ -13,17 +13,17 @@ namespace Myriad.Parser
 
         }
 
-        async public override Task Parse(List<string> paragraphs)
+        public override void Parse(List<string> paragraphs)
         {
-            bool foundHeading = false;
+            bool foundFirstHeading = false;
             foreach (string paragraph in paragraphs)
             {
                 if ((paragraph.Length > Numbers.nothing) &&
                     (paragraph[Ordinals.first] == '='))
-                    foundHeading = true;
-                if (!foundHeading) continue;
+                    foundFirstHeading = true;
+                if (!foundFirstHeading) continue;
                 currentParagraph = creator.Create(paragraph);
-                await ParseParagraph();
+                ParseParagraph();
             }
         }
     }

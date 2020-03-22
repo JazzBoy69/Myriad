@@ -26,7 +26,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        protected override Task RenderBody()
+        protected override void RenderBody()
         {
             throw new NotImplementedException();
         }

@@ -17,6 +17,8 @@ namespace Myriad.Parser
 
         abstract char CharAt(int index);
 
+        abstract int TokenAt(int index);
+
         abstract string StringAt(int start, int end);
 
         abstract string StringAt(StringRange range);
@@ -24,9 +26,12 @@ namespace Myriad.Parser
         abstract int IndexOf(char token, int start, int end);
 
     }
-    public class MarkedUpParagraph : IMarkedUpParagraph
+    public class MarkedUpParagraph : IMarkedUpParagraph //Todo: implement sliced version
     {
         string text;
+        public MarkedUpParagraph()
+        {
+        }
         public int Length { get { return text.Length; } }
 
         public string StringAt(StringRange range)
@@ -36,9 +41,6 @@ namespace Myriad.Parser
 
         public string Text { get { return text; } set { text = value; } }
 
-        public MarkedUpParagraph()
-        {
-        }
         public int IndexOfAny(char[] tokens, int start)
         {
             return text.IndexOfAny(tokens, start);
@@ -64,6 +66,11 @@ namespace Myriad.Parser
         public int IndexOf(char token, int start, int end)
         {
             return StringAt(start, end).IndexOf(token) + start;
+        }
+
+        public int TokenAt(int index)
+        {
+            return text[index] * 256 + text[index + 1];
         }
     }
 }

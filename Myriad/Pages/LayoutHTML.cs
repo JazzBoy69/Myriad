@@ -146,7 +146,7 @@ namespace Myriad.Pages
             <span class='zoomclose'>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
         </div>
-<article>
+<div id=top></div><article>
 ";
         public const string close = @"</article>
     </div>

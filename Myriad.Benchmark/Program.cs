@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Myriad;
 using Microsoft.AspNetCore.Http;
 using Myriad.Parser;
+using Myriad.Pages;
 
 
 namespace Myriad.Benchmark
@@ -17,17 +18,18 @@ namespace Myriad.Benchmark
         //[Benchmark]
         public void GetHomeData()
         {
-            IndexPage indexPage = new IndexPage(DefaultResponse());
+            IndexPage indexPage = new IndexPage();
             var paragraphs = indexPage.GetPageParagraphs();
         }
-        //[Benchmark]
+        [Benchmark]
         async public Task RenderIndex()
         {
-            IndexPage page = new IndexPage(DefaultResponse());
+            IndexPage page = new IndexPage();
+            page.SetResponse(DefaultResponse());
             await page.RenderPage();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void ParseCitation()
         {
             string textOfCitation = "(Mt 24:14, 16)";
