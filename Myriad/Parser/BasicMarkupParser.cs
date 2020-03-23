@@ -66,8 +66,9 @@ namespace Myriad.Parser
             try
             {
                 if (currentParagraph.Length == Numbers.nothing) return;
+                Initialize();
                 HandleStart();
-                MoveToFirstToken();
+                SearchForToken();
                 foundEndToken = false;
                 while (mainRange.Valid) 
                 {
@@ -83,15 +84,7 @@ namespace Myriad.Parser
             }
         }
 
-        virtual protected void HandleStart()
-        {
-        }
-        virtual protected void HandleEnd()
-        {
-
-        }
-
-        protected void MoveToFirstToken()
+        protected void Initialize()
         {
             if (currentParagraph.Length == Numbers.nothing)
             {
@@ -99,8 +92,16 @@ namespace Myriad.Parser
             }
             mainRange = new StringRange();
             mainRange.SetLimit(currentParagraph.Length - 1);
-            SearchForToken();
         }
+        virtual protected void HandleStart()
+        {
+
+        }
+        virtual protected void HandleEnd()
+        {
+
+        }
+
 
         protected void MoveToNextToken()
         {

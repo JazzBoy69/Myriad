@@ -23,7 +23,7 @@ namespace TestStub
             List<string> paragraphs = ReaderProvider.Reader()
                 .GetData<string>(DataOperation.ReadNavigationPage, "home");
             var response = DefaultResponse();
-            var parser = new MarkupParser(new HTMLResponseWriter(response));
+            var parser = new MarkupParser(new HTMLStringBuilder());
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.Parse(paragraphs);
         }

@@ -18,7 +18,20 @@ namespace Myriad.Parser
         internal bool figure = false;
         internal bool labelExists = false;
         internal bool hideDetails = false;
-
+        internal bool sidenote = false;
+        internal void Reset()
+        {
+            detail = false;
+            bold = false;
+            super = false;
+            italic = false;
+            heading = false;
+            editable = true;
+            figure = false;
+            labelExists = false;
+            hideDetails = false;
+            sidenote = false;
+        }
     }
     public class MarkupParser : BasicMarkupParser
     {
@@ -34,6 +47,7 @@ namespace Myriad.Parser
 
         protected override void HandleStart()
         {
+            formats.Reset();
             formatter.StartSection();
             if (currentParagraph.Length > 1)
             {
@@ -52,13 +66,17 @@ namespace Myriad.Parser
             if (token == Tokens.headingToken)
             {
                 formats.editable = false;
-                formatter.StartHeading();
+                formats.heading = true;
+                formatter.StartHeading(); 
+                mainRange.BumpStart();
+                mainRange.BumpStart();
                 return false;
             }
 
             if (token == Tokens.startSidenote)
             {
                 formats.editable = false;
+                formats.sidenote = true;
                 formatter.StartSidenote(formats);
                 mainRange.BumpStart();
                 mainRange.BumpStart();
@@ -66,6 +84,8 @@ namespace Myriad.Parser
             }
             if (token == Tokens.picture)
             {
+                formats.editable = false;
+                formats.figure = true;
                 formatter.AppendFigure(currentParagraph.Text, formats);
                 return true;
             }
@@ -80,6 +100,7 @@ namespace Myriad.Parser
             formatter.AppendEndString();
             formatter.EndParagraph();
             formatter.EndSection();
+            formatter.AppendClearDiv();
         }
 
         public override void SearchForToken()
@@ -110,7 +131,7 @@ namespace Myriad.Parser
             }
             if (longToken ==Tokens.italic)
             {
-                formats.italic = formatter.ToggleItalic(formats.italic);
+                formats.italic = formatter.ToggleItalic(formats.italic, citationLevel);
                 mainRange.BumpStart();
                 return;
             }
