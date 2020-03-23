@@ -35,8 +35,8 @@ namespace Myriad.Parser
     }
     public class MarkupParser : BasicMarkupParser
     {
-        readonly Formats formats = new Formats();
-        readonly PageFormatter formatter;
+        internal readonly Formats formats = new Formats();
+        readonly PageFormatter formatter; 
 
         public MarkupParser(HTMLResponse builder)
         {

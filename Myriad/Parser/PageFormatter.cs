@@ -18,14 +18,14 @@ namespace Myriad.Parser
         };
 
         readonly HTMLResponse builder;
-        private readonly IParser parser;
+        private readonly MarkupParser parser;
         readonly CitationHandler citationHandler;
 
         public string Result { get { return builder.Response(); } }
 
         public PageFormatter(IParser parser, HTMLResponse builder)
         {
-            this.parser = parser;
+            this.parser = (MarkupParser) parser;
             this.builder = builder;
             citationHandler = new CitationHandler();
         }
@@ -278,16 +278,26 @@ namespace Myriad.Parser
         {
 
             if (citationLevel > 0)
-            { //todo need to see if the range is set the same as the passed tests
+            { //todo need to adjusted piped label
                 string citedText = parser.CurrentParagraph.StringAt(parser.MainRange); //todo remove
                 List<Citation> citations =
                     citationHandler.ParseCitations(parser.MainRange, 
                     parser.CurrentParagraph);
                 if (citations.Count > 0)
                 {
-                    AppendCitations(citations);
+                    if (parser.formats.labelExists)
+                    {
+                        citations[Ordinals.first].Label = labelRange;
+                        AppendCitation(citations[Ordinals.first]);
+                        parser.MainRange.MoveStartTo(parser.MainRange.End);
+                        parser.MainRange.BumpEnd();
+                    }
+                    else
+                    {
+                        AppendCitations(citations);
                     parser.MainRange.MoveStartTo(citations[citations.Count - 1].Label.End + 1);
                     parser.MainRange.BumpEnd();
+                    }
                 }
             }
             AppendString();
