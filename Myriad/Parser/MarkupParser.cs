@@ -60,7 +60,7 @@ namespace Myriad.Parser
 
         }
 
-        private bool HandleStartToken()
+        protected bool HandleStartToken()
         {
             int token = currentParagraph.TokenAt(Ordinals.first);
             if (token == Tokens.headingToken)
@@ -107,7 +107,7 @@ namespace Myriad.Parser
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));
         }
-        override public void HandleToken()
+        override public bool HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             int longToken = currentParagraph.TokenAt(mainRange.End);
@@ -115,31 +115,31 @@ namespace Myriad.Parser
             {
                 formats.detail = formatter.HandleDetails(formats.detail, citationLevel, formats);
                 mainRange.BumpStart();
-                return;
+                return true;
             }
 
             if (longToken == Tokens.bold)
             {
                 formats.bold = formatter.ToggleBold(formats.bold, citationLevel);
                 mainRange.BumpStart();
-                return;
+                return true;
             }
             if (token == '^')
             {
                 formats.super = formatter.ToggleSuperscription(formats.super, citationLevel);
-                return;
+                return true;
             }
             if (longToken ==Tokens.italic)
             {
                 formats.italic = formatter.ToggleItalic(formats.italic, citationLevel);
                 mainRange.BumpStart();
-                return;
+                return true;
             }
             if (longToken == Tokens.endSidenote)
             {
                 formatter.EndSidenote(citationLevel, formats);
                 HandleEndToken();
-                return;
+                return true;
             }
 
             if (longToken == Tokens.headingToken)
@@ -147,47 +147,50 @@ namespace Myriad.Parser
                 formatter.AppendString();
                 formatter.EndHeading();
                 HandleEndToken();
-                return;
+                return true;
             }
             if ((token == '(') || (token == '[') || (token == '{') || (token == '~'))
             {
+                formatter.AppendString(citationLevel);
                 citationLevel = IncreaseCitationLevel();
-                return;
+                return true;
             }
             if ((token == ')') || (token == ']') || (token == '}'))
             {
+                formatter.AppendString(citationLevel);
                 citationLevel = DecreaseCitationLevel();
-                return;
+                return true;
             }
             if (token == '_')
             {
                 formatter.AppendString();
-                return;
+                return true;
             }
             if (token == '|')
             {
                 formatter.SetLabel(citationLevel, formats);
-                return;
+                return true;
             }
             if (token == '#')
             {
                 if (formats.labelExists)
                 {
                     MoveIndexToEndBracket();
-                    if (!mainRange.Valid) return;
+                    if (!mainRange.Valid) return true;
                     ResetCitationLevel();
                     formatter.AppendTag(formats);
-                    return;
+                    return true;
                 }
                 formatter.AppendString(citationLevel);
 
                 MoveIndexToEndOfWord();
                 formatter.AppendTag(formats);
+                return true;
             }
-            formatter.AppendString();
+            return false;
         }
 
-        private void HandleEndToken()
+        protected void HandleEndToken()
         {
             foundEndToken = true;
             //TODO handle closing for special tokens
@@ -196,7 +199,7 @@ namespace Myriad.Parser
 
         public override void HandleCitations()
         {
-            formatter.AppendString(citationLevel);
+             formatter.AppendString(citationLevel);
         }
 
         protected void MoveIndexToEndOfWord()

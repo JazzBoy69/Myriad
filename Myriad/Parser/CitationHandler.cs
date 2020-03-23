@@ -69,8 +69,9 @@ namespace Myriad.Parser
         {
             int action = TokenDictionary.Lookup(tokenBeforeLast, lastToken, token, count);
             if (action == Result.notfound) return false;
+            string book = paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1); //todo remove
             if (count == Result.notfound) count =
-                    Bible.IndexOfBook(paragraphToParse.StringAt(citation.Label));
+                    Bible.IndexOfBook(paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1));
             if (count == Result.notfound) return false;
             verse.Set(action & 7, count);
             if (action > 0xF)

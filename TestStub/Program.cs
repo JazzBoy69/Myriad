@@ -26,6 +26,7 @@ namespace TestStub
             var parser = new MarkupParser(new HTMLStringBuilder());
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.Parse(paragraphs);
+            string result = parser.ParsedText;
         }
     }
 }

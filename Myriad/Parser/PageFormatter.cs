@@ -278,11 +278,17 @@ namespace Myriad.Parser
         {
 
             if (citationLevel > 0)
-            {
+            { //todo need to see if the range is set the same as the passed tests
+                string citedText = parser.CurrentParagraph.StringAt(parser.MainRange); //todo remove
                 List<Citation> citations =
                     citationHandler.ParseCitations(parser.MainRange, 
                     parser.CurrentParagraph);
-                AppendCitations(citations);
+                if (citations.Count > 0)
+                {
+                    AppendCitations(citations);
+                    parser.MainRange.MoveStartTo(citations[citations.Count - 1].Label.End + 1);
+                    parser.MainRange.BumpEnd();
+                }
             }
             AppendString();
         }
@@ -308,7 +314,8 @@ namespace Myriad.Parser
                 if (citation.DisplayLabel.Valid)
                     builder.Append(parser.CurrentParagraph.StringAt(citation.DisplayLabel));
                 else
-                    builder.Append(parser.CurrentParagraph.StringAt(citation.Label));
+                    builder.Append(parser.CurrentParagraph.StringAt(citation.Label.Start,
+                        citation.Label.End-1));
                 builder.Append(HTMLTags.EndAnchor);
             }
             catch (Exception ex)
