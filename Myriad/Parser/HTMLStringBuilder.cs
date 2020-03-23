@@ -6,8 +6,10 @@ namespace Myriad.Parser
     public struct HTMLTags
     {
         internal const string StartSection = "<section>";
+        internal const string StartMainHeader = "<h2>";
         internal const string StartHeader = "<h3>";
         internal const string StartDivWithClass = "<div class='";
+        internal const string StartDivWithID = "<div id='";
         internal const string StartParagraph = "<p>";
         internal const string StartSpan = "<span>";
         internal const string StartSpanWithClass = "<span class='";
@@ -23,6 +25,7 @@ namespace Myriad.Parser
         internal const string Width = " width='";
         internal const string EndSection = "</section>";
         internal const string EndSpan = "</span>";
+        internal const string EndMainHeader = "</h2>";
         internal const string EndHeader = "</h3>";
         internal const string EndBold = "</b>";
         internal const string EndItalic = "</i>";
@@ -44,6 +47,8 @@ namespace Myriad.Parser
         public void StartSpan(string className);
         public void StartAnchor(string className);
         public void StartDivWithClass(string className);
+
+        public void StartDivWithID(string id);
         public void StartFigure(string className);
         public void StartIMG(string path);
         public void Append(char c);
@@ -102,6 +107,13 @@ namespace Myriad.Parser
         {
             Builder.Append(HTMLTags.StartDivWithClass);
             Builder.Append(className);
+            Builder.Append(HTMLTags.CloseQuoteEndTag);
+        }
+
+        public void StartDivWithID(string id)
+        {
+            Builder.Append(HTMLTags.StartDivWithID);
+            Builder.Append(id);
             Builder.Append(HTMLTags.CloseQuoteEndTag);
         }
 

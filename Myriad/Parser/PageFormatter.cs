@@ -8,6 +8,7 @@ namespace Myriad.Parser
 {
     internal class PageFormatter
     {
+        public const string commentsClass = "comments";
         readonly CitationRange extendedTarget;
         readonly StringRange labelRange = new StringRange();
         static readonly Dictionary<char, string> tokenToString = new Dictionary<char, string>
@@ -110,6 +111,26 @@ namespace Myriad.Parser
         {
             builder.StartDivWithClass("clear");
             builder.Append(HTMLTags.EndDiv);
+        }
+
+        internal void StartMainHeading()
+        {
+            builder.Append(HTMLTags.StartMainHeader);
+        }
+
+        internal void EndMainHeading()
+        {
+            builder.Append(HTMLTags.EndMainHeader);
+        }
+
+        internal void EndComments()
+        {
+            builder.Append(HTMLTags.EndDiv);
+        }
+
+        internal void StartComments()
+        {
+            builder.StartDivWithID(commentsClass);
         }
 
         internal void EndHeading()

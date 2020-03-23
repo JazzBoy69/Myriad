@@ -6,7 +6,7 @@ using Myriad.Library;
 
 namespace Myriad.Parser
 {
-    public class NavigationParser :MarkupParser
+    public class NavigationParser : MarkupParser
     {
         public NavigationParser(HTMLResponse builder) : base(builder)
         {
@@ -18,13 +18,21 @@ namespace Myriad.Parser
             bool foundFirstHeading = false;
             foreach (string paragraph in paragraphs)
             {
-                if ((paragraph.Length > Numbers.nothing) &&
-                    (paragraph[Ordinals.first] == '='))
-                    foundFirstHeading = true;
-                if (!foundFirstHeading) continue;
+                if (!foundFirstHeading)
+                {
+                    if ((paragraph.Length > Numbers.nothing) &&
+                        (paragraph[Ordinals.first] == '='))
+                    {
+                        currentParagraph = creator.Create(paragraph);
+                        ParseMainHeading();
+                        foundFirstHeading = true;
+                    }
+                    continue;
+                }
                 currentParagraph = creator.Create(paragraph);
                 ParseParagraph();
             }
+            EndComments();
         }
     }
 }

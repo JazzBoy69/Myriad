@@ -64,6 +64,13 @@ namespace Myriad
             await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
         }
 
+        async void HTMLResponse.StartDivWithID(string id)
+        {
+            await response.WriteAsync(HTMLTags.StartDivWithID);
+            await response.WriteAsync(id);
+            await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
+        }
+
         async void HTMLResponse.StartFigure(string className)
         {
             await response.WriteAsync(HTMLTags.StartFigureWithClass);

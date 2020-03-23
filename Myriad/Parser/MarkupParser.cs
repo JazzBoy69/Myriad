@@ -103,6 +103,21 @@ namespace Myriad.Parser
             formatter.AppendClearDiv();
         }
 
+        protected void ParseMainHeading()
+        {
+            mainRange.MoveStartTo(Ordinals.third);
+            mainRange.MoveEndTo(currentParagraph.Length - 3);
+            formatter.StartMainHeading();
+            formatter.AppendString();
+            formatter.EndMainHeading();
+            formatter.StartComments();
+        }
+
+        protected void EndComments()
+        {
+            formatter.EndComments();
+        }
+
         public override void SearchForToken()
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));

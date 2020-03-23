@@ -42,7 +42,7 @@ namespace Myriad.Tests
                 }
             }
             var builder = new HTMLStringBuilder();
-            var parser = new MarkupParser(builder);
+            var parser = new NavigationParser(builder);
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.Parse(paragraphs);
             string correctResult = "";
