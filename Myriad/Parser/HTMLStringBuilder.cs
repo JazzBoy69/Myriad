@@ -52,6 +52,8 @@ namespace Myriad.Parser
         public void StartFigure(string className);
         public void StartIMG(string path);
         public void Append(char c);
+
+        public void Append(Span<char> span);
         public void Append(string stringToAppend);
         public void Append(int number);
         public void AppendHREF(string pageName);
@@ -143,6 +145,11 @@ namespace Myriad.Parser
             Builder.Append(HTMLTags.Class);
             Builder.Append(className);
             Builder.Append(HTMLTags.CloseQuote);
+        }
+
+        public void Append(Span<char> span)
+        {
+            Builder.Append(span);
         }
     }
 }

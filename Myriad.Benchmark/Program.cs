@@ -29,10 +29,10 @@ namespace Myriad.Benchmark
             await page.RenderPage();
         }
 
-        //[Benchmark]
+        [Benchmark]
         public void ParseCitation()
         {
-            string textOfCitation = "(Mt 24:14, 16)";
+            string textOfCitation = "({Mark 2:1|Mr 2:1!})";
             CitationHandler citationHandler = new CitationHandler();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
             paragraph.Text = textOfCitation;

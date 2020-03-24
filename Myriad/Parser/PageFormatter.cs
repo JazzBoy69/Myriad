@@ -60,7 +60,7 @@ namespace Myriad.Parser
         internal void AppendEndString()
         {
             if (parser.MainRange.End < parser.MainRange.Start) return;
-            builder.Append(parser.CurrentParagraph.StringAt(parser.MainRange.Start,
+            builder.Append(parser.CurrentParagraph.SpanAt(parser.MainRange.Start,
                 parser.MainRange.End));
           }
 
@@ -299,8 +299,7 @@ namespace Myriad.Parser
         {
 
             if (citationLevel > 0)
-            { //todo need to adjusted piped label
-                string citedText = parser.CurrentParagraph.StringAt(parser.MainRange); //todo remove
+            { 
                 List<Citation> citations =
                     citationHandler.ParseCitations(parser.MainRange, 
                     parser.CurrentParagraph);
@@ -308,10 +307,11 @@ namespace Myriad.Parser
                 {
                     if (parser.formats.labelExists)
                     {
-                        citations[Ordinals.first].Label = labelRange;
+                        citations[Ordinals.first].DisplayLabel = labelRange;
                         AppendCitation(citations[Ordinals.first]);
-                        parser.MainRange.MoveStartTo(parser.MainRange.End);
+                        parser.MainRange.MoveStartTo(parser.MainRange.End+1);
                         parser.MainRange.BumpEnd();
+                        return;
                     }
                     else
                     {
@@ -343,9 +343,9 @@ namespace Myriad.Parser
                 citationPage.AppendQuery(builder, citation);
                 builder.Append(HTMLTags.EndTag);
                 if (citation.DisplayLabel.Valid)
-                    builder.Append(parser.CurrentParagraph.StringAt(citation.DisplayLabel));
+                    builder.Append(parser.CurrentParagraph.SpanAt(citation.DisplayLabel));
                 else
-                    builder.Append(parser.CurrentParagraph.StringAt(citation.Label.Start,
+                    builder.Append(parser.CurrentParagraph.SpanAt(citation.Label.Start,
                         citation.Label.End-1));
                 builder.Append(HTMLTags.EndAnchor);
             }
@@ -374,7 +374,7 @@ namespace Myriad.Parser
                 parser.MainRange.MoveStartTo(end + 1);
                 return;
             }
-            builder.Append(parser.CurrentParagraph.StringAt(parser.MainRange.Start, end-1));
+            builder.Append(parser.CurrentParagraph.SpanAt(parser.MainRange.Start, end-1));
             parser.MainRange.MoveStartTo(end + 1);
         }
 
@@ -410,6 +410,7 @@ namespace Myriad.Parser
             if (citationLevel > 0)
             {
                 labelRange.Copy(parser.MainRange);
+                labelRange.PullEnd();
                 parser.MainRange.GoToNextStartPosition();
                 formats.labelExists = true;
             }

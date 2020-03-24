@@ -23,7 +23,7 @@ namespace TestStub
         private void RunTest()
         {
             InitializeParser();
-            paragraphs.Add("testing **bold** //italic// **//bold italic//**");
+            paragraphs.Add("testing {Mark 2:1|Mr 2:1!} **bold** //italic// **//bold italic//**");
             parser.Parse(paragraphs);
             string result = parser.ParsedText.ToString();
 

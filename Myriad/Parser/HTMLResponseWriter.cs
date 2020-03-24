@@ -1,6 +1,8 @@
 ﻿using Myriad.Parser;
 using Microsoft.AspNetCore.Http;
-namespace Myriad
+using System;
+
+namespace Myriad.Parser
 {
     public class HTMLResponseWriter : HTMLResponse
     {
@@ -10,6 +12,12 @@ namespace Myriad
         {
             this.response = response;
         }
+
+        void HTMLResponse.Append(Span<char> span)
+        {
+            response.WriteAsync(span.ToString());
+        }
+
         async void HTMLResponse.Append(char c)
         {
             await response.WriteAsync(c.ToString());
