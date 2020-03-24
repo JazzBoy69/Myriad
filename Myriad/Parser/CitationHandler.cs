@@ -67,26 +67,35 @@ namespace Myriad.Parser
 
         private bool TakeAction()
         {
+            if (((count > 0) && (count < 4)) && (token == ' '))
+            {
+                MoveToNext();
+                return true;
+            }
             int action = TokenDictionary.Lookup(tokenBeforeLast, lastToken, token, count);
             if (action == Result.notfound) return false;
-            string book = paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1); //todo remove
             if (count == Result.notfound) count =
-                    Bible.IndexOfBook(paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1));
+                    IndexOfBook(paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1));
             if (count == Result.notfound) return false;
             verse.Set(action & 7, count);
             if (action > 0xF)
             {
-                AddCitationToResults();
+                ApplyVerseToCitation();
                 if (citation.CitationType == CitationTypes.Invalid)
                 {
                     EndParsingSession();
                     return true;
                 }
-                Reset();
+                AddCitationToResults();
             }
             else
                 MoveToNext();
             return true;
+        }
+
+        protected virtual int IndexOfBook(string book)
+        {
+            return Bible.IndexOfBook(book);
         }
 
         public void GetToken()
@@ -208,7 +217,7 @@ namespace Myriad.Parser
             lastToken = ';';
         }
 
-        private void AddCitationToResults()
+        private void ApplyVerseToCitation()
         {
             int stashVerse = Result.notfound;
             if ((verse.Second.Verse != Result.notfound) &&
@@ -236,7 +245,7 @@ namespace Myriad.Parser
             citation.Label.MoveEndTo(rangeToParse.End + 1);
         }
 
-        private void Reset()
+        private void AddCitationToResults()
         {
             int pointer = citation.Label.End;
             if ((lastToken == ',') && (verse.First.Verse + 1 != verse.Second.Verse))
@@ -244,7 +253,9 @@ namespace Myriad.Parser
                 verse.First.Verse = verse.Second.Verse;
                 verse.Second.Reset();
                 pointer = commaAt;
-                citation.Label.MoveEndTo(commaAt+1);
+                citation.Label.MoveEndTo(commaAt);
+                citation.TrailingSymbols.MoveStartTo(commaAt+1);
+                citation.TrailingSymbols.MoveEndTo(commaAt+1);
             }
             else
             {

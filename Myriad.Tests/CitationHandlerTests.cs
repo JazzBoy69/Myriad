@@ -13,7 +13,7 @@ namespace Myriad.Tests
         public const string BrokenCommaCitation = "(Mt 24:14, 16)";
         public const string SimpleCitation = "(Mr 13:10)";
         public const string ChapterCitation = "(Mt 24)";
-        public const string NumberedBookCitation = "(1Jo 5:3)";
+        public const string NumberedBookCitation = "(1 John 5:3)";
         public const string RangeCitation = "(Mt 24:45-47)";
         public const string BangCitation = "(Mr 2:1!)";
     }
@@ -38,7 +38,7 @@ namespace Myriad.Tests
             });
             if (citations.Count > 0)
             {
-                int p = citationText.IndexOf(' ');
+                int p = citationText.LastIndexOf(' ');
                 int correctBook = Bible.IndexOfBook(citationText.Substring(Ordinals.second,
                     p - 1));
                 int q = citationText.IndexOf(':');
@@ -54,9 +54,9 @@ namespace Myriad.Tests
                 { return "book =" + book + "("+correctBook+") chapter=" + chapter + "("+
                     correctChapter+") verse=" + verse+"("+correctVerse+")"; });
                 Assert.That(firstCitation.Label.Start == 1);
-                Assert.That(firstCitation.Label.End == citationText.Length - 1, ()=>
+                Assert.That(firstCitation.Label.End == citationText.Length - 2, ()=>
                 {
-                    return firstCitation.Label.End.ToString()+"-"+citationText.Length;
+                    return firstCitation.Label.End.ToString()+"-"+(citationText.Length-2);
                 });
                 string label = paragraph.StringAt(firstCitation.Label);
                 Assert.AreEqual(citationText.Substring(Ordinals.second,
@@ -76,7 +76,7 @@ namespace Myriad.Tests
                 int verse = firstCitation.CitationRange.FirstVerse;
                 string label = paragraph.StringAt(firstCitation.Label);
                 Assert.AreEqual(Citations.BangCitation.Substring(Ordinals.second,
-                    Citations.ChapterCitation.Length - 2), label);
+                    Citations.BangCitation.Length - 2), label);
 
                 Assert.That((book == 40 && chapter == 2 && verse == 1),
                     () =>
@@ -212,7 +212,7 @@ namespace Myriad.Tests
             paragraph.Text = textOfCitation;
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(1);
-            mainRange.MoveEndTo(textOfCitation.Length - 1);
+            mainRange.MoveEndTo(textOfCitation.Length - 2);
             var citations = citationHandler.ParseCitations(mainRange, paragraph);
             return (citations, paragraph);
 

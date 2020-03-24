@@ -18,15 +18,30 @@ namespace TestStub
         {
             return new DefaultHttpContext().Response;
         }
+        List<string> paragraphs;
+        MarkupParser parser;
         private void RunTest()
         {
-            List<string> paragraphs = ReaderProvider.Reader()
+            InitializeParser();
+            paragraphs.Add("testing **bold** //italic// **//bold italic//**");
+            parser.Parse(paragraphs);
+            string result = parser.ParsedText.ToString();
+
+
+          /*  List<string> paragraphs = ReaderProvider.Reader()
                 .GetData<string>(DataOperation.ReadNavigationPage, "home");
             var response = DefaultResponse();
             var parser = new NavigationParser(new HTMLStringBuilder());
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.Parse(paragraphs);
-            string result = parser.ParsedText;
+            string result = parser.ParsedText; */
+        }
+
+        private void InitializeParser()
+        {
+            parser = new MarkupParser(new HTMLStringBuilder());
+            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
+            paragraphs = new List<string>();
         }
     }
 }

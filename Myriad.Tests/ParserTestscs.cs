@@ -24,7 +24,7 @@ namespace Myriad.Tests
             paragraphs.Add("testing **bold** //italic// **//bold italic//**");
             parser.Parse(paragraphs);
             string result = parser.ParsedText.ToString();
-            Assert.AreEqual("<section><p>testing <b>bold</b> <i>italic</i> <b><i>bold italic</i></b></p></section>", result);
+            Assert.AreEqual("<section><p>testing <b>bold</b> <i>italic</i> <b><i>bold italic</i></b></p></section><div class='clear'></div>", result);
         }
         private void InitializeParser()
         {

@@ -21,7 +21,8 @@ namespace Myriad.Parser
         static Dictionary<int, int> table = new Dictionary<int, int>()
         {//Key: Alpha or number (A or 1) || nextToLastToken (0 if doesn't matter) || last token || token
             //1 to add citation to results; 0 continue || index to set
-            { 0xA448, 0x00 }, //Set first book ; Mt 24:14 => ; ; Mt             
+            { 0xA448, 0x00 }, //Set first book ; Mt 24:14 => ; ; Mt              
+            { 0xA488, 0x00 }, //Set first book ; Mt 24:14 => ; ; Mt             
             { 0xA048, 0x00 }, //Set first book ; Mt 24:14 => ; Mt 
             { 0x1485, 0x01 }, //Set first chapter Mt 24:14 => ;xx _24:            
             { 0x1085, 0x01 }, //Set first chapter Mt 24:14 =>  _24:
