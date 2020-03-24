@@ -44,7 +44,7 @@ namespace Myriad.Pages
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
                     <img src='images/icons8-ellipsis-30.png' class='ellipsis hidden' />
             </div>
-            <div id='modal-overlay'><</div>
+            <div id='modal-overlay'></div>
             <div id=level class='hidden'>0</div>
             <div id='bibleindex'>
                 <section id=possibilities class='buttongrid'>
@@ -145,9 +145,9 @@ namespace Myriad.Pages
             <span class='zoomclose'>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
         </div>
-<div id=top></div><article>
+<div id=top></div><article><div id='mainPane'>
 ";
-        public const string close = @"</article>
+        public const string close = @"</div></article>
     </div>
 
     <script src='js/myriad27.01.20.js'></script>

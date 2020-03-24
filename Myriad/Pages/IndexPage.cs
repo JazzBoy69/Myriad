@@ -15,7 +15,7 @@ namespace Myriad.Pages
 <script>
    window.onload = function () {
     shortcut.add('Ctrl+F10', function () {
-         $('#searchField').focus();
+         document.getElementById('searchField').focus();
     });
     SetupIndex();
 };

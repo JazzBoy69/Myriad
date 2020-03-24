@@ -36,85 +36,117 @@ function CreateTableOfContents(section)
     });
 }
 
-function GetLinksInClass(className)
+function GetLinksInID(id)
 {
-    return document.getElementById(className).getElementsByTagName('a');
+    return document.getElementById(id).childNodes;
 }
 
+function AddClassToGroup(g, c) {
+    for (var i = 0; i < g.length; i++) {
+        g[i].classList.add(c);
+    }
+}
+
+function RemoveClassFromGroup(g, c) {
+    for (var i = 0; i < g.length; i++) {
+        g[i].classList.remove(c);
+    }
+}
+
+function HandlePossibilityClick(event) {
+    if ((event.target === null) || (event.target.textContent === null)) return;
+    var searchField = document.getElementById('searchField');
+    var indexgroup = keys.getElementsByClassName('indexgroup');
+    var indexnumber = keys.getElementsByClassName('indexnumber');
+    var go = document.getElementById('go');
+
+    searchField.value = event.target.textContent + ' ';
+    AddClassToGroup(indexgroup, 'hidden');
+    RemoveClassFromGroup(indexnumber, 'hidden');
+    document.getElementById('level').textContent = "1";
+    if (!go.classList.contains('hidden')) {
+        go.classList.add('hidden');
+    }
+}
+
+function HandleIndexGroupClick(event) {
+    if (event === null) return;
+    var possibilityLinks = GetLinksInID('possibilities');
+    var id = event.target.id;
+    if (id === null) return;
+    alert(id);
+    var group = "group" + id.substr(id.length - 1);
+    for (i = 0; i < possibilityLinks.length; i++) {
+        if (possibilityLinks[i].classList.contains(group))
+            possibilityLinks[i].classList.remove('hidden');
+        else
+            possibilityLinks[i].classList.add('hidden');
+    }
+}
+
+function HandleIndexNumberClick(event) {
+    var searchField = document.getElementById('searchField');
+    var text = searchField.value + event.target.textContent;
+    searchField.value = text;
+    var levelElement = document.getElementById('level');
+    var level = parseInt(levelElement.textContent);
+    level++;
+    levelElement.textContent = level.toString();
+    document.getElementById('go').classList.remove('hidden');
+}
+
+function HandleBackClick(event) {
+    var searchField = document.getElementById('searchField');
+    var possibilityLinks = GetLinksInID('possibilities');
+    var indexgroup = keys.getElementsByClassName('indexgroup');
+    var indexnumber = keys.getElementsByClassName('indexnumber');
+    var level = parseInt(document.getElementById('level').textContent);
+    if (level === 0) {
+        for (i = 0; i < possibilityLinks.length; i++) {
+            if (possibilityLinks[i].classList.contains('common'))
+                possibilityLinks[i].classList.remove('hidden');
+            else
+                possibilityLinks[i].classList.add('hidden');
+        }
+        return;
+    }
+    if (level === 1) {
+        searchField.value = "";
+        RemoveClassFromGroup(indexgroup, 'hidden');
+        AddClassToGroup(indexnumber, 'hidden');
+        document.getElementById('level').textContent = "0";
+        document.getElementById('go').classList.add('hidden');
+        return;
+    }
+    var reference = searchField.value;
+    reference = reference.substr(0, reference.length - 1);
+    searchField.value = reference;
+    level--;
+    document.getElementById('level').textContent = level.toString();
+}
 
 function SetupIndex() {
-    var possibilityLinks = GetLinksInClass('possibilities');
+    var possibilityLinks = GetLinksInID('possibilities');
     var go = document.getElementById('go');
     var keys = document.getElementById('keys');
     var indexgroup = keys.getElementsByClassName('indexgroup');
     var indexnumber = keys.getElementsByClassName('indexnumber');
-    var searchField = document.getElementById('searchField');
-    var levelElement = document.getElementById('level');
-    for (let element of possibilityLinks)
+
+    for (var i = 0; i < possibilityLinks.length; i++)
     {
-        element.addEventListener('onclick', function (event) {
-            searchField.val(event.target.text() + ' ');
-            indexgroup.addClass('hidden');
-            indexnumber.removeClass('hidden');
-            levelElement.text("1");
-            if (!go.hasClass('hidden')) {
-                go.addClass('hidden');
-            }
-        });
+        possibilityLinks[i].addEventListener('click', HandlePossibilityClick);
     }
-    go.addEventListener('onclick', function (event) {
+    go.addEventListener('click', function () {
         document.getElementById('search').click();
     });
-    for (var i = 0; i < indexgroup.length; i++)
+    for (i = 0; i < indexgroup.length; i++)
     {
-        indexgroup[i].addEventListener('onclick', function (event) {
-            var id = event.target.attr('id');
-            var group = "group" + id.substr(id.length - 1);
-            possibilityLinks.forEach(function (current) {
-                if (current.hasClass(group))
-                    current.removeClass('hidden');
-                else
-                    current.addClass('hidden');
-            });
-        });
+        indexgroup[i].addEventListener('click', HandleIndexGroupClick);
     }
     for (i = 0; i < indexnumber.length; i++) {
-        indexnumber[i].addEventListener('onclick', function (event) {
-            var text = searchField.val() + event.target.text();
-            searchField.val(text);
-            var level = levelElement.text();
-            level++;
-            levelElement.text(level.toString());
-            go.removeClass('hidden');
-        });
+        indexnumber[i].addEventListener('click', HandleIndexNumberClick);
     }
-    document.getElementById('back').addEventListener('onclick', function (event) {
-        var level = document.getElementById('level').text();
-        if (level === 0) {
-            for (let link in possibilityLinks) {
-                if (link.hasClass('common'))
-                    link.removeClass('hidden');
-                else
-                    link.addClass('hidden');
-            }
-            return;
-        }
-        if (level === 1) {
-            searchField.val("");
-            indexgroup.removeClass('hidden');
-            indexnumber.addClass('hidden');
-            levelElement.text("0");
-            return;
-        }
-        var reference = searchField.val();
-        reference = reference.substr(0, reference.length - 1);
-        searchField.val(reference);
-        level--;
-        levelElement.text(level.toString());
-        if (level < 2) {
-            go.addClass('hidden');
-        }
-    });
+    document.getElementById('back').addEventListener('click', HandleBackClick);
 }
 
 function CreateTableOfContentsFromMarkers(section) {
@@ -138,17 +170,23 @@ function filterPath(string) {
 }
 
 function showHideIndex() {
-    var overlay = $('#bibleindex');
-    var article = $('article');
-    if (overlay.hasClass('show')) {
-        overlay.removeClass('show');
-        article.removeClass('blur');
-        $('.ellipsis').removeClass('hidden');
+    var overlay = document.getElementById('bibleindex');
+    var article = document.getElementById('mainPane');
+    var ellipsis = document.getElementById('ellipsis');
+    if (overlay.classList.contains('show')) {
+        overlay.classList.remove('show');
+        article.classList.remove('blur');
+        if ((ellipsis !== null) && (ellipsis.classList !== null)) {
+            ellipsis.classList.remove('hidden');
+
+        }
     }
     else {
-        overlay.addClass('show');
-        article.addClass('blur');
-        $('.ellipsis').addClass('hidden');
+        overlay.classList.add('show');
+        article.classList.add('blur');
+        if ((ellipsis !== null) && (ellipsis.classList !== null)) {
+                ellipsis.classList.add('hidden');
+        }
     }
 }
 
