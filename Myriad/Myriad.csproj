@@ -14,4 +14,10 @@
     <Folder Include="AppliedClasses\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\css\myriad.03.11.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

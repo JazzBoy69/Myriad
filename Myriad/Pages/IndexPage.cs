@@ -13,13 +13,12 @@ namespace Myriad.Pages
     {
         public const string IndexScripts = @"
 <script>
-   $(document).ready(function () {
+   window.onload = function () {
     shortcut.add('Ctrl+F10', function () {
          $('#searchField').focus();
     });
-    SetupPagination();
     SetupIndex();
-});
+};
     </script>";
     }
 

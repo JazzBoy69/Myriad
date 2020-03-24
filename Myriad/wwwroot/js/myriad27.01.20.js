@@ -21,69 +21,98 @@ function SetupCopytoClipboardWithLabel() {
 
 function CreateTableOfContents(section)
 {
-    $("#toc").append('<li><a id="link" href="#top">Top of page</a></li>');
-    var h2 = $(section).find("h3");
-    $(h2).each(function (i) {
-        var current = $(this);
+    var toc = document.getElementsByClassName('#toc');
+    toc.append('<li><a id="link" href="#top">Top of page</a></li>');
+    var h2 = document.getElementById(section).querySelectorAll("h3");
+
+    h2.forEach(function (current, i) {
         if (current.hasClass("sideheading") || current.text() === "Related Articles" || current.text() === "Cross references") {
             return true;
         }
         current.attr("id", "title" + i);
-        $("#toc").append("<li><a id='link" + i + "' href='#title" +
+        toc.append("<li><a id='link" + i + "' href='#title" +
             i + "'>" +
             current.html() + "</a></li>");
     });
 }
 
+function GetLinksInClass(className)
+{
+    return document.getElementById(className).getElementsByTagName('a');
+}
+
+
 function SetupIndex() {
-    $('#possibilities a').not('.common').addClass('hidden');
-    $('#possibilities a').click(function (event) {
-        $('#searchField').val($(this).text() + ' ');
-        $('#keys a.indexgroup').addClass('hidden');
-        $('#keys a.indexnumber').removeClass('hidden');
-        $('#level').text("1");
-        if (!$('#go').hasClass('hidden')) {
-            $('#go').addClass('hidden');
-        }
+    var possibilityLinks = GetLinksInClass('possibilities');
+    var go = document.getElementById('go');
+    var keys = document.getElementById('keys');
+    var indexgroup = keys.getElementsByClassName('indexgroup');
+    var indexnumber = keys.getElementsByClassName('indexnumber');
+    var searchField = document.getElementById('searchField');
+    var levelElement = document.getElementById('level');
+    for (let element of possibilityLinks)
+    {
+        element.addEventListener('onclick', function (event) {
+            searchField.val(event.target.text() + ' ');
+            indexgroup.addClass('hidden');
+            indexnumber.removeClass('hidden');
+            levelElement.text("1");
+            if (!go.hasClass('hidden')) {
+                go.addClass('hidden');
+            }
+        });
+    }
+    go.addEventListener('onclick', function (event) {
+        document.getElementById('search').click();
     });
-    $('#go').click(function (event) {
-        $('#search').click();
-    });
-    $('#keys a.indexgroup').click(function (event) {
-        var id = $(this).attr('id');
-        var group = ".group" + id.substr(id.length - 1);
-        $('#possibilities a').not(group).addClass('hidden');
-        $('#possibilities a' + group).removeClass('hidden');
-    });
-    $('#keys a.indexnumber').click(function (event) {
-        var text = $('#searchField').val()+$(this).text();
-        $('#searchField').val(text);
-        var level = +$('#level').text();
-        level++;
-        $('#level').text(level.toString());
-        $('#go').removeClass('hidden');
-    });
-    $('#back').click(function (event) {
-        var level = +$('#level').text();
+    for (var i = 0; i < indexgroup.length; i++)
+    {
+        indexgroup[i].addEventListener('onclick', function (event) {
+            var id = event.target.attr('id');
+            var group = "group" + id.substr(id.length - 1);
+            possibilityLinks.forEach(function (current) {
+                if (current.hasClass(group))
+                    current.removeClass('hidden');
+                else
+                    current.addClass('hidden');
+            });
+        });
+    }
+    for (i = 0; i < indexnumber.length; i++) {
+        indexnumber[i].addEventListener('onclick', function (event) {
+            var text = searchField.val() + event.target.text();
+            searchField.val(text);
+            var level = levelElement.text();
+            level++;
+            levelElement.text(level.toString());
+            go.removeClass('hidden');
+        });
+    }
+    document.getElementById('back').addEventListener('onclick', function (event) {
+        var level = document.getElementById('level').text();
         if (level === 0) {
-            $('#possibilities a.common').removeClass('hidden');
-            $('#possibilities a').not('.common').addClass('hidden');
+            for (let link in possibilityLinks) {
+                if (link.hasClass('common'))
+                    link.removeClass('hidden');
+                else
+                    link.addClass('hidden');
+            }
             return;
         }
         if (level === 1) {
-            $('#searchField').val("");
-            $('#keys a.indexgroup').removeClass('hidden');
-            $('#keys a.indexnumber').addClass('hidden');
-            $('#level').text("0");
+            searchField.val("");
+            indexgroup.removeClass('hidden');
+            indexnumber.addClass('hidden');
+            levelElement.text("0");
             return;
         }
-        var reference = $('#searchField').val();
+        var reference = searchField.val();
         reference = reference.substr(0, reference.length - 1);
-        $('#searchField').val(reference);
+        searchField.val(reference);
         level--;
-        $('#level').text(level.toString());
+        levelElement.text(level.toString());
         if (level < 2) {
-            $('#go').addClass('hidden');
+            go.addClass('hidden');
         }
     });
 }
@@ -377,38 +406,39 @@ function SetupModalPictures() {
 
 function SetupPagination() {
     if (screen.width < 961) {
-        $('article').hammer().on('swipeleft', function () {
+        var hammertime = new Hammer.Manager(document.getElementById('article'));
+        hammertime.on('swipeleft', function () {
             window.location = $('#nextLink').attr('href');
         });
-        $('article').hammer().on('swiperight', function () {
+        hammertime.on('swiperight', function () {
             window.location = $('#previousLink').attr('href');
         });
     }
     shortcut.add("Ctrl+Shift+F12", function () {
-        window.location.href = $('#previousLink').attr('href');
+        window.location.href = document.getElementById('previousLink').attr('href');
     });
     shortcut.add("Ctrl+F12", function () {
-        window.location.href = $('#nextLink').attr('href');
+        window.location.href = document.getElementById('nextLink').attr('href');
     });
-    $('#menuPrevious').css('height', window.innerHeight);
-    $('#menuNext').css('height', window.innerHeight);
-    $('#modal-overlay').css('height', window.innerHeight);
-	$('#menuPrevious').mouseup(function () {
-		if ($('#modal-image-box').hasClass('hidden'))
-			window.location = $('#previousLink').attr('href');
+    var prev = document.getElementById('menuPrevious').style.height = window.innerHeight;
+    document.getElementById('menuNext').style.height =  window.innerHeight;
+    document.getElementById('modal-overlay').style.height =  window.innerHeight;
+    document.getElementById('menuPrevious').addEventListener('mouseup', function () {
+        if (document.getElementById('modal-image-box').hasClass('hidden'))
+            window.location = document.getElementById('previousLink').attr('href');
 		else 
-			$('#modal-image-box').addClass('hidden');
+            document.getElementById('modal-image-box').addClass('hidden');
     });
-    $('#menuNext').mouseup(function () {
-		if ($('#modal-image-box').hasClass('hidden'))
-			window.location = $('#nextLink').attr('href');
+    document.getElementById('menuNext').addEventListener('mouseup', function () {
+        if (document.getElementById('modal-image-box').hasClass('hidden'))
+            window.location = document.getElementById('nextLink').attr('href');
 		else
-			$('#modal-image-box').addClass('hidden');
+            document.getElementById('modal-image-box').addClass('hidden');
     });
-    $(window).resize(function () {
-        $('#menuPrevious').css('height', window.innerHeight);
-        $('#menuNext').css('height', window.innerHeight);
-        $('#modal-overlay').css('height', window.innerHeight);
+    window.addEventListener('resize', function () {
+        document.getElementById('menuPrevious').style.height = window.innerHeight;
+        document.getElementById('menuNext').style.height = window.innerHeight;
+        document.getElementById('modal-overlay').style.height = window.innerHeight;
     });
 }
 
