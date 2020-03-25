@@ -22,19 +22,10 @@ namespace TestStub
         MarkupParser parser;
         private void RunTest()
         {
-            InitializeParser();
-            paragraphs.Add("testing {Mark 2:1|Mr 2:1!} **bold** //italic// **//bold italic//**");
-            parser.Parse(paragraphs);
-            string result = parser.ParsedText.ToString();
-
-
-          /*  List<string> paragraphs = ReaderProvider.Reader()
-                .GetData<string>(DataOperation.ReadNavigationPage, "home");
-            var response = DefaultResponse();
-            var parser = new NavigationParser(new HTMLStringBuilder());
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            parser.Parse(paragraphs);
-            string result = parser.ParsedText; */
+            string citationText;
+            Citation citation = CitationConverter.FromString("Mt 24:45-47");
+            citationText = CitationConverter.ToString(citation);
+            Console.WriteLine(citationText);
         }
 
         private void InitializeParser()

@@ -33,5 +33,10 @@ namespace Myriad.Pages
         {
             return pageURL;
         }
+
+        protected override CitationTypes GetCitationType()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

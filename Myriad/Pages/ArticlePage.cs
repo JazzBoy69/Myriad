@@ -32,7 +32,7 @@ namespace Myriad.Pages
     public class ArticlePage : CommonPage
     {
         public const string pageURL = "/Article";
-        public const string queryKey = "Title=";
+        public const string queryKeyTitle = "Title=";
         public const string queryKeyID = "ID=";
 
         string title;
@@ -76,9 +76,9 @@ namespace Myriad.Pages
                     DataOperation.ReadArticleTitle, id);
                 return;
             }
-            if (query.ContainsKey(queryKey))
+            if (query.ContainsKey(queryKeyTitle))
             {
-                title = query[queryKey];
+                title = query[queryKeyTitle];
                 id = ReaderProvider.Reader().GetDatum<string>(
                         DataOperation.ReadArticleID, title);
             }

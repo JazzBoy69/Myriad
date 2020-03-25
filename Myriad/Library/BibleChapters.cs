@@ -5,7 +5,11 @@
 namespace Myriad.Library
 {
     public class Bible
-    {
+    {        
+        public static bool IsShortBook(int book)
+        {
+            return ((book == 30) || (book == 56) || ((book > 61) && (book < 65)));
+        }
         public static int IndexOfBook(string p)
         {
             if (NamesTitleCaseIndex.TryGetValue(p, out int result))

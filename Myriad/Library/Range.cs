@@ -94,7 +94,13 @@ namespace Myriad.Library
             end = new KeyID(book, lastChapter, lastVerse, lastWord);
         }
 
-
+        public bool OneChapter
+        {
+            get
+            {
+                return start.SameChapter(end);
+            }
+        }
         public int StartID
         {
             get
@@ -193,6 +199,13 @@ namespace Myriad.Library
             get
             {
                 return start.Valid;
+            }
+        }
+
+        public bool IsOneVerse {
+            get
+            {
+                return (start.SameVerse(end));
             }
         }
 

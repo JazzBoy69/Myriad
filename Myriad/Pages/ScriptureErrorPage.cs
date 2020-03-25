@@ -14,6 +14,11 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
+        protected override CitationTypes GetCitationType()
+        {
+            throw new NotImplementedException();
+        }
+
         protected override string GetTitle()
         {
             throw new NotImplementedException();

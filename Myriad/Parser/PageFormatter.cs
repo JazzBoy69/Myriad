@@ -219,7 +219,7 @@ namespace Myriad.Parser
                 builder.StartAnchor("link");
                 builder.AppendHREF(ArticlePage.pageURL);
                 builder.Append(HTMLTags.StartQuery);
-                builder.Append(ArticlePage.queryKey);
+                builder.Append(ArticlePage.queryKeyTitle);
                 parser.MainRange.BumpStart();
                 AppendTagString();
                 AppendExtendedTarget();
@@ -234,7 +234,7 @@ namespace Myriad.Parser
                 builder.StartAnchor("link");
                 builder.AppendHREF(ArticlePage.pageURL);
                 builder.Append(HTMLTags.StartQuery);
-                builder.Append(ArticlePage.queryKey);
+                builder.Append(ArticlePage.queryKeyTitle);
                 AppendTagStringAnchored();
                 AppendExtendedTarget();
 

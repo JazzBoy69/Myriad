@@ -16,9 +16,14 @@ namespace Myriad.Pages
             return pageURL;
         }
 
+        protected override CitationTypes GetCitationType()
+        {
+            return CitationTypes.Text;
+        }
+
         protected override string GetTitle()
         {
-            throw new NotImplementedException();
+            return CitationConverter.ToString(citation);
         }
 
         protected override string PageScripts()
