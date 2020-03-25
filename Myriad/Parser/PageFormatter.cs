@@ -336,11 +336,10 @@ namespace Myriad.Parser
         {
             try
             {
-                ScripturePage citationPage = PageReferrer.GetPage(citation.CitationType);
                 builder.Append(HTMLTags.StartAnchor);
-                builder.AppendHREF(citationPage.GetURL());
+                builder.AppendHREF(PageReferrer.URLs[citation.CitationType]);
                 builder.Append(HTMLTags.StartQuery);
-                citationPage.AppendQuery(builder, citation);
+                PageReferrer.AppendQuery(builder, citation);
                 builder.Append(HTMLTags.EndTag);
                 if (citation.DisplayLabel.Valid)
                     builder.Append(parser.CurrentParagraph.SpanAt(citation.DisplayLabel));

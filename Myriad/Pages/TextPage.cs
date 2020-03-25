@@ -9,7 +9,7 @@ namespace Myriad.Pages
 {
     public class TextPage : ScripturePage
     {
-        const string pageURL = "/Text";
+        public const string pageURL = "/Text";
 
         public override string GetURL()
         {

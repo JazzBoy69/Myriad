@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Myriad.Parser;
+using Myriad.Library;
+using Microsoft.AspNetCore.Http;
 
 namespace Myriad.Pages
 {
@@ -10,12 +11,24 @@ namespace Myriad.Pages
     {
         internal const string queryKeyTGStart = "tgstart=";
         internal const string queryKeyTGEnd = "tgend=";
-        public void AppendQuery(HTMLResponse builder, Citation citation)
+        public const string queryKeyStart = "start";
+        public const string queryKeyEnd = "end";
+
+        protected KeyID startID;
+        protected KeyID endID;
+        public override void LoadQueryInfo(IQueryCollection query)
         {
-            builder.Append("start=");
-            builder.Append(citation.CitationRange.StartID);
-            builder.Append("&end=");
-            builder.Append(citation.CitationRange.EndID);
+            int start;
+            int end;
+            if (!int.TryParse(query[queryKeyStart], out start)) start = Result.notfound;
+            if (!int.TryParse(query[queryKeyEnd], out end)) end = Result.notfound;
+            startID = new KeyID(start);
+            endID = new KeyID(end);
+        }
+
+        public override bool IsValid()
+        {
+            return (startID != null) && (endID != null) && (startID.Valid) && (endID.Valid);
         }
     }
 }

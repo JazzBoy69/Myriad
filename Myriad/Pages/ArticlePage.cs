@@ -33,5 +33,15 @@ namespace Myriad.Pages
         {
             throw new NotImplementedException();
         }
+
+        public override void LoadQueryInfo(IQueryCollection query)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool IsValid()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

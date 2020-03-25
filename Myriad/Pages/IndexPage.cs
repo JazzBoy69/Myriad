@@ -24,7 +24,7 @@ namespace Myriad.Pages
 
     public class IndexPage : CommonPage
     {
-        const string pageURL = "/Index";
+        public const string pageURL = "/Index";
         public IndexPage() 
         {
         }
@@ -56,6 +56,15 @@ namespace Myriad.Pages
         public override string GetURL()
         {
             return pageURL;
+        }
+
+        public override void LoadQueryInfo(IQueryCollection query)
+        {
+        }
+
+        public override bool IsValid()
+        {
+            return true;
         }
     }
 }

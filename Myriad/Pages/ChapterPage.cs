@@ -9,7 +9,7 @@ namespace Myriad.Pages
 {
     public class ChapterPage : ScripturePage
     {
-        private const string pageURL = "/Chapter";
+        public const string pageURL = "/Chapter";
         internal ChapterPage()
         {
         }

@@ -19,6 +19,10 @@ namespace Myriad.Pages
         {
             this.response = response;
         }
+
+        public abstract void LoadQueryInfo(IQueryCollection query);
+
+        public abstract bool IsValid();
         public abstract string GetURL();
         async public Task RenderPage()
         {

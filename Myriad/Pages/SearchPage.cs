@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Myriad.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +6,22 @@ using System.Threading.Tasks;
 
 namespace Myriad.Pages
 {
-    public class VersePage : ScripturePage
+    public class SearchPage : CommonPage
     {
-        public const string pageURL = "/Verse";
+        public const string pageURL = "/Search";
         public override string GetURL()
         {
-            return pageURL;
+            throw new NotImplementedException();
+        }
+
+        public override bool IsValid()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadQueryInfo(IQueryCollection query)
+        {
+            throw new NotImplementedException();
         }
 
         protected override string GetTitle()

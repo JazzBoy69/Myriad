@@ -10,19 +10,20 @@ namespace Myriad.Pages
         internal static TextPage textPage = new TextPage();
         internal static VersePage versePage = new VersePage();
         internal static ScriptureErrorPage errorPage = new ScriptureErrorPage();
-        internal static ScripturePage GetPage(CitationTypes citationType)
+
+        internal static Dictionary<CitationTypes, string> URLs = new Dictionary<CitationTypes, string>()
         {
-            switch (citationType)
-            {
-                case CitationTypes.Chapter:
-                    return chapterPage;
-                case CitationTypes.Text:
-                    return textPage;
-                case CitationTypes.Verse:
-                    return versePage;
-                default:
-                    return errorPage;
-            }
+            { CitationTypes.Chapter, ChapterPage.pageURL },
+            { CitationTypes.Text, TextPage.pageURL },
+            { CitationTypes.Verse, VersePage.pageURL },
+            { CitationTypes.Invalid, IndexPage.pageURL }
+        };
+        internal static void AppendQuery(HTMLResponse builder, Citation citation)
+        {
+            builder.Append("start=");
+            builder.Append(citation.CitationRange.StartID);
+            builder.Append("&end=");
+            builder.Append(citation.CitationRange.EndID);
         }
     }
 }

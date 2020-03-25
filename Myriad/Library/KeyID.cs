@@ -4,6 +4,8 @@ namespace Myriad.Library
 {
     public class KeyID
     {
+        public const int MinimumID = chapterMultiplier + verseMultiplier;
+        public const int MaximumID = bookMulitiplier * 65 + chapterMultiplier * 22 + verseMultiplier * 21 + 255;
         public const int MaxWordIndex = 255;      
         public const int InvalidBook = Result.error;
 
