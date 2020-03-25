@@ -33,7 +33,27 @@ function CreateTableOfContents(section)
         toc.append("<li><a id='link" + i + "' href='#title" +
             i + "'>" +
             current.html() + "</a></li>");
+        current.onclick = TOCScroll;
     });
+}
+
+function TOCScroll(event) {
+    const distanceToTop = el => Math.floor(el.getBoundingClientRect().top);
+    e.preventDefault();
+    var targetID = (respond) ? respond.getAttribute('href') : this.getAttribute('href');
+    const targetAnchor = document.querySelector(targetID);
+    if (!targetAnchor) return;
+    const originalTop = distanceToTop(targetAnchor);
+    window.scrollBy({ top: originalTop, left: 0, behavior: 'smooth' });
+    const checkIfDone = setInterval(function () {
+        const atBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 2;
+        if (distanceToTop(targetAnchor) === 0 || atBottom) {
+            targetAnchor.tabIndex = '-1';
+            targetAnchor.focus();
+            window.history.pushState('', '', targetID);
+            clearInterval(checkIfDone);
+        }
+    }, 100);
 }
 
 function GetLinksInID(id)
@@ -134,19 +154,19 @@ function SetupIndex() {
 
     for (var i = 0; i < possibilityLinks.length; i++)
     {
-        possibilityLinks[i].addEventListener('click', HandlePossibilityClick);
+        possibilityLinks[i].onclick = HandlePossibilityClick;
     }
-    go.addEventListener('click', function () {
+    go.onclick = function () {
         document.getElementById('search').click();
-    });
+    };
     for (i = 0; i < indexgroup.length; i++)
     {
-        indexgroup[i].addEventListener('click', HandleIndexGroupClick);
+        indexgroup[i].onclick = HandleIndexGroupClick;
     }
     for (i = 0; i < indexnumber.length; i++) {
-        indexnumber[i].addEventListener('click', HandleIndexNumberClick);
+        indexnumber[i].onclick = HandleIndexNumberClick;
     }
-    document.getElementById('back').addEventListener('click', HandleBackClick);
+    document.getElementById('back').onclick = HandleBackClick;
 }
 
 function CreateTableOfContentsFromMarkers(section) {
@@ -352,24 +372,40 @@ function HandleTabs() {
 
 function HandleHiddenDetails()
 {
-    $(".hiddendetail").click(function (e) {
-        $(this).addClass("showdetail").removeClass('hiddendetail');
-        $(this).siblings(".hiddendetail").addClass("showdetail").removeClass("hiddendetail");
+    var details = document.getElementsByClassName('hiddendetail');
+    details.forEach(detail => detail.onclick = function (e) {
+        e.target.classList.add("showdetail");
+        e.target.classList.remove('hiddendetail');
+        var hiddenSiblings = e.target.parent.childNodes.getElementsByClassName("hiddendetail");
+        AddClassToGroup(hiddenSiblings, "showdetail");
+        RemoveClassFromGroup(hiddenSiblings, "hiddendetail");
     });
 }
 
 function ScrollToTarget()
 {
-    var $mark = $('.target');
-    if ($mark.parent().parent().hasClass('hiddendetail'))
-    {
-        $mark.parent().parent().addClass("showdetail").removeClass('hiddendetail');
-    }
-    var targetOffset = $mark.parent().offset().top+5;
-    var h = $('header').height() + 40;
-    $('html, body').animate({
-        scrollTop: targetOffset - h
-    }, 1000);
+    const marks = document.getElementsByClassName('target');
+    marks.forEach(function (mark) {
+        var grandparent = mark.parent().parent();
+        if (grandparent.classList.contains('hiddendetail')) {
+            grandparent.classList.add("showdetail");
+            grandparent.classList.remove('hiddendetail');
+        }
+    });
+    const distanceToTop = el => Math.floor(el.getBoundingClientRect().top);
+    const targetAnchor = marks[0];
+    if (!targetAnchor) return;
+    const originalTop = distanceToTop(targetAnchor);
+    window.scrollBy({ top: originalTop, left: 0, behavior: 'smooth' });
+    const checkIfDone = setInterval(function () {
+        const atBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 2;
+        if (distanceToTop(targetAnchor) === 0 || atBottom) {
+            targetAnchor.tabIndex = '-1';
+            targetAnchor.focus();
+            window.history.pushState('', '', targetID);
+            clearInterval(checkIfDone);
+        }
+    }, 100);
 }
 
 
@@ -383,10 +419,14 @@ function ScrollToScriptureTarget() {
 }
 
 function SetupOverlay() {
-    $('#modal-overlay').css('height', window.innerHeight);
-    $(window).resize(function () {
-        $('#modal-overlay').css('height', window.innerHeight);
-    });
+    SetOverlaySize();
+    window.onresize = function () {
+        SetOverlaySize();
+    };
+}
+
+function SetOverlaySize() {
+    document.getElementById('modal-overlay').style.height = window.innerHeight;
 }
 
 function HandleReadingView() {
@@ -430,16 +470,45 @@ function HandleReadingView() {
 }
 
 function SetupModalPictures() {
-	$('article img').click(function (e) {
-		var img = $(e.target);
-		$('#modal-image').attr('src', img.attr('src'));
-		$('#modal-image-box').removeClass('hidden');
-		$('#menuNext').addClass('hidden');
+    var images = document.getElementById('article').getElementsByTagName('img');
+    images.forEach(image => image.onclick = function (e) {
+		var img = e.target;
+        document.getElementById('modal-image').src = img.src;
+        document.getElementById('modal-image-box').classList.remove('hidden');
+        document.getElementById('menuNext').classList.add('hidden');
 	});
-	$('.zoomclose').click(function (e) {
-		$('#modal-image-box').addClass('hidden');
-		$('#menuNext').removeClass('hidden');
-	});
+    document.getElementById('zoomclose').onclick = function (e) {
+        document.getElementById('modal-image-box').classList.add('hidden');
+        document.getElementById('menuNext').classList.remove('hidden');
+	};
+}
+
+function SetupSuppressedParagraphs() {
+    var suppressedParagraphs = document.getElementsByClassName('suppressed');
+    var ellipsis = document.getElementById('ellipsis'); 
+    suppressedParagraphs.forEach(function (paragraph) {
+        paragraph.onclick = function (event) {
+            event.target.removeClass('suppressed');
+        };
+        if (paragraph.length < 1) return;
+        ellipsis.removeClass('hidden');
+    });
+    ellipsis.onclick = function (event) {
+        var extraInfo = document.getElementsByClassName('extrainfo');
+        var suppressed = document.getElementsByClassName('suppressed');
+        RemoveClassFromGroup(suppressed, 'suppressed');
+        AddClassToGroup(suppressed, 'extrainfo');
+        RemoveClassFromGroup(extraInfo, 'extrainfo');
+        AddClassToGroup(extraInfo, 'suppressed');
+     };
+    $('.suppressed').click(function (event) {
+        $(this).removeClass('suppressed');
+    });
+}
+
+function SetupEditParagraph() {
+    var paragraphs = document.getElementsByClassName('editparagraph');
+    paragraphs.forEach(paragraph => paragraph.onclick = EditParagraph);
 }
 
 function SetupPagination() {

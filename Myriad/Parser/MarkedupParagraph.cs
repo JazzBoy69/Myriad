@@ -30,7 +30,7 @@ namespace Myriad.Parser
         abstract int IndexOf(char token, int start, int end);
 
     }
-    public class MarkedUpParagraph : IMarkedUpParagraph //Todo: implement sliced version
+    public class MarkedUpParagraph : IMarkedUpParagraph
     {
         char[] text;
         public MarkedUpParagraph()

@@ -63,7 +63,7 @@ rt {
 	}
 }
 /* The Close Button */
-.zoomclose {
+#zoomclose {
 	position: fixed;
 	z-index:1200;
 	top: 5rem;
@@ -73,8 +73,8 @@ rt {
 	font-weight: bold;
 	transition: 0.3s;
 }
-.zoomclose:hover,
-.zoomclose:focus {
+#zoomclose:hover,
+#zoomclose:focus {
 	color: #f88;
 	text-decoration: none;
 	cursor: pointer;

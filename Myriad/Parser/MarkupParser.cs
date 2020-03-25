@@ -89,7 +89,7 @@ namespace Myriad.Parser
                 formatter.AppendFigure(currentParagraph.Text, formats);
                 return true;
             }
-            //Todo Table
+            //Todo Handle Table tokens
 
             return false;
         }
@@ -208,7 +208,7 @@ namespace Myriad.Parser
         protected void HandleEndToken()
         {
             foundEndToken = true;
-            //TODO handle closing for special tokens
+            //TODO handle closing for special tokens?
             formatter.EndSection();
         }
 

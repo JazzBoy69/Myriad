@@ -11,8 +11,14 @@ namespace Myriad.Data.Implementation
     {
         static Dictionary<DataOperation, string> selectors = new Dictionary<DataOperation, string>()
         {
-            { DataOperation.ReadNavigationPage, 
-                "select text from navigationparagraphs where name=@key order by paragraphindex" }
+            { DataOperation.ReadNavigationPage,
+                "select text from navigationparagraphs where name=@key order by paragraphindex" },
+            { DataOperation.ReadArticleTitle,
+                "select title from tags where id=@key"},
+            { DataOperation.ReadArticleID,
+                "select id from tags where title=@key" },
+            { DataOperation.ReadArticle,
+                "select text from glossary where id=@key" }
         };
         private static string connectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
 
@@ -35,6 +41,25 @@ namespace Myriad.Data.Implementation
         private static SqlConnection GetConnection()
         {
             return new SqlConnection(connectionString);
+        }
+
+        public T GetDatum<T>(DataOperation operation, string key)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var command = new SqlCommand(selectors[operation], connection);
+            command.Parameters.AddWithValue("@key", key);
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return(T)reader.GetValue(Ordinals.first);
+            }
+            connection.Close();
+            return default;
+        }
+        public T GetDatum<T>(DataOperation operation, int key)
+        {
+            return GetDatum<T>(operation, key.ToString());
         }
     }
 }

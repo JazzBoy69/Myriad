@@ -47,6 +47,7 @@ namespace Myriad
             app.Run(async context =>
             {
                 CommonPage page = RequestedPage(context);
+                //todo implement render partial page
                 await page.RenderPage();
             });
 

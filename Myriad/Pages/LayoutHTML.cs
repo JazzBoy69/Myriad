@@ -42,7 +42,7 @@ namespace Myriad.Pages
                     </li>
                 </ul>
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
-                    <img src='images/icons8-ellipsis-30.png' class='ellipsis hidden' />
+                    <img src='images/icons8-ellipsis-30.png' id='ellipsis hidden' />
             </div>
             <div id='modal-overlay'></div>
             <div id=level class='hidden'>0</div>
@@ -142,7 +142,7 @@ namespace Myriad.Pages
             </div>
         </header>
         <div id='modal-image-box' class='hidden'>
-            <span class='zoomclose'>&times;</span>
+            <span id='zoomclose'>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
         </div>
 <div id=top></div><article><div id='mainPane'>

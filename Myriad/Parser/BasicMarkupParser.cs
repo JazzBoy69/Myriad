@@ -197,7 +197,7 @@ namespace Myriad.Parser
 
         virtual public void HandleCitations()
         {
-            //todo
+            //todo Handle Citations when not parsing (updating page)
         }
 
         protected void ResetCitationLevel()
