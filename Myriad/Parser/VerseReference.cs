@@ -62,7 +62,6 @@ namespace Myriad.Parser
             else
             {
                 First.Set(index, value);
-                Second.Set(index, value);
             }
         }
 

@@ -53,6 +53,7 @@ namespace Myriad.Tests
             Citation citation = CitationConverter.FromString(Citations.ChapterCitation);
             citationText = CitationConverter.ToString(citation);
             TestCitation(citationText, citation);
+            Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
         }
 
         [Test]

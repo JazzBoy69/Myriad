@@ -71,13 +71,18 @@ namespace Myriad.Parser
                 if (firstVerse.WordIndex != Result.notfound)
                 {
                     CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                     firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
+                     firstVerse.WordIndex, firstVerse.Chapter, secondVerse.Verse,
                      KeyID.MaxWordIndex);
                 }
                 else
                 {
-                    CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                     secondVerse.Chapter, secondVerse.Verse);
+                    if (secondVerse.Chapter != Result.notfound)
+                        CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                         firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
+                         KeyID.MaxWordIndex);
+                    else
+                        CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
+                     firstVerse.Chapter, secondVerse.Verse);
                 }
                 CitationType = CitationTypes.Text;
                 return;
