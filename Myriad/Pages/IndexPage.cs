@@ -39,8 +39,8 @@ namespace Myriad.Pages
 
         public List<string> GetPageParagraphs()
         {
-            return ReaderProvider.Reader()
-                .GetData<string>(DataOperation.ReadNavigationPage, "home");
+            var reader = ReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, "home");
+            return reader.GetData<string>();
         }
 
         protected override string GetTitle()

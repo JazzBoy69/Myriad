@@ -7,115 +7,95 @@ using Myriad.Library;
 
 namespace Myriad.Data.Implementation
 {
-    public class SqlServerDataReader : DataReader
+    public class SqlServerInfo
     {
-        static Dictionary<DataOperation, string> selectors = new Dictionary<DataOperation, string>()
+        internal const string key1 = "@key1";
+        internal const string key2 = "@key2";
+        internal static Dictionary<DataOperation, string> Selectors = new Dictionary<DataOperation, string>()
         {
             { DataOperation.ReadNavigationPage,
-                "select text from navigationparagraphs where name=@key order by paragraphindex" },
+                "select text from navigationparagraphs where name=@key1 order by paragraphindex" },
             { DataOperation.ReadArticleTitle,
-                "select title from tags where id=@key"},
+                "select title from tags where id="+ key1},
             { DataOperation.ReadArticleID,
-                "select id from tags where title=@key" },
+                "select id from tags where title="+ key1 },
             { DataOperation.ReadArticle,
-                "select text from glossary where id=@key" },
+                "select text from glossary where id="+ key1 },
             { DataOperation.ReadCommentIDs,
-                "select id from commentlinks where last>= @key1 and start<=@key2" },
+                "select id from commentlinks where last>= "+ key1+" and start<="+key2 },
             { DataOperation.ReadCommentParagraphs,
-                "select text from comments where id=@key" }
+                "select text from comments where id="+ key1 }
         };
-        private static string connectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
-
-        public List<T> GetData<T>(DataOperation operation, object key)
+        internal static SqlConnection Connection()
         {
-            using var connection = GetConnection();
+            return new SqlConnection(ConnectionString);
+        }
+        static string ConnectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
+    }
+    public class SqlServerDataReader<KeyType> : DataReader<KeyType>
+    {
+        protected SqlDataReader reader;
+        protected SqlConnection connection;
+        protected SqlCommand command;
+        public SqlServerDataReader(DataOperation operation, KeyType key)
+        {
+            connection = SqlServerInfo.Connection();
             connection.Open();
-            using var command = new SqlCommand(selectors[operation], connection);
-            command.Parameters.AddWithValue("@key", key);
-            using var reader = command.ExecuteReader();
-            List<T> results = new List<T>();
+            command = new SqlCommand(SqlServerInfo.Selectors[operation], connection);
+            command.Parameters.AddWithValue(SqlServerInfo.key1, key);
+        }
+
+        public List<DataType> GetData<DataType>()
+        {
+            reader = command.ExecuteReader();
+            List<DataType> results = new List<DataType>();
             while (reader.Read())
             {
-                results.Add((T)reader.GetValue(Ordinals.first));
+                results.Add(reader.GetFieldValue<DataType>(Ordinals.first));
             }
-            connection.Close();
+            Close();
             return results;
         }
 
-        private static SqlConnection GetConnection()
+        private void Close()
         {
-            return new SqlConnection(connectionString);
+            reader.Close();
+            command.Dispose();
+            connection.Close();
         }
 
-        public T GetDatum<T>(DataOperation operation, object key)
+        public List<(T1, T2)> GetData<T1, T2>()
         {
-            using var connection = GetConnection();
-            connection.Open();
-            using var command = new SqlCommand(selectors[operation], connection);
-            command.Parameters.AddWithValue("@key", key);
-            using var reader = command.ExecuteReader();
+            reader = command.ExecuteReader();
+            List<(T1, T2)> results = new List<(T1, T2)>();
+            while (reader.Read())
+            {
+                results.Add((reader.GetFieldValue<T1>(Ordinals.first),
+                    reader.GetFieldValue<T2>(Ordinals.second)));
+            }
+            Close();
+            return results;
+        }
+
+        public DataType GetDatum<DataType>()
+        {
+            reader = command.ExecuteReader();
             if (reader.Read())
             {
-                return (T)reader.GetValue(Ordinals.first);
+                DataType result = reader.GetFieldValue<DataType>(Ordinals.first);
+                Close();
+                return result;
             }
-            connection.Close();
+            Close();
             return default;
         }
-        public T GetDatum<T>(DataOperation operation, int key)
-        {
-            return GetDatum<T>(operation, key.ToString());
-        }
+    }
 
-        public List<T> GetData<T>(DataOperation operation, object key1, object key2)
+    public class SqlServerDataReader<KeyType1, KeyType2> : SqlServerDataReader<KeyType1>, DataReader<KeyType1,KeyType2> 
+    {
+        public SqlServerDataReader(DataOperation operation, KeyType1 key1, KeyType2 key2) : base(operation, key1)    
         {
-            using var connection = GetConnection();
-            connection.Open();
-            using var command = new SqlCommand(selectors[operation], connection);
-            command.Parameters.AddWithValue("@key1", key1);
-            command.Parameters.AddWithValue("@key2", key2);
-            using var reader = command.ExecuteReader();
-            List<T> results = new List<T>();
-            while (reader.Read())
-            {
-                results.Add((T)reader.GetValue(Ordinals.first));
-            }
-            connection.Close();
-            return results;
-        }
-
-        public List<(T1, T2)> GetData<T1, T2>(DataOperation operation, object key1, object key2)
-        {
-            using var connection = GetConnection();
-            connection.Open();
-            using var command = new SqlCommand(selectors[operation], connection);
-            command.Parameters.AddWithValue("@key1", key1);
-            command.Parameters.AddWithValue("@key2", key2);
-            using var reader = command.ExecuteReader();
-            List<(T1, T2)> results = new List<(T1, T2)>();
-            while (reader.Read())
-            {
-                results.Add(((T1)reader.GetValue(Ordinals.first),
-                    (T2)reader.GetValue(Ordinals.second)));
-            }
-            connection.Close();
-            return results;
-        }
-
-        public List<(T1, T2)> GetData<T1, T2>(DataOperation operation, object key)
-        {
-            using var connection = GetConnection();
-            connection.Open();
-            using var command = new SqlCommand(selectors[operation], connection);
-            command.Parameters.AddWithValue("@key", key);
-            using var reader = command.ExecuteReader();
-            List<(T1, T2)> results = new List<(T1, T2)>();
-            if (reader.Read())
-            {
-                results.Add(((T1)reader.GetValue(Ordinals.first),
-                    (T2)reader.GetValue(Ordinals.second)));
-            }
-            connection.Close();
-            return results;
+            command.Parameters.AddWithValue(SqlServerInfo.key2, key2);
         }
     }
 }

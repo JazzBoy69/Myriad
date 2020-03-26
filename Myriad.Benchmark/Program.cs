@@ -15,7 +15,7 @@ namespace Myriad.Benchmark
         {
             return new DefaultHttpContext().Response;
         }
-        //[Benchmark]
+        [Benchmark]
         public void GetHomeData()
         {
             IndexPage indexPage = new IndexPage();
@@ -29,7 +29,7 @@ namespace Myriad.Benchmark
             await page.RenderPage();
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void ParseCitation()
         {
             string textOfCitation = "({Mark 2:1|Mr 2:1!})";

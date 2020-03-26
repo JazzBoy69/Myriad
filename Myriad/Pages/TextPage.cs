@@ -73,18 +73,28 @@ namespace Myriad.Pages
             }
             else
             {
-                List<(int start, int end)> idRanges = ReaderProvider.Reader()
-                    .GetData<int, int>(DataOperation.ReadCommentLinks,
-                    commentIDs[Ordinals.first]);
-                paragraphs = ReaderProvider.Reader()
-                    .GetData<string>(DataOperation.ReadCommentParagraphs,
-                    commentIDs[Ordinals.first]);
+                List<(int start, int end)> idRanges = ReadLinks(commentIDs[Ordinals.first]);
+
+                paragraphs = ReadParagraphs(commentIDs[Ordinals.first]);
                 if (idRanges.Count > 1) AddTextTabs(idRanges);
                 else AddText(idRanges[Ordinals.first]);
                 AddComment();
             }
         }
 
+        private List<string> ReadParagraphs(int commentID)
+        {
+            var reader = ReaderProvider<int>.Reader(DataOperation.ReadArticle,
+                commentID);
+            return reader.GetData<string>();
+        }
+
+        private List<(int start, int end)> ReadLinks(int commentID)
+        {
+            var reader = ReaderProvider<int>.Reader(DataOperation.ReadCommentLinks,
+                commentID);
+            return reader.GetData<int, int>();
+        }
         private void Initialize()
         {
             builder = new HTMLResponseWriter(response);
@@ -120,9 +130,9 @@ namespace Myriad.Pages
 
         private List<int> GetCommentIDs(Citation citation)
         {
-            return ReaderProvider.Reader()
-                .GetData<int>(DataOperation.ReadCommentIDs, 
+            var reader = ReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
+            return reader.GetData<int>();
         }
     }
 }

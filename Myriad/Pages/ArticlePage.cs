@@ -65,22 +65,25 @@ namespace Myriad.Pages
         }
         public List<string> GetPageParagraphs()
         {
-            return ReaderProvider.Reader()
-                .GetData<string>(DataOperation.ReadArticle, id);
+            var reader = ReaderProvider<string>.Reader(DataOperation.ReadArticle, id);
+            return reader.GetData<string>();
         }
         public override void LoadQueryInfo(IQueryCollection query)
         {
             if (query.ContainsKey(queryKeyID))
             {
-                title = ReaderProvider.Reader().GetDatum<string>(
+                id = query[queryKeyID];
+                var titleReader = ReaderProvider<string>.Reader(
                     DataOperation.ReadArticleTitle, id);
+                title = titleReader.GetDatum<string>();
                 return;
             }
             if (query.ContainsKey(queryKeyTitle))
             {
                 title = query[queryKeyTitle];
-                id = ReaderProvider.Reader().GetDatum<string>(
-                        DataOperation.ReadArticleID, title);
+                var idReader = ReaderProvider<string>.Reader(
+                    DataOperation.ReadArticleID, title);
+                id = idReader.GetDatum<string>();
             }
         }
 
