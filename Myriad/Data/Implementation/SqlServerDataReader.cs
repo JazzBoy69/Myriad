@@ -18,7 +18,9 @@ namespace Myriad.Data.Implementation
             { DataOperation.ReadArticleID,
                 "select id from tags where title=@key" },
             { DataOperation.ReadArticle,
-                "select text from glossary where id=@key" }
+                "select text from glossary where id=@key" },
+            { DataOperation.ReadCommentIDs,
+                "select id from commentlinks where last>= @key1 and start<=@key2" }
         };
         private static string connectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
 
@@ -60,6 +62,23 @@ namespace Myriad.Data.Implementation
         public T GetDatum<T>(DataOperation operation, int key)
         {
             return GetDatum<T>(operation, key.ToString());
+        }
+
+        public List<T> GetData<T>(DataOperation operation, int key1, int key2)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            using var command = new SqlCommand(selectors[operation], connection);
+            command.Parameters.AddWithValue("@key1", key1);
+            command.Parameters.AddWithValue("@key2", key2);
+            using var reader = command.ExecuteReader();
+            List<T> results = new List<T>();
+            while (reader.Read())
+            {
+                results.Add((T)reader.GetValue(Ordinals.first));
+            }
+            connection.Close();
+            return results;
         }
     }
 }

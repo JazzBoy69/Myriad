@@ -6,7 +6,7 @@ using Myriad.Library;
 
 namespace Myriad.Parser
 {
-    internal class PageFormatter
+    public class PageFormatter
     {
         public const string commentsClass = "comments";
         readonly CitationRange extendedTarget;
