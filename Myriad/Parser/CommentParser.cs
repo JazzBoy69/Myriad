@@ -11,9 +11,5 @@ namespace Myriad.Parser
         {
         }
 
-        internal void AddTitle(string v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

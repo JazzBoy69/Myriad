@@ -13,87 +13,87 @@ namespace Myriad.Parser
             this.response = response;
         }
 
-        void HTMLResponse.Append(Span<char> span)
+        public void Append(Span<char> span)
         {
             response.WriteAsync(span.ToString());
         }
 
-        async void HTMLResponse.Append(char c)
+        public async void Append(char c)
         {
             await response.WriteAsync(c.ToString());
         }
 
-        async void HTMLResponse.Append(string stringToAppend)
+        public async void Append(string stringToAppend)
         {
             await response.WriteAsync(stringToAppend);
         }
 
-        async void HTMLResponse.Append(int number)
+        public async void Append(int number)
         {
             await response.WriteAsync(number.ToString());
         }
 
-        async void HTMLResponse.AppendClass(string className)
+        public async void AppendClass(string className)
         {
             await response.WriteAsync(HTMLTags.Class);
             await response.WriteAsync(className);
             await response.WriteAsync(HTMLTags.CloseQuote);
         }
 
-        async void HTMLResponse.AppendHREF(string pageName)
+        public async void AppendHREF(string pageName)
         {
             await response.WriteAsync(HTMLTags.HREF);
             await response.WriteAsync(pageName);
         }
 
-        async void HTMLResponse.AppendIMGWidth(string widthString)
+        public async void AppendIMGWidth(string widthString)
         {
             await response.WriteAsync(HTMLTags.Width);
             await response.WriteAsync(widthString);
             await response.WriteAsync(HTMLTags.CloseQuote);
         }
 
-        string HTMLResponse.Response()
+        public string Response()
         {
             return "";
         }
 
-        async void HTMLResponse.StartAnchor(string className)
+        public async void StartAnchor(string className)
         {
             await response.WriteAsync(HTMLTags.StartAnchorWithClass);
             await response.WriteAsync(className);
             await response.WriteAsync(HTMLTags.CloseQuote);
         }
 
-        async void HTMLResponse.StartDivWithClass(string className)
+        public async void StartDivWithClass(string className)
         {
             await response.WriteAsync(HTMLTags.StartDivWithClass);
             await response.WriteAsync(className);
             await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
         }
 
-        async void HTMLResponse.StartDivWithID(string id)
+        public async void StartDivWithID(string id)
         {
             await response.WriteAsync(HTMLTags.StartDivWithID);
             await response.WriteAsync(id);
             await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
         }
 
-        async void HTMLResponse.StartFigure(string className)
+        public async void StartFigure(string className)
         {
             await response.WriteAsync(HTMLTags.StartFigureWithClass);
             await response.WriteAsync(className);
             await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
         }
 
-        async void HTMLResponse.StartIMG(string path)
+        public async void StartIMG(string path)
         {
             await response.WriteAsync(HTMLTags.StartImg);
             await response.WriteAsync(path);
             await response.WriteAsync(HTMLTags.CloseQuote);
         }
 
-        async void HTMLResponse.StartSpan(string className)
+        public async void StartSpan(string className)
         {
             await response.WriteAsync(HTMLTags.StartSpanWithClass);
             await response.WriteAsync(className);

@@ -7,13 +7,15 @@ using Myriad.Data.Implementation;
 namespace Myriad.Data
 {
     public enum DataOperation { ReadNavigationPage, ReadArticleTitle, ReadArticleID, 
-        ReadArticle, ReadCommentIDs }
+        ReadArticle, ReadCommentIDs, ReadCommentLinks, ReadCommentParagraphs
+    }
     public interface DataReader
     {
-        public abstract List<T> GetData<T>(DataOperation operation, string key);
-        T GetDatum<T>(DataOperation operation, int key);
-        T GetDatum<T>(DataOperation operation, string key);
-        List<T> GetData<T>(DataOperation readCommentIDs, int startID, int endID);
+        List<T> GetData<T>(DataOperation operation, object key);
+        T GetDatum<T>(DataOperation operation, object key);
+        List<T> GetData<T>(DataOperation operation, object key1, object key2);
+        List<ValueTuple<T1, T2>> GetData<T1, T2>(DataOperation operation, object key1, object key2);
+        List<ValueTuple<T1, T2>> GetData<T1, T2>(DataOperation operation, object key);
     }
 
     public static class ReaderProvider

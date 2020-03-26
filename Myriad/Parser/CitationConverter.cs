@@ -25,29 +25,34 @@ namespace Myriad.Parser
 
         public static string ToString(Citation citation)
         {
-            StringBuilder result = new StringBuilder(
-                Bible.NamesTitleCase[citation.CitationRange.Book]);
-            result.Append(" ");
+            HTMLStringBuilder builder = new HTMLStringBuilder();
+            Append(builder, citation);
+            return builder.Response();
+        }
+
+        internal static void Append(HTMLResponse builder, Citation citation)
+        {
+            builder.Append(Bible.NamesTitleCase[citation.CitationRange.Book]);
+            builder.Append(" ");
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
-                result.Append(citation.CitationRange.FirstChapter);
+                builder.Append(citation.CitationRange.FirstChapter);
                 if (citation.CitationType != CitationTypes.Chapter)
-                    result.Append(":");
+                    builder.Append(":");
             }
-            if (citation.CitationType == CitationTypes.Chapter) return result.ToString();
-            result.Append(citation.CitationRange.FirstVerse);
-            if (citation.CitationType == CitationTypes.Verse) return result.ToString();
+            if (citation.CitationType == CitationTypes.Chapter) return;
+            builder.Append(citation.CitationRange.FirstVerse);
+            if (citation.CitationType == CitationTypes.Verse) return;
             if (!citation.CitationRange.IsOneVerse)
             {
-                result.Append("-");
+                builder.Append("-");
                 if (!citation.CitationRange.OneChapter)
                 {
-                    result.Append(citation.CitationRange.LastChapter);
-                    result.Append(":");
+                    builder.Append(citation.CitationRange.LastChapter);
+                    builder.Append(":");
                 }
-                result.Append(citation.CitationRange.LastVerse);
+                builder.Append(citation.CitationRange.LastVerse);
             }
-            return result.ToString();
         }
     }
 }

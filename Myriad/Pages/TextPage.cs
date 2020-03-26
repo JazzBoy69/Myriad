@@ -34,6 +34,8 @@ namespace Myriad.Pages
         public const string pageURL = "/Text";
         CommentParser parser;
         HTMLResponseWriter builder;
+        List<int> commentIDs;
+        List<string> paragraphs;
 
         public override string GetURL()
         {
@@ -57,14 +59,13 @@ namespace Myriad.Pages
 
         protected override void RenderBody()
         {
-            builder = new HTMLResponseWriter(response);
-            parser = new CommentParser(builder);
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            List<int> commentIDs = GetCommentIDs(citation);
+            Initialize();
             bool readingView = commentIDs.Count > 1;
             if (readingView)
             {
-                parser.AddTitle(GetTitle());
+                builder.Append(HTMLTags.StartMainHeader);
+                builder.Append(GetTitle());
+                builder.Append(HTMLTags.EndMainHeader);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
                     AddReadingViewSection(commentIDs[i]);
@@ -72,11 +73,42 @@ namespace Myriad.Pages
             }
             else
             {
-                AddTextAndComments(commentIDs[Ordinals.first]);
+                List<(int start, int end)> idRanges = ReaderProvider.Reader()
+                    .GetData<int, int>(DataOperation.ReadCommentLinks,
+                    commentIDs[Ordinals.first]);
+                paragraphs = ReaderProvider.Reader()
+                    .GetData<string>(DataOperation.ReadCommentParagraphs,
+                    commentIDs[Ordinals.first]);
+                if (idRanges.Count > 1) AddTextTabs(idRanges);
+                else AddText(idRanges[Ordinals.first]);
+                AddComment();
             }
         }
 
-        private void AddTextAndComments(int commentID)
+        private void Initialize()
+        {
+            builder = new HTMLResponseWriter(response);
+            parser = new CommentParser(builder);
+            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
+            commentIDs = GetCommentIDs(citation);
+        }
+
+        private void AddComment()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void AddText((int start, int end) textRange)
+        {
+            builder.Append(HTMLTags.StartMainHeader);
+            Citation citation = new Citation(textRange.start, textRange.end);
+            builder.Append(" (");
+            CitationConverter.Append(builder, citation);
+            builder.Append(")");
+            builder.Append(HTMLTags.EndMainHeader);
+        }
+
+        private void AddTextTabs(List<(int start, int end)> idRanges)
         {
             throw new NotImplementedException();
         }
