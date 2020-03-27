@@ -24,7 +24,13 @@ namespace Myriad.Data.Implementation
             { DataOperation.ReadCommentIDs,
                 "select id from commentlinks where last>= "+ key1+" and start<="+key2 },
             { DataOperation.ReadCommentParagraphs,
-                "select text from comments where id="+ key1 }
+                "select text from comments where id="+ key1 },
+            { DataOperation.ReadCommentLinks,
+                "select start, last from commentlinks where id="+ key1 },
+            { DataOperation.ReadKeywords,
+                "select keyid, leadingsymbols, text, trailingsymbols from keywords"+
+                " where keyid>="
+                + key1 + " and keyid<=" + key2 }
         };
         internal static SqlConnection Connection()
         {
@@ -88,6 +94,18 @@ namespace Myriad.Data.Implementation
             }
             Close();
             return default;
+        }
+
+        public List<ClassType> GetClassData<ClassType>() where ClassType : DataObject, new()
+        {
+            reader = command.ExecuteReader();
+            List<ClassType> results = new List<ClassType>();
+            while (reader.Read())
+            {
+                results.Add(DataObjectFactory<ClassType>.Read(reader));
+            }
+            Close();
+            return results;
         }
     }
 

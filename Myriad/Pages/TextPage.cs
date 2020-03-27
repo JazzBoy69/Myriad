@@ -82,14 +82,14 @@ namespace Myriad.Pages
             }
         }
 
-        private List<string> ReadParagraphs(int commentID)
+        public List<string> ReadParagraphs(int commentID)
         {
             var reader = ReaderProvider<int>.Reader(DataOperation.ReadArticle,
                 commentID);
             return reader.GetData<string>();
         }
 
-        private List<(int start, int end)> ReadLinks(int commentID)
+        public List<(int start, int end)> ReadLinks(int commentID)
         {
             var reader = ReaderProvider<int>.Reader(DataOperation.ReadCommentLinks,
                 commentID);
@@ -116,6 +116,15 @@ namespace Myriad.Pages
             CitationConverter.Append(builder, citation);
             builder.Append(")");
             builder.Append(HTMLTags.EndMainHeader);
+            List<Keyword> keywords = ReadKeywords(citation);
+            //TODO add text body
+        }
+
+        public List<Keyword> ReadKeywords(Citation citation)
+        {
+            var reader = ReaderProvider<int, int>.Reader(DataOperation.ReadKeywords,
+                citation.CitationRange.StartID, citation.CitationRange.EndID);
+            return reader.GetClassData<Keyword>();
         }
 
         private void AddTextTabs(List<(int start, int end)> idRanges)

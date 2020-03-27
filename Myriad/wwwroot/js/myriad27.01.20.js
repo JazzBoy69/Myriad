@@ -73,6 +73,29 @@ function RemoveClassFromGroup(g, c) {
     }
 }
 
+
+function SetupIndex() {
+    var possibilityLinks = GetLinksInID('possibilities');
+    var go = document.getElementById('go');
+    var keys = document.getElementById('keys');
+    var indexgroup = keys.getElementsByClassName('indexgroup');
+    var indexnumber = keys.getElementsByClassName('indexnumber');
+
+    for (var i = 0; i < possibilityLinks.length; i++) {
+        possibilityLinks[i].onclick = HandlePossibilityClick;
+    }
+    go.onclick = function () {
+        document.getElementById('search').click();
+    };
+    for (i = 0; i < indexgroup.length; i++) {
+        indexgroup[i].onclick = HandleIndexGroupClick;
+    }
+    for (i = 0; i < indexnumber.length; i++) {
+        indexnumber[i].onclick = HandleIndexNumberClick;
+    }
+    document.getElementById('back').onclick = HandleBackClick;
+}
+
 function HandlePossibilityClick(event) {
     if ((event.target === null) || (event.target.textContent === null)) return;
     var searchField = document.getElementById('searchField');
@@ -145,29 +168,6 @@ function HandleBackClick(event) {
     document.getElementById('level').textContent = level.toString();
 }
 
-function SetupIndex() {
-    var possibilityLinks = GetLinksInID('possibilities');
-    var go = document.getElementById('go');
-    var keys = document.getElementById('keys');
-    var indexgroup = keys.getElementsByClassName('indexgroup');
-    var indexnumber = keys.getElementsByClassName('indexnumber');
-
-    for (var i = 0; i < possibilityLinks.length; i++)
-    {
-        possibilityLinks[i].onclick = HandlePossibilityClick;
-    }
-    go.onclick = function () {
-        document.getElementById('search').click();
-    };
-    for (i = 0; i < indexgroup.length; i++)
-    {
-        indexgroup[i].onclick = HandleIndexGroupClick;
-    }
-    for (i = 0; i < indexnumber.length; i++) {
-        indexnumber[i].onclick = HandleIndexNumberClick;
-    }
-    document.getElementById('back').onclick = HandleBackClick;
-}
 
 function CreateTableOfContentsFromMarkers(section) {
     $("#toc").append('<li><a id="link" href="#top">Top of page</a></li>');
@@ -197,8 +197,11 @@ function showHideIndex() {
         overlay.classList.remove('show');
         article.classList.remove('blur');
         if ((ellipsis !== null) && (ellipsis.classList !== null)) {
-            ellipsis.classList.remove('hidden');
-
+            var suppressedParagraphs = document.getElementsByClassName('suppressed');
+            suppressedParagraphs.forEach(function (paragraph) {
+                if (paragraph.length < 1) return;
+                ellipsis.removeClass('hidden');
+            });
         }
     }
     else {

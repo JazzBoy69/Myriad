@@ -208,7 +208,7 @@ namespace Myriad.Parser
         protected void HandleEndToken()
         {
             foundEndToken = true;
-            //TODO handle closing for special tokens?
+            //todo handle closing for special tokens?
             formatter.EndSection();
         }
 

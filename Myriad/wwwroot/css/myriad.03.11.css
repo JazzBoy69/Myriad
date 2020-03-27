@@ -29,7 +29,7 @@ rt {
 .invalid {color:red;}
 .scripture-comment p{margin-left:0;margin-right:0;}
 
-.ellipsis {max-height: 1.5rem;position: absolute;top: 5rem;right: 20rem;opacity:.5;}
+#ellipsis {max-height: 1.5rem;position: absolute;top: 5rem;right: 20rem;opacity:.5;}
 
 #modal-image-box {
 	position: fixed; /* Stay in place */
@@ -238,9 +238,8 @@ position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-
     transition: visibility 0s, opacity 0.2s linear;
 }
 .blur {
-    filter: blur(5px);
-    transition: filter .1s;
-    -webkit-filter: blur(5px)
+    filter: blur(10px);
+    transition: filter .05s;
 }
 
 #indexscripture {font-size: 3rem;}
@@ -294,7 +293,7 @@ figure.portrait, figure.square, .sidenote{width:26rem}
 .searchResults{width:40rem;}
 .definitionBlock div, ul.tabs{width:50rem;}
 .indexicon img{right: 10rem;}
-.ellipsis{right:10rem;}
+#ellipsis{right:10rem;}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:5rem;}
 table{margin-left:5.25rem;}
@@ -323,7 +322,7 @@ article{width:50rem;padding-left:3rem;}
 figure.portrait, figure.square, .sidenote{width:21rem}
 .searchResults{width:46rem;}
 .indexicon img {right: 5rem;}
-.ellipsis{right:5rem;}
+#ellipsis{right:5rem;}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:3rem;}
     table {
@@ -352,7 +351,7 @@ ul.tabs{width:38rem;}
 #menuPrevious {width: 3rem;}
 #menuNext {width: 3rem;}
 .indexicon img {right: 5rem;}
-.ellipsis{right:5rem;}
+#ellipsis{right:5rem;}
 .indexbutton {
         height:2rem;
         font-size: 1.5rem;
@@ -401,7 +400,7 @@ ul.tabs {display:inline-block;}
 #menuPrevious {width: 2rem;}
 #menuNext {width: 2rem;}
 .indexicon img {right:1rem;}
-.ellipsis{right:1rem;}
+#ellipsis{right:1rem;}
 .searchTabs{display:block;width:32rem;}
 .definitionsheader{margin-left:0;width:100%;float:none;}
 .definitionsheader ul{width:100%;}
@@ -456,7 +455,7 @@ ul.tabs, .definitionBlock div, .searchResults{width:16rem;}
 #menuPrevious {width: 1rem;}
 #menuNext {width: 1rem;}
 .indexicon img {right: 1rem;}
-.ellipsis{right:1rem;}
+#ellipsis{right:1rem;}
 .indexbutton {
         height:2rem;
         font-size: 1rem;
