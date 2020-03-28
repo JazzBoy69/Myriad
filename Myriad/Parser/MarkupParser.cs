@@ -103,7 +103,8 @@ namespace Myriad.Parser
         protected override void HandleEnd()
         {
             mainRange.MoveEndToLimit();
-            mainRange.MoveStartTo(mainRange.Start - 1);
+            if (mainRange.Start > Ordinals.first)
+                mainRange.MoveStartTo(mainRange.Start - 1);
             formatter.AppendString(currentParagraph, mainRange);
             if (formats.heading)
                 formatter.EndHeading();
