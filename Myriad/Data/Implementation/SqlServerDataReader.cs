@@ -28,7 +28,7 @@ namespace Myriad.Data.Implementation
             { DataOperation.ReadCommentLinks,
                 "select start, last from commentlinks where id="+ key1 },
             { DataOperation.ReadKeywords,
-                "select keyid, leadingsymbols, text, trailingsymbols from keywords"+
+                "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
                 " where keyid>="
                 + key1 + " and keyid<=" + key2 }
         };

@@ -13,7 +13,7 @@ namespace Myriad.Parser
             this.response = response;
         }
 
-        public void Append(Span<char> span)
+        public void Append(ReadOnlySpan<char> span)
         {
             response.WriteAsync(span.ToString());
         }
@@ -65,7 +65,14 @@ namespace Myriad.Parser
             await response.WriteAsync(HTMLTags.CloseQuote);
         }
 
-        public async void StartDivWithClass(string className)
+        public async void StartSectionWithClass(string className)
+        {
+            await response.WriteAsync(HTMLTags.StartSectionWithClass);
+            await response.WriteAsync(className);
+            await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
+        }
+
+            public async void StartDivWithClass(string className)
         {
             await response.WriteAsync(HTMLTags.StartDivWithClass);
             await response.WriteAsync(className);

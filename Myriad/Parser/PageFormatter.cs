@@ -336,22 +336,27 @@ namespace Myriad.Parser
         {
             try
             {
-                builder.Append(HTMLTags.StartAnchor);
-                builder.AppendHREF(PageReferrer.URLs[citation.CitationType]);
-                builder.Append(HTMLTags.StartQuery);
-                PageReferrer.AppendQuery(builder, citation);
-                builder.Append(HTMLTags.EndTag);
+                StartCitationAnchor(builder, citation);
                 if (citation.DisplayLabel.Valid)
                     builder.Append(parser.CurrentParagraph.SpanAt(citation.DisplayLabel));
                 else
                     builder.Append(parser.CurrentParagraph.SpanAt(citation.Label.Start,
-                        citation.Label.End-1));
+                        citation.Label.End - 1));
                 builder.Append(HTMLTags.EndAnchor);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        public static void StartCitationAnchor(HTMLResponse builder, Citation citation)
+        {
+            builder.Append(HTMLTags.StartAnchor);
+            builder.AppendHREF(PageReferrer.URLs[citation.CitationType]);
+            builder.Append(HTMLTags.StartQuery);
+            PageReferrer.AppendQuery(builder, citation);
+            builder.Append(HTMLTags.EndTag);
         }
 
         internal void AppendString()

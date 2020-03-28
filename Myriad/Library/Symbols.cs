@@ -7,7 +7,7 @@
         public const string returnChar = "\r";
         public const char tab = '\t';
         public const char space = ' ';
-
+        public const string ellipsis = "&hellip;";
         internal static bool IsLetter(char c)
         {
             return (((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c < 'z')));

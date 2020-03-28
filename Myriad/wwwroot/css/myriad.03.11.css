@@ -1,6 +1,6 @@
 /*FONTS AND COLORS*/
 body{font-size:87.5%;font-size:14px;font-weight:400;line-height:1.5em;color:#64605d;text-rendering:optimizeLegibility;font-family:'Segoe UI', Roboto, Lato, 'Helvetica Neue', Arial, sans-serif;}
-h1, h2, h3 {font-family:'Droid Serif', "Palatino Linotype", Cambria, Cochin, Georgia,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
+h1, h2, h3 {font-family:"Palatino Linotype", Cambria, Cochin, Georgia,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
 .sidenote h3{font-family:"Calibri", Roboto, Lato, Arial, sans-serif;}
 .sidenote p{font-family:"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
 .textquote p{font-family:"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
@@ -13,6 +13,15 @@ p.nav a, p.definitionnav a, p.versenav a{padding-right:1rem;}
 a.target{background-color:#ff8}
 .suppressed a.target{background-color:#dd8;}
 a.error{color:red;}
+/*Poetic*/
+.firstpoetic {
+    padding-left: 1rem;
+    text-indent: -1rem;
+}
+.poetic {
+    padding-left: 2rem;
+    text-indent: -1rem;
+}
 /*Ruby*/
 ruby{font-family:Lato, "Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
 rt {

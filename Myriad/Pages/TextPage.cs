@@ -32,6 +32,7 @@ namespace Myriad.Pages
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
+        TextFormatter formatter;
         CommentParser parser;
         HTMLResponseWriter builder;
         List<int> commentIDs;
@@ -105,19 +106,32 @@ namespace Myriad.Pages
 
         private void AddComment()
         {
-            throw new NotImplementedException();
+            builder.StartSectionWithClass(HTMLClasses.scriptureComment);
+            parser.Parse(paragraphs);
+            builder.Append(HTMLTags.EndSection);
+            builder.Append(HTMLTags.EndSection);
         }
 
         private void AddText((int start, int end) textRange)
         {
+            builder.StartSectionWithClass(HTMLClasses.scriptureSection);
             builder.Append(HTMLTags.StartMainHeader);
             Citation citation = new Citation(textRange.start, textRange.end);
             builder.Append(" (");
             CitationConverter.Append(builder, citation);
             builder.Append(")");
             builder.Append(HTMLTags.EndMainHeader);
+            builder.StartSectionWithClass(HTMLClasses.scriptureText);
             List<Keyword> keywords = ReadKeywords(citation);
-            //TODO add text body
+            formatter = new TextFormatter(builder);
+            formatter.AppendCitationData(citation);
+            builder.StartDivWithClass(HTMLClasses.scriptureQuote);
+            builder.Append(HTMLTags.StartParagraph);
+            formatter.AppendKeywords(keywords);
+            builder.Append(HTMLTags.EndParagraph);
+            builder.Append(HTMLTags.EndDiv);
+            //todo edit comment link
+            builder.Append(HTMLTags.EndSection);
         }
 
         public List<Keyword> ReadKeywords(Citation citation)

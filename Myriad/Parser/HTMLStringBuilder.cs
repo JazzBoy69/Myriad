@@ -8,6 +8,7 @@ namespace Myriad.Parser
         internal const string StartSection = "<section>";
         internal const string StartMainHeader = "<h2>";
         internal const string StartHeader = "<h3>";
+        internal const string StartSectionWithClass = "<section class='";
         internal const string StartDivWithClass = "<div class='";
         internal const string StartDivWithID = "<div id='";
         internal const string StartParagraph = "<p>";
@@ -40,6 +41,21 @@ namespace Myriad.Parser
         internal const string CloseQuoteEndTag = "'>";
         internal const string StartQuery = "?";
         internal const string Ampersand = "&";
+        internal const string dataStart = "datastart";
+        internal const string dataEnd = "dataend";
+    }
+
+    public static class HTMLClasses
+    {
+        internal const string scriptureSection = "scripture-section";
+        internal const string scriptureText = "scripture-text";
+        internal const string scriptureQuote = "scripture-quote";
+        internal const string scriptureComment = "scripture-comment";
+        internal const string hidden = "hidden";
+        internal const string active = "active";
+        internal const string rangeData = "rangedata";
+        internal const string poetic1 = "poetic1";
+        internal const string poetic2 = "poetic2";
     }
 
     public interface HTMLResponse
@@ -53,7 +69,7 @@ namespace Myriad.Parser
         public void StartIMG(string path);
         public void Append(char c);
 
-        public void Append(Span<char> span);
+        public void Append(ReadOnlySpan<char> span);
         public void Append(string stringToAppend);
         public void Append(int number);
         public void AppendHREF(string pageName);
@@ -147,7 +163,7 @@ namespace Myriad.Parser
             Builder.Append(HTMLTags.CloseQuote);
         }
 
-        public void Append(Span<char> span)
+        public void Append(ReadOnlySpan<char> span)
         {
             Builder.Append(span);
         }
