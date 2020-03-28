@@ -19,22 +19,18 @@ function SetupCopytoClipboardWithLabel() {
     });
 }
 
-function CreateTableOfContents(section)
-{
+function CreateTableOfContents(section) {
     var toc = document.getElementsByClassName('#toc');
     toc.append('<li><a id="link" href="#top">Top of page</a></li>');
-    var h2 = document.getElementById(section).querySelectorAll("h3");
+    var headings = document.getElementById(section).querySelectorAll("h3");
+    for (var i = 0; i < headings.length; i++) {
+        headings[i].id = "title" + i;
 
-    h2.forEach(function (current, i) {
-        if (current.hasClass("sideheading") || current.text() === "Related Articles" || current.text() === "Cross references") {
-            return true;
-        }
-        current.attr("id", "title" + i);
         toc.append("<li><a id='link" + i + "' href='#title" +
             i + "'>" +
-            current.html() + "</a></li>");
-        current.onclick = TOCScroll;
-    });
+            headings[i].innerHTML + "</a></li>");
+        headings[i].onclick = TOCScroll;
+    }
 }
 
 function TOCScroll(event) {
@@ -198,10 +194,10 @@ function showHideIndex() {
         article.classList.remove('blur');
         if ((ellipsis !== null) && (ellipsis.classList !== null)) {
             var suppressedParagraphs = document.getElementsByClassName('suppressed');
-            suppressedParagraphs.forEach(function (paragraph) {
-                if (paragraph.length < 1) return;
+            for (var i = 0; i < suppressedParagraphs.length; i++) {
+                if (suppressedParagraphs[i].length < 1) return;
                 ellipsis.removeClass('hidden');
-            });
+            }
         }
     }
     else {
@@ -376,25 +372,28 @@ function HandleTabs() {
 function HandleHiddenDetails()
 {
     var details = document.getElementsByClassName('hiddendetail');
-    details.forEach(detail => detail.onclick = function (e) {
-        e.target.classList.add("showdetail");
-        e.target.classList.remove('hiddendetail');
-        var hiddenSiblings = e.target.parent.childNodes.getElementsByClassName("hiddendetail");
-        AddClassToGroup(hiddenSiblings, "showdetail");
-        RemoveClassFromGroup(hiddenSiblings, "hiddendetail");
-    });
+    for (var i = 0; i < details.length; i++) {
+        details[i].onclick = function (e) {
+            e.target.classList.add("showdetail");
+            e.target.classList.remove('hiddendetail');
+            var hiddenSiblings = e.target.parent.childNodes.getElementsByClassName("hiddendetail");
+            AddClassToGroup(hiddenSiblings, "showdetail");
+            RemoveClassFromGroup(hiddenSiblings, "hiddendetail");
+        }
+    }
 }
 
 function ScrollToTarget()
 {
     const marks = document.getElementsByClassName('target');
-    marks.forEach(function (mark) {
-        var grandparent = mark.parent().parent();
+    for (var i = 0; i < marks.length; i++) {
+        var grandparent = marks[i].parent().parent();
         if (grandparent.classList.contains('hiddendetail')) {
             grandparent.classList.add("showdetail");
             grandparent.classList.remove('hiddendetail');
         }
-    });
+    }
+            
     const distanceToTop = el => Math.floor(el.getBoundingClientRect().top);
     const targetAnchor = marks[0];
     if (!targetAnchor) return;
@@ -506,32 +505,34 @@ function HandleScriptureTextClicks() {
 
 function HandleTabClicks() {
     var tabs = document.querySelectorAll('ul.tabs li');
-    tabs.forEach(tab => tab.onclick = function (event) {
-        if (!event.target.classList.contains('active')) {
-            var tabNum = event.target.index();
-            var tabID = event.target.attr('id') + "-tab";
-            event.target.addClass("active").siblings().removeClass('active');
-            var theTab = document.getElementById('#' + tabID);
-            theTab.classList.add('active');
-            var siblings = theTab.siblings();
-            RemoveClassFromGroup(siblings, 'active');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].onclick = function (event) {
+            if (!event.target.classList.contains('active')) {
+                var tabNum = event.target.index();
+                var tabID = event.target.attr('id') + "-tab";
+                event.target.addClass("active").siblings().removeClass('active');
+                var theTab = document.getElementById('#' + tabID);
+                theTab.classList.add('active');
+                var siblings = theTab.siblings();
+                RemoveClassFromGroup(siblings, 'active');
 
-            var start = theTab.data - start;
-            var end = parseInt(theTab.data - end);
-            var url = '/Text?';
-            var previousLink = document.getElementById('previousLink');
-            previousLink.href = url + 'end=' + (start - 1);
-            var nextLink = document.getElementById('nextLink');
-            nextLink.href = url + 'start=' + (end + 1);
-            var upLink = document.getElementById('upLink');
-            upLink.href = '/Chapter?start=' + start;
-            var chronoLink = document.getElementById('#chronoLink');
-            if (chronoLink) {
-                var chronoid = chronoLink.data - id;
-                chronoLink.href = '/Chrono?id=' + chronoid + "&start=" + start + "&end=" + end;
+                var start = theTab.data - start;
+                var end = parseInt(theTab.data - end);
+                var url = '/Text?';
+                var previousLink = document.getElementById('previousLink');
+                previousLink.href = url + 'end=' + (start - 1);
+                var nextLink = document.getElementById('nextLink');
+                nextLink.href = url + 'start=' + (end + 1);
+                var upLink = document.getElementById('upLink');
+                upLink.href = '/Chapter?start=' + start;
+                var chronoLink = document.getElementById('#chronoLink');
+                if (chronoLink) {
+                    var chronoid = chronoLink.data - id;
+                    chronoLink.href = '/Chrono?id=' + chronoid + "&start=" + start + "&end=" + end;
+                }
             }
         }
-    });
+    }
 }
 
 
@@ -556,14 +557,14 @@ function SetupModalPictures(element) {
 
 function SetupSuppressedParagraphs() {
     var suppressedParagraphs = document.getElementsByClassName('suppressed');
-    var ellipsis = document.getElementById('ellipsis'); 
-    suppressedParagraphs.forEach(function (paragraph) {
-        paragraph.onclick = function (event) {
+    var ellipsis = document.getElementById('ellipsis');
+    for (var i = 0; i < suppressedParagraphs.length; i++) {
+        suppressedParagraphs[i].onclick = function (event) {
             event.target.removeClass('suppressed');
         };
         if (paragraph.length < 1) return;
         ellipsis.removeClass('hidden');
-    });
+    }
     ellipsis.onclick = function (event) {
         var extraInfo = document.getElementsByClassName('extrainfo');
         var suppressed = document.getElementsByClassName('suppressed');
