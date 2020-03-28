@@ -85,7 +85,7 @@ namespace Myriad.Pages
 
         public List<string> ReadParagraphs(int commentID)
         {
-            var reader = ReaderProvider<int>.Reader(DataOperation.ReadArticle,
+            var reader = ReaderProvider<int>.Reader(DataOperation.ReadCommentParagraphs,
                 commentID);
             return reader.GetData<string>();
         }
@@ -126,9 +126,7 @@ namespace Myriad.Pages
             formatter = new TextFormatter(builder);
             formatter.AppendCitationData(citation);
             builder.StartDivWithClass(HTMLClasses.scriptureQuote);
-            builder.Append(HTMLTags.StartParagraph);
             formatter.AppendKeywords(keywords);
-            builder.Append(HTMLTags.EndParagraph);
             builder.Append(HTMLTags.EndDiv);
             //todo edit comment link
             builder.Append(HTMLTags.EndSection);

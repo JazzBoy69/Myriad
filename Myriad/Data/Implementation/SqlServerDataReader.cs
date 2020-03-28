@@ -24,11 +24,11 @@ namespace Myriad.Data.Implementation
             { DataOperation.ReadCommentIDs,
                 "select id from commentlinks where last>= "+ key1+" and start<="+key2 },
             { DataOperation.ReadCommentParagraphs,
-                "select text from comments where id="+ key1 },
+                "select RTrim(text) from comments where id="+ key1 },
             { DataOperation.ReadCommentLinks,
                 "select start, last from commentlinks where id="+ key1 },
             { DataOperation.ReadKeywords,
-                "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
+                "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
                 " where keyid>="
                 + key1 + " and keyid<=" + key2 }
         };

@@ -13,15 +13,7 @@ p.nav a, p.definitionnav a, p.versenav a{padding-right:1rem;}
 a.target{background-color:#ff8}
 .suppressed a.target{background-color:#dd8;}
 a.error{color:red;}
-/*Poetic*/
-.firstpoetic {
-    padding-left: 1rem;
-    text-indent: -1rem;
-}
-.poetic {
-    padding-left: 2rem;
-    text-indent: -1rem;
-}
+
 /*Ruby*/
 ruby{font-family:Lato, "Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
 rt {
@@ -162,6 +154,18 @@ img.landscape.rightside{margin-left:1%;}
 img.landscape{margin-right:auto;}
 .sidenote p, .sidenote h3{margin-right:0;}
 
+/*Poetic*/
+.firstpoetic {
+    padding-left: 1.5rem;
+    text-indent: -1.5rem;
+}
+p.firstpoetic, p.poetic {
+    padding-bottom: .1rem;
+}
+.poetic {
+    padding-left: 2.5rem;
+    text-indent: -1.5rem;
+}
 /*EDIT FORM*/
 .editText{margin-bottom:-.5em;margin-top:-1em;}
 textarea {

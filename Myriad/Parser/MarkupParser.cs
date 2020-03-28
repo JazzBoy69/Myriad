@@ -36,11 +36,15 @@ namespace Myriad.Parser
     public class MarkupParser : BasicMarkupParser
     {
         internal readonly Formats formats = new Formats();
-        readonly PageFormatter formatter; 
+        readonly PageFormatter formatter;
+        readonly CitationHandler citationHandler;
+        readonly StringRange labelRange = new StringRange();
+
 
         public MarkupParser(HTMLResponse builder)
         {
             formatter = new PageFormatter(this, builder);
+            citationHandler = new CitationHandler();
         }
 
         public string ParsedText { get { return formatter.Result; } }
@@ -97,6 +101,7 @@ namespace Myriad.Parser
         protected override void HandleEnd()
         {
             mainRange.MoveEndToLimit();
+            mainRange.MoveStartTo(mainRange.Start - 1);
             formatter.AppendEndString();
             formatter.EndParagraph();
             formatter.EndSection();
@@ -105,10 +110,8 @@ namespace Myriad.Parser
 
         protected void ParseMainHeading()
         {
-            mainRange.MoveStartTo(Ordinals.third);
-            mainRange.MoveEndTo(currentParagraph.Length - 3);
             formatter.StartMainHeading();
-            formatter.AppendString();
+            formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
             formatter.EndMainHeading();
             formatter.StartComments();
         }
@@ -122,87 +125,148 @@ namespace Myriad.Parser
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));
         }
-        override public bool HandleToken()
+        override public void HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             int longToken = currentParagraph.TokenAt(mainRange.End);
+            if (token == '|')
+            {
+                if (citationLevel > 0)
+                    SetLabel();
+                SkipToken();
+                return;
+            }
+            if (citationLevel > Numbers.nothing)
+                HandleCitations();
+            AppendTextUpToToken();
             if (longToken == Tokens.detail)
             {
-                formats.detail = formatter.HandleDetails(formats.detail, citationLevel, formats);
-                mainRange.BumpStart();
-                return true;
+                formats.detail = formatter.HandleDetails(formats.detail, formats);
+                SkipLongToken();
+                return;
             }
 
             if (longToken == Tokens.bold)
             {
-                formats.bold = formatter.ToggleBold(formats.bold, citationLevel);
-                mainRange.BumpStart();
-                return true;
+                formats.bold = formatter.ToggleBold(formats.bold);
+                SkipLongToken();
+                return;
             }
             if (token == '^')
             {
-                formats.super = formatter.ToggleSuperscription(formats.super, citationLevel);
-                return true;
+                formats.super = formatter.ToggleSuperscription(formats.super);
+                SkipToken();
+                return;
             }
-            if (longToken ==Tokens.italic)
+            if (longToken == Tokens.italic)
             {
-                formats.italic = formatter.ToggleItalic(formats.italic, citationLevel);
-                mainRange.BumpStart();
-                return true;
+                formats.italic = formatter.ToggleItalic(formats.italic);
+                SkipLongToken();
+                return;
+            }
+            if (token == '/')
+            {
+                AppendToken();
+                return;
             }
             if (longToken == Tokens.endSidenote)
             {
-                formatter.EndSidenote(citationLevel, formats);
+                formatter.EndSidenote(formats);
                 HandleEndToken();
-                return true;
+                SkipLongToken();
+                return;
             }
 
             if (longToken == Tokens.headingToken)
             {
-                formatter.AppendString();
                 formatter.EndHeading();
                 HandleEndToken();
-                return true;
+                SkipLongToken();
+                return;
             }
-            if ((token == '(') || (token == '[') || (token == '{') || (token == '~'))
+            if ((token == '(') || (token == '['))
             {
-                formatter.AppendString(citationLevel);
-                citationLevel = IncreaseCitationLevel();
-                return true;
+                citationLevel++;
+                AppendToken();
+                return;
             }
-            if ((token == ')') || (token == ']') || (token == '}'))
+            if (token == '{')
             {
-                formatter.AppendString(citationLevel);
+                citationLevel++;
+                SkipToken();
+                return;
+            }
+            if (token == '~')
+            {
+                citationLevel++;
+                formatter.Append('—');
+                SkipToken();
+                return;
+            }
+            if ((token == ')') || (token == ']'))
+            {
                 citationLevel = DecreaseCitationLevel();
-                return true;
+                AppendToken();
+                return;
+            }
+            if (token == '}')
+            {
+                citationLevel = DecreaseCitationLevel();
+                SkipToken();
+                return;
             }
             if (token == '_')
             {
-                formatter.AppendString();
-                return true;
-            }
-            if (token == '|')
-            {
-                formatter.SetLabel(citationLevel, formats);
-                return true;
+                formatter.Append(HTMLTags.NonbreakingSpace);
+                SkipToken();
+                return;
             }
             if (token == '#')
             {
                 if (formats.labelExists)
                 {
-                    MoveIndexToEndBracket();
-                    if (!mainRange.Valid) return true;
+                    SearchForEndBracketToken();
+                    if (!mainRange.Valid) return;
                     ResetCitationLevel();
-                    formatter.AppendTag(formats);
-                    return true;
+                    formatter.AppendTag(currentParagraph, labelRange, formats);
+                    formats.labelExists = false;
+                    labelRange.Invalidate();
+                    return;
                 }
-                formatter.AppendString(citationLevel);
-
                 MoveIndexToEndOfWord();
-                formatter.AppendTag(formats);
-                return true;
+                formatter.AppendTag(currentParagraph, mainRange, formats);
+                return;
             }
-            return false;
+            AppendToken();
+        }
+
+        internal void SetLabel()
+        {
+            labelRange.Copy(mainRange);
+            labelRange.PullEnd();
+            mainRange.GoToNextStartPosition();
+            formats.labelExists = true;
+        }
+        private void AppendToken()
+        {
+            formatter.AppendString(currentParagraph, mainRange.End, mainRange.End);
+            mainRange.GoToNextStartPosition();
+        }
+
+        private void SkipToken()
+        {
+            mainRange.GoToNextStartPosition();
+        }
+
+        private void SkipLongToken()
+        {
+            mainRange.BumpEnd();
+            mainRange.GoToNextStartPosition();
+        }
+
+        private void AppendTextUpToToken()
+        {
+            formatter.AppendString(currentParagraph, mainRange.Start, mainRange.End - 1);
         }
 
         protected void HandleEndToken()
@@ -214,7 +278,23 @@ namespace Myriad.Parser
 
         public override void HandleCitations()
         {
-             formatter.AppendString(citationLevel);
+            List<Citation> citations =
+                citationHandler.ParseCitations(mainRange, currentParagraph);
+            if (citations.Count > 0)
+            {
+                if (formats.labelExists)
+                {
+                    citations[Ordinals.first].DisplayLabel = labelRange;
+                    formatter.AppendCitationWithLabel(citations[Ordinals.first]);
+                    mainRange.MoveStartTo(mainRange.End);
+                    return;
+                }
+                else
+                {
+                    formatter.AppendCitations(citations);
+                    mainRange.MoveStartTo(citations[citations.Count - 1].Label.End + 1);
+                }
+            }
         }
 
         protected void MoveIndexToEndOfWord()

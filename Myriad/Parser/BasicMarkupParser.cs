@@ -30,8 +30,7 @@ namespace Myriad.Parser
         abstract void SetParagraphCreator(IMarkedUpParagraphCreator creator);
        
         abstract void SearchForToken();
-        abstract bool HandleToken();
-        abstract int IncreaseCitationLevel();
+        abstract void HandleToken();
         abstract int DecreaseCitationLevel();
         abstract void HandleCitations();
 
@@ -121,9 +120,9 @@ namespace Myriad.Parser
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.citationTokens, mainRange.Start));
         }
 
-        virtual public bool HandleToken()
+        virtual public void HandleToken()
         {
-            if (mainRange.End > mainRange.Max - 2) return true;
+            if (mainRange.End > mainRange.Max - 2) return;
             int longtoken = currentParagraph.TokenAt(mainRange.End);
             char token = currentParagraph.CharAt(mainRange.End);
             
@@ -133,55 +132,48 @@ namespace Myriad.Parser
                 DecreaseCitationLevel();
                 mainRange.BumpStart();
                 mainRange.BumpStart();
-                return true;
+                return;
             }
             if (longtoken == Tokens.startSidenote)
             {
-                IncreaseCitationLevel();
+                citationLevel++;
                 mainRange.BumpStart();
                 mainRange.BumpStart();
-                return true;
+                return;
             }
             if (longtoken == Tokens.picture)
             {
-                return true;
+                return;
             }
             if (token == '{')
             {
-                citationLevel = IncreaseCitationLevel();
+                citationLevel++;
                 MoveIndexToNextBracketToken();
                 mainRange.PullEnd();
-                return true;
+                return;
             }
             if ((token == '(') || (token == '[') || (token == '~'))
             {
-                citationLevel = IncreaseCitationLevel();
-                return true;
+                citationLevel++;
+                return;
             }
             if ((token == ')') || (token == ']') || (token == '}'))
             {
                 citationLevel = DecreaseCitationLevel();
-                return true;
+                return;
             }
-            return false;
+            return;
         }
 
-        protected void MoveIndexToEndBracket()
+        protected void SearchForEndBracketToken()
         {
             if (mainRange.Start > currentParagraph.Length)
                 return;
             mainRange.MoveEndTo(currentParagraph.IndexOf('}', mainRange.Start - 1));
         }
 
-        public int IncreaseCitationLevel()
-        {
-            HandleCitations();
-            citationLevel++;
-            return citationLevel;
-        }
         public int DecreaseCitationLevel()
         {
-            HandleCitations();
             if (citationLevel > 0)
                 citationLevel--;
             return citationLevel;

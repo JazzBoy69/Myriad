@@ -58,7 +58,7 @@ namespace Myriad.Parser
             return "";
         }
 
-        public async void StartAnchor(string className)
+        public async void StartAnchorWithClass(string className)
         {
             await response.WriteAsync(HTMLTags.StartAnchorWithClass);
             await response.WriteAsync(className);
@@ -100,9 +100,16 @@ namespace Myriad.Parser
             await response.WriteAsync(HTMLTags.CloseQuote);
         }
 
-        public async void StartSpan(string className)
+        public async void StartSpanWithClass(string className)
         {
             await response.WriteAsync(HTMLTags.StartSpanWithClass);
+            await response.WriteAsync(className);
+            await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
+        }
+
+        public async void StartParagraphWithClass(string className)
+        {
+            await response.WriteAsync(HTMLTags.StartParagraphWithClass);
             await response.WriteAsync(className);
             await response.WriteAsync(HTMLTags.CloseQuoteEndTag);
         }

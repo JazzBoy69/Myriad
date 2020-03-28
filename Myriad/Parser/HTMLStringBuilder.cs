@@ -10,6 +10,7 @@ namespace Myriad.Parser
         internal const string StartHeader = "<h3>";
         internal const string StartSectionWithClass = "<section class='";
         internal const string StartDivWithClass = "<div class='";
+        internal const string StartParagraphWithClass = "<p class='";
         internal const string StartDivWithID = "<div id='";
         internal const string StartParagraph = "<p>";
         internal const string StartSpan = "<span>";
@@ -43,6 +44,7 @@ namespace Myriad.Parser
         internal const string Ampersand = "&";
         internal const string dataStart = "datastart";
         internal const string dataEnd = "dataend";
+        internal const string NonbreakingSpace = "&nbsp;";
     }
 
     public static class HTMLClasses
@@ -54,14 +56,17 @@ namespace Myriad.Parser
         internal const string hidden = "hidden";
         internal const string active = "active";
         internal const string rangeData = "rangedata";
-        internal const string poetic1 = "poetic1";
-        internal const string poetic2 = "poetic2";
+        internal const string poetic1 = "firstpoetic";
+        internal const string poetic2 = "poetic";
+        public const string comments = "comments";
+        public const string hiddendetail = "hiddendetail";
+        public const string link = "link";
     }
 
     public interface HTMLResponse
     {
-        public void StartSpan(string className);
-        public void StartAnchor(string className);
+        public void StartSpanWithClass(string className);
+        public void StartAnchorWithClass(string className);
         public void StartDivWithClass(string className);
 
         public void StartDivWithID(string id);
@@ -76,6 +81,7 @@ namespace Myriad.Parser
         public void AppendIMGWidth(string widthString);
         public void AppendClass(string className);
         public string Response();
+        void StartParagraphWithClass(string className);
     }
     public class HTMLStringBuilder : HTMLResponse
     {
@@ -86,14 +92,14 @@ namespace Myriad.Parser
         {
             return Builder.ToString();
         }
-        public void StartSpan(string className)
+        public void StartSpanWithClass(string className)
         {
             Builder.Append(HTMLTags.StartSpanWithClass);
             Builder.Append(className);
             Builder.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        public void StartAnchor(string className)
+        public void StartAnchorWithClass(string className)
         {
             Builder.Append(HTMLTags.StartAnchorWithClass);
             Builder.Append(className);
@@ -166,6 +172,13 @@ namespace Myriad.Parser
         public void Append(ReadOnlySpan<char> span)
         {
             Builder.Append(span);
+        }
+
+        public void StartParagraphWithClass(string className)
+        {
+            Builder.Append(HTMLTags.StartParagraphWithClass);
+            Builder.Append(className);
+            Builder.Append(HTMLTags.CloseQuoteEndTag);
         }
     }
 }

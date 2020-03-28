@@ -24,10 +24,10 @@ namespace Myriad.Parser
                 if ((keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound)
                     && (poetic))
                 {
-                    builder.Append(HTMLTags.EndDiv);
+                    builder.Append(HTMLTags.EndParagraph);
                     if (index < keywords.Count - 1)
                     {
-                        builder.StartDivWithClass(
+                        builder.StartParagraphWithClass(
                             (keywords[index + 1].WordIndex == Ordinals.first) ?
                             HTMLClasses.poetic1 :
                             HTMLClasses.poetic2);
@@ -47,12 +47,12 @@ namespace Myriad.Parser
                 if (poetic)
                 {
                     poetic = false;
-                    builder.Append(HTMLTags.EndDiv);
+                    builder.Append(HTMLTags.EndParagraph);
                 }
                 else
                 {
                     poetic = true;
-                    builder.StartDivWithClass(HTMLClasses.poetic1);
+                    builder.StartParagraphWithClass(HTMLClasses.poetic1);
                 }
             }
             AppendTextOfKeyword(keyword);
@@ -60,15 +60,19 @@ namespace Myriad.Parser
 
         private bool AppendFirstWord(List<Keyword> keywords)
         {
+            poetic = keywords[Ordinals.first].IsPoetic;
+            if (poetic)
+            {
+                builder.StartParagraphWithClass(HTMLClasses.poetic1);
+            }
+            else
+            {
+                builder.Append(HTMLTags.StartParagraph);
+            }
             AppendVerseNumber(keywords[Ordinals.first]);
             if (keywords[Ordinals.first].WordIndex != Ordinals.first)
             {
                 builder.Append(Symbols.ellipsis);
-            }
-            poetic = keywords[Ordinals.first].IsPoetic;
-            if (poetic)
-            {
-                builder.StartDivWithClass(HTMLClasses.poetic1);
             }
             AppendTextOfKeyword(keywords[Ordinals.first]);
             return poetic;
@@ -79,10 +83,7 @@ namespace Myriad.Parser
             builder.Append(keyword.LeadingSymbols);
             if (keyword.IsCapitalized)
             {
-                Span<char> firstLetter = new Span<char>();
-                keyword.Text.Slice(Ordinals.first, 1).ToUpper(firstLetter, 
-                    System.Globalization.CultureInfo.CurrentCulture);
-                builder.Append(firstLetter);
+                builder.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
                 builder.Append(keyword.Text.Slice(Ordinals.second));
             }
             else
@@ -94,7 +95,6 @@ namespace Myriad.Parser
 
         private void AppendVerseNumber(Keyword keyword)
         {
-            builder.Append(HTMLTags.StartAnchor);
             var citation = new Citation(keyword.ID, keyword.ID);
             citation.CitationType = CitationTypes.Verse;
             PageFormatter.StartCitationAnchor(builder, citation);
@@ -106,8 +106,8 @@ namespace Myriad.Parser
         internal void AppendCitationData(Citation citation)
         {
             builder.Append(HTMLTags.StartDivWithClass);
-            builder.Append(HTMLClasses.hidden + " " + HTMLClasses.active + HTMLClasses.rangeData);
-            builder.Append(" " + HTMLTags.dataStart+"='");
+            builder.Append(HTMLClasses.hidden + " " + HTMLClasses.active + " "+ HTMLClasses.rangeData);
+            builder.Append("' " + HTMLTags.dataStart+"='");
             builder.Append(citation.CitationRange.StartID);
             builder.Append("' " + HTMLTags.dataEnd + "='");
             builder.Append(citation.CitationRange.EndID);

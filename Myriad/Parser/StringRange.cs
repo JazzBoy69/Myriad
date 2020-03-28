@@ -2,64 +2,34 @@
 
 namespace Myriad.Parser
 {
-    public class StringRange
+    public class ReadOnlyStringRange
     {
-        int start = Ordinals.first;
-        int end = Ordinals.first;
-        int max;
-        public StringRange()
+        protected int start = Ordinals.first;
+        protected int end = Result.notfound;
+        protected int max;
+
+        public ReadOnlyStringRange()
         {
         }
-        public StringRange(int start, int end)
+        public ReadOnlyStringRange(int start, int end)
         {
             this.start = start;
             this.end = end;
         }
-        public static StringRange InvalidRange
+
+        public static ReadOnlyStringRange InvalidRange
         {
             get
             {
-                StringRange result = new StringRange();
+                ReadOnlyStringRange result = new ReadOnlyStringRange();
                 result.Invalidate();
                 return result;
             }
         }
-        public void MoveStartTo(int start)
-        {
-            this.start = start;
-        }
 
-        public void BumpStart()
+        public void Invalidate()
         {
-            start++;
-        }
-
-        public void MoveEndTo(int end)
-        {
-            this.end = end;
-        }
-
-        public void BumpEnd()
-        {
-            end++;
-        }
-
-        public void GoToNextStartPosition()
-        {
-            start= end + 1;
-        }
-
-        public void Reset()
-        {
-            start = Ordinals.first;
-            end = Ordinals.first;
-        }
-
-        public void SetLimit(int max)
-        {
-            start = Ordinals.first;
-            end = Ordinals.first;
-            this.Max = max;
+            start = -1;
         }
 
         public bool Invalid
@@ -77,6 +47,7 @@ namespace Myriad.Parser
                 return (start <= end) && (start >= 0) && (end >= 0) && (start <= Max) && (end <= Max);
             }
         }
+
 
         public int Start
         {
@@ -127,6 +98,66 @@ namespace Myriad.Parser
         }
 
         public int Max { get => max; set => max = value; }
+    }
+
+    public class StringRange :ReadOnlyStringRange
+    {
+        public StringRange() : base()
+        {
+        }
+        public StringRange(int start, int end) : base(start, end)
+        {
+        }
+
+        public new static StringRange InvalidRange
+        {
+            get
+            {
+                StringRange result = new StringRange();
+                result.Invalidate();
+                return result;
+            }
+        }
+
+        public void MoveStartTo(int start)
+        {
+            this.start = start;
+        }
+
+        public void BumpStart()
+        {
+            start++;
+        }
+
+        public void MoveEndTo(int end)
+        {
+            this.end = end;
+        }
+
+        public void BumpEnd()
+        {
+            end++;
+        }
+
+        public void GoToNextStartPosition()
+        {
+            start= end + 1;
+        }
+
+        public void Reset()
+        {
+            start = Ordinals.first;
+            end = Ordinals.first;
+        }
+
+        public void SetLimit(int max)
+        {
+            start = Ordinals.first;
+            end = Ordinals.first;
+            this.Max = max;
+        }
+
+
 
         public void Copy(StringRange source)
         {
@@ -140,10 +171,6 @@ namespace Myriad.Parser
             end = max;
         }
 
-        public void Invalidate()
-        {
-            start = -1;
-        }
 
         public void PullEnd()
         {

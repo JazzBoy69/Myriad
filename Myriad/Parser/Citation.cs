@@ -12,7 +12,7 @@ namespace Myriad.Parser
     }
     public class Citation
     {
-        public StringRange DisplayLabel = StringRange.InvalidRange;
+        public StringRange DisplayLabel = new StringRange();
         public StringRange Label = new StringRange();
         public StringRange LeadingSymbols = new StringRange();
         public StringRange TrailingSymbols = new StringRange();
@@ -21,7 +21,7 @@ namespace Myriad.Parser
 
         public Citation()
         {
-
+            DisplayLabel.Invalidate();
         }
 
         public Citation(int start, int end)

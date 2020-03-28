@@ -25,6 +25,7 @@ namespace Myriad.Parser
                     {
                         currentParagraph = creator.Create(paragraph);
                         ParseMainHeading();
+
                         foundFirstHeading = true;
                     }
                     continue;

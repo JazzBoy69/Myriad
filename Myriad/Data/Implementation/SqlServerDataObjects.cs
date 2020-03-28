@@ -46,7 +46,7 @@ namespace Myriad.Data
 
         public bool IsPoetic
         {
-            get { return IsPoetic; }
+            get { return isPoetic; }
         }
 
         public int Chapter

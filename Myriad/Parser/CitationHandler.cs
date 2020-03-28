@@ -14,7 +14,7 @@ namespace Myriad.Parser
         Citation citation = new Citation();
         CitedVerse verse = new CitedVerse();
         List<Citation> results;
-        StringRange rangeToParse;
+        ReadOnlyStringRange rangeToParse;
         StringRange labelRange;
         IMarkedUpParagraph paragraphToParse;
         bool first = true;
@@ -266,8 +266,8 @@ namespace Myriad.Parser
             {
                 citation.TrailingSymbols.MoveStartTo(pointer);
                 citation.TrailingSymbols.MoveEndTo(pointer);
-                citation.Label.PullEnd();
-                rangeToParse.MoveStartTo(pointer);
+                //citation.Label.PullEnd();
+                //rangeToParse.MoveStartTo(pointer);
                 pointer++;
             }
             Citation newCitation = citation.Copy();

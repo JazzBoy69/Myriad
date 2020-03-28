@@ -61,7 +61,8 @@ namespace Myriad.Library
 
         internal void Set(int book, int chapter)
         {
-            if (book > 65)
+            if ((book > 65) || 
+                ((chapter < 1) || (chapter > Bible.Chapters[book].Length - 1)))
             {
                 this.Invalidate();
                 return;
