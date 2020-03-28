@@ -21,7 +21,7 @@ namespace Myriad.Pages
     SetupEditParagraph();
     SetThisVerseAsTarget();
     SetupPagination();
-    SetupModalPictures();
+    SetupModalPictures('."+HTMLClasses.scriptureComment+@"');
     HandleReadingView();
     HandleTabClicks();
     ScrollToTarget();

@@ -61,6 +61,7 @@ namespace Myriad.Parser
         public const string comments = "comments";
         public const string hiddendetail = "hiddendetail";
         public const string link = "link";
+        public const string sidenote = "sidenote";
     }
 
     public interface HTMLResponse

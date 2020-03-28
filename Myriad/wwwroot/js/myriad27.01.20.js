@@ -440,102 +440,114 @@ function HandleReadingView() {
 
 function HandleScriptureHeaderClicks() {
     var headers = document.querySelectorAll('.scripture-header h3');
-    headers.forEach(header => header.click = function (event) {
-        var texts = document.getElementsByClassName('scripture-text');
-        AddClassToGroup(texts, 'hidden');
-        var comments = document.getElementsByClassName('scripture-comment');
-        RemoveClassFromGroup(comments, 'hidden');
-        var commentheaders = document.getElementsByClassName('scripture-comment-header');
-        RemoveClassFromGroup(commentheaders, 'hidden');
-        event.target.parent().classList.add('hidden');
-        var mark = event.target.parent().siblingsgetElementsByClassName('scripture-comment')[0];
-        var targetOffset = mark.parent().offset().top + 5;
-        var h = document.getElementById('header').height + 40;
-        window.scrollBy({ top: targetOffset - h, left: 0, behavior: 'smooth' });
-    });
+    for (var i = 0; i < headers.length; i++) {
+        headers[i].onclick = function (event) {
+            var texts = document.getElementsByClassName('scripture-text');
+            AddClassToGroup(texts, 'hidden');
+            var comments = document.getElementsByClassName('scripture-comment');
+            RemoveClassFromGroup(comments, 'hidden');
+            var commentheaders = document.getElementsByClassName('scripture-comment-header');
+            RemoveClassFromGroup(commentheaders, 'hidden');
+            event.target.parent().classList.add('hidden');
+            var mark = event.target.parent().siblingsgetElementsByClassName('scripture-comment')[0];
+            var targetOffset = mark.parent().offset().top + 5;
+            var h = document.getElementById('header').height + 40;
+            window.scrollBy({ top: targetOffset - h, left: 0, behavior: 'smooth' });
+        }
+    }
 }
 
 function HandleCommentHeaderClicks() {
     var headers = document.querySelectorAll('scripture-comment-header');
-    headers.forEach(header => header.click = function (event) {
-        var texts = document.getElementsByClassName('scripture-text');
-        RemoveClassFromGroup(texts, 'hidden');
-        var comments = document.getElementsByClassName('scripture-comment');
-        AddClassToGroup(comments, 'hidden');
-        var siblings = event.target.siblings.getElementsByClassName('.scripture-header');
-        RemoveClassFromGroup(siblings, 'hidden');
-        var commentheaders = document.getElementsByClassName('scripture-comment-header');
-        AddClassToGroup(commentheaders, 'hidden');
-        var mark = event.target.siblings.getElementsByClassName('scripture-text')[0];
-        var targetOffset = mark.parent().offset().top + 5;
-        var h = document.getElementById('header').height + 40;
-        window.scrollBy({ top: targetOffset - h, left: 0, behavior: 'smooth' });
-    });
+    for (var i = 0; i < headers.length; i++) {
+        headers[i].onclick = function (event) {
+            var texts = document.getElementsByClassName('scripture-text');
+            RemoveClassFromGroup(texts, 'hidden');
+            var comments = document.getElementsByClassName('scripture-comment');
+            AddClassToGroup(comments, 'hidden');
+            var siblings = event.target.siblings.getElementsByClassName('.scripture-header');
+            RemoveClassFromGroup(siblings, 'hidden');
+            var commentheaders = document.getElementsByClassName('scripture-comment-header');
+            AddClassToGroup(commentheaders, 'hidden');
+            var mark = event.target.siblings.getElementsByClassName('scripture-text')[0];
+            var targetOffset = mark.parent().offset().top + 5;
+            var h = document.getElementById('header').height + 40;
+            window.scrollBy({ top: targetOffset - h, left: 0, behavior: 'smooth' });
+        }
+    }
 }
 
 function HandleScriptureTextClicks() {
     var texts = document.getElementsByClassName('scripture-text');
-    texts.forEach(text => text.onclick = function (event) {
-        if (event.target.classList.contains('expanded')) {
-            var headers = document.getElementsByClassName('scripture-header');
-            var verseNumbers = document.getElementsByClassName('versenumber');
-            AddClassToGroup(headers, 'hidden');
-            AddClassToGroup(verseNumbers, 'hidden');
-            var texts = document.getElementsByClassName('scripture-text');
-            RemoveClassFromGroup(texts, 'expanded');
-        }
-        else {
-            var expandedtexts = document.getElementsByClassName('scripture-text');
-            RemoveClassFromGroup(expandedtexts, 'expanded');
-            var expandedheaders = document.getElementsByClassName('scripture-header');
-            AddClassToGroup(expandedheaders, 'hidden');
-            var parentheader = event.target.parent.querySelector('.scripture-header');
-            parentheader.classList.remove('hidden');
-            var expandedVerseNumbers = document.getElementsByClassName('versenumber');
-            RemoveClassFromGroup(expandedVerseNumbers, 'hidden');
-            event.target.classList.add('expanded');
-        }
-    });
-
-    function HandleTabClicks() {
-        var tabs = document.querySelectorAll('ul.tabs li');
-        tabs.forEach(tab => tab.onclick = function (event) {
-            if (!event.target.classList.contains('active')) {
-                var tabNum = event.target.index();
-                var tabID = event.target.attr('id') + "-tab";
-                event.target.addClass("active").siblings().removeClass('active');
-                var theTab = document.getElementById('#' + tabID);
-                theTab.classList.add('active');
-                var siblings = theTab.siblings();
-                RemoveClassFromGroup(siblings, 'active');
-
-                var start = theTab.data-start;
-                var end = parseInt(theTab.data-end);
-                var url = '/Text?';
-                var previousLink = document.getElementById('previousLink');
-                previousLink.href = url + 'end=' + (start - 1);
-                var nextLink = document.getElementById('nextLink');
-                nextLink.href = url + 'start=' + (end + 1);
-                var upLink = document.getElementById('upLink');
-                upLink.href = '/Chapter?start=' + start;
-                var chronoLink = document.getElementById('#chronoLink');
-                if (chronoLink) {
-                    var chronoid = chronoLink.data - id;
-                    chronoLink.href = '/Chrono?id=' + chronoid + "&start=" + start + "&end=" + end;
-                }
+    for (var i = 0; i < texts.length; i++) {
+        texts[i].onclick = function (event) {
+            if (event.target.classList.contains('expanded')) {
+                var headers = document.getElementsByClassName('scripture-header');
+                var verseNumbers = document.getElementsByClassName('versenumber');
+                AddClassToGroup(headers, 'hidden');
+                AddClassToGroup(verseNumbers, 'hidden');
+                var texts = document.getElementsByClassName('scripture-text');
+                RemoveClassFromGroup(texts, 'expanded');
             }
-        });
+            else {
+                var expandedtexts = document.getElementsByClassName('scripture-text');
+                RemoveClassFromGroup(expandedtexts, 'expanded');
+                var expandedheaders = document.getElementsByClassName('scripture-header');
+                AddClassToGroup(expandedheaders, 'hidden');
+                var parentheader = event.target.parent.querySelector('.scripture-header');
+                parentheader.classList.remove('hidden');
+                var expandedVerseNumbers = document.getElementsByClassName('versenumber');
+                RemoveClassFromGroup(expandedVerseNumbers, 'hidden');
+                event.target.classList.add('expanded');
+            }
+        }
     }
 }
 
-function SetupModalPictures() {
-    var images = document.getElementById('article').getElementsByTagName('img');
-    images.forEach(image => image.onclick = function (e) {
-		var img = e.target;
-        document.getElementById('modal-image').src = img.src;
-        document.getElementById('modal-image-box').classList.remove('hidden');
-        document.getElementById('menuNext').classList.add('hidden');
-	});
+function HandleTabClicks() {
+    var tabs = document.querySelectorAll('ul.tabs li');
+    tabs.forEach(tab => tab.onclick = function (event) {
+        if (!event.target.classList.contains('active')) {
+            var tabNum = event.target.index();
+            var tabID = event.target.attr('id') + "-tab";
+            event.target.addClass("active").siblings().removeClass('active');
+            var theTab = document.getElementById('#' + tabID);
+            theTab.classList.add('active');
+            var siblings = theTab.siblings();
+            RemoveClassFromGroup(siblings, 'active');
+
+            var start = theTab.data - start;
+            var end = parseInt(theTab.data - end);
+            var url = '/Text?';
+            var previousLink = document.getElementById('previousLink');
+            previousLink.href = url + 'end=' + (start - 1);
+            var nextLink = document.getElementById('nextLink');
+            nextLink.href = url + 'start=' + (end + 1);
+            var upLink = document.getElementById('upLink');
+            upLink.href = '/Chapter?start=' + start;
+            var chronoLink = document.getElementById('#chronoLink');
+            if (chronoLink) {
+                var chronoid = chronoLink.data - id;
+                chronoLink.href = '/Chrono?id=' + chronoid + "&start=" + start + "&end=" + end;
+            }
+        }
+    });
+}
+
+
+function SetupModalPictures(element) {
+    var commentArea = document.querySelectorAll(element);
+    for (var i = 0; i < commentArea.length; i++) {
+        var images = commentArea[i].getElementsByTagName('img');
+        for (var j = 0; j < images.length; j++) {
+            images[j].onclick = function (e) {
+                var img = e.target;
+                document.getElementById('modal-image').src = img.src;
+                document.getElementById('modal-image-box').classList.remove('hidden');
+                document.getElementById('menuNext').classList.add('hidden');
+            }
+        }
+    }
     document.getElementById('zoomclose').onclick = function (e) {
         document.getElementById('modal-image-box').classList.add('hidden');
         document.getElementById('menuNext').classList.remove('hidden');
@@ -567,18 +579,22 @@ function SetupSuppressedParagraphs() {
 
 function SetupEditParagraph() {
     var paragraphs = document.getElementsByClassName('editparagraph');
-    paragraphs.forEach(paragraph => paragraph.onclick = EditParagraph);
+    for (var i = 0; i < paragraphs.length; i++) {
+        paragraphs[i].onclick = EditParagraph;
+    }
 }
 
 function SetThisVerseAsTarget() {
     var links = document.getElementsByClassName("link");
-    links.forEach(link => link.onclick = function (event) {
-        var a = event.target.href;
-        var dta = document.querySelector('.active.rangedata');
-        e.preventDefault();
-        var tg = a + '&tgstart=' + dta.attr('data-start') + '&tgend=' + dta.attr('data-end')
-        location.href = tg;
-    });
+    for (var i = 0; i < links.length; i++) {
+        links[i].onclick = function (event) {
+            var a = event.target.href;
+            var dta = document.querySelector('.active.rangedata');
+            e.preventDefault();
+            var tg = a + '&tgstart=' + dta.attr('data-start') + '&tgend=' + dta.attr('data-end')
+            location.href = tg;
+        }
+    }
 }
 
 function SetupPagination() {
