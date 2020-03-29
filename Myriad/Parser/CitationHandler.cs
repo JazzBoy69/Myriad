@@ -73,10 +73,21 @@ namespace Myriad.Parser
                 return true;
             }
             int action = TokenDictionary.Lookup(tokenBeforeLast, lastToken, token, count);
-            if (action == Result.notfound) return false;
+            if (action == Result.notfound) 
+                return false;
             if (count == Result.notfound) count =
                     IndexOfBook(paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1));
             if (count == Result.notfound) return false;
+            if ((action == Ordinals.second) && (verse.First.Book == Result.notfound)
+                && (results.Count > Numbers.nothing))
+            {
+                verse.First.Book = results[results.Count - 1].CitationRange.Book;
+            }
+            if ((action == Ordinals.third) && (verse.First.Chapter == Result.notfound)
+                && (results.Count > Numbers.nothing))
+            {
+                verse.First.Chapter = results[results.Count - 1].CitationRange.FirstChapter;
+            }
             verse.Set(action & 7, count);
             if (action > 0xF)
             {
@@ -235,7 +246,8 @@ namespace Myriad.Parser
                 citation.CitationType = CitationTypes.Verse;
             if (stashVerse != Result.notfound)
             {
-                verse.Second.Verse = stashVerse;
+                verse.First.Verse = stashVerse;
+                verse.Second.Reset();
             }
         }
 
@@ -250,12 +262,11 @@ namespace Myriad.Parser
             int pointer = citation.Label.End;
             if ((lastToken == ',') && (verse.First.Verse + 1 != verse.Second.Verse))
             {
-                verse.First.Verse = verse.Second.Verse;
-                verse.Second.Reset();
                 pointer = commaAt;
                 citation.Label.MoveEndTo(commaAt);
                 citation.TrailingSymbols.MoveStartTo(commaAt+1);
                 citation.TrailingSymbols.MoveEndTo(commaAt+1);
+                lastToken = ';';
             }
             else
             {

@@ -78,8 +78,7 @@ namespace Myriad.Parser
                 {
                     if (secondVerse.Chapter != Result.notfound)
                         CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
-                         firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
-                         KeyID.MaxWordIndex);
+                         secondVerse.Chapter, secondVerse.Verse);
                     else
                         CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
                      firstVerse.Chapter, secondVerse.Verse);

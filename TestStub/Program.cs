@@ -23,7 +23,7 @@ namespace TestStub
         private void RunTest()
         {
             string citationText;
-            Citation citation = CitationConverter.FromString("Mt 24:45-47");
+            List<Citation> citation = CitationConverter.FromString("Mt 24:14, 16-18");
             citationText = CitationConverter.ToString(citation);
             Console.WriteLine(citationText);
         }

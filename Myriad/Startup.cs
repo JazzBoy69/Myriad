@@ -9,6 +9,7 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
+using Myriad.Library;
 using Myriad.Pages;
 using Myriad.Parser;
 using Microsoft.Extensions.Primitives;
@@ -59,7 +60,7 @@ namespace Myriad
             var query = context.Request.Query;
             if ((path == SearchPage.pageURL) && (query.ContainsKey("q")))
             {
-                Citation citation = CitationConverter.FromString(query["q"]);
+                Citation citation = CitationConverter.FromString(query["q"])[Ordinals.first]; ;
                 if (citation.CitationType != CitationTypes.Invalid)
                 {
                     switch (citation.CitationType)

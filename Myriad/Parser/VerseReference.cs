@@ -57,10 +57,24 @@ namespace Myriad.Parser
             if (index > Ordinals.fourth)
             {
                 index -= 4;
+                if ((index == Ordinals.third) && (Second.Chapter == Result.notfound))
+                {
+                    Second.Chapter = First.Chapter;
+                }
+                if ((index == Ordinals.second) && (Bible.IsShortBook(First.Book)))
+                {
+                    Second.Chapter = 1;
+                    index++;
+                }
                 Second.Set(index, value);
             }
             else
             {
+                if ((index == Ordinals.second) && (Bible.IsShortBook(First.Book)))
+                {
+                    First.Chapter = 1;
+                    index++;
+                }
                 First.Set(index, value);
             }
         }
