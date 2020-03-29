@@ -145,11 +145,13 @@ namespace Myriad.Pages
         private void AddTextTabs(List<(int start, int end)> idRanges)
         {
             throw new NotImplementedException();
+            // todo parallel texts
         }
 
         private void AddReadingViewSection(int commentID)
         {
             throw new NotImplementedException();
+            //todo reading view
         }
 
         private List<int> GetCommentIDs(Citation citation)

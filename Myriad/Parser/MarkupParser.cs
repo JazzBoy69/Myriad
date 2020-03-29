@@ -56,7 +56,7 @@ namespace Myriad.Parser
             formatter.StartSection();
             if (currentParagraph.Length > 1)
             {
-                HandleStartToken();
+                foundEndToken = HandleStartToken();
             }
             if (!formats.heading && !formats.figure)
             {

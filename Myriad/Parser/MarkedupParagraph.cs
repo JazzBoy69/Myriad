@@ -47,8 +47,8 @@ namespace Myriad.Parser
         public string Text 
         { 
             get 
-            { 
-                return text.ToString(); 
+            {
+                return new string(text);
             } 
             set 
             { 

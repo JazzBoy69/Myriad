@@ -73,6 +73,7 @@ namespace Myriad.Parser
                 if (currentParagraph.Length == Numbers.nothing) return;
                 Initialize();
                 HandleStart();
+                if (foundEndToken) return;
                 SearchForToken();
                 foundEndToken = false;
                 while (mainRange.Valid)
