@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Myriad.Library;
 
 namespace Myriad.Parser
 {
@@ -28,7 +29,7 @@ namespace Myriad.Parser
         abstract Span<char> SpanAt(StringRange range);
 
         abstract int IndexOf(char token, int start, int end);
-
+        int LastIndexOf(char token);
     }
     public class MarkedUpParagraph : IMarkedUpParagraph
     {
@@ -64,14 +65,18 @@ namespace Myriad.Parser
         }
         public int IndexOfAny(char[] tokens, int start)
         {
-            var textSpan = TextSpan;
-            return textSpan.Slice(start, textSpan.Length-start).IndexOfAny(tokens)+start;
+            int result = TextSpan.Slice(start).IndexOfAny(tokens);
+            return (result == Result.notfound) ?
+                Result.notfound :
+                result + start;
         }
 
         public int IndexOf(char token, int start)
         {
-            var textSpan = TextSpan;
-            return textSpan.Slice(start, textSpan.Length - start).IndexOf(token)+start;
+            int result = TextSpan.Slice(start).IndexOf(token);
+            return (result == Result.notfound) ?
+                Result.notfound :
+                result + start;
         }
 
         public char CharAt(int index)
@@ -88,7 +93,10 @@ namespace Myriad.Parser
         
         public int IndexOf(char token, int start, int end)
         {
-            return TextSpan.Slice(start, end - start).IndexOf(token);
+            int result = TextSpan.Slice(start, end - start+1).IndexOf(token)+start;
+            return (result == Result.notfound) ?
+                Result.notfound :
+                result + start;
         }
 
         public int TokenAt(int index)
@@ -105,6 +113,11 @@ namespace Myriad.Parser
         public Span<char> SpanAt(StringRange range)
         {
             return SpanAt(range.Start, range.End);
+        }
+
+        public int LastIndexOf(char token)
+        {
+            return Array.LastIndexOf(text, token);
         }
     }
 }

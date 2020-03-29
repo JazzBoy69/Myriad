@@ -51,6 +51,7 @@ namespace Myriad.Parser
 
         protected override void HandleStart()
         {
+            citationLevel = 0;
             formats.Reset();
             formatter.StartSection();
             if (currentParagraph.Length > 1)
@@ -103,8 +104,13 @@ namespace Myriad.Parser
         protected override void HandleEnd()
         {
             mainRange.MoveEndToLimit();
-            if (mainRange.Start > Ordinals.first)
-                mainRange.MoveStartTo(mainRange.Start - 1);
+            if (citationLevel > 0)
+            {
+                mainRange.MoveStartTo(lastDash + 1);
+                mainRange.PullEnd();
+                HandleLastDashCitations();
+                mainRange.BumpEnd();
+            }
             formatter.AppendString(currentParagraph, mainRange);
             if (formats.heading)
                 formatter.EndHeading();
@@ -133,6 +139,10 @@ namespace Myriad.Parser
         public override void SearchForToken()
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));
+            if ((mainRange.End == Result.notfound) || ((mainRange.Start < lastDash) && (mainRange.End > lastDash)))
+            {
+                mainRange.MoveEndTo(lastDash);
+            }
         }
         override public void HandleToken()
         {
@@ -193,7 +203,7 @@ namespace Myriad.Parser
                 SkipLongToken();
                 return;
             }
-            if ((token == '(') || (token == '['))
+            if ((token == '(') || (token == '[') || (token=='—'))
             {
                 citationLevel++;
                 AppendToken();
@@ -286,6 +296,27 @@ namespace Myriad.Parser
             formatter.EndSection();
         }
 
+        public void HandleLastDashCitations()
+        {
+            List<Citation> citations =
+                citationHandler.ParseCitations(mainRange, currentParagraph);
+            if (citations.Count > 0)
+            {
+                if (formats.labelExists)
+                {
+                    citations[Ordinals.first].DisplayLabel = labelRange;
+                    formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
+                    mainRange.MoveStartTo(mainRange.End);
+                    return;
+                }
+                else
+                {
+                    citations.Last().Label.BumpEnd();
+                    formatter.AppendCitations(currentParagraph, citations);
+                    mainRange.MoveStartTo(citations[citations.Count - 1].Label.End);
+                }
+            }
+        }
         public override void HandleCitations()
         {
             List<Citation> citations =

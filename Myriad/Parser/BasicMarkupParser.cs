@@ -42,6 +42,7 @@ namespace Myriad.Parser
         protected StringRange mainRange = new StringRange();
         protected IMarkedUpParagraphCreator creator;
         protected bool foundEndToken;
+        protected int lastDash;
 
         public IMarkedUpParagraph CurrentParagraph { get => currentParagraph; }
         public StringRange MainRange { get => mainRange;  }
@@ -91,7 +92,25 @@ namespace Myriad.Parser
             }
             mainRange = new StringRange();
             mainRange.SetLimit(currentParagraph.Length - 1);
+            lastDash = GetLastDash();
         }
+
+        private int GetLastDash()
+        {
+            int p = currentParagraph.LastIndexOf('—');
+            if (p == Result.notfound) return Result.notfound;
+            int q = currentParagraph.IndexOf('.', p);
+            int r = currentParagraph.LastIndexOf('.');
+            if (q != r) return Result.notfound;
+            q = currentParagraph.IndexOf(' ', p);
+            if (q == Result.notfound) return Result.notfound;
+            r = Bible.IndexOfBook(currentParagraph.StringAt(p + 1, q - 1));
+            return (r == Result.notfound) ?
+                Result.notfound :
+                p;
+
+        }
+
         virtual protected void HandleStart()
         {
 
@@ -118,6 +137,10 @@ namespace Myriad.Parser
         virtual public void SearchForToken()
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.citationTokens, mainRange.Start));
+            if ((mainRange.Start < lastDash) && (mainRange.End > lastDash))
+            {
+                mainRange.MoveEndTo(lastDash);
+            }
         }
 
         virtual public void HandleToken()
@@ -152,7 +175,7 @@ namespace Myriad.Parser
                 mainRange.PullEnd();
                 return;
             }
-            if ((token == '(') || (token == '[') || (token == '~'))
+            if ((token == '(') || (token == '[') || (token == '—'))
             {
                 citationLevel++;
                 return;
