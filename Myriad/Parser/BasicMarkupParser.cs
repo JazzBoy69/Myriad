@@ -61,6 +61,11 @@ namespace Myriad.Parser
 
         }
 
+        public void ParseParagraph(string paragraph)
+        {
+            currentParagraph = creator.Create(paragraph);
+            ParseParagraph();
+        }
         protected void ParseParagraph()
         {
             try

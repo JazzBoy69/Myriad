@@ -106,6 +106,7 @@ namespace Myriad.Pages
 
         private void AddComment()
         {
+            paragraphs.RemoveAt(Ordinals.first);
             builder.StartSectionWithClass(HTMLClasses.scriptureComment);
             parser.Parse(paragraphs);
             builder.Append(HTMLTags.EndSection);
@@ -115,12 +116,14 @@ namespace Myriad.Pages
         private void AddText((int start, int end) textRange)
         {
             builder.StartSectionWithClass(HTMLClasses.scriptureSection);
-            builder.Append(HTMLTags.StartMainHeader);
+            builder.Append(HTMLTags.StartHeader);
+            builder.Append(paragraphs[Ordinals.first].Substring(Ordinals.third,
+                paragraphs[Ordinals.first].Length - 4));
             Citation citation = new Citation(textRange.start, textRange.end);
             builder.Append(" (");
-            CitationConverter.Append(builder, citation);
+            builder.Append(GetTitle());
             builder.Append(")");
-            builder.Append(HTMLTags.EndMainHeader);
+            builder.Append(HTMLTags.EndHeader);
             builder.StartSectionWithClass(HTMLClasses.scriptureText);
             List<Keyword> keywords = ReadKeywords(citation);
             formatter = new TextFormatter(builder);

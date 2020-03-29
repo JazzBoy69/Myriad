@@ -97,9 +97,11 @@ namespace Myriad.Parser
         {
             var citation = new Citation(keyword.ID, keyword.ID);
             citation.CitationType = CitationTypes.Verse;
+            builder.Append(HTMLTags.StartBold);
             PageFormatter.StartCitationAnchor(builder, citation);
             builder.Append(keyword.Verse);
             builder.Append(HTMLTags.EndAnchor);
+            builder.Append(HTMLTags.EndBold);
             builder.Append(Symbols.space);
         }
 
