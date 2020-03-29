@@ -19,6 +19,7 @@ namespace Myriad.Parser
         IMarkedUpParagraph paragraphToParse;
         bool first = true;
         int commaAt = Result.notfound;
+        bool brokenComma = false;
 
         public Citation Citation
         {
@@ -222,6 +223,7 @@ namespace Myriad.Parser
         private void ApplyVerseToCitation()
         {
             int stashVerse = Result.notfound;
+            brokenComma = false;
             if ((verse.Second.Verse != Result.notfound) &&
                 ((lastToken == ',') && (verse.First.Verse + 1 != verse.Second.Verse)))
              {
@@ -230,7 +232,19 @@ namespace Myriad.Parser
                     lastToken = ';';
                 }
                 stashVerse = verse.Second.Verse;
+                brokenComma = true;
                 verse.Second.Reset();
+            }
+            if ((verse.First.Verse != Result.notfound) && (results.Count > Numbers.nothing))
+            {
+                if (verse.First.Chapter == Result.notfound)
+                {
+                    verse.First.Chapter = results[results.Count - 1].CitationRange.LastChapter;
+                }
+                if (verse.First.Book == Result.notfound)
+                {
+                    verse.First.Book = results[results.Count - 1].CitationRange.Book;
+                }
             }
             citation.Set(verse.First, verse.Second);
             if ((token == '!') && (citation.CitationType == CitationTypes.Text))
@@ -251,7 +265,7 @@ namespace Myriad.Parser
         private void AddCitationToResults()
         {
             int pointer = citation.Label.End;
-            if ((lastToken == ',') && (verse.First.Verse + 1 != verse.Second.Verse))
+            if (brokenComma)
             {
                 pointer = commaAt;
                 citation.Label.MoveEndTo(commaAt);
@@ -268,20 +282,23 @@ namespace Myriad.Parser
             {
                 citation.TrailingSymbols.MoveStartTo(pointer);
                 citation.TrailingSymbols.MoveEndTo(pointer);
-                //citation.Label.PullEnd();
-                //rangeToParse.MoveStartTo(pointer);
                 pointer++;
             }
             Citation newCitation = citation.Copy();
             results.Add(newCitation);
             citation = new Citation();
             pointer++;
-            //if (lastToken == ',') pointer++;
             citation.LeadingSymbols.MoveStartTo(pointer);
             citation.LeadingSymbols.MoveEndTo(pointer);
             citation.Label.MoveStartTo(pointer);
             citation.Label.MoveEndTo(pointer);
             first = true;
+            if (!brokenComma)
+            {
+                tokenBeforeLast = lastToken;
+                lastToken = token;
+            }
+            count = Numbers.nothing;
         }
 
         public void MoveToNext()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Myriad.Parser;
 using Myriad.Data;
 using Myriad;
+using Myriad.Tests;
 
 namespace TestStub
 {
@@ -23,7 +24,7 @@ namespace TestStub
         private void RunTest()
         {
             string citationText;
-            List<Citation> citation = CitationConverter.FromString("3Jo 1, 5-8");
+            List<Citation> citation = CitationConverter.FromString(Citations.BrokenCommaCitation);
             citationText = CitationConverter.ToString(citation);
             Console.WriteLine(citationText);
         }

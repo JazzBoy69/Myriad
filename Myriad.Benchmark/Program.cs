@@ -15,7 +15,7 @@ namespace Myriad.Benchmark
         {
             return new DefaultHttpContext().Response;
         }
-        [Benchmark]
+        //[Benchmark]
         public void GetHomeData()
         {
             IndexPage indexPage = new IndexPage();

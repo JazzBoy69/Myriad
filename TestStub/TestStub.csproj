@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Myriad.Tests\Myriad.Tests.csproj" />
     <ProjectReference Include="..\Myriad\Myriad.csproj" />
   </ItemGroup>
 
