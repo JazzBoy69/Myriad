@@ -20,6 +20,7 @@ namespace Myriad.Tests
         public const string ShortBookCommaCitation = "2Jo 10, 11";
         public const string ShortBookBrokenCitation = "3Jo 1, 5-8";
         public const string MultipleCitations = "Mt 24:14; 25:31-33, 40; Mr 13:10";
+        public const string MultipleCitations2 = "Ge 6:5; 8:21; Jas 1:14, 15";
     }
     class CitationHandlerTests
     {
@@ -58,6 +59,16 @@ namespace Myriad.Tests
             citationText = CitationConverter.ToString(citation);
             TestCitation(citationText, citation);
             Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
+            HTMLStringBuilder builder = new HTMLStringBuilder();
+            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            MarkupParser parser = new MarkupParser(builder);
+            PageFormatter formatter = new PageFormatter(parser, builder);
+            paragraph.Text = Citations.ChapterCitation;
+            CitationHandler citationHandler = new CitationHandler();
+            StringRange range = new StringRange(0, Citations.ChapterCitation.Length - 1);
+            var citations = citationHandler.ParseCitations(range, paragraph);
+            formatter.AppendCitationLabels(paragraph, citations);
+            Assert.AreEqual(Citations.ChapterCitation, builder.Response());
         }
 
         [Test]

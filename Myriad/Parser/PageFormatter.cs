@@ -278,7 +278,7 @@ namespace Myriad.Parser
                     SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End));
             StartCitationAnchor(builder, citation);
             builder.Append(paragraph.SpanAt(citation.Label.Start,
-                citation.Label.End - 1));
+                citation.Label.End));
             builder.Append(HTMLTags.EndAnchor);
             if (citation.TrailingSymbols.Length > 0)
                 builder.Append(paragraph.

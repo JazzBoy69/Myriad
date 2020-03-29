@@ -16,7 +16,7 @@ namespace Myriad.Parser
             paragraph.Text = stringToConvert;
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(Ordinals.first);
-            mainRange.MoveEndTo(stringToConvert.Length - 1);
+            mainRange.MoveEndTo(stringToConvert.Length-1);
             var citations = citationHandler.ParseCitations(mainRange, paragraph);
             return (citations.Count>Numbers.nothing) ? 
                 citations :

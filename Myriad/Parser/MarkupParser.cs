@@ -313,14 +313,15 @@ namespace Myriad.Parser
                 {
                     citations.Last().Label.BumpEnd();
                     formatter.AppendCitations(currentParagraph, citations);
-                    mainRange.MoveStartTo(citations[citations.Count - 1].Label.End);
+                    mainRange.MoveStartTo(citations[citations.Count - 1].Label.End+1);
                 }
             }
         }
         public override void HandleCitations()
         {
+            var rangeToParse = new StringRange(mainRange.Start, mainRange.End - 1);
             List<Citation> citations =
-                citationHandler.ParseCitations(mainRange, currentParagraph);
+                citationHandler.ParseCitations(rangeToParse, currentParagraph);
             if (citations.Count > 0)
             {
                 if (formats.labelExists)

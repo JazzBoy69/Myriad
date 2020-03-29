@@ -285,8 +285,8 @@ namespace Myriad.Parser
                 citation.TrailingSymbols.MoveStartTo(pointer);
                 citation.TrailingSymbols.MoveEndTo(pointer);
                 citation.Label.PullEnd();
-                pointer++;
             }
+            pointer++;
             Citation newCitation = citation.Copy();
             results.Add(newCitation);
             citation = new Citation();
