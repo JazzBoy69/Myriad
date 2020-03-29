@@ -18,7 +18,7 @@ namespace Myriad.Tests
         public const string BangCitation = "Mr 2:1!";
         public const string ShortBookCitation = "2Jo 10";
         public const string ShortBookCommaCitation = "2Jo 10, 11";
-        public const string ShortBookBrokenCitation = "3Jo 1, 5-8";
+        public const string ShortBookBrokenCitation = "3Jo 1, 5-8";
     }
     class CitationHandlerTests
     {
