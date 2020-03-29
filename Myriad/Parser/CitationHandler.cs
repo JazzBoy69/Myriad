@@ -78,16 +78,7 @@ namespace Myriad.Parser
             if (count == Result.notfound) count =
                     IndexOfBook(paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1));
             if (count == Result.notfound) return false;
-            if ((action == Ordinals.second) && (verse.First.Book == Result.notfound)
-                && (results.Count > Numbers.nothing))
-            {
-                verse.First.Book = results[results.Count - 1].CitationRange.Book;
-            }
-            if ((action == Ordinals.third) && (verse.First.Chapter == Result.notfound)
-                && (results.Count > Numbers.nothing))
-            {
-                verse.First.Chapter = results[results.Count - 1].CitationRange.FirstChapter;
-            }
+
             verse.Set(action & 7, count);
             if (action > 0xF)
             {

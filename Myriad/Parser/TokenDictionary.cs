@@ -36,12 +36,14 @@ namespace Myriad.Parser
             { 0x1453, 0x02 }, //Set first verse Mt 24:14; 28:19, 20 => ; xx:19,
             { 0x1454, 0x12 }, //Set first verse and add results Mt 24:14; 28:20; => ; xx:20;
             { 0x1456, 0x12 }, //Set first verse and add results Mr 2:1! => ; xx:1!
+            { 0x1483, 0x01 }, //Set first chapter Ge 6, 7 => ;xx_6,
             { 0x1484, 0x11 }, //Set first chapter and add results Mt 24; => ;xx_24;
             { 0x1485, 0x01 }, //Set first chapter Mt 24:14 => ;xx _24:
             { 0x1524, 0x16 }, //Set second verse Mt 24:45-47 => :xx-47;
             { 0x1525, 0x05 }, //Set second chapter 2Co 6:14-7:1 => :xx-7:
             { 0x1534, 0x16 }, //Set second verse and add results Re 16:14, 16; => :xx, 16;
             { 0x1532, 0x16 }, //Set second verse and add results Re 16:14, 16-18 => :xx, 16-
+            { 0x1834, 0x15 }, //Set second chapter and add results Ge 6, 7; => _xx, 7;
             { 0x1852, 0x02 }, //Set first verse Mt 24:45-47 => _xx:45- 
             { 0x1853, 0x02 }, //Set first verse Mt 28:19, 20 => _xx:19,
             { 0x1854, 0x12 }, //Set first verse and add results Mt 24:14; => _xx:14;

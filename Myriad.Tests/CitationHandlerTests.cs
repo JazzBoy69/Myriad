@@ -16,7 +16,8 @@ namespace Myriad.Tests
         public const string NumberedBookCitation = "1 John 5:3";
         public const string RangeCitation = "Mt 24:45-47";
         public const string BangCitation = "Mr 2:1!";
-        public const string ShortBookCitation = "2Jo 10, 11";
+        public const string ShortBookCitation = "2Jo 10";
+        public const string ShortBookCommaCitation = "2Jo 10, 11";
         public const string ShortBookBrokenCitation = "3Jo 1, 5-8";
     }
     class CitationHandlerTests
@@ -74,6 +75,15 @@ namespace Myriad.Tests
             Citation citation = CitationConverter.FromString(Citations.ShortBookCitation)[Ordinals.first];
             citationText = CitationConverter.ToString(citation);
             Assert.AreEqual(Citations.ShortBookCitation, citationText);
+        }
+
+        [Test]
+        public void ShortBookCommaCitation()
+        {
+            string citationText;
+            Citation citation = CitationConverter.FromString(Citations.ShortBookCommaCitation)[Ordinals.first];
+            citationText = CitationConverter.ToString(citation);
+            Assert.AreEqual(Citations.ShortBookCommaCitation, citationText);
         }
 
         [Test]
