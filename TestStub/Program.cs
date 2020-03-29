@@ -24,7 +24,7 @@ namespace TestStub
         private void RunTest()
         {
             string citationText;
-            List<Citation> citation = CitationConverter.FromString(Citations.BrokenCommaCitation);
+            List<Citation> citation = CitationConverter.FromString(Citations.MultipleCitations);
             citationText = CitationConverter.ToString(citation);
             Console.WriteLine(citationText);
         }

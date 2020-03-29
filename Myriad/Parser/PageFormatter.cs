@@ -238,7 +238,27 @@ namespace Myriad.Parser
             }
         }
 
-        internal void AppendCitations(IMarkedUpParagraph paragraph, List<Citation> citations)
+        public void AppendCitationLabels(IMarkedUpParagraph paragraph, List<Citation> citations)
+        {
+            foreach (var citation in citations)
+            {
+                AppendCitationLabel(paragraph, citation);
+            }
+        }
+
+        internal void AppendCitationLabel(IMarkedUpParagraph paragraph, Citation citation)
+        {
+            if (citation.LeadingSymbols.Length > 0)
+                builder.Append(paragraph.
+                    SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End));
+            builder.Append(paragraph.SpanAt(citation.Label.Start,
+                citation.Label.End));
+            if (citation.TrailingSymbols.Length > 0)
+                builder.Append(paragraph.
+                    SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End));
+        }
+
+        public void AppendCitations(IMarkedUpParagraph paragraph, List<Citation> citations)
         {
             foreach (var citation in citations)
             {

@@ -198,11 +198,13 @@ namespace Myriad.Parser
 
         public void SkipLeadingSymbols()
         {
-            while ((citation.Label.End <= rangeToParse.End) && (paragraphToParse.CharAt(citation.Label.Start) == ' '))
+            citation.LeadingSymbols.MoveStartTo(citation.Label.Start);
+            while ((citation.Label.Start <= rangeToParse.End) && (paragraphToParse.CharAt(citation.Label.Start) == ' '))
             {
-                citation.LeadingSymbols.BumpEnd();
                 citation.Label.BumpStart();
             }
+            citation.LeadingSymbols.MoveEndTo(citation.Label.Start - 1);
+            citation.Label.MoveEndTo(citation.Label.Start);
         }
 
         public void InitializeParser(StringRange givenRange, IMarkedUpParagraph givenParagraph)
@@ -282,14 +284,12 @@ namespace Myriad.Parser
             {
                 citation.TrailingSymbols.MoveStartTo(pointer);
                 citation.TrailingSymbols.MoveEndTo(pointer);
+                citation.Label.PullEnd();
                 pointer++;
             }
             Citation newCitation = citation.Copy();
             results.Add(newCitation);
             citation = new Citation();
-            pointer++;
-            citation.LeadingSymbols.MoveStartTo(pointer);
-            citation.LeadingSymbols.MoveEndTo(pointer);
             citation.Label.MoveStartTo(pointer);
             citation.Label.MoveEndTo(pointer);
             first = true;

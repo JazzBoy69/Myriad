@@ -103,6 +103,16 @@ namespace Myriad.Tests
             List<Citation> citation = CitationConverter.FromString(Citations.MultipleCitations);
             citationText = CitationConverter.ToString(citation);
             Assert.AreEqual(Citations.MultipleCitations, citationText);
+            HTMLStringBuilder builder = new HTMLStringBuilder();
+            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            MarkupParser parser = new MarkupParser(builder);
+            PageFormatter formatter = new PageFormatter(parser, builder);
+            paragraph.Text = Citations.MultipleCitations;
+            CitationHandler citationHandler = new CitationHandler();
+            StringRange range = new StringRange(0, Citations.MultipleCitations.Length - 1);
+            var citations = citationHandler.ParseCitations(range, paragraph);
+            formatter.AppendCitationLabels(paragraph, citations);
+            Assert.AreEqual(Citations.MultipleCitations, builder.Response());
         }
 
         [Test]
