@@ -7,39 +7,6 @@ using Myriad.Library;
 
 namespace Myriad.Data.Implementation
 {
-    public class SqlServerInfo
-    {
-        internal const string key1 = "@key1";
-        internal const string key2 = "@key2";
-        internal static Dictionary<DataOperation, string> Selectors = new Dictionary<DataOperation, string>()
-        {
-            { DataOperation.ReadNavigationPage,
-                "select text from navigationparagraphs where name=@key1 order by paragraphindex" },
-            { DataOperation.ReadArticleTitle,
-                "select title from tags where id="+ key1},
-            { DataOperation.ReadArticleID,
-                "select id from tags where title="+ key1 },
-            { DataOperation.ReadArticle,
-                "select text from glossary where id="+ key1 },
-            { DataOperation.ReadCommentIDs,
-                "select id from commentlinks where last>= "+ key1+" and start<="+key2 },
-            { DataOperation.ReadCommentParagraphs,
-                "select RTrim(text) from comments where id="+ key1 },
-            { DataOperation.ReadCommentLinks,
-                "select start, last from commentlinks where id="+ key1 },
-            { DataOperation.ReadKeywords,
-                "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
-                " where keyid>="
-                + key1 + " and keyid<=" + key2 },
-            { DataOperation.ReadImageSize,
-                "select height, width from ImageSizes where name="+key1 }
-        };
-        internal static SqlConnection Connection()
-        {
-            return new SqlConnection(ConnectionString);
-        }
-        static string ConnectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
-    }
     public class SqlServerDataReader<KeyType> : DataReader<KeyType>
     {
         protected SqlDataReader reader;
@@ -50,7 +17,7 @@ namespace Myriad.Data.Implementation
             connection = SqlServerInfo.Connection();
             connection.Open();
             command = new SqlCommand(SqlServerInfo.Selectors[operation], connection);
-            command.Parameters.AddWithValue(SqlServerInfo.key1, key);
+            command.Parameters.AddWithValue(SqlServerInfo.parameterNames[(operation, Ordinals.first)], key);
         }
 
         public List<DataType> GetData<DataType>()
@@ -128,7 +95,7 @@ namespace Myriad.Data.Implementation
     {
         public SqlServerDataReader(DataOperation operation, KeyType1 key1, KeyType2 key2) : base(operation, key1)    
         {
-            command.Parameters.AddWithValue(SqlServerInfo.key2, key2);
+            command.Parameters.AddWithValue(SqlServerInfo.parameterNames[(operation, Ordinals.second)], key2);
         }
     }
 }

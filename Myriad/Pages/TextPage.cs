@@ -85,14 +85,14 @@ namespace Myriad.Pages
 
         public List<string> ReadParagraphs(int commentID)
         {
-            var reader = ReaderProvider<int>.Reader(DataOperation.ReadCommentParagraphs,
+            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadCommentParagraphs,
                 commentID);
             return reader.GetData<string>();
         }
 
         public List<(int start, int end)> ReadLinks(int commentID)
         {
-            var reader = ReaderProvider<int>.Reader(DataOperation.ReadCommentLinks,
+            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadCommentLinks,
                 commentID);
             return reader.GetData<int, int>();
         }
@@ -137,7 +137,7 @@ namespace Myriad.Pages
 
         public List<Keyword> ReadKeywords(Citation citation)
         {
-            var reader = ReaderProvider<int, int>.Reader(DataOperation.ReadKeywords,
+            var reader = SQLServerReaderProvider<int, int>.Reader(DataOperation.ReadKeywords,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetClassData<Keyword>();
         }
@@ -156,7 +156,7 @@ namespace Myriad.Pages
 
         private List<int> GetCommentIDs(Citation citation)
         {
-            var reader = ReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
+            var reader = SQLServerReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetData<int>();
         }

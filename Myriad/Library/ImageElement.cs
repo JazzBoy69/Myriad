@@ -30,7 +30,7 @@ namespace Myriad.Library
 
         private void GetDimensionsFromDatabase()
         {
-            var reader = ReaderProvider<string>.Reader(DataOperation.ReadImageSize,
+            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadImageSize,
                 filename);
             ImageSize size = reader.GetClassDatum<ImageSize>();
             if (size == null)

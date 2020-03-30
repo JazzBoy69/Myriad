@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Myriad.Library;
 using System.Data.Common;
+using System.Data.SqlClient;
 
 namespace Myriad.Data
 {
@@ -26,6 +27,16 @@ namespace Myriad.Data
             isCapitalized = reader.GetInt32(Ordinals.fifth) != 0;
             isPoetic = reader.GetInt32(Ordinals.sixth) != 0;
             paragraphWordIndex = reader.GetInt32(Ordinals.seventh);
+        }
+
+        public void Create(DbCommand command)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddParameterTo<DataType>(DataWriter<DataType> writer, int index) where DataType : DataObject
+        {
+            throw new NotImplementedException();
         }
 
         public ReadOnlySpan<char> LeadingSymbols
@@ -70,5 +81,7 @@ namespace Myriad.Data
         {
             get { return id.ID; }
         }
+
+        public int ParameterCount => throw new NotImplementedException();
     }
 }

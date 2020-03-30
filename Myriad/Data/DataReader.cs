@@ -9,7 +9,9 @@ namespace Myriad.Data
 {
     public enum DataOperation { ReadNavigationPage, ReadArticleTitle, ReadArticleID, 
         ReadArticle, ReadCommentIDs, ReadCommentLinks, ReadCommentParagraphs,
-        ReadKeywords, ReadImageSize
+        ReadKeywords, ReadImageSize,
+
+        WriteImageSize = 256
     }
     public static class DataObjectFactory<DataObjectType> where DataObjectType:DataObject, new()
     {
@@ -21,10 +23,6 @@ namespace Myriad.Data
         }
     }
 
-    public interface DataObject
-    {
-        void Read(DbDataReader reader);
-    }
     public interface DataReader<KeyType>
     {
         List<DataType> GetData<DataType>();
@@ -41,7 +39,7 @@ namespace Myriad.Data
     {
     }
 
-    public static class ReaderProvider<KeyType>
+    public static class SQLServerReaderProvider<KeyType>
     {
         public static DataReader<KeyType> Reader(DataOperation operation, KeyType key)
         {
@@ -49,7 +47,15 @@ namespace Myriad.Data
         }
     }
 
-    public static class ReaderProvider<KeyType1, KeyType2>
+    public static class SQLServerWriterProvider<DataType> where DataType : DataObject
+    {
+        public static DataWriter<DataType> Writer(DataOperation operation)
+        {
+            return new SqlServerDataWriter<DataType>(operation);
+        }
+    }
+
+    public static class SQLServerReaderProvider<KeyType1, KeyType2>
     {
         public static DataReader<KeyType1, KeyType2> Reader(DataOperation operation, 
             KeyType1 key1, KeyType2 key2)
@@ -57,5 +63,4 @@ namespace Myriad.Data
             return new SqlServerDataReader<KeyType1, KeyType2>(operation, key1, key2);
         }
     }
-
 }

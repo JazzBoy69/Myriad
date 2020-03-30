@@ -65,7 +65,7 @@ namespace Myriad.Pages
         }
         public List<string> GetPageParagraphs()
         {
-            var reader = ReaderProvider<string>.Reader(DataOperation.ReadArticle, id);
+            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadArticle, id);
             return reader.GetData<string>();
         }
         public override void LoadQueryInfo(IQueryCollection query)
@@ -73,7 +73,7 @@ namespace Myriad.Pages
             if (query.ContainsKey(queryKeyID))
             {
                 id = query[queryKeyID];
-                var titleReader = ReaderProvider<string>.Reader(
+                var titleReader = SQLServerReaderProvider<string>.Reader(
                     DataOperation.ReadArticleTitle, id);
                 title = titleReader.GetDatum<string>();
                 return;
@@ -81,7 +81,7 @@ namespace Myriad.Pages
             if (query.ContainsKey(queryKeyTitle))
             {
                 title = query[queryKeyTitle];
-                var idReader = ReaderProvider<string>.Reader(
+                var idReader = SQLServerReaderProvider<string>.Reader(
                     DataOperation.ReadArticleID, title);
                 id = idReader.GetDatum<string>();
             }

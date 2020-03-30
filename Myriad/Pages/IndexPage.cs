@@ -39,7 +39,7 @@ namespace Myriad.Pages
 
         public List<string> GetPageParagraphs()
         {
-            var reader = ReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, "home");
+            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, "home");
             return reader.GetData<string>();
         }
 
