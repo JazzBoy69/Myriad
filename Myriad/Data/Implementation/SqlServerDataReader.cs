@@ -30,7 +30,9 @@ namespace Myriad.Data.Implementation
             { DataOperation.ReadKeywords,
                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
                 " where keyid>="
-                + key1 + " and keyid<=" + key2 }
+                + key1 + " and keyid<=" + key2 },
+            { DataOperation.ReadImageSize,
+                "select height, width from ImageSizes where name="+key1 }
         };
         internal static SqlConnection Connection()
         {
@@ -106,6 +108,19 @@ namespace Myriad.Data.Implementation
             }
             Close();
             return results;
+        }
+
+        public ClassType GetClassDatum<ClassType>() where ClassType : DataObject, new()
+        {
+            reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                ClassType result = DataObjectFactory<ClassType>.Read(reader);
+                Close();
+                return result;
+            }
+            Close();
+            return default;
         }
     }
 

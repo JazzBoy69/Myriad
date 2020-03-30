@@ -9,7 +9,7 @@ namespace Myriad.Data
 {
     public enum DataOperation { ReadNavigationPage, ReadArticleTitle, ReadArticleID, 
         ReadArticle, ReadCommentIDs, ReadCommentLinks, ReadCommentParagraphs,
-        ReadKeywords
+        ReadKeywords, ReadImageSize
     }
     public static class DataObjectFactory<DataObjectType> where DataObjectType:DataObject, new()
     {
@@ -32,6 +32,9 @@ namespace Myriad.Data
         List<ValueTuple<T1, T2>> GetData<T1, T2>();
 
         List<ClassType> GetClassData<ClassType>() where ClassType : DataObject, new();
+
+        ClassType GetClassDatum<ClassType>() where ClassType : DataObject, new();
+
     }
 
     public interface DataReader<KeyType1, KeyType2> : DataReader<KeyType1>

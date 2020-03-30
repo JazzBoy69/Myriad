@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using Myriad.Data;
 
 namespace Myriad.Library
 {
@@ -7,21 +9,51 @@ namespace Myriad.Library
     {
         const double landscapeRatio = .70;
         const double portraitRatio = 1.18;
-        private readonly string path;
-        private double height;
+        private string path;
+        private double height = -1.0;
         private double width;
         private double widthpercentage = 1;
         private double ratio;
-        private readonly bool valid = false;
+        private bool valid = false;
         public static string pictureDirectory = System.IO.Path.Combine(Directory.GetCurrentDirectory(),
                 "wwwroot", "pictures");
         public static string pictureSourceDirectory = "pictures";
+        string filename;
 
 
 
         public ImageElement(string p)
         {
-            string filename = p.Replace("[[", "").Replace("]]", "");
+            filename = p.Replace("[[", "").Replace("]]", "");
+            GetDimensionsFromDatabase();
+        }
+
+        private void GetDimensionsFromDatabase()
+        {
+            var reader = ReaderProvider<string>.Reader(DataOperation.ReadImageSize,
+                filename);
+            ImageSize size = reader.GetClassDatum<ImageSize>();
+            if (size == null)
+            {
+                GetDimensionsFromFile();
+                if (valid)
+                {
+                    SaveDimensionsInDatabase();
+                }
+                return;
+            }
+            this.height = size.Height;
+            this.width = size.Width;
+        }
+
+        private void SaveDimensionsInDatabase()
+        {
+            //todo implement write to database
+            throw new NotImplementedException();
+        }
+
+        private void GetDimensionsFromFile()
+        {
             string path = System.IO.Path.Combine(pictureDirectory, filename);
             this.path = System.IO.Path.Combine(pictureSourceDirectory, filename);
             if (File.Exists(path))
