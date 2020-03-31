@@ -12,8 +12,8 @@ namespace Myriad.Tests
         public void AddImageSizeToDb()
         {
             string filename = "Ge0605.jpg";
-            double width = 200;
-            double height = 100;
+            double width = 600;
+            double height = 287;
             var imageSize = new ImageSize(filename, width, height);
             Assert.AreEqual(width, imageSize.Width);
             Assert.AreEqual(height, imageSize.Height);

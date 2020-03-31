@@ -5,6 +5,7 @@ using Myriad;
 using Microsoft.AspNetCore.Http;
 using Myriad.Parser;
 using Myriad.Pages;
+using Myriad.Library;
 
 
 namespace Myriad.Benchmark
@@ -21,7 +22,7 @@ namespace Myriad.Benchmark
             IndexPage indexPage = new IndexPage();
             var paragraphs = indexPage.GetPageParagraphs();
         }
-        [Benchmark]
+        //[Benchmark]
         async public Task RenderIndex()
         {
             IndexPage page = new IndexPage();
@@ -40,6 +41,29 @@ namespace Myriad.Benchmark
             mainRange.MoveStartTo(1);
             mainRange.MoveEndTo(textOfCitation.Length - 1);
             var citations = citationHandler.ParseCitations(mainRange, paragraph);
+        }
+
+        [Benchmark]
+        public void GetImageFromFile()
+        {
+            string filename = "Ge0605.jpg";
+            ImageElement image = new Library.ImageElement(filename);
+            for (int i = 0; i < 5; i++)
+            {
+                image.GetDimensionsFromFile();
+            }
+        }
+
+        [Benchmark]
+        public void GetImageFromDatabase()
+        {
+            string filename = "Ge0605.jpg";
+            ImageElement image = new Library.ImageElement(filename);
+            for (int i = 0; i < 5; i++)
+            {
+                image.GetDimensionsFromDatabase();
+               // if ((image.Width != 100) || (image.Height != 200)) 
+            }
         }
     }
 

@@ -5,7 +5,7 @@ using Myriad.Data;
 namespace Myriad.Library
 {
 
-    class ImageElement
+    public class ImageElement
     {
         const double landscapeRatio = .70;
         const double portraitRatio = 1.18;
@@ -27,7 +27,7 @@ namespace Myriad.Library
             GetDimensionsFromDatabase();
         }
 
-        private void GetDimensionsFromDatabase()
+        public void GetDimensionsFromDatabase()
         {
             var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadImageSize,
                 filename);
@@ -43,20 +43,21 @@ namespace Myriad.Library
             }
             this.height = size.Height;
             this.width = size.Width;
-            //string path = System.IO.Path.Combine(pictureDirectory, filename);
             this.path = System.IO.Path.Combine(pictureSourceDirectory, filename);
         }
 
         private void SaveDimensionsInDatabase()
         {
+
             var writer = SQLServerWriterProvider<ImageSize>.Writer(DataOperation.CreateImageSize);
-            ImageSize imageSize = new ImageSize(path, width, height);
+            ImageSize imageSize = new ImageSize(filename, width, height);
             writer.BeginTransaction();
             writer.WriteData(imageSize);
             writer.Commit();
+
         }
 
-        private void GetDimensionsFromFile()
+        public void GetDimensionsFromFile()
         {
             string path = System.IO.Path.Combine(pictureDirectory, filename);
             this.path = System.IO.Path.Combine(pictureSourceDirectory, filename);
