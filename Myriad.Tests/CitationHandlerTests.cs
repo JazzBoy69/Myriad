@@ -21,6 +21,10 @@ namespace Myriad.Tests
         public const string ShortBookBrokenCitation = "3Jo 1, 5-8";
         public const string MultipleCitations = "Mt 24:14; 25:31-33, 40; Mr 13:10";
         public const string MultipleCitations2 = "Ge 6:5; 8:21; Jas 1:14, 15";
+        public const string FullNameCitation = "First John 5:3";
+        public const string NumberedBookCitationResult = "1Jo 5:3";
+        public const string SongOfSolomon = "Song of Solomon 2:1";
+        public const string SongOfSolomonResult = "Ca 2:1";
     }
     class CitationHandlerTests
     {
@@ -49,6 +53,18 @@ namespace Myriad.Tests
             List<Citation> citations = CitationConverter.FromString(Citations.BrokenCommaCitation);
             citationText = CitationConverter.ToString(citations);
             Assert.AreEqual(Citations.BrokenCommaCitation, citationText);
+        }
+
+        [Test]
+        public void FullNameCitation()
+        {
+            string citationText;
+            List<Citation> citations = CitationConverter.FromString(Citations.FullNameCitation);
+            citationText = CitationConverter.ToString(citations);
+            Assert.AreEqual(Citations.NumberedBookCitationResult, citationText);
+            citations = CitationConverter.FromString(Citations.SongOfSolomon);
+            citationText = CitationConverter.ToString(citations);
+            Assert.AreEqual(Citations.SongOfSolomonResult, citationText);
         }
 
         [Test]

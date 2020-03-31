@@ -24,7 +24,7 @@ namespace TestStub
         private void RunTest()
         {
             string citationText;
-            List<Citation> citation = CitationConverter.FromString("Mt 24");
+            List<Citation> citation = CitationConverter.FromString("Song of Solomon 2:1");
             citationText = CitationConverter.ToString(citation);
             Console.WriteLine(citationText);
         }

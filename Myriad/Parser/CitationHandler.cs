@@ -76,8 +76,21 @@ namespace Myriad.Parser
             int action = TokenDictionary.Lookup(tokenBeforeLast, lastToken, token, count);
             if (action == Result.notfound) 
                 return false;
-            if (count == Result.notfound) count =
-                    IndexOfBook(paragraphToParse.StringAt(citation.Label.Start, citation.Label.End-1));
+            if (count == Result.notfound)
+            {
+                string book = paragraphToParse.StringAt(citation.Label.Start, citation.Label.End - 1);
+                count = IndexOfBook(book);
+                if (count == Result.notfound)
+                {
+                    if ((book == "First") || (book == "Second") || (book == "Third") || (book == "Song") || (book=="Song of"))
+                    {
+                        count = Numbers.nothing;
+                        citation.Label.BumpEnd();
+                        first = false;
+                        return true;
+                    }
+                }
+            }
             if (count == Result.notfound) return false;
 
             verse.Set(action & 7, count);

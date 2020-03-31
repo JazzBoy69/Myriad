@@ -53,18 +53,6 @@ namespace Myriad.Benchmark
                 image.GetDimensionsFromFile();
             }
         }
-
-        [Benchmark]
-        public void GetImageFromDatabase()
-        {
-            string filename = "Ge0605.jpg";
-            ImageElement image = new Library.ImageElement(filename);
-            for (int i = 0; i < 5; i++)
-            {
-                image.GetDimensionsFromDatabase();
-               // if ((image.Width != 100) || (image.Height != 200)) 
-            }
-        }
     }
 
     class Program

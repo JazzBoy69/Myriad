@@ -24,37 +24,7 @@ namespace Myriad.Library
         public ImageElement(string p)
         {
             filename = p.Replace("[[", "").Replace("]]", "");
-            GetDimensionsFromDatabase();
-        }
-
-        public void GetDimensionsFromDatabase()
-        {
-            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadImageSize,
-                filename);
-            ImageSize size = reader.GetClassDatum<ImageSize>();
-            if (size == null)
-            {
-                GetDimensionsFromFile();
-                if (valid)
-                {
-                    SaveDimensionsInDatabase();
-                }
-                return;
-            }
-            this.height = size.Height;
-            this.width = size.Width;
-            this.path = System.IO.Path.Combine(pictureSourceDirectory, filename);
-        }
-
-        private void SaveDimensionsInDatabase()
-        {
-
-            var writer = SQLServerWriterProvider<ImageSize>.Writer(DataOperation.CreateImageSize);
-            ImageSize imageSize = new ImageSize(filename, width, height);
-            writer.BeginTransaction();
-            writer.WriteData(imageSize);
-            writer.Commit();
-
+            GetDimensionsFromFile();
         }
 
         public void GetDimensionsFromFile()
