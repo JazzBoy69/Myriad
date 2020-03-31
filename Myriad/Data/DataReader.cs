@@ -9,11 +9,7 @@ namespace Myriad.Data
 {
     public enum DataOperation { ReadNavigationPage, ReadArticleTitle, ReadArticleID, 
         ReadArticle, ReadCommentIDs, ReadCommentLinks, ReadCommentParagraphs,
-        ReadKeywords, ReadImageSize,
-
-        CreateImageSize = 256,
-        UpdateImageSize = 257,
-        DeleteImageSize = 258
+        ReadKeywords, ReadImageSize
     }
     public static class DataObjectFactory<DataObjectType> where DataObjectType:DataObject, new()
     {

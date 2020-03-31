@@ -70,6 +70,8 @@ namespace Myriad.Parser
         public void StartAnchorWithClass(string className);
         public void StartDivWithClass(string className);
 
+        public void StartSectionWithClass(string className);
+
         public void StartDivWithID(string id);
         public void StartFigure(string className);
         public void StartIMG(string path);
@@ -178,6 +180,13 @@ namespace Myriad.Parser
         public void StartParagraphWithClass(string className)
         {
             Builder.Append(HTMLTags.StartParagraphWithClass);
+            Builder.Append(className);
+            Builder.Append(HTMLTags.CloseQuoteEndTag);
+        }
+
+        public void StartSectionWithClass(string className)
+        {
+            Builder.Append(HTMLTags.StartSectionWithClass);
             Builder.Append(className);
             Builder.Append(HTMLTags.CloseQuoteEndTag);
         }

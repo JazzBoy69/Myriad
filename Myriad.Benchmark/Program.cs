@@ -30,6 +30,24 @@ namespace Myriad.Benchmark
             await page.RenderPage();
         }
 
+        //319428096&end=319428114
+        //[Benchmark]
+        async public Task RenderTextWithPictures()
+        {
+            TextPage page = new TextPage();
+            page.SetResponse(DefaultResponse());
+            page.SetCitation(new Citation(394496, 394522));
+            await page.RenderPage();
+        }
+
+        [Benchmark]
+        async public Task RenderText()
+        {
+            TextPage page = new TextPage();
+            page.SetResponse(DefaultResponse());
+            page.SetCitation(new Citation(319422720, 319422739));
+            await page.RenderPage();
+        }
         //[Benchmark]
         public void ParseCitation()
         {
@@ -43,7 +61,7 @@ namespace Myriad.Benchmark
             var citations = citationHandler.ParseCitations(mainRange, paragraph);
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void GetImageFromFile()
         {
             string filename = "Ge0605.jpg";
