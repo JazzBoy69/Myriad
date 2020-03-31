@@ -12,9 +12,8 @@ namespace Myriad.Data
         void BeginTransaction();
         void Commit();
         void SetParameter<T>(int index, T value);
-        void AddParameter(int index, string value);
-        void AddParameter(int index, double value);
+        void AddParameter<T>(int index, T value);
 
-        void AddParameter(int index, int value);
+        void DeleteData<T>(T value);
     }
 }

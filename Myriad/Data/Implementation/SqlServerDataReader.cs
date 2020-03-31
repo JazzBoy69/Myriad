@@ -20,6 +20,13 @@ namespace Myriad.Data.Implementation
             command.Parameters.AddWithValue(SqlServerInfo.parameterNames[(operation, Ordinals.first)], key);
         }
 
+        public void Open()
+        {
+            connection = SqlServerInfo.Connection();
+            connection.Open();
+            command.Connection = connection;
+        }
+
         public List<DataType> GetData<DataType>()
         {
             reader = command.ExecuteReader();

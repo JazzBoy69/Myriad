@@ -11,7 +11,9 @@ namespace Myriad.Data
         ReadArticle, ReadCommentIDs, ReadCommentLinks, ReadCommentParagraphs,
         ReadKeywords, ReadImageSize,
 
-        WriteImageSize = 256
+        CreateImageSize = 256,
+        UpdateImageSize = 257,
+        DeleteImageSize = 258
     }
     public static class DataObjectFactory<DataObjectType> where DataObjectType:DataObject, new()
     {
@@ -32,7 +34,7 @@ namespace Myriad.Data
         List<ClassType> GetClassData<ClassType>() where ClassType : DataObject, new();
 
         ClassType GetClassDatum<ClassType>() where ClassType : DataObject, new();
-
+        void Open();
     }
 
     public interface DataReader<KeyType1, KeyType2> : DataReader<KeyType1>

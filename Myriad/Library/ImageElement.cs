@@ -48,8 +48,11 @@ namespace Myriad.Library
 
         private void SaveDimensionsInDatabase()
         {
-            //todo implement write to database
-            throw new NotImplementedException();
+            var writer = SQLServerWriterProvider<ImageSize>.Writer(DataOperation.CreateImageSize);
+            ImageSize imageSize = new ImageSize(filename, width, height);
+            writer.BeginTransaction();
+            writer.WriteData(imageSize);
+            writer.Commit();
         }
 
         private void GetDimensionsFromFile()

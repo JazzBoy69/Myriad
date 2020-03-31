@@ -22,22 +22,7 @@ namespace Myriad.Data.Implementation
             command = new SqlCommand(SqlServerInfo.Selectors[operation], connection);
         }
 
-
-        public void AddParameter(int index, double value)
-        {
-            command.Parameters.Add(new SqlParameter(SqlServerInfo.parameterNames[(operation, index)],
-                SqlServerInfo.parameterTypes[(operation, index)]));
-            command.Parameters[index].Value = value;
-        }
-
-        public void AddParameter(int index, int value)
-        {
-            command.Parameters.Add(new SqlParameter(SqlServerInfo.parameterNames[(operation, index)],
-                SqlServerInfo.parameterTypes[(operation, index)]));
-            command.Parameters[index].Value = value;
-        }
-
-        public void AddParameter(int index, string value)
+        public void AddParameter<T>(int index, T value)
         {
             command.Parameters.Add(new SqlParameter(SqlServerInfo.parameterNames[(operation, index)],
                 SqlServerInfo.parameterTypes[(operation, index)]));
@@ -69,6 +54,12 @@ namespace Myriad.Data.Implementation
                     data.AddParameterTo(this, i);
                 }
             }
+            command.ExecuteNonQuery();
+        }
+
+        public void DeleteData<T>(T value)
+        {
+            AddParameter(Ordinals.first, value);
             command.ExecuteNonQuery();
         }
     }

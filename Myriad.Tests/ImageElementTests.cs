@@ -18,7 +18,7 @@ namespace Myriad.Tests
             Assert.AreEqual(width, imageSize.Width);
             Assert.AreEqual(height, imageSize.Height);
             Assert.AreEqual(filename, imageSize.Filename);
-            var writer = SQLServerWriterProvider<ImageSize>.Writer(DataOperation.WriteImageSize);
+            var writer = SQLServerWriterProvider<ImageSize>.Writer(DataOperation.CreateImageSize);
             writer.BeginTransaction();
             writer.WriteData(imageSize);
             writer.Commit();
@@ -27,6 +27,13 @@ namespace Myriad.Tests
             ImageSize sizeFromDb = reader.GetClassDatum<ImageSize>();
             Assert.AreEqual(width, sizeFromDb.Width);
             Assert.AreEqual(height, sizeFromDb.Height);
+            var delete = SQLServerWriterProvider<ImageSize>.Writer(DataOperation.DeleteImageSize);
+            delete.BeginTransaction();
+            delete.DeleteData(imageSize.Filename);
+            delete.Commit();
+            reader.Open();
+            sizeFromDb = reader.GetClassDatum<ImageSize>();
+            Assert.IsNull(sizeFromDb);
         }
     }
 }
