@@ -37,11 +37,16 @@ namespace Myriad.Pages
             List<(int start, int end)> idRanges = ReadLinks(commentID);
 
             paragraphs = ReadParagraphs(commentID);
-            if (idRanges.Count > 1) AddTextTabs(idRanges, Ordinals.first);
-            else AddText(idRanges[Ordinals.first]);
+            if (idRanges.Count > 1)
+            {
+                AddTextTabs(idRanges, Ordinals.first);
+                AddScriptureTextToTabs(idRanges, Ordinals.first);
+            }
+            else AddSingleText(idRanges[Ordinals.first]);
             AddComment();
         }
-        private void AddText((int start, int end) textRange)
+
+        private void AddSingleText((int start, int end) textRange)
         {
             builder.StartSectionWithClass(HTMLClasses.scriptureSection);
             builder.Append(HTMLTags.StartHeader);
@@ -52,6 +57,11 @@ namespace Myriad.Pages
             builder.Append(CitationConverter.ToString(citation));
             builder.Append(")");
             builder.Append(HTMLTags.EndHeader);
+            AddScriptureText(citation);
+        }
+
+        private void AddScriptureText(Citation citation)
+        {
             builder.StartSectionWithClass(HTMLClasses.scriptureText);
             List<Keyword> keywords = ReadKeywords(citation);
             formatter = new TextFormatter(builder);
@@ -125,6 +135,48 @@ namespace Myriad.Pages
         }
 
 
+        private void AddScriptureTextToTabs(List<(int start, int end)> idRanges, int index)
+        {
+            builder.Append(HTMLTags.StartList);
+            builder.Append(HTMLTags.ID);
+            builder.Append(HTMLClasses.tabs);
+            builder.Append(index);
+            builder.Append(HTMLClasses.tabSuffix);
+            builder.Append(HTMLTags.Class);
+            builder.Append(HTMLClasses.tab);
+            builder.Append(HTMLTags.CloseQuoteEndTag);
+            for (int i = Ordinals.first; i < idRanges.Count; i++)
+            {
+                activeSet = false;
+                builder.Append(HTMLTags.StartListItem);
+                builder.Append(HTMLTags.ID);
+                builder.Append(index);
+                builder.Append('-');
+                builder.Append(i);
+                builder.Append(HTMLClasses.tabSuffix);
+                Citation range = new Citation(idRanges[i].start, idRanges[i].end);
+                if ((!activeSet) && ((range.CitationRange.Contains(sourceCitation.CitationRange)) ||
+                    (sourceCitation.CitationRange.Contains(range.CitationRange)) ||
+                    (range.CitationRange.Book == sourceCitation.CitationRange.Book)))
+                {
+                    builder.Append(HTMLTags.Class);
+                    builder.Append(HTMLClasses.active);
+                    builder.Append(HTMLTags.CloseQuote);
+                    activeSet = true;
+                }
+                builder.Append(HTMLClasses.rangeData);
+                builder.Append(HTMLTags.dataStart);
+                builder.Append(idRanges[i].start);
+                builder.Append(HTMLTags.dataEnd);
+                builder.Append(idRanges[i].end);
+                builder.Append(HTMLTags.EndTag);
+
+                AddScriptureText(range);
+
+                builder.Append(HTMLTags.EndListItem);
+            }
+            builder.Append(HTMLTags.EndList);
+        }
         private void AddComment()
         {
             paragraphs.RemoveAt(Ordinals.first);

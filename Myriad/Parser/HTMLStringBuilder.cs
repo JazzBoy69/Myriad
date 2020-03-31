@@ -63,11 +63,13 @@ namespace Myriad.Parser
         internal const string rangeData = "rangedata";
         internal const string poetic1 = "firstpoetic";
         internal const string poetic2 = "poetic";
-        public const string comments = "comments";
-        public const string hiddendetail = "hiddendetail";
-        public const string link = "link";
-        public const string sidenote = "sidenote";
-        public const string tabs = "tabs";
+        internal const string comments = "comments";
+        internal const string hiddendetail = "hiddendetail";
+        internal const string link = "link";
+        internal const string sidenote = "sidenote";
+        internal const string tabs = "tabs";
+        internal const string tabSuffix = "-tab";
+        internal const string tab = "tab";
     }
 
     public interface HTMLResponse
