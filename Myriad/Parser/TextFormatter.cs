@@ -109,9 +109,9 @@ namespace Myriad.Parser
         {
             builder.Append(HTMLTags.StartDivWithClass);
             builder.Append(HTMLClasses.hidden + " " + HTMLClasses.active + " "+ HTMLClasses.rangeData);
-            builder.Append("' " + HTMLTags.dataStart+"='");
+            builder.Append("' " + HTMLClasses.dataStart+"='");
             builder.Append(citation.CitationRange.StartID);
-            builder.Append("' " + HTMLTags.dataEnd + "='");
+            builder.Append("' " + HTMLClasses.dataEnd + "='");
             builder.Append(citation.CitationRange.EndID);
             builder.Append(HTMLTags.CloseQuoteEndTag);
             builder.Append(HTMLTags.EndDiv);

@@ -357,6 +357,31 @@ function EditParagraph() {
     });
 }
 
+function HandleTabClick(tabClicked) {
+    if (!tabClicked.classList.contains('active')) {
+        var scriptureTabID = tabClicked.id + '-tab';
+        tabClicked.classList.add('active');
+        var clickedSiblings = getSiblings(tabClicked);
+        RemoveClassFromGroup(clickedSiblings, 'active');
+        var scriptureTab = document.getElementById(scriptureTabID);
+        scriptureTab.classList.add('active');
+        var scriptureSiblings = getSiblings(scriptureTab);
+        RemoveClassFromGroup(scriptureSiblings, 'active');
+    }
+}
+
+function getChildren(n, skipMe) {
+    var r = [];
+    for (; n; n = n.nextSibling)
+        if (n.nodeType == 1 && n != skipMe)
+            r.push(n);
+    return r;
+};
+
+function getSiblings(n) {
+    return getChildren(n.parentNode.firstChild, n);
+}
+
 function HandleTabs() {
     $("ul.tabs li").click(function (e) {
         if (!$(this).hasClass("active")) {

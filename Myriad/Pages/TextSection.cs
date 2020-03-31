@@ -127,6 +127,8 @@ namespace Myriad.Pages
                     builder.Append(HTMLTags.CloseQuote);
                     activeSet = true;
                 }
+                builder.Append(HTMLTags.OnClick);
+                builder.Append(JavaScriptFunctions.HandleTabClick);
                 builder.Append(HTMLTags.EndTag);
                 builder.Append(CitationConverter.ToString(range));
                 builder.Append(HTMLTags.EndListItem);
@@ -150,6 +152,7 @@ namespace Myriad.Pages
                 activeSet = false;
                 builder.Append(HTMLTags.StartListItem);
                 builder.Append(HTMLTags.ID);
+                builder.Append(HTMLClasses.tabs);
                 builder.Append(index);
                 builder.Append('-');
                 builder.Append(i);
@@ -165,9 +168,9 @@ namespace Myriad.Pages
                     activeSet = true;
                 }
                 builder.Append(HTMLClasses.rangeData);
-                builder.Append(HTMLTags.dataStart);
+                builder.Append(HTMLClasses.dataStart);
                 builder.Append(idRanges[i].start);
-                builder.Append(HTMLTags.dataEnd);
+                builder.Append(HTMLClasses.dataEnd);
                 builder.Append(idRanges[i].end);
                 builder.Append(HTMLTags.EndTag);
 

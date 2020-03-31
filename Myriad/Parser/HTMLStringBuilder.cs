@@ -3,6 +3,10 @@ using System.Text;
 
 namespace Myriad.Parser
 {
+    public struct JavaScriptFunctions
+    {
+        internal const string HandleTabClick = "HandleTabClick(this)";
+    }
     public struct HTMLTags
     {
         internal const string StartSection = "<section>";
@@ -47,9 +51,8 @@ namespace Myriad.Parser
         internal const string CloseQuoteEndTag = "'>";
         internal const string StartQuery = "?";
         internal const string Ampersand = "&";
-        internal const string dataStart = "datastart";
-        internal const string dataEnd = "dataend";
         internal const string NonbreakingSpace = "&nbsp;";
+        internal const string OnClick = " onclick=";
     }
 
     public static class HTMLClasses
@@ -60,7 +63,9 @@ namespace Myriad.Parser
         internal const string scriptureComment = "scripture-comment";
         internal const string hidden = "hidden";
         internal const string active = "active";
-        internal const string rangeData = "rangedata";
+        internal const string rangeData = " rangedata";
+        internal const string dataStart = " datastart";
+        internal const string dataEnd = " dataend";
         internal const string poetic1 = "firstpoetic";
         internal const string poetic2 = "poetic";
         internal const string comments = "comments";

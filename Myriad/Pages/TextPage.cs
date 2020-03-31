@@ -18,16 +18,20 @@ namespace Myriad.Pages
          document.getElementById('searchField').focus();
     });
     SetupIndex();
-    SetupEditParagraph();
-    SetThisVerseAsTarget();
-    SetupPagination();
     SetupModalPictures('."+HTMLClasses.scriptureComment+@"');
-    HandleReadingView();
-    HandleTabClicks();
-    ScrollToTarget();
+
 };
     </script>";
     }
+
+    /*        
+    SetupEditParagraph();
+    SetThisVerseAsTarget();
+    SetupPagination(); 
+    HandleReadingView();
+    ScrollToTarget();
+
+    */
 
     public class TextPage : ScripturePage
     {
