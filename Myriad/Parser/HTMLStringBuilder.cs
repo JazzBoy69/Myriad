@@ -20,7 +20,10 @@ namespace Myriad.Parser
         internal const string StartSuper = "<sup>";
         internal const string StartAnchor = "<a";
         internal const string StartAnchorWithClass = "<a class='";
+        internal const string StartList = "<ul";
+        internal const string StartListItem = "<li";
         internal const string Class = " class='";
+        internal const string ID = " id=";
         internal const string HREF = " HREF=";
         internal const string StartFigureWithClass = "<figure class='";
         internal const string StartImg = "<img src='";
@@ -36,6 +39,8 @@ namespace Myriad.Parser
         internal const string EndFigure = "</figure>";
         internal const string EndParagraph = "</p>";
         internal const string EndAnchor = "</a>";
+        internal const string EndList = "</ul>";
+        internal const string EndListItem = "</li>";
         internal const string CloseQuote = "'";
         internal const string EndTag = ">";
         internal const string EndSingleTag = " />";
@@ -62,6 +67,7 @@ namespace Myriad.Parser
         public const string hiddendetail = "hiddendetail";
         public const string link = "link";
         public const string sidenote = "sidenote";
+        public const string tabs = "tabs";
     }
 
     public interface HTMLResponse

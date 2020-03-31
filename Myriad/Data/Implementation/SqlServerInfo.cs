@@ -53,7 +53,7 @@ namespace Myriad.Data.Implementation
                 "select text from glossary where id="+
                 parameterNames[(DataOperation.ReadArticle, Ordinals.first)]},
             { DataOperation.ReadCommentIDs,
-                "select id from commentlinks where last>= "+
+                "select id from commentlinks where originalword = 0 and last>= "+
                 parameterNames[(DataOperation.ReadCommentIDs, Ordinals.first)] +
                 " and start<="+parameterNames[(DataOperation.ReadCommentIDs, Ordinals.second)] },
             { DataOperation.ReadCommentParagraphs,

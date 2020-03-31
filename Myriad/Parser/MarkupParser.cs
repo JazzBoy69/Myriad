@@ -253,8 +253,11 @@ namespace Myriad.Parser
                     mainRange.GoToNextStartPosition();
                     return;
                 }
+                StringRange inlineLabelRange = new StringRange(mainRange.End+1, mainRange.End+1);
                 MoveIndexToEndOfWord();
-                formatter.AppendTag(currentParagraph, mainRange, mainRange, formats);
+                inlineLabelRange.MoveEndTo(mainRange.End-1);
+                formatter.AppendTag(currentParagraph, inlineLabelRange, inlineLabelRange, formats);
+                mainRange.GoToNextStartPosition();
                 return;
             }
             AppendToken();
@@ -345,7 +348,6 @@ namespace Myriad.Parser
             while ((!mainRange.AtLimit) &&
                 (Symbols.IsPartOfWord(currentParagraph.CharAt(mainRange.End))))
                 mainRange.BumpEnd();
-            mainRange.PullEnd();
         }
     }
 

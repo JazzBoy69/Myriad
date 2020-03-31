@@ -31,6 +31,8 @@ namespace Myriad.Pages
 
         protected override void RenderBody()
         {
+            //todo move toc
+            //todo edit page
             var paragraphs = GetPageParagraphs();
             var parser = new NavigationParser(new HTMLResponseWriter(response));
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());

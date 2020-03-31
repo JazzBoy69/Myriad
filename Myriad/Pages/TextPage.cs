@@ -77,7 +77,7 @@ namespace Myriad.Pages
             }
             else
             {
-                textSection.AddTextSection(commentIDs[Ordinals.first]);
+                textSection.AddTextSection(commentIDs[Ordinals.first], citation);
             }
         }
 

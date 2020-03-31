@@ -7,6 +7,7 @@ using Myriad.Library;
 
 namespace Myriad.Data.Implementation
 {
+    //todo write change log
     public class SqlServerDataWriter<DataType> : DataWriter<DataType> where DataType : DataObject
     {
         private DataOperation operation;

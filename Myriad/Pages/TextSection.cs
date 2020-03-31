@@ -14,7 +14,9 @@ namespace Myriad.Pages
         HTMLResponse builder;
         TextFormatter formatter;
         CommentParser parser;
-
+        bool activeSet;
+        Citation sourceCitation;
+        //todo cache sections?
         public TextSection(HTMLResponse builder)
         {
             this.builder = builder;
@@ -24,15 +26,18 @@ namespace Myriad.Pages
         public void AddReadingViewSection(int commentID)
         {
             throw new NotImplementedException();
+            activeSet = false;
             //todo reading view
         }
 
-        public void AddTextSection(int commentID)
+        public void AddTextSection(int commentID, Citation sourceCitation)
         {
+            activeSet = false;
+            this.sourceCitation = sourceCitation;
             List<(int start, int end)> idRanges = ReadLinks(commentID);
 
             paragraphs = ReadParagraphs(commentID);
-            if (idRanges.Count > 1) AddTextTabs(idRanges);
+            if (idRanges.Count > 1) AddTextTabs(idRanges, Ordinals.first);
             else AddText(idRanges[Ordinals.first]);
             AddComment();
         }
@@ -77,12 +82,47 @@ namespace Myriad.Pages
                 commentID);
             return reader.GetData<string>();
         }
-        private void AddTextTabs(List<(int start, int end)> idRanges)
-        {
-            throw new NotImplementedException();
-            // todo parallel texts
-        }
 
+        private void AddTextTabs(List<(int start, int end)> idRanges, int index)
+        {
+            //todo refactor heading?
+            builder.StartSectionWithClass(HTMLClasses.scriptureSection);
+            builder.Append(HTMLTags.StartHeader);
+            builder.Append(paragraphs[Ordinals.first].Substring(Ordinals.third,
+                paragraphs[Ordinals.first].Length - 4));
+            builder.Append(HTMLTags.EndHeader);
+
+            builder.Append(HTMLTags.StartList);
+            builder.Append(HTMLTags.ID);
+            builder.Append(HTMLClasses.tabs);
+            builder.Append(index);
+            builder.Append(HTMLTags.Class);
+            builder.Append(HTMLClasses.tabs);
+            builder.Append(HTMLTags.CloseQuoteEndTag);
+            for (int i = Ordinals.first; i < idRanges.Count; i++)
+            {
+                Citation range = new Citation(idRanges[i].start, idRanges[i].end);
+                builder.Append(HTMLTags.StartListItem);
+                builder.Append(HTMLTags.ID);
+                builder.Append(HTMLClasses.tabs);
+                builder.Append(index);
+                builder.Append('-');
+                builder.Append(i);
+                if ((!activeSet) && ((range.CitationRange.Contains(sourceCitation.CitationRange)) ||
+                    (sourceCitation.CitationRange.Contains(range.CitationRange)) || 
+                    (range.CitationRange.Book == sourceCitation.CitationRange.Book)))
+                {
+                    builder.Append(HTMLTags.Class);
+                    builder.Append(HTMLClasses.active);
+                    builder.Append(HTMLTags.CloseQuote);
+                    activeSet = true;
+                }
+                builder.Append(HTMLTags.EndTag);
+                builder.Append(CitationConverter.ToString(range));
+                builder.Append(HTMLTags.EndListItem);
+            }
+            builder.Append(HTMLTags.EndList);
+        }
 
 
         private void AddComment()
