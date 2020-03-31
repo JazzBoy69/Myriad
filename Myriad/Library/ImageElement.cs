@@ -21,7 +21,6 @@ namespace Myriad.Library
         string filename;
 
 
-
         public ImageElement(string p)
         {
             filename = p.Replace("[[", "").Replace("]]", "");
@@ -44,12 +43,14 @@ namespace Myriad.Library
             }
             this.height = size.Height;
             this.width = size.Width;
+            //string path = System.IO.Path.Combine(pictureDirectory, filename);
+            this.path = System.IO.Path.Combine(pictureSourceDirectory, filename);
         }
 
         private void SaveDimensionsInDatabase()
         {
             var writer = SQLServerWriterProvider<ImageSize>.Writer(DataOperation.CreateImageSize);
-            ImageSize imageSize = new ImageSize(filename, width, height);
+            ImageSize imageSize = new ImageSize(path, width, height);
             writer.BeginTransaction();
             writer.WriteData(imageSize);
             writer.Commit();
