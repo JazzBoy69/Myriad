@@ -17,16 +17,23 @@ namespace Myriad.Data.Implementation
         const string keyLast = "@last";
         const string keyWidth = "@width";
         const string keyHeight = "@height";
+        const string keyIndex = "@index";
         internal static Dictionary<(DataOperation, int), string> parameterNames = new Dictionary<(DataOperation, int), string>()
         {
             { (DataOperation.ReadNavigationPage, Ordinals.first), keyName },
+            { (DataOperation.ReadNavigationParagraph, Ordinals.first), keyID },
+            { (DataOperation.ReadNavigationParagraph, Ordinals.second), keyIndex },
             { (DataOperation.ReadNavigationID, Ordinals.first), keyName },
             { (DataOperation.ReadArticleTitle, Ordinals.first), keyID },
             { (DataOperation.ReadArticleID, Ordinals.first), keyTitle },
             { (DataOperation.ReadArticle, Ordinals.first), keyID },
+            { (DataOperation.ReadArticleParagraph, Ordinals.first), keyID },
+            { (DataOperation.ReadArticleParagraph, Ordinals.second), keyIndex },
             { (DataOperation.ReadCommentIDs, Ordinals.first), keyLast },
             { (DataOperation.ReadCommentIDs, Ordinals.second), keyStart },
-            { (DataOperation.ReadCommentParagraphs, Ordinals.first), keyID },
+            { (DataOperation.ReadComment, Ordinals.first), keyID },
+            { (DataOperation.ReadCommentParagraph, Ordinals.first), keyID },
+            { (DataOperation.ReadCommentParagraph, Ordinals.second), keyIndex },
             { (DataOperation.ReadCommentLinks, Ordinals.first), keyID },
             { (DataOperation.ReadKeywords, Ordinals.first), keyStart },
             { (DataOperation.ReadKeywords, Ordinals.second), keyLast }
@@ -44,6 +51,11 @@ namespace Myriad.Data.Implementation
                 "select text from navigationparagraphs where name="+
                 parameterNames[(DataOperation.ReadNavigationPage, Ordinals.first)]
                  +" order by paragraphindex" },
+            { DataOperation.ReadNavigationParagraph,
+                "select text from navigationparagraphs where articleid="+
+                parameterNames[(DataOperation.ReadNavigationParagraph, Ordinals.first)]+
+                " and paragraphindex="+
+                parameterNames[(DataOperation.ReadNavigationParagraph, Ordinals.second)] },
              { DataOperation.ReadNavigationID,
                 "select _id from navigation where name="+
                 parameterNames[(DataOperation.ReadNavigationPage, Ordinals.first)]},
@@ -56,13 +68,23 @@ namespace Myriad.Data.Implementation
             { DataOperation.ReadArticle,
                 "select text from glossary where id="+
                 parameterNames[(DataOperation.ReadArticle, Ordinals.first)]},
+            { DataOperation.ReadArticleParagraph,
+                "select text from glossary where id="+
+                parameterNames[(DataOperation.ReadArticleParagraph, Ordinals.first)]+
+                " and paragraphindex="+
+                parameterNames[(DataOperation.ReadArticleParagraph, Ordinals.second)]},
             { DataOperation.ReadCommentIDs,
                 "select id from commentlinks where originalword = 0 and last>= "+
                 parameterNames[(DataOperation.ReadCommentIDs, Ordinals.first)] +
                 " and start<="+parameterNames[(DataOperation.ReadCommentIDs, Ordinals.second)] },
-            { DataOperation.ReadCommentParagraphs,
+            { DataOperation.ReadComment,
                 "select RTrim(text) from comments where id="+
-                parameterNames[(DataOperation.ReadCommentParagraphs, Ordinals.first)] },
+                parameterNames[(DataOperation.ReadComment, Ordinals.first)] },
+             { DataOperation.ReadCommentParagraph,
+                "select RTrim(text) from comments where id="+
+                parameterNames[(DataOperation.ReadCommentParagraph, Ordinals.first)]+
+                " and paragraphindex="+
+                parameterNames[(DataOperation.ReadCommentParagraph, Ordinals.second)]},
             { DataOperation.ReadCommentLinks,
                 "select start, last from commentlinks where id="+
                 parameterNames[(DataOperation.ReadCommentLinks, Ordinals.first)] },

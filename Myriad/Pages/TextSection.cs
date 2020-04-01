@@ -89,7 +89,7 @@ namespace Myriad.Pages
 
         public List<string> ReadParagraphs(int commentID)
         {
-            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadCommentParagraphs,
+            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadComment,
                 commentID);
             return reader.GetData<string>();
         }
@@ -182,7 +182,6 @@ namespace Myriad.Pages
         }
         private void AddComment()
         {
-            paragraphs.RemoveAt(Ordinals.first);
             builder.StartSectionWithClass(HTMLClasses.scriptureComment);
             parser.Parse(paragraphs);
             builder.Append(HTMLTags.EndSection);

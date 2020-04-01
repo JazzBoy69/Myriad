@@ -7,8 +7,9 @@ using Myriad.Data.Implementation;
 
 namespace Myriad.Data
 {
-    public enum DataOperation { ReadNavigationPage, ReadNavigationID, ReadArticleTitle, ReadArticleID, 
-        ReadArticle, ReadCommentIDs, ReadCommentLinks, ReadCommentParagraphs,
+    public enum DataOperation { ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID, 
+        ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
+        ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph,
         ReadKeywords, ReadImageSize
     }
     public static class DataObjectFactory<DataObjectType> where DataObjectType:DataObject, new()

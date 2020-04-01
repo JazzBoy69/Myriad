@@ -302,18 +302,42 @@ function scrollableElement(els) {
     return [];
 }
 
-function EditParagraph(link) {
-    var id = link.getAttribute('data-id');
-    var index = link.getAttribute('data-index');
-    alert(id + ' ' + index);
+function EditParagraph(editlink) {
+    var edittype = editlink.getAttribute('data-edittype');
+    var ID = editlink.getAttribute('data-id');
+    var index = editlink.getAttribute('data-index');
+    postAjax('/EditParagraph/GetData',
+        {
+        editType: edittype,
+        ID: ID,
+        paragraphIndex: index
+    },
+        function (data) { ShowEditWindow(data); }
+    );
+}
+
+function ShowEditWindow(data) {
+    alert(data);
+}
+
+function postAjax(url, data, success) {
+    var params = typeof data === 'string' ? data : Object.keys(data).map(
+        function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) }
+    ).join('&');
+
+    var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+    xhr.open('POST', url);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState > 3 && xhr.status === 200) { success(xhr.responseText); }
+    };
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send(params);
+    return xhr;
 }
 
 
 function EditParagraphOld() {
-    var editlink = $(this);
-    var edittype = $(this).data('edittype');
-    var ID = $(this).data('linkid');
-    var index = $(this).data('index');
     $.ajax({
         url: "/Verse?handler=ParagraphPlainText",
         beforeSend: function (xhr) {

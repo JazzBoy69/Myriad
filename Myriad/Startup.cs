@@ -47,6 +47,12 @@ namespace Myriad
             });
             app.Run(async context =>
             {
+                string path = context.Request.Path;
+                if (path == EditParagraph.getDataURL)
+                {
+                    EditParagraph.SendPlainText(context);
+                    return;
+                }
                 CommonPage page = RequestedPage(context);
                 await page.RenderPage();
             });
@@ -57,6 +63,7 @@ namespace Myriad
         {
             string path = context.Request.Path;
             var query = context.Request.Query;
+
             if ((path == SearchPage.pageURL) && (query.ContainsKey("q")))
             {
                 Citation citation = CitationConverter.FromString(query["q"])[Ordinals.first]; ;
