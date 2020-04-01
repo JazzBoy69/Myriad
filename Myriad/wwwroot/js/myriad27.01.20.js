@@ -317,7 +317,11 @@ function EditParagraph(editlink) {
 }
 
 function ShowEditWindow(data) {
-    alert(data);
+    var editForm = document.getElementById('editForm');
+    var mainPane = document.getElementById('mainPane');
+    editForm.innerText = data;
+    mainPane.classList.add('hidden');
+    editForm.classList.remove('hidden');
 }
 
 function postAjax(url, data, success) {

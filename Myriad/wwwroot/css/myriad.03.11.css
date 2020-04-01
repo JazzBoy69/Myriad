@@ -14,6 +14,16 @@ a.target{background-color:#ff8}
 .suppressed a.target{background-color:#dd8;}
 a.error{color:red;}
 
+
+
+/*Edit*/
+#editForm {
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+}
+
 /*Ruby*/
 ruby{font-family:Lato, "Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
 rt {
@@ -117,10 +127,12 @@ article{padding-top:5em;padding-bottom:3em;min-height:40rem;}
 div+section.scripture{margin-top:1.5rem;}
 div.crossrefs details summary+p{margin-top:.4em;}
 section{display:block;align-items:stretch;}
+#editForm {padding-top:4rem;}
 
 
 /*HORIZONTAL SPACING */
 article{width:60rem;padding-left:10rem;}
+#editForm {width: 44rem; padding-left: 10rem;padding-top:5rem;}
 figure{-webkit-margin-start:0;-webkit-margin-end:0;}
 figure.portrait, figure.square, .sidenote{display:block;float:right;width:26rem; border-left:2px solid #d3d3d3;}
 .crossrefs+.sidenote{float:none;border:0;}
@@ -302,6 +314,7 @@ position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-
 
 /*HORIZONTAL SPACING */
 article{width:55rem;padding-left:5rem;}
+#editForm {width: 44rem; padding-left: 16rem;}
 figure.portrait, figure.square, .sidenote{width:26rem}
 .searchResults{width:40rem;}
 .definitionBlock div, ul.tabs{width:50rem;}
