@@ -18,11 +18,22 @@ a.error{color:red;}
 
 /*Edit*/
 #editForm {
+    position: fixed;
+    top: 5rem;
+    left: 16rem;
     white-space: pre-wrap;
     font-family: monospace;
     font-size: 1.25rem;
     line-height: 1.5rem;
+    height: 75vh;
+    overflow-y: auto;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 10px 10px #888;
 }
+    #editForm:focus {
+        outline: 0px solid transparent;
+    }
 
 /*Ruby*/
 ruby{font-family:Lato, "Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
@@ -132,7 +143,14 @@ section{display:block;align-items:stretch;}
 
 /*HORIZONTAL SPACING */
 article{width:60rem;padding-left:10rem;}
-#editForm {width: 44rem; padding-left: 10rem;padding-top:5rem;}
+#editForm {
+    width: 40rem;
+    padding-left: 4rem;
+    padding-right: 4rem;
+    border-left: 8rem;
+    border-left-style: solid;
+    border-left-width: 1px;
+}
 figure{-webkit-margin-start:0;-webkit-margin-end:0;}
 figure.portrait, figure.square, .sidenote{display:block;float:right;width:26rem; border-left:2px solid #d3d3d3;}
 .crossrefs+.sidenote{float:none;border:0;}
@@ -314,7 +332,6 @@ position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-
 
 /*HORIZONTAL SPACING */
 article{width:55rem;padding-left:5rem;}
-#editForm {width: 44rem; padding-left: 16rem;}
 figure.portrait, figure.square, .sidenote{width:26rem}
 .searchResults{width:40rem;}
 .definitionBlock div, ul.tabs{width:50rem;}

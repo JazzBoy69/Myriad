@@ -33,13 +33,14 @@ namespace Myriad.Pages
                 <!--Navigation Controls-->
                 <ul>
                     <li id='menuHome'><a href='/Index?name=home'><span class='icon'><img src='images/home.png' /></span></a></li>
-                        <li id='menuPrevious'><a id='previousLink'><span class='icon'><img src='images/left.png' /></span></a></li>
-                           <li id='menuUp'><a id='upLink'><span class='icon'><img src='images/up.png' /></span></a></li>
-                              <li id='menuNext'><a id='nextLink'><span class='icon'><img src='images/right.png' /></span></a></li>
-                                 <li id='menuTOC'>
+                    <li id='menuPrevious'><a id='previousLink'><span class='icon'><img src='images/left.png' /></span></a></li>
+                    <li id='menuUp'><a id='upLink'><span class='icon'><img src='images/up.png' /></span></a></li>
+                    <li id='menuNext'><a id='nextLink'><span class='icon'><img src='images/right.png' /></span></a></li>
+                    <li id='menuTOC'>
                         <a onclick='showHideMenu()'><span class='icon'><img src='images/toc.png' /></span></a>
                             <ul id='toc' class='hidden'></ul>
                     </li>
+                    <li id='menuCancel' class='hidden'><a id='cancelEdit' onclick=CancelEdit()><span class='icon'><img src='images/icons8-unavailable.png' /></span></a></li>
                 </ul>
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
                     <img src='images/icons8-ellipsis-30.png' id='ellipsis' class='hidden' />
@@ -145,7 +146,7 @@ namespace Myriad.Pages
             <span id='zoomclose'>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
         </div>
-<div id=top></div><article><div id=editForm contenteditable=true class='hidden'></div><div id='mainPane'>
+<div id=top></div><article><div id=editForm contenteditable=true class='hidden' data-pos=0></div><div id='mainPane'>
 ";
         public const string close = @"</div></article>
     </div>

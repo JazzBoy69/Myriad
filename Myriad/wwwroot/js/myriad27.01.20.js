@@ -319,9 +319,23 @@ function EditParagraph(editlink) {
 function ShowEditWindow(data) {
     var editForm = document.getElementById('editForm');
     var mainPane = document.getElementById('mainPane');
+    var menuCancel = document.getElementById('menuCancel');
     editForm.innerText = data;
+    var scrollPos = document.documentElement.scrollTop;
+    editForm.setAttribute('data-pos', scrollPos);
     mainPane.classList.add('hidden');
+    menuCancel.classList.remove('hidden');
     editForm.classList.remove('hidden');
+}
+
+function CancelEdit() {
+    var editForm = document.getElementById('editForm');
+    var mainPane = document.getElementById('mainPane'); 
+    editForm.classList.add('hidden');
+    menuCancel.classList.add('hidden');
+    mainPane.classList.remove('hidden');
+    var scrollPos = editForm.getAttribute('data-pos');
+    document.documentElement.scrollTop = scrollPos;
 }
 
 function postAjax(url, data, success) {
