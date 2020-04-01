@@ -7,7 +7,7 @@ using Myriad.Data.Implementation;
 
 namespace Myriad.Data
 {
-    public enum DataOperation { ReadNavigationPage, ReadArticleTitle, ReadArticleID, 
+    public enum DataOperation { ReadNavigationPage, ReadNavigationID, ReadArticleTitle, ReadArticleID, 
         ReadArticle, ReadCommentIDs, ReadCommentLinks, ReadCommentParagraphs,
         ReadKeywords, ReadImageSize
     }

@@ -16,20 +16,21 @@ namespace Myriad.Parser
         public override void Parse(List<string> paragraphs)
         {
             bool foundFirstHeading = false;
-            foreach (string paragraph in paragraphs)
+            for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {
                 if (!foundFirstHeading)
                 {
-                    if ((paragraph.Length > Numbers.nothing) &&
-                        (paragraph[Ordinals.first] == '='))
+                    if ((paragraphs[index].Length > Numbers.nothing) &&
+                        (paragraphs[index][Ordinals.first] == '='))
                     {
-                        currentParagraph = creator.Create(paragraph);
+                        currentParagraph = creator.Create(paragraphs[index]);
                         ParseMainHeading();
                         foundFirstHeading = true;
                     }
                     continue;
                 }
-                currentParagraph = creator.Create(paragraph);
+                currentParagraph = creator.Create(paragraphs[index]);
+                paragraphInfo.index = index;
                 ParseParagraph();
             }
             EndComments();

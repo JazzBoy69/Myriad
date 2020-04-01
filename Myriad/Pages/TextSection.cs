@@ -36,6 +36,7 @@ namespace Myriad.Pages
             this.sourceCitation = sourceCitation;
             List<(int start, int end)> idRanges = ReadLinks(commentID);
 
+            parser.SetParagraphInfo(ParagraphType.Comment, commentID);
             paragraphs = ReadParagraphs(commentID);
             if (idRanges.Count > 1)
             {
@@ -95,7 +96,6 @@ namespace Myriad.Pages
 
         private void AddTextTabs(List<(int start, int end)> idRanges, int index)
         {
-            //todo refactor heading?
             builder.StartSectionWithClass(HTMLClasses.scriptureSection);
             builder.Append(HTMLTags.StartHeader);
             builder.Append(paragraphs[Ordinals.first].Substring(Ordinals.third,

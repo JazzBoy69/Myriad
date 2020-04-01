@@ -25,6 +25,8 @@ namespace Myriad.Pages
     public class IndexPage : CommonPage
     {
         public const string pageURL = "/Index";
+
+        int ID;
         public IndexPage() 
         {
         }
@@ -33,10 +35,18 @@ namespace Myriad.Pages
         {
             //todo move toc
             //todo edit page
+            ID = GetPageID();
             var paragraphs = GetPageParagraphs();
             var parser = new NavigationParser(new HTMLResponseWriter(response));
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
+            parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             parser.Parse(paragraphs);
+        }
+
+        private int GetPageID()
+        {
+            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadNavigationID, "home");
+            return reader.GetDatum<int>();
         }
 
         public List<string> GetPageParagraphs()

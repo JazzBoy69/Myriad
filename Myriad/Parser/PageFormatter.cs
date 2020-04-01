@@ -134,6 +134,12 @@ namespace Myriad.Parser
             return true;
         }
 
+        internal void StartEditSpan(ParagraphInfo info)
+        {
+            if (info.type == ParagraphType.Undefined) return;
+            builder.StartSpanWithClass(HTMLClasses.paragraphcontent);
+        }
+
         internal void AppendString(IMarkedUpParagraph paragraph, StringRange range)
         {
             AppendString(paragraph, range.Start, range.End);
@@ -143,6 +149,27 @@ namespace Myriad.Parser
         {
             if (start > end) return;
             builder.Append(paragraph.SpanAt(start, end));
+        }
+
+        internal void EndEditSpan(ParagraphInfo info)
+        {
+            if (info.type == ParagraphType.Undefined) return;
+            builder.Append(HTMLTags.EndSpan);
+            builder.Append(HTMLTags.StartSpanWithClass);
+            builder.Append(HTMLClasses.editparagraph);
+            builder.Append(HTMLTags.CloseQuote);
+            builder.Append(HTMLTags.Data_EditType);
+            builder.Append((int)info.type);
+            builder.Append(HTMLTags.Data_ID);
+            builder.Append(info.ID);
+            builder.Append(HTMLTags.Data_Index);
+            builder.Append(info.index);
+            builder.Append(HTMLTags.OnClick);
+            builder.Append(JavaScriptFunctions.EditParagraph);
+            builder.Append(HTMLTags.EndTag);
+            builder.Append(HTMLTags.NonbreakingSpace);
+            builder.Append("Edit");
+            builder.Append(HTMLTags.EndSpan);
         }
 
         internal void StartSidenoteWithHeading(Formats formats)

@@ -17,6 +17,7 @@ namespace Myriad.Parser
             for (int index = Ordinals.second; index<paragraphs.Count; index++)      
             {
                 currentParagraph = creator.Create(paragraphs[index]);
+                paragraphInfo.index = index;
                 ParseParagraph();
             }
         }

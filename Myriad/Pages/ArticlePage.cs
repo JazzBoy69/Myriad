@@ -37,6 +37,7 @@ namespace Myriad.Pages
 
         string title;
         string id;
+        int idNumber;
         public ArticlePage()
         {
         }
@@ -59,7 +60,7 @@ namespace Myriad.Pages
         protected override void RenderBody()
         {
             var paragraphs = GetPageParagraphs();
-            var parser = new ArticleParser(new HTMLResponseWriter(response));
+            var parser = new ArticleParser(new HTMLResponseWriter(response), idNumber);
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.Parse(paragraphs);
         }
@@ -84,7 +85,9 @@ namespace Myriad.Pages
                 var idReader = SQLServerReaderProvider<string>.Reader(
                     DataOperation.ReadArticleID, title);
                 id = idReader.GetDatum<string>();
+
             }
+            idNumber = Numbers.Convert(id);
         }
 
         public override bool IsValid()

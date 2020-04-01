@@ -20,6 +20,7 @@ namespace Myriad.Data.Implementation
         internal static Dictionary<(DataOperation, int), string> parameterNames = new Dictionary<(DataOperation, int), string>()
         {
             { (DataOperation.ReadNavigationPage, Ordinals.first), keyName },
+            { (DataOperation.ReadNavigationID, Ordinals.first), keyName },
             { (DataOperation.ReadArticleTitle, Ordinals.first), keyID },
             { (DataOperation.ReadArticleID, Ordinals.first), keyTitle },
             { (DataOperation.ReadArticle, Ordinals.first), keyID },
@@ -43,6 +44,9 @@ namespace Myriad.Data.Implementation
                 "select text from navigationparagraphs where name="+
                 parameterNames[(DataOperation.ReadNavigationPage, Ordinals.first)]
                  +" order by paragraphindex" },
+             { DataOperation.ReadNavigationID,
+                "select _id from navigation where name="+
+                parameterNames[(DataOperation.ReadNavigationPage, Ordinals.first)]},
             { DataOperation.ReadArticleTitle,
                 "select title from tags where id="+
                 parameterNames[(DataOperation.ReadArticleTitle, Ordinals.first)]},

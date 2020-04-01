@@ -6,6 +6,7 @@ namespace Myriad.Parser
     public struct JavaScriptFunctions
     {
         internal const string HandleTabClick = "HandleTabClick(this)";
+        internal const string EditParagraph = "EditParagraph(this)";
     }
     public struct HTMLTags
     {
@@ -53,6 +54,9 @@ namespace Myriad.Parser
         internal const string Ampersand = "&";
         internal const string NonbreakingSpace = "&nbsp;";
         internal const string OnClick = " onclick=";
+        internal const string Data_EditType = " data-edittype=";
+        internal const string Data_ID = " data-id=";
+        internal const string Data_Index = " data-index=";
     }
 
     public static class HTMLClasses
@@ -75,6 +79,8 @@ namespace Myriad.Parser
         internal const string tabs = "tabs";
         internal const string tabSuffix = "-tab";
         internal const string tab = "tab";
+        internal const string paragraphcontent = "parcontent";
+        internal const string editparagraph = "editparagraph";
     }
 
     public interface HTMLResponse

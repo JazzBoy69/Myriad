@@ -39,16 +39,22 @@ namespace Myriad.Parser
         readonly PageFormatter formatter;
         readonly CitationHandler citationHandler;
         readonly StringRange labelRange = new StringRange();
+        protected ParagraphInfo paragraphInfo;
 
+        public string ParsedText { get { return formatter.Result; } }
 
         public MarkupParser(HTMLResponse builder)
         {
             formatter = new PageFormatter(this, builder);
             citationHandler = new CitationHandler();
+            paragraphInfo.type = ParagraphType.Undefined;
         }
 
-        public string ParsedText { get { return formatter.Result; } }
-
+        public void SetParagraphInfo(ParagraphType type, int ID)
+        {
+            paragraphInfo.type = type;
+            paragraphInfo.ID = ID;
+        }
         protected override void HandleStart()
         {
             citationLevel = 0;
@@ -61,6 +67,10 @@ namespace Myriad.Parser
             if (!formats.heading && !formats.figure)
             {
                 formatter.StartParagraph();
+                if (formats.editable)
+                {
+                    formatter.StartEditSpan(paragraphInfo);
+                }
             }
 
         }
@@ -112,6 +122,9 @@ namespace Myriad.Parser
                 mainRange.BumpEnd();
             }
             formatter.AppendString(currentParagraph, mainRange);
+
+            HandleEditParagraphSpan();
+
             if (formats.heading)
                 formatter.EndHeading();
             else
@@ -120,6 +133,14 @@ namespace Myriad.Parser
             {
                 formatter.EndSection();
                 formatter.AppendClearDiv();
+            }
+        }
+
+        private void HandleEditParagraphSpan()
+        {
+            if (formats.editable)
+            {
+                formatter.EndEditSpan(paragraphInfo);
             }
         }
 
@@ -190,6 +211,7 @@ namespace Myriad.Parser
             }
             if (longToken == Tokens.endSidenote)
             {
+                HandleEditParagraphSpan();
                 formatter.EndSidenote(formats);
                 HandleEndToken();
                 SkipLongToken();

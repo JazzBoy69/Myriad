@@ -8,29 +8,32 @@ namespace Myriad.Parser
 {
     public class ArticleParser : MarkupParser
     {
-        public ArticleParser(HTMLResponse builder) : base(builder)
+        int ID;
+        public ArticleParser(HTMLResponse builder, int articleID) : base(builder)
         {
-
+            ID = articleID;
         }
 
         public override void Parse(List<string> paragraphs)
         {
             bool foundFirstHeading = false;
-            foreach (string paragraph in paragraphs)
+            SetParagraphInfo(ParagraphType.Article, ID);
+            for (int i = Ordinals.first; i<paragraphs.Count; i++)
             {
                 if (!foundFirstHeading)
                 {
-                    if ((paragraph.Length > Numbers.nothing) &&
-                        (paragraph[Ordinals.first] == '='))
+                    if ((paragraphs[i].Length > Numbers.nothing) &&
+                        (paragraphs[i][Ordinals.first] == '='))
                     {
-                        currentParagraph = creator.Create(paragraph);
+                        currentParagraph = creator.Create(paragraphs[i]);
                         ParseMainHeading();
 
                         foundFirstHeading = true;
                     }
                     continue;
                 }
-                currentParagraph = creator.Create(paragraph);
+                currentParagraph = creator.Create(paragraphs[i]);
+                paragraphInfo.index = i;
                 ParseParagraph();
             }
             EndComments();

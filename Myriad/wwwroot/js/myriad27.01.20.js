@@ -302,7 +302,14 @@ function scrollableElement(els) {
     return [];
 }
 
-function EditParagraph() {
+function EditParagraph(link) {
+    var id = link.getAttribute('data-id');
+    var index = link.getAttribute('data-index');
+    alert(id + ' ' + index);
+}
+
+
+function EditParagraphOld() {
     var editlink = $(this);
     var edittype = $(this).data('edittype');
     var ID = $(this).data('linkid');
@@ -373,25 +380,13 @@ function HandleTabClick(tabClicked) {
 function getChildren(n, skipMe) {
     var r = [];
     for (; n; n = n.nextSibling)
-        if (n.nodeType == 1 && n != skipMe)
+        if (n.nodeType === 1 && n !== skipMe)
             r.push(n);
     return r;
 };
 
 function getSiblings(n) {
     return getChildren(n.parentNode.firstChild, n);
-}
-
-function HandleTabs() {
-    $("ul.tabs li").click(function (e) {
-        if (!$(this).hasClass("active")) {
-            var tabNum = $(this).index();
-            var tabID = $(this).attr('id') + "-tab";
-
-            $(this).addClass("active").siblings().removeClass('active');
-            $('#' + tabID).addClass("active").siblings().removeClass('active');
-        }
-    });
 }
 
 function HandleHiddenDetails()
