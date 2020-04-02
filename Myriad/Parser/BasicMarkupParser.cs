@@ -70,7 +70,7 @@ namespace Myriad.Parser
         {
             try
             {
-                if (currentParagraph.Length == Numbers.nothing) return;
+                if (currentParagraph.Length == Number.nothing) return;
                 Initialize();
                 HandleStart();
                 if (foundEndToken) return;
@@ -92,7 +92,7 @@ namespace Myriad.Parser
 
         protected void Initialize()
         {
-            if (currentParagraph.Length == Numbers.nothing)
+            if (currentParagraph.Length == Number.nothing)
             {
                 mainRange = StringRange.InvalidRange;
             }
@@ -208,17 +208,9 @@ namespace Myriad.Parser
             return citationLevel;
         }
 
-        async private Task HandleCitationsAsync()
-        {
-            await Task.Run(() =>
-            {
-                HandleCitations();
-            });
-        }
-
         virtual public void HandleCitations()
         {
-            //todo Handle Citations when not parsing (updating page)
+            //todo Handle Citations when not parsing (updating page) !!!!!
         }
 
         protected void ResetCitationLevel()

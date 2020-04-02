@@ -81,6 +81,7 @@ namespace Myriad.Parser
             {
                 currentParagraph = creator.Create(paragraphs[index]);
                 paragraphInfo.index = index;
+                ResetCrossReferences();
                 ParseParagraph();
             }
         }

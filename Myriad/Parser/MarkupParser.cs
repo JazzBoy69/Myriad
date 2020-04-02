@@ -40,16 +40,26 @@ namespace Myriad.Parser
         readonly CitationHandler citationHandler;
         readonly StringRange labelRange = new StringRange();
         protected ParagraphInfo paragraphInfo;
+        readonly List<Citation> allCitations = new List<Citation>();
+        readonly List<string> tags = new List<string>();
+
+        public List<Citation> Citations => allCitations;
+        public List<string> Tags => tags;
 
         public string ParsedText { get { return formatter.Result; } }
 
         public MarkupParser(HTMLResponse builder)
         {
-            formatter = new PageFormatter(this, builder);
+            formatter = new PageFormatter(builder);
             citationHandler = new CitationHandler();
             paragraphInfo.type = ParagraphType.Undefined;
         }
 
+        protected void ResetCrossReferences()
+        {
+            allCitations.Clear();
+            tags.Clear();
+        }
         public void SetParagraphInfo(ParagraphType type, int ID)
         {
             paragraphInfo.type = type;
@@ -91,7 +101,7 @@ namespace Myriad.Parser
                 if (currentParagraph.Length > 2)
                     formatter.StartSidenoteWithHeading(formats);
                 else
-                    formatter.StartSidenote(formats);
+                    formatter.StartSidenote();
                 SkipLongToken();
                 return false;
             }
@@ -161,7 +171,7 @@ namespace Myriad.Parser
                 SkipToken();
                 return;
             }
-            if (citationLevel > Numbers.nothing)
+            if (citationLevel > Number.nothing)
                 HandleCitations();
             AppendTextUpToToken();
             if (longToken == Tokens.detail)
@@ -253,7 +263,9 @@ namespace Myriad.Parser
                     SearchForEndBracketToken();
                     if (!mainRange.Valid) return;
                     ResetCitationLevel();
-                    formatter.AppendTag(currentParagraph, labelRange, mainRange, formats);
+                    string tag = currentParagraph.StringAt(mainRange);
+                    tags.Add(tag);
+                    formatter.AppendTag(currentParagraph, labelRange, mainRange);
                     formats.labelExists = false;
                     labelRange.Invalidate();
                     mainRange.GoToNextStartPosition();
@@ -262,7 +274,7 @@ namespace Myriad.Parser
                 StringRange inlineLabelRange = new StringRange(mainRange.End+1, mainRange.End+1);
                 MoveIndexToEndOfWord();
                 inlineLabelRange.MoveEndTo(mainRange.End-1);
-                formatter.AppendTag(currentParagraph, inlineLabelRange, inlineLabelRange, formats);
+                formatter.AppendTag(currentParagraph, inlineLabelRange, inlineLabelRange);
                 mainRange.GoToNextStartPosition();
                 return;
             }
@@ -322,7 +334,7 @@ namespace Myriad.Parser
                 {
                     citations.Last().Label.BumpEnd();
                     formatter.AppendCitations(currentParagraph, citations);
-                    mainRange.MoveStartTo(citations[citations.Count - 1].Label.End+1);
+                    mainRange.MoveStartTo(citations[Ordinals.last].Label.End+1);
                 }
             }
         }
@@ -331,20 +343,19 @@ namespace Myriad.Parser
             var rangeToParse = new StringRange(mainRange.Start, mainRange.End - 1);
             List<Citation> citations =
                 citationHandler.ParseCitations(rangeToParse, currentParagraph);
-            if (citations.Count > 0)
+            if (citations.Count < 1) return;
+            allCitations.AddRange(citations);
+            if (formats.labelExists)
             {
-                if (formats.labelExists)
-                {
-                    citations[Ordinals.first].DisplayLabel = labelRange;
-                    formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
-                    mainRange.MoveStartTo(mainRange.End);
-                    return;
-                }
-                else
-                {
-                    formatter.AppendCitations(currentParagraph, citations);
-                    mainRange.MoveStartTo(citations[citations.Count - 1].Label.End + 1);
-                }
+                citations[Ordinals.first].DisplayLabel = labelRange;
+                formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
+                mainRange.MoveStartTo(mainRange.End);
+                return;
+            }
+            else
+            {
+                formatter.AppendCitations(currentParagraph, citations);
+                mainRange.MoveStartTo(citations[Ordinals.last].Label.End + 1);
             }
         }
 

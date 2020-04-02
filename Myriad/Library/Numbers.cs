@@ -1,10 +1,13 @@
 ﻿using System.Linq;
 namespace Myriad.Library
 {
-    public static class Numbers
+    public struct Number
     {
         public const int nothing = 0;
         public const int single = 1;
+    }
+    public static class Numbers
+    {
         internal static bool CompleteCheckIsNumber(string verseString)
         {
             foreach (char c in verseString)
@@ -41,7 +44,7 @@ namespace Myriad.Library
         public const int error = -1;
         public const int notfound = -1;
     }
-    public static class Ordinals
+    public struct Ordinals
     {
         public const int first = 0;
         public const int second = 1;
@@ -68,9 +71,9 @@ namespace Myriad.Library
         public const int twentythird = 22;
         public const int twentyfourth = 23;
         public const int twentyfifth = 24;
-        internal static System.Index last = ^0;
-        internal static System.Index nexttolast = ^1;
-        internal static System.Index secondtolast = ^2;
+        internal static System.Index last = ^1;
+        internal static System.Index nexttolast = ^2;
+        internal static System.Index secondtolast = ^3;
     }
 
 }

@@ -70,7 +70,6 @@ namespace Myriad.Pages
             builder.StartDivWithClass(HTMLClasses.scriptureQuote);
             formatter.AppendKeywords(keywords);
             builder.Append(HTMLTags.EndDiv);
-            //todo edit comment link in header
             builder.Append(HTMLTags.EndSection);
         }
         public List<(int start, int end)> ReadLinks(int commentID)

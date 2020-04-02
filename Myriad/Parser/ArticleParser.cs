@@ -8,7 +8,7 @@ namespace Myriad.Parser
 {
     public class ArticleParser : MarkupParser
     {
-        int ID;
+        readonly int ID;
         public ArticleParser(HTMLResponse builder, int articleID) : base(builder)
         {
             ID = articleID;
@@ -86,7 +86,7 @@ namespace Myriad.Parser
             {
                 if (!foundFirstHeading)
                 {
-                    if ((paragraphs[i].Length > Numbers.nothing) &&
+                    if ((paragraphs[i].Length > Number.nothing) &&
                         (paragraphs[i][Ordinals.first] == '='))
                     {
                         currentParagraph = creator.Create(paragraphs[i]);
@@ -98,6 +98,7 @@ namespace Myriad.Parser
                 }
                 currentParagraph = creator.Create(paragraphs[i]);
                 paragraphInfo.index = i;
+                ResetCrossReferences();
                 ParseParagraph();
             }
             EndComments();

@@ -14,7 +14,7 @@ namespace Myriad.Parser
 
         public string Result { get { return builder.Response(); } }
 
-        public PageFormatter(IParser parser, HTMLResponse builder)
+        public PageFormatter(HTMLResponse builder)
         {
             this.builder = builder;
         }
@@ -121,7 +121,7 @@ namespace Myriad.Parser
             builder.Append(c);
         }
 
-        internal bool ToggleHeading(Formats formats, char charAfterToken)
+        internal bool ToggleHeading(Formats formats)
         {
             formats.editable = false;
             if (formats.heading)
@@ -178,7 +178,7 @@ namespace Myriad.Parser
             builder.Append(HTMLTags.StartHeader);
             formats.heading = true;
         }
-        internal void StartSidenote(Formats formats)
+        internal void StartSidenote()
         {
             builder.StartDivWithClass(HTMLClasses.sidenote);
         }
@@ -226,7 +226,7 @@ namespace Myriad.Parser
         }
 
 
-        internal void AppendTag(IMarkedUpParagraph paragraph, StringRange labelRange, StringRange tagRange, Formats formats)
+        internal void AppendTag(IMarkedUpParagraph paragraph, StringRange labelRange, StringRange tagRange)
         {
             builder.StartAnchorWithClass(HTMLClasses.link);
             builder.AppendHREF(ArticlePage.pageURL);

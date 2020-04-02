@@ -83,7 +83,7 @@ namespace Myriad.Parser
             {
                 if (!foundFirstHeading)
                 {
-                    if ((paragraphs[index].Length > Numbers.nothing) &&
+                    if ((paragraphs[index].Length > Number.nothing) &&
                         (paragraphs[index][Ordinals.first] == '='))
                     {
                         currentParagraph = creator.Create(paragraphs[index]);
@@ -94,6 +94,7 @@ namespace Myriad.Parser
                 }
                 currentParagraph = creator.Create(paragraphs[index]);
                 paragraphInfo.index = index;
+                ResetCrossReferences();
                 ParseParagraph();
             }
             EndComments();
