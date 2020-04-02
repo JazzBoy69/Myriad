@@ -50,7 +50,12 @@ namespace Myriad
                 string path = context.Request.Path;
                 if (path == EditParagraph.getDataURL)
                 {
-                    EditParagraph.SendPlainText(context);
+                    EditParagraph.GetPlainText(context);
+                    return;
+                }
+                if (path == EditParagraph.setDataURL)
+                {
+                    EditParagraph.SetText(context);
                     return;
                 }
                 CommonPage page = RequestedPage(context);

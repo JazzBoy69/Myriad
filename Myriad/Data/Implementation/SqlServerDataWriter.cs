@@ -25,9 +25,8 @@ namespace Myriad.Data.Implementation
 
         public void AddParameter<T>(int index, T value)
         {
-            command.Parameters.Add(new SqlParameter(SqlServerInfo.parameterNames[(operation, index)],
-                SqlServerInfo.parameterTypes[(operation, index)]));
-            command.Parameters[index].Value = value;
+            command.Parameters.AddWithValue(SqlServerInfo.parameterNames[(operation, index)],
+                value);
         }
 
         public void BeginTransaction()

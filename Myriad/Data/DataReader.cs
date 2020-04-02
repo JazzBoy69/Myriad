@@ -10,7 +10,12 @@ namespace Myriad.Data
     public enum DataOperation { ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID, 
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph,
-        ReadKeywords, ReadImageSize
+        ReadKeywords, ReadImageSize,
+
+            CreateNavigationParagraph=256, UpdateNavigationParagraph=257, DeleteNavigationParagraph=258,
+            CreateArticleParagraph=270, UpdateArticleParagraph=271, DeleteArticleParagraph=272,
+            CreateCommentParagraph=280, UpdateCommentParagraph=281, DeleteCommentParagraph=282
+
     }
     public static class DataObjectFactory<DataObjectType> where DataObjectType:DataObject, new()
     {

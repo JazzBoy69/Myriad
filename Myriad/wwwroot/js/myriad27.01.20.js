@@ -306,6 +306,12 @@ function EditParagraph(editlink) {
     var edittype = editlink.getAttribute('data-edittype');
     var ID = editlink.getAttribute('data-id');
     var index = editlink.getAttribute('data-index');
+    var editForm = document.getElementById('editForm');
+    editForm.setAttribute('data-edittype', edittype);
+    editForm.setAttribute('data-id', ID);
+    editForm.setAttribute('data-index', index);
+    var menuAccept = document.getElementById('menuAccept');
+    menuAccept.onclick = AcceptEditParagraph;
     postAjax('/EditParagraph/GetData',
         {
         editType: edittype,
@@ -320,22 +326,49 @@ function ShowEditWindow(data) {
     var editForm = document.getElementById('editForm');
     var mainPane = document.getElementById('mainPane');
     var menuCancel = document.getElementById('menuCancel');
+    var menuEdit = document.getElementById('menuEdit');
+    var menuAccept = document.getElementById('menuAccept');
     editForm.innerText = data;
     var scrollPos = document.documentElement.scrollTop;
     editForm.setAttribute('data-pos', scrollPos);
     mainPane.classList.add('hidden');
+    menuEdit.classList.add('hidden');
     menuCancel.classList.remove('hidden');
+    menuAccept.classList.remove('hidden');
     editForm.classList.remove('hidden');
 }
 
-function CancelEdit() {
+function CloseEditForm() {
     var editForm = document.getElementById('editForm');
     var mainPane = document.getElementById('mainPane'); 
     editForm.classList.add('hidden');
     menuCancel.classList.add('hidden');
     mainPane.classList.remove('hidden');
+    menuEdit.classList.remove('hidden');
+    menuAccept.classList.add('hidden');
     var scrollPos = editForm.getAttribute('data-pos');
     document.documentElement.scrollTop = scrollPos;
+}
+
+function AcceptEditParagraph() {
+    var editForm = document.getElementById('editForm');
+    var edittype = editForm.getAttribute('data-edittype');
+    var ID = editForm.getAttribute('data-id');
+    var index = editForm.getAttribute('data-index');
+    postAjax('/EditParagraph/SetData',
+        {
+            editType: edittype,
+            ID: ID,
+            paragraphIndex: index,
+            text: editForm.innerText
+        },
+        function (data) { RefreshEditedParagraph(data); }
+    );
+    CloseEditForm();
+}
+
+function RefreshEditedParagraph(data) {
+    alert(data);
 }
 
 function postAjax(url, data, success) {
