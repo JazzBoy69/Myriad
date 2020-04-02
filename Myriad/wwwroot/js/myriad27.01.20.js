@@ -306,6 +306,8 @@ function EditParagraph(editlink) {
     var edittype = editlink.getAttribute('data-edittype');
     var ID = editlink.getAttribute('data-id');
     var index = editlink.getAttribute('data-index');
+    var editSpan = editlink.parentElement.getElementsByClassName('parcontent')[0];
+    editSpan.classList.add('updating');
     var editForm = document.getElementById('editForm');
     editForm.setAttribute('data-edittype', edittype);
     editForm.setAttribute('data-id', ID);
@@ -368,7 +370,9 @@ function AcceptEditParagraph() {
 }
 
 function RefreshEditedParagraph(data) {
-    alert(data);
+    var editSpan = document.getElementsByClassName('updating')[0];
+    editSpan.classList.remove('updating');
+    editSpan.innerHTML = data;
 }
 
 function postAjax(url, data, success) {

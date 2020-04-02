@@ -36,7 +36,7 @@ namespace Myriad.Parser
     public class MarkupParser : BasicMarkupParser
     {
         internal readonly Formats formats = new Formats();
-        readonly PageFormatter formatter;
+        protected readonly PageFormatter formatter;
         readonly CitationHandler citationHandler;
         readonly StringRange labelRange = new StringRange();
         protected ParagraphInfo paragraphInfo;
@@ -59,19 +59,15 @@ namespace Myriad.Parser
         {
             citationLevel = 0;
             formats.Reset();
-            formatter.StartSection();
+            AddHTMLBeforeParagraph();
             if (currentParagraph.Length > 1)
             {
                 foundEndToken = HandleStartToken();
             }
-            if (!formats.heading && !formats.figure)
-            {
-                formatter.StartParagraph();
-                if (formats.editable)
-                {
-                    formatter.StartEditSpan(paragraphInfo);
-                }
-            }
+        }
+
+        virtual protected void AddHTMLBeforeParagraph()
+        {
 
         }
 
@@ -123,25 +119,14 @@ namespace Myriad.Parser
             }
             formatter.AppendString(currentParagraph, mainRange);
 
-            HandleEditParagraphSpan();
-
             if (formats.heading)
                 formatter.EndHeading();
-            else
-                formatter.EndParagraph();
-            if (!formats.sidenote)
-            {
-                formatter.EndSection();
-                formatter.AppendClearDiv();
-            }
         }
 
-        private void HandleEditParagraphSpan()
+        virtual protected void AddHTMLAfterParagraph()
         {
-            if (formats.editable)
-            {
-                formatter.EndEditSpan(paragraphInfo);
-            }
+            if (formats.heading)
+                formatter.EndHeading();
         }
 
         protected void ParseMainHeading()
@@ -211,7 +196,6 @@ namespace Myriad.Parser
             }
             if (longToken == Tokens.endSidenote)
             {
-                HandleEditParagraphSpan();
                 formatter.EndSidenote(formats);
                 HandleEndToken();
                 SkipLongToken();

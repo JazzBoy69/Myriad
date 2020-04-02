@@ -67,9 +67,9 @@ namespace Myriad.Data.Implementation
                 " and paragraphindex="+
                 parameterNames[(DataOperation.ReadNavigationParagraph, Ordinals.second)] },
             { DataOperation.UpdateNavigationParagraph,
-                "update navigationparagraphs set text='"+
+                "update navigationparagraphs set text="+
                 parameterNames[(DataOperation.UpdateNavigationParagraph, Ordinals.third)]+
-                "' where articleid="+
+                " where articleid="+
                 parameterNames[(DataOperation.UpdateNavigationParagraph, Ordinals.first)]+
                 " and paragraphindex="+
                 parameterNames[(DataOperation.UpdateNavigationParagraph, Ordinals.second)] },
@@ -91,9 +91,9 @@ namespace Myriad.Data.Implementation
                 " and paragraphindex="+
                 parameterNames[(DataOperation.ReadArticleParagraph, Ordinals.second)]},
             { DataOperation.UpdateArticleParagraph,
-                "update glossary set text='"+
+                "update glossary set text="+
                 parameterNames[(DataOperation.UpdateArticleParagraph, Ordinals.third)]+
-                "' where id="+
+                " where id="+
                 parameterNames[(DataOperation.UpdateArticleParagraph, Ordinals.first)]+
                 " and paragraphindex="+
                 parameterNames[(DataOperation.UpdateArticleParagraph, Ordinals.second)]},
@@ -110,9 +110,9 @@ namespace Myriad.Data.Implementation
                 " and paragraphindex="+
                 parameterNames[(DataOperation.ReadCommentParagraph, Ordinals.second)]},
             { DataOperation.UpdateCommentParagraph,
-                "update comments set text='"+
+                "update comments set text="+
                 parameterNames[(DataOperation.UpdateCommentParagraph, Ordinals.third)]+
-                "' where id="+
+                " where id="+
                 parameterNames[(DataOperation.UpdateCommentParagraph, Ordinals.first)]+
                 " and paragraphindex="+
                 parameterNames[(DataOperation.UpdateCommentParagraph, Ordinals.second)]},
