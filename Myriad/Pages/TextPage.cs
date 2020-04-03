@@ -36,7 +36,7 @@ namespace Myriad.Pages
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
-        HTMLResponseWriter builder;
+        HTMLResponseWriter writer;
         List<int> commentIDs;
         TextSection textSection;
 
@@ -65,15 +65,15 @@ namespace Myriad.Pages
             return TextHTML.TextScripts;
         }
 
-        protected override void RenderBody()
+        public override void RenderBody(HTMLResponse writer)
         {
             Initialize();
             bool readingView = commentIDs.Count > 1;
             if (readingView)
             {
-                builder.Append(HTMLTags.StartMainHeader);
-                builder.Append(GetTitle());
-                builder.Append(HTMLTags.EndMainHeader);
+                writer.Append(HTMLTags.StartMainHeader);
+                writer.Append(GetTitle());
+                writer.Append(HTMLTags.EndMainHeader);
 
                 //todo next previous page
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
@@ -89,8 +89,8 @@ namespace Myriad.Pages
 
         private void Initialize()
         {
-            builder = new HTMLResponseWriter(response);
-            textSection = new TextSection(builder);
+            writer = new HTMLResponseWriter(response);
+            textSection = new TextSection(writer);
             commentIDs = GetCommentIDs(citation);
         }
 

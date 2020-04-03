@@ -34,13 +34,13 @@ namespace Myriad.Pages
         {
         }
 
-        protected override void RenderBody()
+        public override void RenderBody(HTMLResponse writer)
         {
             //todo move toc
             //todo edit page
             ID = GetPageID();
-            var paragraphs = GetPageParagraphs();
-            parser = new PageParser(new HTMLResponseWriter(response));
+            paragraphs = GetPageParagraphs();
+            parser = new PageParser(writer);
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             Parse();

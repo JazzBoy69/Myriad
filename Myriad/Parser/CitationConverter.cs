@@ -25,85 +25,85 @@ namespace Myriad.Parser
 
         public static string ToString(Citation citation)
         {
-            HTMLStringBuilder builder = new HTMLStringBuilder();
-            Append(builder, citation);
-            return builder.Response();
+            HTMLStringWriter writer = new HTMLStringWriter();
+            Append(writer, citation);
+            return writer.Response();
         }
 
         public static string ToString(List<Citation> citations)
         {
-            HTMLStringBuilder builder = new HTMLStringBuilder();
+            HTMLStringWriter writer = new HTMLStringWriter();
             for (var i = Ordinals.first; i < citations.Count; i++)
             {
-                if (i == Ordinals.first) Append(builder, citations[i]);
+                if (i == Ordinals.first) Append(writer, citations[i]);
                 else
-                    AppendNext(builder, citations[i - 1], citations[i]);
+                    AppendNext(writer, citations[i - 1], citations[i]);
             }
-            return builder.Response();
+            return writer.Response();
         }
 
-        internal static void Append(HTMLResponse builder, Citation citation)
+        internal static void Append(HTMLResponse writer, Citation citation)
         {
-            builder.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
-            builder.Append(" ");
+            writer.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
+            writer.Append(" ");
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
-                builder.Append(citation.CitationRange.FirstChapter);
+                writer.Append(citation.CitationRange.FirstChapter);
                 if (citation.CitationType != CitationTypes.Chapter)
-                    builder.Append(":");
+                    writer.Append(":");
             }
             if (citation.CitationType == CitationTypes.Chapter) return;
-            builder.Append(citation.CitationRange.FirstVerse);
+            writer.Append(citation.CitationRange.FirstVerse);
             if (citation.CitationType == CitationTypes.Verse) return;
             if (!citation.CitationRange.IsOneVerse)
             {
                 if ((citation.CitationRange.FirstChapter == citation.CitationRange.LastChapter) &&
                     (citation.CitationRange.FirstVerse + 1 == citation.CitationRange.LastVerse))
-                    builder.Append(", ");
+                    writer.Append(", ");
                 else
-                    builder.Append("-");
+                    writer.Append("-");
                 if (!citation.CitationRange.OneChapter)
                 {
-                    builder.Append(citation.CitationRange.LastChapter);
-                    builder.Append(":");
+                    writer.Append(citation.CitationRange.LastChapter);
+                    writer.Append(":");
                 }
-                builder.Append(citation.CitationRange.LastVerse);
+                writer.Append(citation.CitationRange.LastVerse);
             }
         }
 
-        private static void AppendNext(HTMLStringBuilder builder, Citation precedingCitation, Citation currentCitation)
+        private static void AppendNext(HTMLStringWriter writer, Citation precedingCitation, Citation currentCitation)
         {
             if (precedingCitation.CitationRange.Book != currentCitation.CitationRange.Book)
             {
-                builder.Append("; ");
-                Append(builder, currentCitation);
+                writer.Append("; ");
+                Append(writer, currentCitation);
                 return;
             }
             else
             if (precedingCitation.CitationRange.LastChapter != currentCitation.CitationRange.FirstChapter)
             {
-                builder.Append("; ");
-                builder.Append(currentCitation.CitationRange.FirstChapter);
-                builder.Append(":");
+                writer.Append("; ");
+                writer.Append(currentCitation.CitationRange.FirstChapter);
+                writer.Append(":");
             }
             else
             {
-                builder.Append(", ");
+                writer.Append(", ");
             }
-            builder.Append(currentCitation.CitationRange.FirstVerse);
+            writer.Append(currentCitation.CitationRange.FirstVerse);
             if (!currentCitation.CitationRange.IsOneVerse)
             {
                 if ((currentCitation.CitationRange.FirstChapter == currentCitation.CitationRange.LastChapter) &&
                     (currentCitation.CitationRange.FirstVerse + 1 == currentCitation.CitationRange.LastVerse))
-                    builder.Append(", ");
+                    writer.Append(", ");
                 else
-                    builder.Append("-");
+                    writer.Append("-");
                 if (!currentCitation.CitationRange.OneChapter)
                 {
-                    builder.Append(currentCitation.CitationRange.LastChapter);
-                    builder.Append(":");
+                    writer.Append(currentCitation.CitationRange.LastChapter);
+                    writer.Append(":");
                 }
-                builder.Append(currentCitation.CitationRange.LastVerse);
+                writer.Append(currentCitation.CitationRange.LastVerse);
             }
         }
     }

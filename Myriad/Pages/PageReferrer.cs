@@ -18,12 +18,12 @@ namespace Myriad.Pages
             { CitationTypes.Verse, VersePage.pageURL },
             { CitationTypes.Invalid, IndexPage.pageURL }
         };
-        internal static void AppendQuery(HTMLResponse builder, Citation citation)
+        internal static void AppendQuery(HTMLResponse writer, Citation citation)
         {
-            builder.Append("start=");
-            builder.Append(citation.CitationRange.StartID);
-            builder.Append("&end=");
-            builder.Append(citation.CitationRange.EndID);
+            writer.Append("start=");
+            writer.Append(citation.CitationRange.StartID);
+            writer.Append("&end=");
+            writer.Append(citation.CitationRange.EndID);
         }
     }
 }

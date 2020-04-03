@@ -105,109 +105,109 @@ namespace Myriad.Parser
         public string Response();
         void StartParagraphWithClass(string className);
     }
-    public class HTMLStringBuilder : HTMLResponse
+    public class HTMLStringWriter : HTMLResponse
     {
-
-        private StringBuilder Builder { get; } = new StringBuilder();
+        StringBuilder writer = new StringBuilder();
+        private StringBuilder Writer => writer;
 
         public string Response()
         {
-            return Builder.ToString();
+            return Writer.ToString();
         }
         public void StartSpanWithClass(string className)
         {
-            Builder.Append(HTMLTags.StartSpanWithClass);
-            Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuoteEndTag);
+            writer.Append(HTMLTags.StartSpanWithClass);
+            writer.Append(className);
+            writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
         public void StartAnchorWithClass(string className)
         {
-            Builder.Append(HTMLTags.StartAnchorWithClass);
-            Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuote);
+            writer.Append(HTMLTags.StartAnchorWithClass);
+            writer.Append(className);
+            writer.Append(HTMLTags.CloseQuote);
         }
 
         public void Append(char c)
         {
-            Builder.Append(c);
+            writer.Append(c);
         }
 
         public void AppendHREF(string pageName)
         {
-            Builder.Append(HTMLTags.HREF);
-            Builder.Append(pageName);
+            writer.Append(HTMLTags.HREF);
+            writer.Append(pageName);
         }
 
         public void Append(string stringToAppend)
         {
-            Builder.Append(stringToAppend);
+            writer.Append(stringToAppend);
         }
 
         public void Append(int number)
         {
-            Builder.Append(number);
+            writer.Append(number);
         }
 
         public void StartDivWithClass(string className)
         {
-            Builder.Append(HTMLTags.StartDivWithClass);
-            Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuoteEndTag);
+            writer.Append(HTMLTags.StartDivWithClass);
+            writer.Append(className);
+            writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
         public void StartDivWithID(string id)
         {
-            Builder.Append(HTMLTags.StartDivWithID);
-            Builder.Append(id);
-            Builder.Append(HTMLTags.CloseQuoteEndTag);
+            writer.Append(HTMLTags.StartDivWithID);
+            writer.Append(id);
+            writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
         public void StartFigure(string className)
         {
-            Builder.Append(HTMLTags.StartFigureWithClass);
-            Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuoteEndTag);        
+            writer.Append(HTMLTags.StartFigureWithClass);
+            writer.Append(className);
+            writer.Append(HTMLTags.CloseQuoteEndTag);        
         }
 
         public void StartIMG(string path)
         {
-            Builder.Append(HTMLTags.StartImg);
-            Builder.Append(path);
-            Builder.Append(HTMLTags.CloseQuote);
+            writer.Append(HTMLTags.StartImg);
+            writer.Append(path);
+            writer.Append(HTMLTags.CloseQuote);
         }
 
         public void AppendIMGWidth(string widthString)
         {
-            Builder.Append(HTMLTags.Width);
-            Builder.Append(widthString);
-            Builder.Append(HTMLTags.CloseQuote);
+            writer.Append(HTMLTags.Width);
+            writer.Append(widthString);
+            writer.Append(HTMLTags.CloseQuote);
         }
 
         public void AppendClass(string className)
         {
-            Builder.Append(HTMLTags.Class);
-            Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuote);
+            writer.Append(HTMLTags.Class);
+            writer.Append(className);
+            writer.Append(HTMLTags.CloseQuote);
         }
 
         public void Append(ReadOnlySpan<char> span)
         {
-            Builder.Append(span);
+            writer.Append(span);
         }
 
         public void StartParagraphWithClass(string className)
         {
-            Builder.Append(HTMLTags.StartParagraphWithClass);
-            Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuoteEndTag);
+            writer.Append(HTMLTags.StartParagraphWithClass);
+            writer.Append(className);
+            writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
         public void StartSectionWithClass(string className)
         {
-            Builder.Append(HTMLTags.StartSectionWithClass);
-            Builder.Append(className);
-            Builder.Append(HTMLTags.CloseQuoteEndTag);
+            writer.Append(HTMLTags.StartSectionWithClass);
+            writer.Append(className);
+            writer.Append(HTMLTags.CloseQuoteEndTag);
         }
     }
 }

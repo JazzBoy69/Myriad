@@ -41,17 +41,16 @@ namespace Myriad.Tests
                     paragraphs.Add(line);
                 }
             }
-            var builder = new HTMLStringBuilder();
-            var parser = new PageParser(builder);
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            for (int i = 0; i < paragraphs.Count; i++)
-                parser.ParseParagraph(paragraphs[i], i);
+            IndexPage page = new IndexPage();
+
+            var writer = new HTMLStringWriter();
+            page.RenderBody(writer);
             string correctResult = "";
             using (StreamReader fs = new StreamReader(directory + name + "HTML.txt"))
             {
                 correctResult = fs.ReadLine();
             }
-            Assert.AreEqual(correctResult, builder.Response());
+            Assert.AreEqual(correctResult, writer.Response());
         }
 
     }

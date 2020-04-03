@@ -69,10 +69,6 @@ namespace Myriad.Parser
                 formatter.EndSection();
                 formatter.AppendClearDiv();
             }
-            if (formats.heading)
-                formatter.EndHeading();
-            else
-                formatter.EndParagraph();
         }
     }
 }

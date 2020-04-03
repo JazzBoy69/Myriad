@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Myriad.Parser;
 
 namespace Myriad.Pages
 {
@@ -34,7 +35,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        protected override void RenderBody()
+        public override void RenderBody(HTMLResponse writer)
         {
             throw new NotImplementedException();
         }

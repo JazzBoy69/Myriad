@@ -253,7 +253,7 @@ namespace Myriad.Parser
 
         public void ParseMainHeading(string paragraph)
         {
-            creator.Create(paragraph);
+            currentParagraph = creator.Create(paragraph);
             formatter.StartMainHeading();
             formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
             formatter.EndMainHeading();

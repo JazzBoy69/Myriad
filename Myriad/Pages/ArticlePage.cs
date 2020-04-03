@@ -58,10 +58,10 @@ namespace Myriad.Pages
             return ArticleHTML.ArticleScripts;
         }
 
-        protected override void RenderBody()
+        public override void RenderBody(HTMLResponse writer)
         {
             var paragraphs = GetPageParagraphs();
-            parser = new PageParser(new HTMLResponseWriter(response));
+            parser = new PageParser(writer);
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             Parse(paragraphs);
         }

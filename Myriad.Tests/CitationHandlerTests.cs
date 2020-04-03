@@ -75,7 +75,7 @@ namespace Myriad.Tests
             citationText = CitationConverter.ToString(citation);
             TestCitation(citationText, citation);
             Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
-            HTMLStringBuilder builder = new HTMLStringBuilder();
+            HTMLStringWriter builder = new HTMLStringWriter();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
             PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.ChapterCitation;
@@ -129,7 +129,7 @@ namespace Myriad.Tests
             List<Citation> citation = CitationConverter.FromString(Citations.MultipleCitations);
             citationText = CitationConverter.ToString(citation);
             Assert.AreEqual(Citations.MultipleCitations, citationText);
-            HTMLStringBuilder builder = new HTMLStringBuilder();
+            HTMLStringWriter builder = new HTMLStringWriter();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
             PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.MultipleCitations;
