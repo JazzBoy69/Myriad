@@ -77,6 +77,8 @@ namespace Myriad.Parser
 
         public override void Parse(List<string> paragraphs)
         {
+            //todo inject objects with parse loop into parser.
+            //should be able to eliminate different parsers
             for (int index = Ordinals.second; index<paragraphs.Count; index++)      
             {
                 currentParagraph = creator.Create(paragraphs[index]);

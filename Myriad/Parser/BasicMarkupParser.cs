@@ -210,7 +210,9 @@ namespace Myriad.Parser
 
         virtual public void HandleCitations()
         {
-            //todo Handle Citations when not parsing (updating page) !!!!!
+            //todo refactor basic markup parser and markup parser. 
+            //move all necessary methods to basic parser and keep formatter references in
+            //markup parser
         }
 
         protected void ResetCitationLevel()

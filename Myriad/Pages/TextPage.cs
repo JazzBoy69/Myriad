@@ -74,6 +74,8 @@ namespace Myriad.Pages
                 builder.Append(HTMLTags.StartMainHeader);
                 builder.Append(GetTitle());
                 builder.Append(HTMLTags.EndMainHeader);
+
+                //todo next previous page
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
                     textSection.AddReadingViewSection(commentIDs[i]);

@@ -20,6 +20,7 @@
 
     public class MarkedUpParagraphCreator : IMarkedUpParagraphCreator
     {
+        //todo should be able to eliminate this. Only one kind of markedup paragraph
         IMarkedUpParagraph IMarkedUpParagraphCreator.Create(string paragraph)
         {
             var markedupParagraph = new MarkedUpParagraph();
