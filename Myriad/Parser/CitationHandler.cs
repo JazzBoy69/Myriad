@@ -84,7 +84,7 @@ namespace Myriad.Parser
                 {
                     if ((book == "First") || (book == "Second") || (book == "Third") || (book == "Song") || (book=="Song of"))
                     {
-                        count = Numbers.nothing;
+                        count = Number.nothing;
                         citation.Label.BumpEnd();
                         first = false;
                         return true;
@@ -144,7 +144,7 @@ namespace Myriad.Parser
             labelRange = new StringRange(citation.Label.Start, citation.Label.Start);
             bool foundZero = false;
             bool lookForNumber = true;
-            count = Numbers.nothing;
+            count = Number.nothing;
             
             while (lookForNumber && (citation.Label.End <= rangeToParse.End))
             {
@@ -228,7 +228,7 @@ namespace Myriad.Parser
             citation = new Citation();
             citation.Label.MoveStartTo(rangeToParse.Start);
             citation.Label.MoveEndTo(rangeToParse.Start);
-            count = Numbers.nothing;
+            count = Number.nothing;
             verse.First.Reset();
             verse.Second.Reset();
             tokenBeforeLast = ';';
@@ -250,7 +250,7 @@ namespace Myriad.Parser
                 brokenComma = true;
                 verse.Second.Reset();
             }
-            if ((verse.First.Verse != Result.notfound) && (results.Count > Numbers.nothing))
+            if ((verse.First.Verse != Result.notfound) && (results.Count > Number.nothing))
             {
                 if (verse.First.Chapter == Result.notfound)
                 {
@@ -311,14 +311,14 @@ namespace Myriad.Parser
                 tokenBeforeLast = lastToken;
                 lastToken = token;
             }
-            count = Numbers.nothing;
+            count = Number.nothing;
         }
 
         public void MoveToNext()
         {
             tokenBeforeLast = lastToken;
             lastToken = token;
-            count = Numbers.nothing;
+            count = Number.nothing;
             citation.Label.BumpEnd();
             if (lastToken == ',')
             {

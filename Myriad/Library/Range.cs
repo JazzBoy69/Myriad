@@ -6,7 +6,7 @@ namespace Myriad.Library
 {
     public class CitationRange
     {
-        public const int invalidID = Numbers.nothing;
+        public const int invalidID = Number.nothing;
         internal static CitationRange InvalidRange = new CitationRange(invalidID, invalidID);
 
         KeyID start;

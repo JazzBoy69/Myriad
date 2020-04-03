@@ -34,6 +34,7 @@ namespace Myriad.Pages
         public const string pageURL = "/Article";
         public const string queryKeyTitle = "Title=";
         public const string queryKeyID = "ID=";
+        PageParser parser;
 
         string title;
         string id;
@@ -60,9 +61,9 @@ namespace Myriad.Pages
         protected override void RenderBody()
         {
             var paragraphs = GetPageParagraphs();
-            var parser = new ArticleParser(new HTMLResponseWriter(response), idNumber);
+            parser = new PageParser(new HTMLResponseWriter(response));
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            parser.Parse(paragraphs);
+            Parse(paragraphs);
         }
         public List<string> GetPageParagraphs()
         {
@@ -93,6 +94,28 @@ namespace Myriad.Pages
         public override bool IsValid()
         {
             return (title != null) && (int.TryParse(id, out int result));
+        }
+
+        public void Parse(List<string> paragraphs)
+        {
+            bool foundFirstHeading = false;
+            parser.SetParagraphInfo(ParagraphType.Article, idNumber);
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            {
+                if (!foundFirstHeading)
+                {
+                    if ((paragraphs[i].Length > Number.nothing) &&
+                        (paragraphs[i][Ordinals.first] == '='))
+                    {
+                        parser.ParseMainHeading(paragraphs[i]);
+
+                        foundFirstHeading = true;
+                    }
+                    continue;
+                }
+                parser.ParseParagraph(paragraphs[i], i);
+            }
+            parser.EndComments();
         }
     }
 }

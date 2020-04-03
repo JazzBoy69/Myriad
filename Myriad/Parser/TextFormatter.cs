@@ -72,7 +72,7 @@ namespace Myriad.Parser
             AppendVerseNumber(keywords[Ordinals.first]);
             if (keywords[Ordinals.first].WordIndex != Ordinals.first)
             {
-                builder.Append(Symbols.ellipsis);
+                builder.Append(Symbol.ellipsis);
             }
             AppendTextOfKeyword(keywords[Ordinals.first]);
             return poetic;
@@ -102,7 +102,7 @@ namespace Myriad.Parser
             builder.Append(keyword.Verse);
             builder.Append(HTMLTags.EndAnchor);
             builder.Append(HTMLTags.EndBold);
-            builder.Append(Symbols.space);
+            builder.Append(Symbol.space);
         }
 
         internal void AppendCitationData(Citation citation)

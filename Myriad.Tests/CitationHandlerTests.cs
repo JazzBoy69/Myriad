@@ -77,8 +77,7 @@ namespace Myriad.Tests
             Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
             HTMLStringBuilder builder = new HTMLStringBuilder();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            MarkupParser parser = new MarkupParser(builder);
-            PageFormatter formatter = new PageFormatter(parser, builder);
+            PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.ChapterCitation;
             CitationHandler citationHandler = new CitationHandler();
             StringRange range = new StringRange(0, Citations.ChapterCitation.Length - 1);
@@ -132,8 +131,7 @@ namespace Myriad.Tests
             Assert.AreEqual(Citations.MultipleCitations, citationText);
             HTMLStringBuilder builder = new HTMLStringBuilder();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            MarkupParser parser = new MarkupParser(builder);
-            PageFormatter formatter = new PageFormatter(parser, builder);
+            PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.MultipleCitations;
             CitationHandler citationHandler = new CitationHandler();
             StringRange range = new StringRange(0, Citations.MultipleCitations.Length - 1);

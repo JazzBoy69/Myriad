@@ -13,14 +13,14 @@ namespace Myriad.Pages
         List<string> paragraphs;
         HTMLResponse builder;
         TextFormatter formatter;
-        CommentParser parser;
+        PageParser parser;
         bool activeSet;
         Citation sourceCitation;
         //todo cache sections?
         public TextSection(HTMLResponse builder)
         {
             this.builder = builder;
-            parser = new CommentParser(builder);
+            parser = new PageParser(builder);
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
         }
         public void AddReadingViewSection(int commentID)
@@ -182,7 +182,10 @@ namespace Myriad.Pages
         private void AddComment()
         {
             builder.StartSectionWithClass(HTMLClasses.scriptureComment);
-            parser.Parse(paragraphs);
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            {
+                parser.ParseParagraph(paragraphs[i], i);
+            }
             builder.Append(HTMLTags.EndSection);
             builder.Append(HTMLTags.EndSection);
         }

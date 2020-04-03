@@ -33,16 +33,24 @@ namespace Myriad.Parser
             sidenote = false;
         }
     }
-    public class MarkupParser : BasicMarkupParser
+    public class MarkupParser : IParser
     {
+        protected int citationLevel = 0;
+        protected IMarkedUpParagraph currentParagraph;
+        protected StringRange mainRange = new StringRange();
+        protected IMarkedUpParagraphCreator creator;
+        protected bool foundEndToken;
+        protected int lastDash;
         internal readonly Formats formats = new Formats();
         protected readonly PageFormatter formatter;
         readonly CitationHandler citationHandler;
         readonly StringRange labelRange = new StringRange();
         protected ParagraphInfo paragraphInfo;
+
         readonly List<Citation> allCitations = new List<Citation>();
         readonly List<string> tags = new List<string>();
-
+        public IMarkedUpParagraph CurrentParagraph { get => currentParagraph; }
+        public StringRange MainRange { get => mainRange; }
         public List<Citation> Citations => allCitations;
         public List<string> Tags => tags;
 
@@ -54,18 +62,17 @@ namespace Myriad.Parser
             citationHandler = new CitationHandler();
             paragraphInfo.type = ParagraphType.Undefined;
         }
-
-        protected void ResetCrossReferences()
+        public void SetParagraphCreator(IMarkedUpParagraphCreator creator)
         {
-            allCitations.Clear();
-            tags.Clear();
+            this.creator = creator;
         }
+
         public void SetParagraphInfo(ParagraphType type, int ID)
         {
             paragraphInfo.type = type;
             paragraphInfo.ID = ID;
         }
-        protected override void HandleStart()
+        virtual protected void HandleStart()
         {
             citationLevel = 0;
             formats.Reset();
@@ -75,7 +82,112 @@ namespace Myriad.Parser
                 foundEndToken = HandleStartToken();
             }
         }
+        protected void Initialize()
+        {
+            if (currentParagraph.Length == Number.nothing)
+            {
+                mainRange = StringRange.InvalidRange;
+            }
+            mainRange = new StringRange();
+            mainRange.SetLimit(currentParagraph.Length - 1);
+            lastDash = GetLastDash();
+        }
+        public void ParseParagraph(string paragraph, int index)
+        {
+            paragraphInfo.index = index;
+            ResetCrossReferences();
+            currentParagraph = creator.Create(paragraph);
+            ParseParagraph();
+        }
+        protected void ParseParagraph()
+        {
+            try
+            {
+                if (currentParagraph.Length == Number.nothing) return;
+                Initialize();
+                HandleStart();
+                if (foundEndToken) return;
+                SearchForToken();
+                foundEndToken = false;
+                while (mainRange.Valid)
+                {
+                    HandleToken();
+                    if (foundEndToken) break;
+                    MoveToNextToken();
+                }
+                if (!foundEndToken) HandleEnd();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
 
+        protected void MoveToNextToken()
+        {
+            if (mainRange.Start > currentParagraph.Length)
+                return;
+            int end = mainRange.End;
+            SearchForToken();
+            if (mainRange.End == end)
+            {
+                mainRange.BumpStart();
+                MoveToNextToken();
+            }
+        }
+
+        protected void SearchForEndBracketToken()
+        {
+            if (mainRange.Start > currentParagraph.Length)
+                return;
+            mainRange.MoveEndTo(currentParagraph.IndexOf('}', mainRange.Start - 1));
+        }
+
+        public int DecreaseCitationLevel()
+        {
+            if (citationLevel > 0)
+                citationLevel--;
+            return citationLevel;
+        }
+        private int GetLastDash()
+        {
+            int p = currentParagraph.LastIndexOf('—');
+            if (p == Result.notfound) return Result.notfound;
+            int q = currentParagraph.IndexOf('.', p);
+            int r = currentParagraph.LastIndexOf('.');
+            if (q != r) return Result.notfound;
+            q = currentParagraph.IndexOf(' ', p);
+            if (q == Result.notfound) return Result.notfound;
+            r = Bible.IndexOfBook(currentParagraph.StringAt(p + 1, q - 1));
+            return (r == Result.notfound) ?
+                Result.notfound :
+                p;
+
+        }
+
+
+
+        protected void MoveIndexToNextBracketToken()
+        {
+            if (mainRange.Start > currentParagraph.Length)
+                return;
+            int end = mainRange.End;
+            mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.brackettokens, mainRange.Start));
+            if (mainRange.End == end)
+            {
+                mainRange.BumpStart();
+                MoveIndexToNextBracketToken();
+            }
+        }
+        protected void ResetCitationLevel()
+        {
+            citationLevel = 0;
+        }
+        protected void ResetCrossReferences()
+        {
+            allCitations.Clear();
+            tags.Clear();
+        }
         virtual protected void AddHTMLBeforeParagraph()
         {
 
@@ -117,7 +229,7 @@ namespace Myriad.Parser
             return false;
         }
 
-        protected override void HandleEnd()
+        virtual protected void HandleEnd()
         {
             mainRange.MoveEndToLimit();
             if (citationLevel > 0)
@@ -139,20 +251,21 @@ namespace Myriad.Parser
                 formatter.EndHeading();
         }
 
-        protected void ParseMainHeading()
+        public void ParseMainHeading(string paragraph)
         {
+            creator.Create(paragraph);
             formatter.StartMainHeading();
             formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
             formatter.EndMainHeading();
             formatter.StartComments();
         }
 
-        protected void EndComments()
+        public void EndComments()
         {
             formatter.EndComments();
         }
 
-        public override void SearchForToken()
+        public void SearchForToken()
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));
             if ((mainRange.End == Result.notfound) || ((mainRange.Start < lastDash) && (mainRange.End > lastDash)))
@@ -160,7 +273,7 @@ namespace Myriad.Parser
                 mainRange.MoveEndTo(lastDash);
             }
         }
-        override public void HandleToken()
+        public void HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             int longToken = currentParagraph.TokenAt(mainRange.End);
@@ -338,7 +451,7 @@ namespace Myriad.Parser
                 }
             }
         }
-        public override void HandleCitations()
+        public void HandleCitations()
         {
             var rangeToParse = new StringRange(mainRange.Start, mainRange.End - 1);
             List<Citation> citations =

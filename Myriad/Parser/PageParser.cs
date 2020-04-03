@@ -6,9 +6,9 @@ using Myriad.Library;
 
 namespace Myriad.Parser
 {
-    public class CommentParser : MarkupParser
+    public class PageParser : MarkupParser
     {
-        public CommentParser(HTMLResponse builder) : base(builder)
+        public PageParser(HTMLResponse builder) : base(builder)
         {
         }
 
@@ -74,19 +74,5 @@ namespace Myriad.Parser
             else
                 formatter.EndParagraph();
         }
-
-        public override void Parse(List<string> paragraphs)
-        {
-            //todo inject objects with parse loop into parser.
-            //should be able to eliminate different parsers
-            for (int index = Ordinals.second; index<paragraphs.Count; index++)      
-            {
-                currentParagraph = creator.Create(paragraphs[index]);
-                paragraphInfo.index = index;
-                ResetCrossReferences();
-                ParseParagraph();
-            }
-        }
-
     }
 }

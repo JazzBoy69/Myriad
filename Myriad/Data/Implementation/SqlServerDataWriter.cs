@@ -47,7 +47,7 @@ namespace Myriad.Data.Implementation
 
         public void WriteData(DataType data)
         {
-            if (command.Parameters.Count == Numbers.nothing)
+            if (command.Parameters.Count == Number.nothing)
             {
                 for (int i = Ordinals.first; i < data.ParameterCount; i++)
                 {

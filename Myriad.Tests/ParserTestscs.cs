@@ -22,9 +22,9 @@ namespace Myriad.Tests
         {
             InitializeParser();
             paragraphs.Add("testing **bold** //italic// **//bold italic//**");
-            parser.Parse(paragraphs);
+            parser.ParseParagraph(paragraphs[0], 0);
             string result = parser.ParsedText.ToString();
-            Assert.AreEqual("<section><p>testing <b>bold</b> <i>italic</i> <b><i>bold italic</i></b></p></section><div class='clear'></div>", result);
+            Assert.AreEqual("testing <b>bold</b> <i>italic</i> <b><i>bold italic</i></b>", result);
         }
         private void InitializeParser()
         {

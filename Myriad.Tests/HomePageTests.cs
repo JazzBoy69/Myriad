@@ -23,7 +23,7 @@ namespace Myriad.Tests
         {
             IndexPage indexPage = new IndexPage();
             paragraphs = indexPage.GetPageParagraphs();
-            Assert.That(paragraphs.Count > Numbers.nothing);
+            Assert.That(paragraphs.Count > Number.nothing);
         }
         [Test]
         public void ParseHomePage()
@@ -42,9 +42,10 @@ namespace Myriad.Tests
                 }
             }
             var builder = new HTMLStringBuilder();
-            var parser = new NavigationParser(builder);
+            var parser = new PageParser(builder);
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
-            parser.Parse(paragraphs);
+            for (int i = 0; i < paragraphs.Count; i++)
+                parser.ParseParagraph(paragraphs[i], i);
             string correctResult = "";
             using (StreamReader fs = new StreamReader(directory + name + "HTML.txt"))
             {

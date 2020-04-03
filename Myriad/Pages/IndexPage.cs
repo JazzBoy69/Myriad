@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Myriad.Parser;
 using Myriad.Data;
+using Myriad.Library;
 
 
 namespace Myriad.Pages
@@ -26,6 +27,8 @@ namespace Myriad.Pages
     {
         public const string pageURL = "/Index";
 
+        List<string> paragraphs;
+        PageParser parser;
         int ID;
         public IndexPage() 
         {
@@ -37,10 +40,30 @@ namespace Myriad.Pages
             //todo edit page
             ID = GetPageID();
             var paragraphs = GetPageParagraphs();
-            var parser = new NavigationParser(new HTMLResponseWriter(response));
+            parser = new PageParser(new HTMLResponseWriter(response));
             parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
-            parser.Parse(paragraphs);
+            Parse();
+        }
+
+        private void Parse()
+        {
+            bool foundFirstHeading = false;
+            for (int index = Ordinals.first; index < paragraphs.Count; index++)
+            {
+                if (!foundFirstHeading)
+                {
+                    if ((paragraphs[index].Length > Number.nothing) &&
+                        (paragraphs[index][Ordinals.first] == '='))
+                    {
+                        parser.ParseMainHeading(paragraphs[index]);
+                        foundFirstHeading = true;
+                    }
+                    continue;
+                }
+                parser.ParseParagraph(paragraphs[index], index);
+            }
+            parser.EndComments();
         }
 
         private int GetPageID()
