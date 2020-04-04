@@ -1,3 +1,31 @@
+function SetupPartialPageLoad() {
+    window.onpopstate = function (event) {
+        LoadMainPane();
+    }
+}
+
+function HandleLink(event) {
+    history.pushState(null, null, event.target.href);
+    event.preventDefault();
+    postAjax(event.target.href, {},
+        function (data) {
+            var mainPane = document.getElementById('mainPane');
+            mainPane.innerHTML = data;
+        });
+}
+
+function LoadMainPane() {
+    var target = document.location + "&partial=true";
+    if ((document.location.pathname === '/') || (document.location.pathname === '/Index')) {
+        target = '/Index?partial=true';
+    }
+    postAjax(target, {},
+        function (data) {
+            var mainPane = document.getElementById('mainPane');
+            mainPane.innerHTML = data;
+        });
+}
+
 function SetupCopytoClipboardWithLabel() {
     document.addEventListener('copy', function (e) {
         var plaintext = document.getSelection().toString();
@@ -701,7 +729,7 @@ function SetupPagination() {
     if (screen.width < 961) {
         var hammertime = new Hammer.Manager(document.getElementById('article'));
         hammertime.on('swipeleft', function () {
-            GotoNext();
+            GoToNext();
         });
         hammertime.on('swiperight', function () {
             GoToPrevious();
@@ -718,30 +746,19 @@ function SetupPagination() {
 function GoToNext() {
     var rangeData = document.querySelector('.rangedata.active');
     var endID = rangeData.getAttribute('data-end');
-    window.onpopstate = function (event) {
-        LoadMainPane();
-    }
     postAjax('/Text-Next', { endID: endID },
         function (data) {
             var rangeData = document.querySelector('.rangedata.active');
             var start = rangeData.getAttribute('data-start');
             var end = rangeData.getAttribute('data-end');
-            history.replaceState(null, null, '/Text-Load?start=' + start + '&end=' + end);
+            history.replaceState(null, null, '/Text?start=' + start + '&end=' + end);
             var mainPane = document.getElementById('mainPane');
             document.title = 'Next Page';
             mainPane.innerHTML = data;
             rangeData = document.querySelector('.rangedata.active');
             start = rangeData.getAttribute('data-start');
             end = rangeData.getAttribute('data-end');
-            history.pushState(null, null, '/Text-Load?start=' + start + '&end=' + end);
-        });
-}
-
-function LoadMainPane() {
-    postAjax(document.location, {},
-        function (data) {
-            var mainPane = document.getElementById('mainPane');
-            mainPane.innerHTML = data;
+            history.pushState(null, null, '/Text?start=' + start + '&end=' + end);
         });
 }
 

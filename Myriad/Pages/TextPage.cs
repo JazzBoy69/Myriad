@@ -21,6 +21,7 @@ namespace Myriad.Pages
     SetupIndex();
     SetupModalPictures('."+HTMLClasses.scriptureComment+ @"');
     SetupPagination(); 
+SetupPartialPageLoad();
 };
     </script>";
     }

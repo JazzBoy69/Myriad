@@ -70,6 +70,7 @@ namespace Myriad.Parser
         internal const string rangeData = " rangedata";
         internal const string dataStart = " data-start=";
         internal const string dataEnd = " data-end=";
+        internal const string partial = "partial=true onclick=HandleLink(event)";
         internal const string poetic1 = "firstpoetic";
         internal const string poetic2 = "poetic";
         internal const string comments = "comments";

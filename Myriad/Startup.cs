@@ -47,18 +47,13 @@ namespace Myriad
             });
             app.Run(async context =>
             {
-                string path = context.Request.Path;
-                if (path == TextPage.loadMainPane)
+                if (context.Request.Query.ContainsKey("partial"))
                 {
-                    string start = context.Request.Query[ScripturePage.queryKeyStart];
-                    string end = context.Request.Query[ScripturePage.queryKeyEnd];
-                    TextPage textPage = new TextPage();
-                    textPage.SetResponse(context.Response);
-                    int startID = Convert.ToInt32(start);
-                    int endID = Convert.ToInt32(end);
-                    textPage.RenderMainPane(startID, endID);
+                    CommonPage partialPage = RequestedPage(context);
+                    partialPage.RenderBody(new HTMLResponseWriter(context.Response));
                     return;
                 }
+                string path = context.Request.Path;
                 if (path == TextPage.nextURL)
                 {
                     TextPage textPage = new TextPage();

@@ -19,6 +19,7 @@ namespace Myriad.Pages
          document.getElementById('searchField').focus();
     });
     SetupIndex();
+SetupPartialPageLoad();
 };
     </script>";
     }
