@@ -79,8 +79,6 @@ SetupPartialPageLoad();
                 writer.Append(HTMLTags.StartMainHeader);
                 writer.Append(GetTitle());
                 writer.Append(HTMLTags.EndMainHeader);
-
-                //todo next previous page
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
                     textSection.AddReadingViewSection(commentIDs[i]);
@@ -99,13 +97,20 @@ SetupPartialPageLoad();
             RenderBody(new HTMLResponseWriter(response));
         }
 
-        public override void RenderNextPage()
+        public override void SetupNextPage()
         {
             var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadNextCommentRange,
                 citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();
             citation = new Citation(start, end);
-            RenderBody(new HTMLResponseWriter(response));
+        }
+
+        public override void SetupPrecedingPage()
+        {
+            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadPrecedingCommentRange,
+                citation.CitationRange.EndID);
+            (int start, int end) = reader.GetDatum<int, int>();
+            citation = new Citation(start, end);
         }
 
         private void Initialize()
@@ -114,25 +119,11 @@ SetupPartialPageLoad();
             commentIDs = GetCommentIDs(citation);
         }
 
-
-
-
-
-
         private List<int> GetCommentIDs(Citation citation)
         {
             var reader = SQLServerReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetData<int>();
-        }
-
-        public override void RenderPrecedingPage()
-        {
-            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadPrecedingCommentRange,
-                citation.CitationRange.EndID);
-            (int start, int end) = reader.GetDatum<int, int>();
-            citation = new Citation(start, end);
-            RenderBody(new HTMLResponseWriter(response));
         }
     }
 }

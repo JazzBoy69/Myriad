@@ -50,19 +50,21 @@ namespace Myriad
                 if (context.Request.Query.ContainsKey("partial"))
                 {
                     CommonPage partialPage = RequestedPage(context);
+                    if (context.Request.Query.ContainsKey("next"))
+                    {
+                        ScripturePage scripturePage = (ScripturePage)partialPage;
+                        scripturePage.SetupNextPage();
+                        scripturePage.RenderBody(new HTMLResponseWriter(context.Response));
+                        return;
+                    }
+                    if (context.Request.Query.ContainsKey("preceding"))
+                    {
+                        ScripturePage scripturePage = (ScripturePage)partialPage;
+                        scripturePage.SetupPrecedingPage();
+                        scripturePage.RenderBody(new HTMLResponseWriter(context.Response));
+                        return;
+                    }
                     partialPage.RenderBody(new HTMLResponseWriter(context.Response));
-                    return;
-                }
-                if (context.Request.Query.ContainsKey("next"))
-                {
-                    ScripturePage partialPage = (ScripturePage)RequestedPage(context);
-                    partialPage.RenderNextPage();
-                    return;
-                }
-                if (context.Request.Query.ContainsKey("preceding"))
-                {
-                    ScripturePage partialPage = (ScripturePage)RequestedPage(context);
-                    partialPage.RenderPrecedingPage();
                     return;
                 }
                 string path = context.Request.Path;

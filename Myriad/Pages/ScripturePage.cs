@@ -27,8 +27,8 @@ namespace Myriad.Pages
         }
         protected abstract CitationTypes GetCitationType();
 
-        public abstract void RenderNextPage();
-        public abstract void RenderPrecedingPage();
+        public abstract void SetupNextPage();
+        public abstract void SetupPrecedingPage();
         public override bool IsValid()
         {
             return (citation != null) && (citation.CitationRange.Valid);

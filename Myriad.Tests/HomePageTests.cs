@@ -29,7 +29,7 @@ namespace Myriad.Tests
             paragraphs = indexPage.GetPageParagraphs();
             Assert.That(paragraphs.Count > Number.nothing);
         }
-        [Test]
+        
         public void ParseHomePage()
         {
             ReadMarkupParagraphs();

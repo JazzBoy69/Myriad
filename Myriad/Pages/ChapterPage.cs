@@ -40,12 +40,12 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void RenderNextPage()
+        public override void SetupNextPage()
         {
             throw new NotImplementedException();
         }
 
-        public override void RenderPrecedingPage()
+        public override void SetupPrecedingPage()
         {
             throw new NotImplementedException();
         }

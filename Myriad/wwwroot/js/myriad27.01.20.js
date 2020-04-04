@@ -1,29 +1,34 @@
 function SetupPartialPageLoad() {
     window.onpopstate = function (event) {
-        LoadMainPane();
+        LoadPage(document.location.href);
     }
 }
 
 function HandleLink(event) {
     history.pushState(null, null, event.target.href);
-    event.preventDefault();
-    postAjax(event.target.href, {},
+    event.preventDefault(); 
+    LoadPage(event.target.href);
+}
+
+function LoadPage(path) {
+    if (performance.navigation.type === 1) {
+        window.location = path;
+        return;
+    }
+    var target = AddQueryToPath(path, 'partial=true');
+    LoadMainPane(target);
+}
+
+function LoadMainPane(path) {
+    postAjax(path, {},
         function (data) {
+            history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
+            history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
             SetTitle();
         });
 }
-
-function LoadMainPane() {
-    var target = AddQueryToPath(document.location.href, 'partial=true');
-    postAjax(target, {},
-        function (data) {
-            var mainPane = document.getElementById('mainPane');
-            mainPane.innerHTML = data;
-        });
-}
-
 
 function AddQueryToPath(path, query) {
     if (HasQuery(path)) {
@@ -770,26 +775,16 @@ function GoToPreceding() {
 
 function TurnPage(direction) {
     var path = AddQueryToPath(CurrentPath(), GetRangeQuery());
-    path = AddQueryToPath(path, direction+'=true');
-    postAjax(path, {},
-        function (data) {
-            SetInnerPane(data);
-        });
+    path = AddQueryToPath(path, direction + '=true');
+    LoadPage(path);
 }
 
 function GetRangeQuery() {
     var rangeData = document.querySelector('.rangedata.active');
+    if (rangeData === null) return '';
     var start = rangeData.getAttribute('data-start');
     var end = rangeData.getAttribute('data-end');
     return 'start=' + start + '&end=' + end;
-}
-
-function SetInnerPane(data) {
-    history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
-    var mainPane = document.getElementById('mainPane');
-    mainPane.innerHTML = data;
-    history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
-    SetTitle();
 }
 
 function SetTitle() {
