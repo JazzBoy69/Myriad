@@ -53,16 +53,19 @@ namespace Myriad
                     partialPage.RenderBody(new HTMLResponseWriter(context.Response));
                     return;
                 }
-                string path = context.Request.Path;
-                if (path == TextPage.nextURL)
+                if (context.Request.Query.ContainsKey("next"))
                 {
-                    TextPage textPage = new TextPage();
-                    textPage.SetResponse(context.Response);
-                    context.Request.Form.TryGetValue("endID", out var endID);
-                    int id = Convert.ToInt32(endID);
-                    textPage.RenderNextPage(id);
+                    ScripturePage partialPage = (ScripturePage)RequestedPage(context);
+                    partialPage.RenderNextPage();
                     return;
                 }
+                if (context.Request.Query.ContainsKey("preceding"))
+                {
+                    ScripturePage partialPage = (ScripturePage)RequestedPage(context);
+                    partialPage.RenderPrecedingPage();
+                    return;
+                }
+                string path = context.Request.Path;
                 if (path == EditParagraph.getDataURL)
                 {
                     EditParagraph.GetPlainText(context);

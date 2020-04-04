@@ -26,6 +26,9 @@ namespace Myriad.Pages
             citation.CitationType = GetCitationType();
         }
         protected abstract CitationTypes GetCitationType();
+
+        public abstract void RenderNextPage();
+        public abstract void RenderPrecedingPage();
         public override bool IsValid()
         {
             return (citation != null) && (citation.CitationRange.Valid);

@@ -98,10 +98,10 @@ SetupPartialPageLoad();
             RenderBody(new HTMLResponseWriter(response));
         }
 
-        internal void RenderNextPage(int endID)
+        public override void RenderNextPage()
         {
             var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadNextCommentRange,
-                endID);
+                citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();
             citation = new Citation(start, end);
             RenderBody(new HTMLResponseWriter(response));
@@ -123,6 +123,16 @@ SetupPartialPageLoad();
             var reader = SQLServerReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetData<int>();
+        }
+
+        public override void RenderPrecedingPage()
+        {
+
+            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadPrecedingCommentRange,
+                citation.CitationRange.EndID);
+            (int start, int end) = reader.GetDatum<int, int>();
+            citation = new Citation(start, end);
+            RenderBody(new HTMLResponseWriter(response));
         }
     }
 }

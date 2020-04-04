@@ -15,15 +15,31 @@ function HandleLink(event) {
 }
 
 function LoadMainPane() {
-    var target = document.location + "&partial=true";
-    if ((document.location.pathname === '/') || (document.location.pathname === '/Index')) {
-        target = '/Index?partial=true';
-    }
+    var target = AddQueryToPath(document.location.href, 'partial=true');
     postAjax(target, {},
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
         });
+}
+
+
+function AddQueryToPath(path, query) {
+    if (HasQuery(path)) {
+        return path+'&' + query;
+    }
+    return path + '?' + query;
+}
+
+function CurrentPath() {
+    if ((document.location.pathname === '/') || (document.location.pathname === '/Index')) {
+        return '/Index';
+    }
+    return document.location.pathname;
+}
+
+function HasQuery(path) {
+    return path.indexOf('?') !== -1;
 }
 
 function SetupCopytoClipboardWithLabel() {
@@ -732,11 +748,11 @@ function SetupPagination() {
             GoToNext();
         });
         hammertime.on('swiperight', function () {
-            GoToPrevious();
+            GoToPreceding();
         });
     }
     shortcut.add("Ctrl+Shift+F12", function () {
-        GoToPrevious();
+        GoToPreceding();
     });
     shortcut.add("Ctrl+F12", function () {
         GoToNext();
@@ -744,26 +760,36 @@ function SetupPagination() {
 }
 
 function GoToNext() {
-    var rangeData = document.querySelector('.rangedata.active');
-    var endID = rangeData.getAttribute('data-end');
-    postAjax('/Text-Next', { endID: endID },
+    var path = AddQueryToPath(CurrentPath(), GetRangeQuery());
+    path = AddQueryToPath(path, 'next=true');
+    postAjax(path, {},
         function (data) {
-            var rangeData = document.querySelector('.rangedata.active');
-            var start = rangeData.getAttribute('data-start');
-            var end = rangeData.getAttribute('data-end');
-            history.replaceState(null, null, '/Text?start=' + start + '&end=' + end);
+            history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
             var mainPane = document.getElementById('mainPane');
             document.title = 'Next Page';
             mainPane.innerHTML = data;
-            rangeData = document.querySelector('.rangedata.active');
-            start = rangeData.getAttribute('data-start');
-            end = rangeData.getAttribute('data-end');
-            history.pushState(null, null, '/Text?start=' + start + '&end=' + end);
+            history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
         });
 }
 
-function GoToPrevious() {
-    window.location = document.getElementById('previousLinkAddress').attr('href');
+function GetRangeQuery() {
+    var rangeData = document.querySelector('.rangedata.active');
+    var start = rangeData.getAttribute('data-start');
+    var end = rangeData.getAttribute('data-end');
+    return 'start=' + start + '&end=' + end;
+}
+
+function GoToPreceding() {
+    var path = AddQueryToPath(CurrentPath(), GetRangeQuery());
+    path = AddQueryToPath(path, 'preceding=true');
+    postAjax(path, {},
+        function (data) {
+            history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
+            var mainPane = document.getElementById('mainPane');
+            document.title = 'Next Page';
+            mainPane.innerHTML = data;
+            history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
+        });
 }
 
 function HandleNext() {
@@ -776,33 +802,7 @@ function HandleNext() {
 
 function HandlePrevious() {
     if (document.getElementById('modal-image-box').hasClass('hidden'))
-        GoToPrevious();
+        GoToPreceding();
     else
         document.getElementById('modal-image-box').addClass('hidden');
-}
-
-function SetupVersePagination() {
-    if (screen.width < 961) {
-        $('article').hammer().on('swipeleft', function () {
-            window.location = $('#nextLink').attr('href');
-        });
-        $('article').hammer().on('swiperight', function () {
-            window.location = $('#previousLink').attr('href');
-        });
-    }
-    $('#menuPrevious').css('height', window.innerHeight);
-    $('#menuNext').css('height', window.innerHeight);
-    $('#modal-overlay').css('height', 0);
-    $('#menuPrevious').mouseup(function () {
-        window.location = $('#previousLink').attr('href');
-    });
-    $('#menuNext').mouseup(function () {
-        window.location = $('#nextLink').attr('href');
-    });
-    $(window).resize(function () {
-        $('#menuPrevious').css('height', window.innerHeight);
-        $('#menuNext').css('height', window.innerHeight);
-    });
-
-
 }

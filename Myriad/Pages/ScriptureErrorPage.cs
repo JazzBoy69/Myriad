@@ -33,5 +33,15 @@ namespace Myriad.Pages
         {
             throw new NotImplementedException();
         }
+
+        public override void RenderNextPage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void RenderPrecedingPage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Myriad.Data
     public enum DataOperation { ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID, 
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
+        ReadPrecedingCommentRange,
         ReadKeywords, ReadImageSize,
 
             CreateNavigationParagraph=256, UpdateNavigationParagraph=257, DeleteNavigationParagraph=258,

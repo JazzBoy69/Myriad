@@ -39,6 +39,7 @@ namespace Myriad.Data.Implementation
             { (DataOperation.ReadCommentIDs, Ordinals.first), keyLast },
             { (DataOperation.ReadCommentIDs, Ordinals.second), keyStart },
             { (DataOperation.ReadNextCommentRange, Ordinals.first), keyStart },
+            { (DataOperation.ReadPrecedingCommentRange, Ordinals.first), keyStart },
             { (DataOperation.ReadComment, Ordinals.first), keyID },
             { (DataOperation.ReadCommentParagraph, Ordinals.first), keyID },
             { (DataOperation.ReadCommentParagraph, Ordinals.second), keyIndex },
@@ -106,6 +107,10 @@ namespace Myriad.Data.Implementation
                 "select start, last from commentlinks where start >" +
                 parameterNames[(DataOperation.ReadNextCommentRange, Ordinals.first)]
                 + " and originalword=0 order by start" },
+            {DataOperation.ReadPrecedingCommentRange,
+                "select start, last from commentlinks where last <" +
+                parameterNames[(DataOperation.ReadPrecedingCommentRange, Ordinals.first)]
+                + " and originalword=0 order by last desc" },
             { DataOperation.ReadComment,
                 "select RTrim(text) from comments where id="+
                 parameterNames[(DataOperation.ReadComment, Ordinals.first)] },
