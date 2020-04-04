@@ -68,8 +68,8 @@ namespace Myriad.Parser
         internal const string hidden = "hidden";
         internal const string active = "active";
         internal const string rangeData = " rangedata";
-        internal const string dataStart = " datastart";
-        internal const string dataEnd = " dataend";
+        internal const string dataStart = " data-start=";
+        internal const string dataEnd = " data-end=";
         internal const string poetic1 = "firstpoetic";
         internal const string poetic2 = "poetic";
         internal const string comments = "comments";
@@ -81,9 +81,11 @@ namespace Myriad.Parser
         internal const string tab = "tab";
         internal const string paragraphcontent = "parcontent";
         internal const string editparagraph = "editparagraph";
+        internal const string citationStart = "citationStart";
+        internal const string citationEnd = "citationEnd";
     }
 
-    public interface HTMLResponse
+    public interface HTMLWriter
     {
         public void StartSpanWithClass(string className);
         public void StartAnchorWithClass(string className);
@@ -105,7 +107,7 @@ namespace Myriad.Parser
         public string Response();
         void StartParagraphWithClass(string className);
     }
-    public class HTMLStringWriter : HTMLResponse
+    public class HTMLStringWriter : HTMLWriter
     {
         StringBuilder writer = new StringBuilder();
         private StringBuilder Writer => writer;

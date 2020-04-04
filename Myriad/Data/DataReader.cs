@@ -9,7 +9,7 @@ namespace Myriad.Data
 {
     public enum DataOperation { ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID, 
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
-        ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph,
+        ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadKeywords, ReadImageSize,
 
             CreateNavigationParagraph=256, UpdateNavigationParagraph=257, DeleteNavigationParagraph=258,
@@ -32,6 +32,8 @@ namespace Myriad.Data
         List<DataType> GetData<DataType>();
         DataType GetDatum<DataType>();
         List<ValueTuple<T1, T2>> GetData<T1, T2>();
+
+        ValueTuple<T1, T2> GetDatum<T1, T2>();
 
         List<ClassType> GetClassData<ClassType>() where ClassType : DataObject, new();
 

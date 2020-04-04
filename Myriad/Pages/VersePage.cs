@@ -30,7 +30,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void RenderBody(HTMLResponse writer)
+        public override void RenderBody(HTMLWriter writer)
         {
             throw new NotImplementedException();
         }

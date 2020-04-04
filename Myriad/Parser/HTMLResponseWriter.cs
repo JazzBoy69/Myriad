@@ -4,7 +4,7 @@ using System;
 
 namespace Myriad.Parser
 {
-    public class HTMLResponseWriter : HTMLResponse
+    public class HTMLResponseWriter : HTMLWriter
     {
         private HttpResponse response;
 

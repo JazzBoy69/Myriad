@@ -11,17 +11,16 @@ namespace Myriad.Pages
     public class TextSection
     {
         List<string> paragraphs;
-        HTMLResponse writer;
+        HTMLWriter writer;
         TextFormatter formatter;
         PageParser parser;
         bool activeSet;
         Citation sourceCitation;
         //todo cache sections?
-        public TextSection(HTMLResponse writer)
+        public TextSection(HTMLWriter writer)
         {
             this.writer = writer;
             parser = new PageParser(writer);
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
         }
         public void AddReadingViewSection(int commentID)
         {
@@ -156,24 +155,30 @@ namespace Myriad.Pages
                 writer.Append('-');
                 writer.Append(i);
                 writer.Append(HTMLClasses.tabSuffix);
+                writer.Append(HTMLTags.Class);
                 Citation range = new Citation(idRanges[i].start, idRanges[i].end);
                 if ((!activeSet) && ((range.CitationRange.Contains(sourceCitation.CitationRange)) ||
                     (sourceCitation.CitationRange.Contains(range.CitationRange)) ||
                     (range.CitationRange.Book == sourceCitation.CitationRange.Book)))
                 {
-                    writer.Append(HTMLTags.Class);
                     writer.Append(HTMLClasses.active);
-                    writer.Append(HTMLTags.CloseQuote);
                     activeSet = true;
                 }
                 writer.Append(HTMLClasses.rangeData);
+                writer.Append(HTMLTags.CloseQuote);
                 writer.Append(HTMLClasses.dataStart);
                 writer.Append(idRanges[i].start);
                 writer.Append(HTMLClasses.dataEnd);
                 writer.Append(idRanges[i].end);
                 writer.Append(HTMLTags.EndTag);
 
-                AddScriptureText(range);
+                writer.StartSectionWithClass(HTMLClasses.scriptureText);
+                List<Keyword> keywords = ReadKeywords(range);
+                formatter = new TextFormatter(writer);
+                writer.StartDivWithClass(HTMLClasses.scriptureQuote);
+                formatter.AppendKeywords(keywords);
+                writer.Append(HTMLTags.EndDiv);
+                writer.Append(HTMLTags.EndSection);
 
                 writer.Append(HTMLTags.EndListItem);
             }

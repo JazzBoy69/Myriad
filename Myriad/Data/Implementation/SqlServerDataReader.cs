@@ -96,6 +96,19 @@ namespace Myriad.Data.Implementation
             Close();
             return default;
         }
+
+        public (T1, T2) GetDatum<T1, T2>()
+        {
+            reader = command.ExecuteReader();
+            
+            if (reader.Read())
+            {
+                return (reader.GetFieldValue<T1>(Ordinals.first),
+                    reader.GetFieldValue<T2>(Ordinals.second));
+            }
+            Close();
+            return default;
+        }
     }
 
     public class SqlServerDataReader<KeyType1, KeyType2> : SqlServerDataReader<KeyType1>, DataReader<KeyType1,KeyType2> 

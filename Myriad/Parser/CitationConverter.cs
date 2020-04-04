@@ -42,7 +42,7 @@ namespace Myriad.Parser
             return writer.Response();
         }
 
-        internal static void Append(HTMLResponse writer, Citation citation)
+        internal static void Append(HTMLWriter writer, Citation citation)
         {
             writer.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
             writer.Append(" ");

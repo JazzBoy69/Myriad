@@ -48,6 +48,26 @@ namespace Myriad
             app.Run(async context =>
             {
                 string path = context.Request.Path;
+                if (path == TextPage.loadMainPane)
+                {
+                    string start = context.Request.Query[ScripturePage.queryKeyStart];
+                    string end = context.Request.Query[ScripturePage.queryKeyEnd];
+                    TextPage textPage = new TextPage();
+                    textPage.SetResponse(context.Response);
+                    int startID = Convert.ToInt32(start);
+                    int endID = Convert.ToInt32(end);
+                    textPage.RenderMainPane(startID, endID);
+                    return;
+                }
+                if (path == TextPage.nextURL)
+                {
+                    TextPage textPage = new TextPage();
+                    textPage.SetResponse(context.Response);
+                    context.Request.Form.TryGetValue("endID", out var endID);
+                    int id = Convert.ToInt32(endID);
+                    textPage.RenderNextPage(id);
+                    return;
+                }
                 if (path == EditParagraph.getDataURL)
                 {
                     EditParagraph.GetPlainText(context);

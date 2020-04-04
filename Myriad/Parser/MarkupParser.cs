@@ -38,7 +38,6 @@ namespace Myriad.Parser
         protected int citationLevel = 0;
         protected IMarkedUpParagraph currentParagraph;
         protected StringRange mainRange = new StringRange();
-        protected IMarkedUpParagraphCreator creator;
         protected bool foundEndToken;
         protected int lastDash;
         internal readonly Formats formats = new Formats();
@@ -56,15 +55,11 @@ namespace Myriad.Parser
 
         public string ParsedText { get { return formatter.Result; } }
 
-        public MarkupParser(HTMLResponse builder)
+        public MarkupParser(HTMLWriter builder)
         {
             formatter = new PageFormatter(builder);
             citationHandler = new CitationHandler();
             paragraphInfo.type = ParagraphType.Undefined;
-        }
-        public void SetParagraphCreator(IMarkedUpParagraphCreator creator)
-        {
-            this.creator = creator;
         }
 
         public void SetParagraphInfo(ParagraphType type, int ID)
@@ -96,7 +91,8 @@ namespace Myriad.Parser
         {
             paragraphInfo.index = index;
             ResetCrossReferences();
-            currentParagraph = creator.Create(paragraph);
+            currentParagraph = new MarkedUpParagraph();
+            currentParagraph.Text = paragraph;
             ParseParagraph();
         }
         protected void ParseParagraph()
@@ -253,7 +249,8 @@ namespace Myriad.Parser
 
         public void ParseMainHeading(string paragraph)
         {
-            currentParagraph = creator.Create(paragraph);
+            currentParagraph = new MarkedUpParagraph();
+            currentParagraph.Text = paragraph;
             formatter.StartMainHeading();
             formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
             formatter.EndMainHeading();

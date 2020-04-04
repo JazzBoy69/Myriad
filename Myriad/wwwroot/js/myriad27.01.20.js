@@ -701,38 +701,67 @@ function SetupPagination() {
     if (screen.width < 961) {
         var hammertime = new Hammer.Manager(document.getElementById('article'));
         hammertime.on('swipeleft', function () {
-            window.location = $('#nextLink').attr('href');
+            GotoNext();
         });
         hammertime.on('swiperight', function () {
-            window.location = $('#previousLink').attr('href');
+            GoToPrevious();
         });
     }
     shortcut.add("Ctrl+Shift+F12", function () {
-        window.location.href = document.getElementById('previousLink').attr('href');
+        GoToPrevious();
     });
     shortcut.add("Ctrl+F12", function () {
-        window.location.href = document.getElementById('nextLink').attr('href');
+        GoToNext();
     });
-    var prev = document.getElementById('menuPrevious').style.height = window.innerHeight;
-    document.getElementById('menuNext').style.height =  window.innerHeight;
-    document.getElementById('modal-overlay').style.height =  window.innerHeight;
-    document.getElementById('menuPrevious').addEventListener('mouseup', function () {
-        if (document.getElementById('modal-image-box').hasClass('hidden'))
-            window.location = document.getElementById('previousLink').attr('href');
-		else 
-            document.getElementById('modal-image-box').addClass('hidden');
-    });
-    document.getElementById('menuNext').addEventListener('mouseup', function () {
-        if (document.getElementById('modal-image-box').hasClass('hidden'))
-            window.location = document.getElementById('nextLink').attr('href');
-		else
-            document.getElementById('modal-image-box').addClass('hidden');
-    });
-    window.addEventListener('resize', function () {
-        document.getElementById('menuPrevious').style.height = window.innerHeight;
-        document.getElementById('menuNext').style.height = window.innerHeight;
-        document.getElementById('modal-overlay').style.height = window.innerHeight;
-    });
+}
+
+function GoToNext() {
+    var rangeData = document.querySelector('.rangedata.active');
+    var endID = rangeData.getAttribute('data-end');
+    window.onpopstate = function (event) {
+        LoadMainPane();
+    }
+    postAjax('/Text-Next', { endID: endID },
+        function (data) {
+            var rangeData = document.querySelector('.rangedata.active');
+            var start = rangeData.getAttribute('data-start');
+            var end = rangeData.getAttribute('data-end');
+            history.replaceState(null, null, '/Text-Load?start=' + start + '&end=' + end);
+            var mainPane = document.getElementById('mainPane');
+            document.title = 'Next Page';
+            mainPane.innerHTML = data;
+            rangeData = document.querySelector('.rangedata.active');
+            start = rangeData.getAttribute('data-start');
+            end = rangeData.getAttribute('data-end');
+            history.pushState(null, null, '/Text-Load?start=' + start + '&end=' + end);
+        });
+}
+
+function LoadMainPane() {
+    postAjax(document.location, {},
+        function (data) {
+            var mainPane = document.getElementById('mainPane');
+            mainPane.innerHTML = data;
+        });
+}
+
+function GoToPrevious() {
+    window.location = document.getElementById('previousLinkAddress').attr('href');
+}
+
+function HandleNext() {
+    if (document.getElementById('modal-image-box').hasClass('hidden'))
+        GoToNext();
+    else
+        document.getElementById('modal-image-box').addClass('hidden');
+}
+
+
+function HandlePrevious() {
+    if (document.getElementById('modal-image-box').hasClass('hidden'))
+        GoToPrevious();
+    else
+        document.getElementById('modal-image-box').addClass('hidden');
 }
 
 function SetupVersePagination() {

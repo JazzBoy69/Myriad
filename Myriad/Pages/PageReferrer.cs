@@ -18,7 +18,7 @@ namespace Myriad.Pages
             { CitationTypes.Verse, VersePage.pageURL },
             { CitationTypes.Invalid, IndexPage.pageURL }
         };
-        internal static void AppendQuery(HTMLResponse writer, Citation citation)
+        internal static void AppendQuery(HTMLWriter writer, Citation citation)
         {
             writer.Append("start=");
             writer.Append(citation.CitationRange.StartID);

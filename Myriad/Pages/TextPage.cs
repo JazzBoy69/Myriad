@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Myriad.Library;
 using Myriad.Data;
+using Microsoft.Extensions.Primitives;
 
 namespace Myriad.Pages
 {
@@ -18,14 +19,13 @@ namespace Myriad.Pages
          document.getElementById('searchField').focus();
     });
     SetupIndex();
-    SetupModalPictures('."+HTMLClasses.scriptureComment+@"');
-
+    SetupModalPictures('."+HTMLClasses.scriptureComment+ @"');
+    SetupPagination(); 
 };
     </script>";
     }
 
     /*        
-    SetupEditParagraph();
     SetThisVerseAsTarget();
     SetupPagination(); 
     HandleReadingView();
@@ -36,7 +36,10 @@ namespace Myriad.Pages
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
-        HTMLResponseWriter writer;
+        public const string precedingURL = "/Text-Preceding";
+        public const string nextURL = "/Text-Next";
+        public const string loadMainPane = "/Text-Load";
+        HTMLWriter writer;
         List<int> commentIDs;
         TextSection textSection;
 
@@ -65,8 +68,9 @@ namespace Myriad.Pages
             return TextHTML.TextScripts;
         }
 
-        public override void RenderBody(HTMLResponse writer)
+        public override void RenderBody(HTMLWriter writer)
         {
+            this.writer = writer;
             Initialize();
             bool readingView = commentIDs.Count > 1;
             if (readingView)
@@ -87,9 +91,23 @@ namespace Myriad.Pages
             }
         }
 
+        internal void RenderMainPane(int startID, int endID)
+        {
+            citation = new Citation(startID, endID);
+            RenderBody(new HTMLResponseWriter(response));
+        }
+
+        internal void RenderNextPage(int endID)
+        {
+            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadNextCommentRange,
+                endID);
+            (int start, int end) = reader.GetDatum<int, int>();
+            citation = new Citation(start, end);
+            RenderBody(new HTMLResponseWriter(response));
+        }
+
         private void Initialize()
         {
-            writer = new HTMLResponseWriter(response);
             textSection = new TextSection(writer);
             commentIDs = GetCommentIDs(citation);
         }

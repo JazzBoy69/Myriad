@@ -10,11 +10,11 @@ namespace Myriad.Parser
     {
         readonly CitationRange extendedTarget;
 
-        readonly HTMLResponse builder;
+        readonly HTMLWriter builder;
 
         public string Result { get { return builder.Response(); } }
 
-        public PageFormatter(HTMLResponse builder)
+        public PageFormatter(HTMLWriter builder)
         {
             this.builder = builder;
         }
@@ -312,7 +312,7 @@ namespace Myriad.Parser
                     SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End));
         }
 
-        public static void StartCitationAnchor(HTMLResponse builder, Citation citation)
+        public static void StartCitationAnchor(HTMLWriter builder, Citation citation)
         {
             builder.Append(HTMLTags.StartAnchor);
             builder.AppendHREF(PageReferrer.URLs[citation.CitationType]);

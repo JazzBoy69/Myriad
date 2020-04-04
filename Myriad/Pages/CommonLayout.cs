@@ -40,7 +40,7 @@ namespace Myriad.Pages
             await response.WriteAsync(stringToWrite);
         }
 
-        public abstract void RenderBody(HTMLResponse writer);
+        public abstract void RenderBody(HTMLWriter writer);
 
         async protected void AddPageScripts()
         {

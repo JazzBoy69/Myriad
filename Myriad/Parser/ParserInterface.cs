@@ -26,8 +26,6 @@ namespace Myriad.Parser
         IMarkedUpParagraph CurrentParagraph { get; }
 
         StringRange MainRange { get; }
-
-        abstract void SetParagraphCreator(IMarkedUpParagraphCreator creator);
        
         abstract void SearchForToken();
         abstract void HandleToken();

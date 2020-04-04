@@ -8,9 +8,9 @@ namespace Myriad.Parser
 {
     internal class TextFormatter
     {
-        private HTMLResponse builder;
+        private HTMLWriter builder;
         private bool poetic;
-        public TextFormatter(HTMLResponse builder)
+        public TextFormatter(HTMLWriter builder)
         {
             this.builder = builder;
         }
@@ -109,11 +109,12 @@ namespace Myriad.Parser
         {
             builder.Append(HTMLTags.StartDivWithClass);
             builder.Append(HTMLClasses.hidden + " " + HTMLClasses.active + " "+ HTMLClasses.rangeData);
-            builder.Append("' " + HTMLClasses.dataStart+"='");
+            builder.Append(HTMLTags.CloseQuote);
+            builder.Append(HTMLClasses.dataStart);
             builder.Append(citation.CitationRange.StartID);
-            builder.Append("' " + HTMLClasses.dataEnd + "='");
+            builder.Append(HTMLClasses.dataEnd);
             builder.Append(citation.CitationRange.EndID);
-            builder.Append(HTMLTags.CloseQuoteEndTag);
+            builder.Append(HTMLTags.EndTag);
             builder.Append(HTMLTags.EndDiv);
         }
     }

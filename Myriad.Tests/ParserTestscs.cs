@@ -29,7 +29,6 @@ namespace Myriad.Tests
         private void InitializeParser()
         {
             parser = new MarkupParser(new HTMLStringWriter());
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             paragraphs = new List<string>();
         }
 

@@ -75,7 +75,6 @@ namespace Myriad.Pages
             articleWriter.WriteData(articleParagraph);
             articleWriter.Commit();
             MarkupParser parser = new MarkupParser(new HTMLResponseWriter(context.Response));
-            parser.SetParagraphCreator(new MarkedUpParagraphCreator());
             parser.ParseParagraph(text, paragraphIndex);
         }
     }

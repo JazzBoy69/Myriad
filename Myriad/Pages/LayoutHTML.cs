@@ -33,9 +33,9 @@ namespace Myriad.Pages
                 <!--Navigation Controls-->
                 <ul>
                     <li id='menuHome'><a href='/Index?name=home'><span class='icon'><img src='images/home.png' /></span></a></li>
-                    <li id='menuPrevious'><a id='previousLink'><span class='icon'><img src='images/left.png' /></span></a></li>
+                    <li id='menuPrevious' onclick=GoToPrevious()><span id='previousLink' onclick=HandlePrevious()><span class='icon'><img src='images/left.png' /></span></a></li>
                     <li id='menuUp'><a id='upLink'><span class='icon'><img src='images/up.png' /></span></a></li>
-                    <li id='menuNext'><a id='nextLink'><span class='icon'><img src='images/right.png' /></span></a></li>
+                    <li id='menuNext' onclick=GoToNext()><a id='nextLink'><span class='icon'><img src='images/right.png' /></span></a></li>
                     <li id='menuTOC'>
                         <a onclick='showHideMenu()'><span class='icon'><img src='images/toc.png' /></span></a>
                             <ul id='toc' class='hidden'></ul>
