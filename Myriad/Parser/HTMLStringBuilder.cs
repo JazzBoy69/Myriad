@@ -84,6 +84,7 @@ namespace Myriad.Parser
         internal const string editparagraph = "editparagraph";
         internal const string citationStart = "citationStart";
         internal const string citationEnd = "citationEnd";
+        internal const string title = "pageTitle";
     }
 
     public interface HTMLWriter

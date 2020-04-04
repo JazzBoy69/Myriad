@@ -58,11 +58,12 @@ namespace Myriad.Pages
             return ArticleHTML.ArticleScripts;
         }
 
-        public override void RenderBody(HTMLWriter writer)
+        public async override void RenderBody(HTMLWriter writer)
         {
             var paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
             Parse(paragraphs);
+            await AddPageTitleData();
         }
         public List<string> GetPageParagraphs()
         {

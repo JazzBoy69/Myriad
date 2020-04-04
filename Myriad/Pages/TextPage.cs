@@ -69,7 +69,7 @@ SetupPartialPageLoad();
             return TextHTML.TextScripts;
         }
 
-        public override void RenderBody(HTMLWriter writer)
+        public async override void RenderBody(HTMLWriter writer)
         {
             this.writer = writer;
             Initialize();
@@ -90,6 +90,7 @@ SetupPartialPageLoad();
             {
                 textSection.AddTextSection(commentIDs[Ordinals.first], citation);
             }
+            await AddPageTitleData();
         }
 
         internal void RenderMainPane(int startID, int endID)
@@ -127,7 +128,6 @@ SetupPartialPageLoad();
 
         public override void RenderPrecedingPage()
         {
-
             var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadPrecedingCommentRange,
                 citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();

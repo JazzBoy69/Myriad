@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Myriad.Parser;
+using Myriad.Library;
 
 namespace Myriad.Pages
 {
@@ -28,9 +29,22 @@ namespace Myriad.Pages
         {
             await CommonLayout.WriteHeader(response, GetTitle());
             RenderBody(new HTMLResponseWriter(response));
+            await AddPageTitleData();
             await Write(LayoutHTML.close);
             AddPageScripts();
             await Write(LayoutHTML.endofBody);
+        }
+
+        protected async Task AddPageTitleData()
+        {
+            await Write(HTMLTags.StartDivWithID);
+            await Write(HTMLClasses.title);
+            await Write(HTMLTags.CloseQuote);
+            await Write(HTMLTags.Class);
+            await Write(HTMLClasses.hidden);
+            await Write(HTMLTags.CloseQuoteEndTag);
+            await Write(GetTitle());
+            await Write(HTMLTags.EndDiv);
         }
 
         protected abstract string GetTitle();

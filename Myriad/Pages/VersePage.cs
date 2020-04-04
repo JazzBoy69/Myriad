@@ -30,9 +30,10 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void RenderBody(HTMLWriter writer)
+        public async override void RenderBody(HTMLWriter writer)
         {
             throw new NotImplementedException();
+            await AddPageTitleData();
         }
 
         public override void RenderNextPage()

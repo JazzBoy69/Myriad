@@ -11,6 +11,7 @@ function HandleLink(event) {
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
+            SetTitle();
         });
 }
 
@@ -760,15 +761,19 @@ function SetupPagination() {
 }
 
 function GoToNext() {
+    TurnPage('next');
+}
+
+function GoToPreceding() {
+    TurnPage('preceding');
+}
+
+function TurnPage(direction) {
     var path = AddQueryToPath(CurrentPath(), GetRangeQuery());
-    path = AddQueryToPath(path, 'next=true');
+    path = AddQueryToPath(path, direction+'=true');
     postAjax(path, {},
         function (data) {
-            history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
-            var mainPane = document.getElementById('mainPane');
-            document.title = 'Next Page';
-            mainPane.innerHTML = data;
-            history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
+            SetInnerPane(data);
         });
 }
 
@@ -779,17 +784,17 @@ function GetRangeQuery() {
     return 'start=' + start + '&end=' + end;
 }
 
-function GoToPreceding() {
-    var path = AddQueryToPath(CurrentPath(), GetRangeQuery());
-    path = AddQueryToPath(path, 'preceding=true');
-    postAjax(path, {},
-        function (data) {
-            history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
-            var mainPane = document.getElementById('mainPane');
-            document.title = 'Next Page';
-            mainPane.innerHTML = data;
-            history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
-        });
+function SetInnerPane(data) {
+    history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
+    var mainPane = document.getElementById('mainPane');
+    mainPane.innerHTML = data;
+    history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
+    SetTitle();
+}
+
+function SetTitle() {
+    var titleData = document.getElementById('pageTitle');
+    document.title = titleData.innerText;
 }
 
 function HandleNext() {

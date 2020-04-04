@@ -7,6 +7,7 @@
         public const string returnChar = "\r";
         public const char tab = '\t';
         public const char space = ' ';
+        public const string spaceString = " ";
         public const string ellipsis = "&hellip;";
     }
         public static class Symbols

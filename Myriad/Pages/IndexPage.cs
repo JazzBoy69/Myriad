@@ -35,7 +35,7 @@ SetupPartialPageLoad();
         {
         }
 
-        public override void RenderBody(HTMLWriter writer)
+        public async override void RenderBody(HTMLWriter writer)
         {
             //todo move toc
             //todo edit page
@@ -44,6 +44,7 @@ SetupPartialPageLoad();
             parser = new PageParser(writer);
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             Parse();
+            await AddPageTitleData();
         }
 
         private void Parse()
