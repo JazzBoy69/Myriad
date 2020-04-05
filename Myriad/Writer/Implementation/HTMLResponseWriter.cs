@@ -1,8 +1,8 @@
-﻿using Myriad.Parser;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
+using Myriad.Library;
 
-namespace Myriad.Parser
+namespace Myriad.Writer
 {
     public class HTMLResponseWriter : HTMLWriter
     {
