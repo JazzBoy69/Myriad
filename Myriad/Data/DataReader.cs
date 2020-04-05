@@ -7,7 +7,8 @@ using Myriad.Data.Implementation;
 
 namespace Myriad.Data
 {
-    public enum DataOperation { ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID, 
+    public enum DataOperation { ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID,
+        ReadNavigationTitle,
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadPrecedingCommentRange,
@@ -40,13 +41,18 @@ namespace Myriad.Data
 
         ClassType GetClassDatum<ClassType>() where ClassType : DataObject, new();
         void Open();
+
+        void Close();
+
+        void SetParameter(KeyType parameter);
     }
 
     public interface DataReader<KeyType1, KeyType2> : DataReader<KeyType1>
     {
+        void SetParameter(KeyType1 parameter1, KeyType2 parameter2);
     }
 
-    public static class SQLServerReaderProvider<KeyType>
+    public static class DataReaderProvider<KeyType>
     {
         public static DataReader<KeyType> Reader(DataOperation operation, KeyType key)
         {
@@ -54,7 +60,7 @@ namespace Myriad.Data
         }
     }
 
-    public static class SQLServerWriterProvider<DataType> where DataType : DataObject
+    public static class DataWriterProvider<DataType> where DataType : DataObject
     {
         public static DataWriter<DataType> Writer(DataOperation operation)
         {
@@ -62,7 +68,7 @@ namespace Myriad.Data
         }
     }
 
-    public static class SQLServerReaderProvider<KeyType1, KeyType2>
+    public static class DataReaderProvider<KeyType1, KeyType2>
     {
         public static DataReader<KeyType1, KeyType2> Reader(DataOperation operation, 
             KeyType1 key1, KeyType2 key2)

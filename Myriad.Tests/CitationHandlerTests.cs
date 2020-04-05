@@ -5,6 +5,8 @@ using NUnit.Framework;
 using Myriad.Parser;
 using Myriad.Library;
 using Myriad.Writer;
+using Myriad.Paragraph;
+using Myriad.CitationHandlers;
 
 namespace Myriad.Tests
 {
@@ -77,7 +79,7 @@ namespace Myriad.Tests
             TestCitation(citationText, citation);
             Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
             HTMLWriter builder = WriterReference.New();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            IMarkedUpParagraph paragraph = ParagraphReference.New(citationText);
             PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.ChapterCitation;
             CitationHandler citationHandler = new CitationHandler();
@@ -131,7 +133,7 @@ namespace Myriad.Tests
             citationText = CitationConverter.ToString(citation);
             Assert.AreEqual(Citations.MultipleCitations, citationText);
             HTMLWriter builder = WriterReference.New();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            IMarkedUpParagraph paragraph = ParagraphReference.New(citationText);
             PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.MultipleCitations;
             CitationHandler citationHandler = new CitationHandler();
@@ -160,7 +162,7 @@ namespace Myriad.Tests
         }
         private static void TestCitation(string citationText, Citation citation)
         {
-            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation(citationText);
+            (List<Citation> citations, IMarkedUpParagraph paragraph) = SetupCitation(citationText);
             Assert.That(citations.Count > 0, () =>
             {
                 return citationText;
@@ -200,7 +202,7 @@ namespace Myriad.Tests
 
         private static void TestCitations(string citationText, List<Citation> referenceCitations)
         {
-            (List<Citation> citations, MarkedUpParagraph paragraph) = SetupCitation(citationText);
+            (List<Citation> citations, IMarkedUpParagraph paragraph) = SetupCitation(citationText);
             Assert.That(citations.Count > 0, () =>
             {
                 return citationText;
@@ -239,11 +241,11 @@ namespace Myriad.Tests
             }
         }
 
-        private static (List<Citation> citations, MarkedUpParagraph paragraph) SetupCitation(string textOfCitation)
+        private static (List<Citation> citations, IMarkedUpParagraph paragraph) SetupCitation(string textOfCitation)
         {
 
             CitationHandler citationHandler = new CitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            IMarkedUpParagraph paragraph = ParagraphReference.New(textOfCitation);
             paragraph.Text = textOfCitation;
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(0);

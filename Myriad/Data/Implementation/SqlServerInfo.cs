@@ -28,6 +28,7 @@ namespace Myriad.Data.Implementation
             { (DataOperation.UpdateNavigationParagraph, Ordinals.first), keyID },
             { (DataOperation.UpdateNavigationParagraph, Ordinals.second), keyIndex },
             { (DataOperation.UpdateNavigationParagraph, Ordinals.third), keyText },
+            { (DataOperation.ReadNavigationTitle, Ordinals.first), keyName },
             { (DataOperation.ReadArticleTitle, Ordinals.first), keyID },
             { (DataOperation.ReadArticleID, Ordinals.first), keyTitle },
             { (DataOperation.ReadArticle, Ordinals.first), keyID },
@@ -78,6 +79,9 @@ namespace Myriad.Data.Implementation
              { DataOperation.ReadNavigationID,
                 "select _id from navigation where name="+
                 parameterNames[(DataOperation.ReadNavigationPage, Ordinals.first)]},
+             { DataOperation.ReadNavigationTitle,
+                "select heading from navigation where name="+
+                parameterNames[(DataOperation.ReadNavigationTitle, Ordinals.first)]},
             { DataOperation.ReadArticleTitle,
                 "select title from tags where id="+
                 parameterNames[(DataOperation.ReadArticleTitle, Ordinals.first)]},

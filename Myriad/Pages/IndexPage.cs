@@ -25,18 +25,21 @@ SetupPartialPageLoad();
     public class IndexPage : CommonPage
     {
         public const string pageURL = "/Index";
+        public const string nameQuery = "name=";
 
         List<string> paragraphs;
+        int mainHeadingIndex;
         PageParser parser;
+        HTMLWriter writer;
         int ID;
         public IndexPage() 
         {
         }
 
-        public async override void RenderBody(HTMLWriter writer)
+        public async override Task RenderBody(HTMLWriter writer)
         {
-            //todo move toc
             //todo edit page
+            this.writer = writer;
             ID = GetPageID();
             paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
@@ -57,6 +60,7 @@ SetupPartialPageLoad();
                     {
                         parser.ParseMainHeading(paragraphs[index]);
                         foundFirstHeading = true;
+                        mainHeadingIndex = index;
                     }
                     continue;
                 }
@@ -67,14 +71,18 @@ SetupPartialPageLoad();
 
         private int GetPageID()
         {
-            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadNavigationID, "home");
-            return reader.GetDatum<int>();
+            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationID, "home");
+            int result = reader.GetDatum<int>();
+            reader.Close();
+            return result;
         }
 
         public List<string> GetPageParagraphs()
         {
-            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, "home");
-            return reader.GetData<string>();
+            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, "home");
+            var results = reader.GetData<string>();
+            reader.Close();
+            return results;
         }
 
         protected override string GetTitle()
@@ -99,6 +107,39 @@ SetupPartialPageLoad();
         public override bool IsValid()
         {
             return true;
+        }
+
+        public async override Task AddTOC()
+        {
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartList);
+                writer.Append(HTMLTags.ID);
+                writer.Append(HTMLClasses.toc);
+                writer.Append(HTMLTags.Class);
+                writer.Append(HTMLClasses.hidden);
+                writer.Append(HTMLTags.CloseQuoteEndTag);
+                var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationTitle, "");
+                for (int index = Ordinals.first; index < mainHeadingIndex; index++)
+                {
+                    reader.SetParameter(paragraphs[index]);
+                    string title = reader.GetDatum<string>();
+                    writer.Append(HTMLTags.StartListItem);
+                    writer.Append(HTMLTags.EndTag);
+                    writer.Append(HTMLTags.StartAnchor);
+                    writer.Append(HTMLTags.HREF);
+                    writer.Append(pageURL);
+                    writer.Append(HTMLTags.StartQuery);
+                    writer.Append(nameQuery);
+                    writer.Append(paragraphs[index]);
+                    writer.Append(HTMLTags.EndTag);
+                    writer.Append(title);
+                    writer.Append(HTMLTags.EndAnchor);
+                    writer.Append(HTMLTags.EndListItem);
+                }
+                reader.Close();
+                writer.Append(HTMLTags.EndList);
+            });
         }
     }
 }

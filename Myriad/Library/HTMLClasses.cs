@@ -31,6 +31,7 @@ namespace Myriad.Library
         internal const string citationStart = "citationStart";
         internal const string citationEnd = "citationEnd";
         internal const string title = "pageTitle";
+        internal const string toc = "toc";
     }
 
 }

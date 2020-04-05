@@ -38,7 +38,6 @@ namespace Myriad.Pages
                     <li id='menuNext' onclick=GoToNext()><a id='nextLink'><span class='icon'><img src='images/right.png' /></span></a></li>
                     <li id='menuTOC'>
                         <a onclick='showHideMenu()'><span class='icon'><img src='images/toc.png' /></span></a>
-                            <ul id='toc' class='hidden'></ul>
                     </li>
                     <li id='menuEdit'><a id='editButton' onclick=Edit()><span class='icon'><img src='images/icons8-edit-48.png' /></span></a></li>
                     <li id='menuCancel' class='hidden'><a id='cancelEdit' onclick=CloseEditForm()><span class='icon'><img src='images/icons8-unavailable.png' /></span></a></li>
@@ -47,7 +46,6 @@ namespace Myriad.Pages
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
                     <img src='images/icons8-ellipsis-30.png' id='ellipsis' class='hidden' />
             </div>
-            <div id='modal-overlay'></div>
             <div id=level class='hidden'>0</div>
             <div id='bibleindex'>
                 <section id=possibilities class='buttongrid'>
@@ -150,10 +148,9 @@ namespace Myriad.Pages
         </div>
 <div id=top></div><article><div id=editForm contenteditable=true class='hidden' data-pos=0 data-id=0 data-index=0 data-edittype=0></div><div id='mainPane'>
 ";
-        public const string close = @"</div></article>
-    </div>
-
-    <script src='js/myriad27.01.21.js'></script>";
+        public const string close = @"</div></article></div>";
+        public const string modalOverlay = "<div id='modal-overlay'></div>";
+        public const string myriadJavaScript = "<script src='js/myriad27.01.21.js'></script>";
         public const string endofBody = "</body></html>";
     }
 }

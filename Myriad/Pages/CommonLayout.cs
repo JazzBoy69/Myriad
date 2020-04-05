@@ -29,10 +29,13 @@ namespace Myriad.Pages
         async public Task RenderPage()
         {
             await CommonLayout.WriteHeader(response, GetTitle());
-            RenderBody(WriterReference.New(response));
+            await RenderBody(WriterReference.New(response));
             await AddPageTitleData();
             await Write(LayoutHTML.close);
-            AddPageScripts();
+            await AddTOC();
+            await Write(LayoutHTML.modalOverlay);
+            await Write(LayoutHTML.myriadJavaScript);
+            await AddPageScripts();
             await Write(LayoutHTML.endofBody);
         }
 
@@ -55,14 +58,17 @@ namespace Myriad.Pages
             await response.WriteAsync(stringToWrite);
         }
 
-        public abstract void RenderBody(HTMLWriter writer);
+        public abstract Task RenderBody(HTMLWriter writer);
 
-        async protected void AddPageScripts()
+        async protected Task AddPageScripts()
         {
             await response.WriteAsync(PageScripts());
         }
 
         protected abstract string PageScripts();
+
+        public abstract Task AddTOC();
+
     }
 
     public class CommonLayout

@@ -65,7 +65,7 @@ namespace Myriad.Tests
         [Test]
         public void ReadEditParagraph()
         {
-            var reader = SQLServerReaderProvider<int, int>.Reader(DataOperation.ReadNavigationParagraph,
+            var reader = DataReaderProvider<int, int>.Reader(DataOperation.ReadNavigationParagraph,
                 53, 7);
             string paragraph = reader.GetDatum<string>();
             ReadMarkupParagraphs();

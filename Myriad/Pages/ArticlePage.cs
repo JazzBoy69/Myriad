@@ -58,7 +58,7 @@ namespace Myriad.Pages
             return ArticleHTML.ArticleScripts;
         }
 
-        public async override void RenderBody(HTMLWriter writer)
+        public async override Task RenderBody(HTMLWriter writer)
         {
             var paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
@@ -67,26 +67,29 @@ namespace Myriad.Pages
         }
         public List<string> GetPageParagraphs()
         {
-            var reader = SQLServerReaderProvider<string>.Reader(DataOperation.ReadArticle, id);
-            return reader.GetData<string>();
+            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadArticle, id);
+            var results = reader.GetData<string>();
+            reader.Close();
+            return results;
         }
         public override void LoadQueryInfo(IQueryCollection query)
         {
             if (query.ContainsKey(queryKeyID))
             {
                 id = query[queryKeyID];
-                var titleReader = SQLServerReaderProvider<string>.Reader(
+                var titleReader = DataReaderProvider<string>.Reader(
                     DataOperation.ReadArticleTitle, id);
                 title = titleReader.GetDatum<string>();
+                titleReader.Close();
                 return;
             }
             if (query.ContainsKey(queryKeyTitle))
             {
                 title = query[queryKeyTitle];
-                var idReader = SQLServerReaderProvider<string>.Reader(
+                var idReader = DataReaderProvider<string>.Reader(
                     DataOperation.ReadArticleID, title);
                 id = idReader.GetDatum<string>();
-
+                idReader.Close();
             }
             idNumber = Numbers.Convert(id);
         }
@@ -116,6 +119,11 @@ namespace Myriad.Pages
                 parser.ParseParagraph(paragraphs[i], i);
             }
             parser.EndComments();
+        }
+
+        public async override Task AddTOC()
+        {
+            throw new NotImplementedException();
         }
     }
 }

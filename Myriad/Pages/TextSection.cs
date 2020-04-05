@@ -73,13 +73,15 @@ namespace Myriad.Pages
         }
         public List<(int start, int end)> ReadLinks(int commentID)
         {
-            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadCommentLinks,
+            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadCommentLinks,
                 commentID);
-            return reader.GetData<int, int>();
+            List<(int start, int end)> results = reader.GetData<int, int>();
+            reader.Close();
+            return results;
         }
         public List<Keyword> ReadKeywords(Citation citation)
         {
-            var reader = SQLServerReaderProvider<int, int>.Reader(DataOperation.ReadKeywords,
+            var reader = DataReaderProvider<int, int>.Reader(DataOperation.ReadKeywords,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetClassData<Keyword>();
         }
@@ -87,9 +89,11 @@ namespace Myriad.Pages
 
         public List<string> ReadParagraphs(int commentID)
         {
-            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadComment,
+            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadComment,
                 commentID);
-            return reader.GetData<string>();
+            var results = reader.GetData<string>();
+            reader.Close();
+            return results;
         }
 
         private void AddTextTabs(List<(int start, int end)> idRanges, int index)

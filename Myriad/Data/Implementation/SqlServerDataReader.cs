@@ -12,8 +12,10 @@ namespace Myriad.Data.Implementation
         protected SqlDataReader reader;
         protected SqlConnection connection;
         protected SqlCommand command;
+        protected DataOperation operation;
         public SqlServerDataReader(DataOperation operation, KeyType key)
         {
+            this.operation = operation;
             connection = SqlServerInfo.Connection();
             connection.Open();
             command = new SqlCommand(SqlServerInfo.Selectors[operation], connection);
@@ -35,15 +37,8 @@ namespace Myriad.Data.Implementation
             {
                 results.Add(reader.GetFieldValue<DataType>(Ordinals.first));
             }
-            Close();
-            return results;
-        }
-
-        private void Close()
-        {
             reader.Close();
-            command.Dispose();
-            connection.Close();
+            return results;
         }
 
         public List<(T1, T2)> GetData<T1, T2>()
@@ -55,7 +50,7 @@ namespace Myriad.Data.Implementation
                 results.Add((reader.GetFieldValue<T1>(Ordinals.first),
                     reader.GetFieldValue<T2>(Ordinals.second)));
             }
-            Close();
+            reader.Close();
             return results;
         }
 
@@ -65,10 +60,10 @@ namespace Myriad.Data.Implementation
             if (reader.Read())
             {
                 DataType result = reader.GetFieldValue<DataType>(Ordinals.first);
-                Close();
+                reader.Close();
                 return result;
             }
-            Close();
+            reader.Close();
             return default;
         }
 
@@ -80,7 +75,7 @@ namespace Myriad.Data.Implementation
             {
                 results.Add(DataObjectFactory<ClassType>.Read(reader));
             }
-            Close();
+            reader.Close();
             return results;
         }
 
@@ -90,10 +85,10 @@ namespace Myriad.Data.Implementation
             if (reader.Read())
             {
                 ClassType result = DataObjectFactory<ClassType>.Read(reader);
-                Close();
+                reader.Close();
                 return result;
             }
-            Close();
+            reader.Close();
             return default;
         }
 
@@ -103,11 +98,26 @@ namespace Myriad.Data.Implementation
             
             if (reader.Read())
             {
-                return (reader.GetFieldValue<T1>(Ordinals.first),
+                var result = (reader.GetFieldValue<T1>(Ordinals.first),
                     reader.GetFieldValue<T2>(Ordinals.second));
+                reader.Close();
+                return result;
             }
-            Close();
+            reader.Close();
             return default;
+        }
+
+        public void Close()
+        {
+            reader.Close();
+            command.Dispose();
+            connection.Close();
+        }
+
+
+        public void SetParameter(KeyType parameter)
+        {
+            command.Parameters[SqlServerInfo.parameterNames[(operation, Ordinals.first)]].Value = parameter;
         }
     }
 
@@ -116,6 +126,12 @@ namespace Myriad.Data.Implementation
         public SqlServerDataReader(DataOperation operation, KeyType1 key1, KeyType2 key2) : base(operation, key1)    
         {
             command.Parameters.AddWithValue(SqlServerInfo.parameterNames[(operation, Ordinals.second)], key2);
+        }
+
+        public void SetParameter(KeyType1 parameter1, KeyType2 parameter2) 
+        {
+            base.SetParameter(parameter1);
+            command.Parameters[SqlServerInfo.parameterNames[(operation, Ordinals.second)]].Value = parameter2;
         }
     }
 }

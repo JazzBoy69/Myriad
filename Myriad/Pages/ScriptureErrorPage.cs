@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Myriad.Library;
 
 namespace Myriad.Pages
@@ -25,7 +26,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void RenderBody(HTMLWriter writer)
+        public override Task RenderBody(HTMLWriter writer)
         {
             throw new NotImplementedException();
         }

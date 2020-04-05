@@ -248,16 +248,15 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 #menuNext img{position: absolute; top:50%; right:1rem;}
 #menuNext.hidden {display:none;}
 #menuTOC{z-index:2000;}
-#toc{max-height:85%;overflow-y:auto;overflow-x:hidden;}
+#toc{max-height:85%;overflow-y:auto;overflow-x:hidden;font-size:1rem;}
 #toc.hidden{visibility:hidden;opacity: 0;z-index: 990;}
-#toc.visible{visibility:visible;opacity:1;display:block;background-color:white;border-radius: 10px;max-height: 100%-7rem; z-index: 1010; width:20rem;
-position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-50%,-50%);}
+#toc.visible{visibility:visible;z-index:2000;opacity:1;display:block;background-color:white;border-radius: 10px;max-height: 100%-7rem; width:20rem;position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-50%,-50%);}
 #toc li {float: none; display: block; width: auto; opacity:1;border: 0;padding: .5rem 1.5rem .5rem 1.5rem;margin:0;}
 #toc li:hover{background-color: #ffc;top:0px;}
 #toc li:first-of-type{padding-top: 1rem;}
 #toc li:last-of-type{padding-bottom: 1rem;}
 #toc li a:hover{text-decoration: none;}
-#modal-overlay{visibility:hidden; opacity: 0; position:absolute; top: 0;left: 0;width: 100%;height:100vh;transition:visibility 0s, opacity 0.2s linear;}
+#modal-overlay{visibility:hidden; opacity: 0; position:absolute; top: 0;left: 0;width: 100%;height:100vh;}
 #bibleindex {
     visibility: hidden;
     opacity: 0;
@@ -271,7 +270,7 @@ position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-
         position: absolute;
         top: 50%;
     }
-#modal-overlay.show {visibility:visible;background-color: black;opacity: .4;transition:display .2s;z-index:2;transition:visibility 0s, opacity 0.2s linear;}
+#modal-overlay.show {visibility:visible;background-color: black;opacity: .4;z-index:2;}
 #bibleindex.show {
     visibility: visible;
     background-color: black;
@@ -281,8 +280,8 @@ position: fixed; top:50%;left:50%;right:auto;bottom: auto;transform: translate(-
     transition: visibility 0s, opacity 0.2s linear;
 }
 .blur {
-    filter: blur(10px);
-    transition: filter .05s;
+    opacity: .7;
+    filter: blur(3px);
 }
 
 #indexscripture {font-size: 3rem;}

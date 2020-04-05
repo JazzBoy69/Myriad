@@ -24,7 +24,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public async override void RenderBody(HTMLWriter writer)
+        public async override Task RenderBody(HTMLWriter writer)
         {
             throw new NotImplementedException();
             await AddPageTitleData();

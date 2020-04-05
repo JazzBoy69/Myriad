@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Myriad.Parser;
 using Myriad.Pages;
 using Myriad.Library;
+using Myriad.Paragraph;
+using Myriad.CitationHandlers;
 
 
 namespace Myriad.Benchmark
@@ -22,7 +24,7 @@ namespace Myriad.Benchmark
             IndexPage indexPage = new IndexPage();
             var paragraphs = indexPage.GetPageParagraphs();
         }
-        //[Benchmark]
+        [Benchmark]
         async public Task RenderIndex()
         {
             IndexPage page = new IndexPage();
@@ -53,7 +55,7 @@ namespace Myriad.Benchmark
         {
             string textOfCitation = "({Mark 2:1|Mr 2:1!})";
             CitationHandler citationHandler = new CitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
+            IMarkedUpParagraph paragraph = ParagraphReference.New(textOfCitation);
             paragraph.Text = textOfCitation;
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(1);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Myriad.Library;
 using Myriad.Data;
 using Myriad.Parser;
@@ -63,7 +64,7 @@ SetupPartialPageLoad();
             return TextHTML.TextScripts;
         }
 
-        public async override void RenderBody(HTMLWriter writer)
+        public async override Task RenderBody(HTMLWriter writer)
         {
             this.writer = writer;
             Initialize();
@@ -93,17 +94,19 @@ SetupPartialPageLoad();
 
         public override void SetupNextPage()
         {
-            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadNextCommentRange,
+            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadNextCommentRange,
                 citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();
+            reader.Close();
             citation = new Citation(start, end);
         }
 
         public override void SetupPrecedingPage()
         {
-            var reader = SQLServerReaderProvider<int>.Reader(DataOperation.ReadPrecedingCommentRange,
+            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadPrecedingCommentRange,
                 citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();
+            reader.Close();
             citation = new Citation(start, end);
         }
 
@@ -115,7 +118,7 @@ SetupPartialPageLoad();
 
         private List<int> GetCommentIDs(Citation citation)
         {
-            var reader = SQLServerReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
+            var reader = DataReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetData<int>();
         }

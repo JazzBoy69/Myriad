@@ -39,7 +39,7 @@ namespace Myriad.Pages
 
         private static void SendPlainTextParagraph(DataOperation operation, int articleID, int paragraphIndex, HttpResponse response)
         {
-            var reader = SQLServerReaderProvider<int, int>.Reader(operation, articleID, paragraphIndex);
+            var reader = DataReaderProvider<int, int>.Reader(operation, articleID, paragraphIndex);
             response.WriteAsync(reader.GetDatum<string>());
         }
 
@@ -68,7 +68,7 @@ namespace Myriad.Pages
                     return;
             }
             ArticleParagraph articleParagraph = new ArticleParagraph(articleID, paragraphIndex, text);
-            var articleWriter = SQLServerWriterProvider<ArticleParagraph>
+            var articleWriter = DataWriterProvider<ArticleParagraph>
                 .Writer(writeOperation);
             articleWriter.BeginTransaction();
             articleWriter.WriteData(articleParagraph);

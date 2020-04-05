@@ -18,10 +18,8 @@ namespace Myriad.Pages
         protected Citation citation;
         public override void LoadQueryInfo(IQueryCollection query)
         {
-            int start;
-            int end;
-            if (!int.TryParse(query[queryKeyStart], out start)) start = Result.notfound;
-            if (!int.TryParse(query[queryKeyEnd], out end)) end = Result.notfound;
+            if (!int.TryParse(query[queryKeyStart], out int start)) start = Result.notfound;
+            if (!int.TryParse(query[queryKeyEnd], out int end)) end = Result.notfound;
             citation = new Citation(start, end);
             citation.CitationType = GetCitationType();
         }
@@ -32,6 +30,11 @@ namespace Myriad.Pages
         public override bool IsValid()
         {
             return (citation != null) && (citation.CitationRange.Valid);
+        }
+
+        public async override Task AddTOC()
+        {
+
         }
     }
 }

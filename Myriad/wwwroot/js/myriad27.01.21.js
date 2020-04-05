@@ -258,20 +258,20 @@ function showHideIndex() {
 }
 
 function showHideMenu() {
-    var toc = $('#toc');
-    var overlay = $('#modal-overlay');
-    var article = $('article');
-    if (toc.hasClass('hidden')) {
-        toc.removeClass('hidden');
-        toc.addClass('visible');
-        overlay.addClass('show');
-        article.addClass('blur');
+    var toc = document.getElementById('toc');
+    var overlay = document.getElementById('modal-overlay');
+    var article = document.getElementById('mainPane');
+    if (toc.classList.contains('hidden')) {
+        toc.classList.remove('hidden');
+        toc.classList.add('visible');
+        overlay.classList.add('show');
+        article.classList.add('blur');
     }
     else {
-        toc.removeClass('visible');
-        overlay.removeClass('show');
-        toc.addClass('hidden');
-        article.removeClass('blur');
+        toc.classList.remove('visible');
+        overlay.classList.remove('show');
+        toc.classList.add('hidden');
+        article.classList.remove('blur');
     }
     return true;
 }
