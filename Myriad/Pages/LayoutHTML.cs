@@ -11,7 +11,7 @@ namespace Myriad.Pages
 <html>
 <head>
     <meta charset='utf-8' />
-    <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1' />";
+    <meta name='viewport' content='user-scalable=no,width=device-width, initial-scale=1, maximum-scale=1' />";
         public const string header =
 @"<link rel='stylesheet' href='css/felicianadialog.01.20.css' />
     <link rel='stylesheet' href='css/myriad.03.11.css' />
@@ -153,7 +153,7 @@ namespace Myriad.Pages
         public const string close = @"</div></article>
     </div>
 
-    <script src='js/myriad27.01.20.js'></script>
+    <script src='js/myriad27.01.21.js'></script>
     <script src='js/Hammer.min.js'></script>
     <script src='js/shortcuts.js'></script>";
         public const string endofBody = "</body></html>";

@@ -1,6 +1,6 @@
 function SetupPartialPageLoad() {
     window.onpopstate = function (event) {
-        LoadPage(document.location.href);
+        LoadHistoryPage(document.location.href);
     }
 }
 
@@ -17,6 +17,24 @@ function LoadPage(path) {
     }
     var target = AddQueryToPath(path, 'partial=true');
     LoadMainPane(target);
+}
+
+function LoadHistoryPage(path) {
+    if (performance.navigation.type === 1) {
+        window.location = path;
+        return;
+    }
+    var target = AddQueryToPath(path, 'partial=true');
+    LoadMainPaneHistory(target);
+}
+
+function LoadMainPaneHistory(path) {
+    postAjax(path, {},
+        function (data) {
+            var mainPane = document.getElementById('mainPane');
+            mainPane.innerHTML = data;
+            SetTitle();
+        });
 }
 
 function LoadMainPane(path) {
@@ -568,14 +586,14 @@ function ScrollToScriptureTarget() {
 		scrollTop: targetOffset - h
 	}, 1000);
 }
-
+//todo eliminate
 function SetupOverlay() {
     SetOverlaySize();
     window.onresize = function () {
         SetOverlaySize();
     };
 }
-
+//todo eliminate
 function SetOverlaySize() {
     document.getElementById('modal-overlay').style.height = window.innerHeight;
 }
@@ -684,7 +702,7 @@ function HandleTabClicks() {
     }
 }
 
-
+//todo get this to work attach event to pictures in server
 function SetupModalPictures(element) {
     var commentArea = document.querySelectorAll(element);
     for (var i = 0; i < commentArea.length; i++) {
@@ -749,7 +767,7 @@ function SetThisVerseAsTarget() {
 
 function SetupPagination() {
     if (screen.width < 961) {
-        var hammertime = new Hammer.Manager(document.getElementById('article'));
+        var hammertime = new Hammer.Manager(document.getElementById('mainPane'));
         hammertime.on('swipeleft', function () {
             GoToNext();
         });

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Myriad.Library;
 
-namespace Myriad.Parser
+namespace Myriad.Library
 {
     public class VerseReference
     {

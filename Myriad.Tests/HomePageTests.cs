@@ -7,6 +7,7 @@ using Myriad.Library;
 using Myriad.Parser;
 using Myriad.Pages;
 using Myriad.Data;
+using Myriad.Writer;
 using System;
 
 namespace Myriad.Tests

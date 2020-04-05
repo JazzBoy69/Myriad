@@ -1,6 +1,6 @@
-﻿using Myriad.Library;
+﻿
 
-namespace Myriad.Parser
+namespace Myriad.Library
 {
     public class ReadOnlyStringRange
     {
