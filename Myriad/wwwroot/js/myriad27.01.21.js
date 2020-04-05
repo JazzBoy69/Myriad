@@ -735,3 +735,16 @@ function HandlePrevious() {
     else
         document.getElementById('modal-image-box').addClass('hidden');
 }
+
+function AddShortcut() {
+    document.onkeydown = HandleShortcut;
+}
+
+function HandleShortcut(e) {
+    if (e.keyCode) code = e.keyCode;
+    else if (e.which) code = e.which;
+    if (code !== 121) return false; //not F10
+    if (!e.ctrlKey) return false; //Ctrl not pressed
+    e.preventDefault();
+    document.getElementById('searchField').focus()
+}

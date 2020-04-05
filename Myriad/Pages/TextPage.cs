@@ -11,9 +11,7 @@ namespace Myriad.Pages
         public const string TextScripts = @"
 <script>
    window.onload = function () {
-    shortcut.add('Ctrl+F10', function () {
-         document.getElementById('searchField').focus();
-    });
+    AddShortcut();
     SetupIndex();
     SetupModalPictures('."+HTMLClasses.scriptureComment+ @"');
     SetupPagination(); 

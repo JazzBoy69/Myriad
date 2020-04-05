@@ -15,9 +15,7 @@ namespace Myriad.Pages
         public const string IndexScripts = @"
 <script>
    window.onload = function () {
-    shortcut.add('Ctrl+F10', function () {
-         document.getElementById('searchField').focus();
-    });
+    AddShortcut();
     SetupIndex();
 SetupPartialPageLoad();
 };

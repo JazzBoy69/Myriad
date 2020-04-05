@@ -153,9 +153,7 @@ namespace Myriad.Pages
         public const string close = @"</div></article>
     </div>
 
-    <script src='js/myriad27.01.21.js'></script>
-    <script src='js/Hammer.min.js'></script>
-    <script src='js/shortcuts.js'></script>";
+    <script src='js/myriad27.01.21.js'></script>";
         public const string endofBody = "</body></html>";
     }
 }
