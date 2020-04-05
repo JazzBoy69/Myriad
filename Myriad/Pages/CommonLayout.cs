@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Myriad.Parser;
 using Myriad.Library;
+using Myriad.Writer;
 
 namespace Myriad.Pages
 {
@@ -28,7 +29,7 @@ namespace Myriad.Pages
         async public Task RenderPage()
         {
             await CommonLayout.WriteHeader(response, GetTitle());
-            RenderBody(new HTMLResponseWriter(response));
+            RenderBody(WriterReference.New(response));
             await AddPageTitleData();
             await Write(LayoutHTML.close);
             AddPageScripts();

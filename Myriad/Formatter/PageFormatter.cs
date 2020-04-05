@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Myriad.Paragraph;
 using Myriad.Pages;
 using Myriad.Library;
+using Myriad.Parser.Helpers;
 
 namespace Myriad.Parser
 {
@@ -343,6 +344,8 @@ namespace Myriad.Parser
             writer.StartIMG(image.Path);
             writer.AppendIMGWidth(ImageElement.WidthString);
             writer.AppendClass(image.Class);
+            writer.Append(HTMLTags.OnClick);
+            writer.Append(JavaScriptFunctions.OpenModalPicture);
             writer.Append(HTMLTags.EndSingleTag);
             writer.Append(HTMLTags.EndFigure);
         }

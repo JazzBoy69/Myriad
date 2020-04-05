@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Myriad.Library;
+using Myriad.Paragraph;
 
 namespace Myriad.Parser
 

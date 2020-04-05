@@ -4,6 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using Myriad.Parser;
 using Myriad.Library;
+using Myriad.Writer;
 
 namespace Myriad.Tests
 {
@@ -75,7 +76,7 @@ namespace Myriad.Tests
             citationText = CitationConverter.ToString(citation);
             TestCitation(citationText, citation);
             Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
-            HTMLStringWriter builder = new HTMLStringWriter();
+            HTMLWriter builder = WriterReference.New();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
             PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.ChapterCitation;
@@ -129,7 +130,7 @@ namespace Myriad.Tests
             List<Citation> citation = CitationConverter.FromString(Citations.MultipleCitations);
             citationText = CitationConverter.ToString(citation);
             Assert.AreEqual(Citations.MultipleCitations, citationText);
-            HTMLStringWriter builder = new HTMLStringWriter();
+            HTMLWriter builder = WriterReference.New();
             MarkedUpParagraph paragraph = new MarkedUpParagraph();
             PageFormatter formatter = new PageFormatter(builder);
             paragraph.Text = Citations.MultipleCitations;

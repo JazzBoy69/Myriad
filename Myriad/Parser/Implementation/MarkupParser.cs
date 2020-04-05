@@ -4,35 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
 using Myriad.Library;
+using Myriad.Paragraph;
+using Myriad.CitationHandlers;
+using Myriad.Parser.Helpers;
 
 namespace Myriad.Parser
 {
-    internal class Formats
-    {
-        internal bool detail = false;
-        internal bool bold = false;
-        internal bool super = false;
-        internal bool italic = false;
-        internal bool heading = false;
-        internal bool editable = true;
-        internal bool figure = false;
-        internal bool labelExists = false;
-        internal bool hideDetails = false;
-        internal bool sidenote = false;
-        internal void Reset()
-        {
-            detail = false;
-            bold = false;
-            super = false;
-            italic = false;
-            heading = false;
-            editable = true;
-            figure = false;
-            labelExists = false;
-            hideDetails = false;
-            sidenote = false;
-        }
-    }
     public class MarkupParser : IParser
     {
         protected int citationLevel = 0;
@@ -91,8 +68,7 @@ namespace Myriad.Parser
         {
             paragraphInfo.index = index;
             ResetCrossReferences();
-            currentParagraph = new MarkedUpParagraph();
-            currentParagraph.Text = paragraph;
+            currentParagraph = ParagraphReference.New(paragraph);
             ParseParagraph();
         }
         protected void ParseParagraph()
@@ -249,8 +225,7 @@ namespace Myriad.Parser
 
         public void ParseMainHeading(string paragraph)
         {
-            currentParagraph = new MarkedUpParagraph();
-            currentParagraph.Text = paragraph;
+            currentParagraph = ParagraphReference.New(paragraph);
             formatter.StartMainHeading();
             formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
             formatter.EndMainHeading();

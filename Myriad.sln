@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad.Tests", "Myriad.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad.Benchmark", "Myriad.Benchmark\Myriad.Benchmark.csproj", "{214EFC21-D67C-4CFE-9679-E9B0736C2969}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestStub", "TestStub\TestStub.csproj", "{7B4C61F0-AA11-43FF-A339-CD0556F0455A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestStub", "TestStub\TestStub.csproj", "{7B4C61F0-AA11-43FF-A339-CD0556F0455A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{73E11791-A05F-41DD-97D5-8D303BA4B380}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

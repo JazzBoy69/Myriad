@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Myriad.Library;
 
-namespace Myriad.Parser
+namespace Myriad.CitationHandlers.Helpers
 {
     public static class TokenDictionary
     {
-        static Dictionary<char, byte> tokenTable = new Dictionary<char, byte>()
+        static readonly Dictionary<char, byte> tokenTable = new Dictionary<char, byte>()
         {
             { '-', 2 },
             { ',', 3 },
@@ -18,7 +15,7 @@ namespace Myriad.Parser
             { '.', 7 },
             { ' ', 8 }
         };
-        static Dictionary<int, int> table = new Dictionary<int, int>()
+        static readonly Dictionary<int, int> table = new Dictionary<int, int>()
         {//Key: Alpha or number (A or 1) || nextToLastToken (0 if doesn't matter) || last token || token
             //1 to add citation to results; 0 continue || index to set
             { 0xA048, 0x00 }, //Set first book ; Mt 24:14 => ; Mt 

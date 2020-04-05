@@ -15,8 +15,8 @@ namespace Myriad.Tests
     [TestFixture]
     public class HomePageTests
     {
-        string directory = "C:\\Users\\joela\\Documents\\Test\\Myriad\\";
-        string name = "Index";
+        readonly string directory = "C:\\Users\\joela\\Documents\\Test\\Myriad\\";
+        readonly string name = "Index";
         List<string> paragraphs;
         MarkupParser parser;
         private HttpResponse DefaultResponse()
@@ -37,7 +37,7 @@ namespace Myriad.Tests
 
             IndexPage page = new IndexPage();
 
-            var writer = new HTMLStringWriter();
+            var writer = WriterReference.New();
             page.RenderBody(writer);
             string correctResult = "";
             using (StreamReader fs = new StreamReader(directory + name + "HTML.txt"))

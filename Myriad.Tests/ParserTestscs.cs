@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using System.Text;
 using Myriad.Parser;
+using Myriad.Writer;
 
 namespace Myriad.Tests
 {
@@ -28,7 +29,7 @@ namespace Myriad.Tests
         }
         private void InitializeParser()
         {
-            parser = new MarkupParser(new HTMLStringWriter());
+            parser = new MarkupParser(WriterReference.New());
             paragraphs = new List<string>();
         }
 

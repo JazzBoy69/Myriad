@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using Myriad.Parser;
+using Myriad.Writer;
 using Myriad.Data;
 using Microsoft.Extensions.Primitives;
 
@@ -51,7 +52,7 @@ namespace Myriad.Pages
             context.Request.Form.TryGetValue("paragraphIndex", out var index);
             int paragraphIndex = Convert.ToInt32(index);
             context.Request.Form.TryGetValue("text", out var text);
-            DataOperation writeOperation = DataOperation.UpdateArticleParagraph;
+            DataOperation writeOperation;
             switch (paragraphType)
             {
                 case ParagraphType.Article:
@@ -63,8 +64,6 @@ namespace Myriad.Pages
                 case ParagraphType.Navigation:
                     writeOperation = DataOperation.UpdateNavigationParagraph;
                     break;
-                case ParagraphType.Undefined:
-                    return;
                 default:
                     return;
             }
@@ -74,7 +73,7 @@ namespace Myriad.Pages
             articleWriter.BeginTransaction();
             articleWriter.WriteData(articleParagraph);
             articleWriter.Commit();
-            MarkupParser parser = new MarkupParser(new HTMLResponseWriter(context.Response));
+            MarkupParser parser = new MarkupParser(WriterReference.New(context.Response));
             parser.ParseParagraph(text, paragraphIndex);
         }
     }

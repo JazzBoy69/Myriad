@@ -2,11 +2,11 @@
 using System;
 using Myriad.Library;
 
-namespace Myriad.Writer
+namespace Myriad.Writer.Implementation
 {
     public class HTMLResponseWriter : HTMLWriter
     {
-        private HttpResponse response;
+        private readonly HttpResponse response;
 
         public HTMLResponseWriter(HttpResponse response)
         {

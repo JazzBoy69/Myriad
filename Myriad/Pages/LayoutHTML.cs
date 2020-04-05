@@ -145,7 +145,7 @@ namespace Myriad.Pages
             </div>
         </header>
         <div id='modal-image-box' class='hidden'>
-            <span id='zoomclose'>&times;</span>
+            <span id='zoomclose' onclick=CloseModalPicture(event)>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
         </div>
 <div id=top></div><article><div id=editForm contenteditable=true class='hidden' data-pos=0 data-id=0 data-index=0 data-edittype=0></div><div id='mainPane'>

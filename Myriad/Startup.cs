@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Hosting;
-using System.Diagnostics;
 using Myriad.Library;
 using Myriad.Pages;
 using Myriad.Parser;
-using Microsoft.Extensions.Primitives;
+using Myriad.Writer;
 
 namespace Myriad
 {
@@ -54,17 +53,17 @@ namespace Myriad
                     {
                         ScripturePage scripturePage = (ScripturePage)partialPage;
                         scripturePage.SetupNextPage();
-                        scripturePage.RenderBody(new HTMLResponseWriter(context.Response));
+                        scripturePage.RenderBody(WriterReference.New(context.Response));
                         return;
                     }
                     if (context.Request.Query.ContainsKey("preceding"))
                     {
                         ScripturePage scripturePage = (ScripturePage)partialPage;
                         scripturePage.SetupPrecedingPage();
-                        scripturePage.RenderBody(new HTMLResponseWriter(context.Response));
+                        scripturePage.RenderBody(WriterReference.New(context.Response));
                         return;
                     }
-                    partialPage.RenderBody(new HTMLResponseWriter(context.Response));
+                    partialPage.RenderBody(WriterReference.New(context.Response));
                     return;
                 }
                 string path = context.Request.Path;

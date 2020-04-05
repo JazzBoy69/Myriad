@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Myriad.Library;
 using Myriad.Writer;
+using Myriad.Paragraph;
+using Myriad.CitationHandlers;
 
 namespace Myriad.Parser
 {
@@ -10,8 +11,7 @@ namespace Myriad.Parser
         public static List<Citation> FromString(string stringToConvert)
         {
             var citationHandler = new QueryCitationHandler();
-            MarkedUpParagraph paragraph = new MarkedUpParagraph();
-            paragraph.Text = stringToConvert;
+            IMarkedUpParagraph paragraph = ParagraphReference.New(stringToConvert);
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(Ordinals.first);
             mainRange.MoveEndTo(stringToConvert.Length-1);
@@ -23,14 +23,14 @@ namespace Myriad.Parser
 
         public static string ToString(Citation citation)
         {
-            HTMLStringWriter writer = new HTMLStringWriter();
+            HTMLWriter writer = WriterReference.New();
             Append(writer, citation);
             return writer.Response();
         }
 
         public static string ToString(List<Citation> citations)
         {
-            HTMLStringWriter writer = new HTMLStringWriter();
+            HTMLWriter writer = WriterReference.New();
             for (var i = Ordinals.first; i < citations.Count; i++)
             {
                 if (i == Ordinals.first) Append(writer, citations[i]);
@@ -69,7 +69,7 @@ namespace Myriad.Parser
             }
         }
 
-        private static void AppendNext(HTMLStringWriter writer, Citation precedingCitation, Citation currentCitation)
+        private static void AppendNext(HTMLWriter writer, Citation precedingCitation, Citation currentCitation)
         {
             if (precedingCitation.CitationRange.Book != currentCitation.CitationRange.Book)
             {

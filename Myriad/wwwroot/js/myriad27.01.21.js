@@ -233,26 +233,6 @@ function HandleBackClick(event) {
 }
 
 
-function CreateTableOfContentsFromMarkers(section) {
-    $("#toc").append('<li><a id="link" href="#top">Top of page</a></li>');
-    var markers = $(section).find(".marker");
-    $(markers).each(function (i) {
-        var current = $(this);
-
-        current.attr("id", "title" + i);
-        $("#toc").append("<li><a id='link" + i + "' href='#title" +
-            i + "'>" +
-            current.html() + "</a></li>");
-    });
-}
-
-function filterPath(string) {
-    return string
-        .replace(/^\//, '')
-        .replace(/(index|default).[a-zA-Z]{3,4}$/, '')
-        .replace(/\/$/, '');
-}
-
 function showHideIndex() {
     var overlay = document.getElementById('bibleindex');
     var article = document.getElementById('mainPane');
@@ -460,57 +440,6 @@ function postAjax(url, data, success) {
 }
 
 
-function EditParagraphOld() {
-    $.ajax({
-        url: "/Verse?handler=ParagraphPlainText",
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("XSRF-TOKEN",
-                $('input:hidden[name="__RequestVerificationToken"]').val());
-        },
-        dataType: "json",
-        type: 'POST',
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({ editType: edittype, commentID: ID, paragraphIndex: index }),
-        success: function (data) {
-            bootbox.prompt({
-                title: "Edit paragraph",
-                inputType: 'textarea',
-                value: data,
-                callback: function (result) {
-                    if (result !== null && result.length>0) {
-                        result = result.replace(/ '/g, ' ‘');
-                        result = result.replace(/^'/g, '^‘');
-                        result = result.replace(/\*\*'/g, '**‘');
-                        result = result.replace(/\/\/'/g, '//‘');
-                        result = result.replace(/“'"/g, '“‘');
-                        result = result.replace(/—'/g, '—‘');
-                        result = result.replace(/\('/g, '(‘');
-                        result = result.replace(/\['/g, '[‘');
-
-                        result = result.replace(/'/g, '’');
-                        var jdata = "{ editType: '" + edittype + "', commentID: '" + ID + "', paragraphIndex: '" + index +
-                            "', commentParagraph: '" + result + "' }";
-                        $.ajax({
-                            url: "/Verse?handler=ParagraphHTML",
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader("XSRF-TOKEN",
-                                    $('input:hidden[name="__RequestVerificationToken"]').val());
-                            },
-                            dataType: "json",
-                            type: "POST",
-                            contentType: "application/json; charset=utf-8",
-                            data: JSON.stringify({ editType: edittype, commentID: ID, paragraphIndex: index, commentParagraph: result }),
-                            success: function (data) {
-                                editlink.siblings('.parcontent').html(data);
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    });
-}
-
 function HandleTabClick(tabClicked) {
     if (!tabClicked.classList.contains('active')) {
         var scriptureTabID = tabClicked.id + '-tab';
@@ -586,17 +515,7 @@ function ScrollToScriptureTarget() {
 		scrollTop: targetOffset - h
 	}, 1000);
 }
-//todo eliminate
-function SetupOverlay() {
-    SetOverlaySize();
-    window.onresize = function () {
-        SetOverlaySize();
-    };
-}
-//todo eliminate
-function SetOverlaySize() {
-    document.getElementById('modal-overlay').style.height = window.innerHeight;
-}
+
 
 function HandleReadingView() {
     HandleScriptureHeaderClicks();
@@ -702,24 +621,16 @@ function HandleTabClicks() {
     }
 }
 
-//todo get this to work attach event to pictures in server
-function SetupModalPictures(element) {
-    var commentArea = document.querySelectorAll(element);
-    for (var i = 0; i < commentArea.length; i++) {
-        var images = commentArea[i].getElementsByTagName('img');
-        for (var j = 0; j < images.length; j++) {
-            images[j].onclick = function (e) {
-                var img = e.target;
-                document.getElementById('modal-image').src = img.src;
-                document.getElementById('modal-image-box').classList.remove('hidden');
-                document.getElementById('menuNext').classList.add('hidden');
-            }
-        }
-    }
-    document.getElementById('zoomclose').onclick = function (e) {
-        document.getElementById('modal-image-box').classList.add('hidden');
-        document.getElementById('menuNext').classList.remove('hidden');
-	};
+function OpenModalPicture(event) {
+    var img = event.target;
+    document.getElementById('modal-image').src = img.src;
+    document.getElementById('modal-image-box').classList.remove('hidden');
+    document.getElementById('menuNext').classList.add('hidden');
+}
+
+function CloseModalPicture(event) {
+    document.getElementById('modal-image-box').classList.add('hidden');
+    document.getElementById('menuNext').classList.remove('hidden');
 }
 
 function SetupSuppressedParagraphs() {

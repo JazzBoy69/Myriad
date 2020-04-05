@@ -24,13 +24,13 @@ namespace TestStub
         {
             IndexPage page = new IndexPage();
 
-            var writer = new HTMLStringWriter();
+            var writer = WriterReference.New();
             page.RenderBody(writer);
         }
 
         private void InitializeParser()
         {
-            parser = new MarkupParser(new HTMLStringWriter());
+            parser = new MarkupParser(WriterReference.New());
             paragraphs = new List<string>();
         }
     }

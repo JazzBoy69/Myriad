@@ -1,5 +1,4 @@
 ﻿using Myriad.Data;
-using Myriad.Parser;
 using System;
 using System.Collections.Generic;
 using Myriad.Library;
@@ -8,7 +7,7 @@ namespace Myriad.Parser
 {
     internal class TextFormatter
     {
-        private HTMLWriter builder;
+        private readonly HTMLWriter builder;
         private bool poetic;
         public TextFormatter(HTMLWriter builder)
         {
@@ -95,8 +94,10 @@ namespace Myriad.Parser
 
         private void AppendVerseNumber(Keyword keyword)
         {
-            var citation = new Citation(keyword.ID, keyword.ID);
-            citation.CitationType = CitationTypes.Verse;
+            var citation = new Citation(keyword.ID, keyword.ID)
+            {
+                CitationType = CitationTypes.Verse
+            };
             builder.Append(HTMLTags.StartBold);
             PageFormatter.StartCitationAnchor(builder, citation);
             builder.Append(keyword.Verse);

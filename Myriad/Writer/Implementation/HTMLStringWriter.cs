@@ -2,11 +2,11 @@
 using System.Text;
 using Myriad.Library;
 
-namespace Myriad.Writer
+namespace Myriad.Writer.Implementation
 {
     public class HTMLStringWriter : HTMLWriter
     {
-        StringBuilder writer = new StringBuilder();
+        readonly StringBuilder writer = new StringBuilder();
         private StringBuilder Writer => writer;
 
         public string Response()

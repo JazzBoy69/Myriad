@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Myriad.Parser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Myriad.Library;
 using Myriad.Data;
-using Microsoft.Extensions.Primitives;
+using Myriad.Parser;
+using Myriad.Writer;
 
 namespace Myriad.Pages
 {
@@ -94,7 +90,7 @@ SetupPartialPageLoad();
         internal void RenderMainPane(int startID, int endID)
         {
             citation = new Citation(startID, endID);
-            RenderBody(new HTMLResponseWriter(response));
+            RenderBody(WriterReference.New(response));
         }
 
         public override void SetupNextPage()

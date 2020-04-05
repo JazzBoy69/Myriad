@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Myriad.Library;
 
-namespace Myriad.Parser
+namespace Myriad.CitationHandlers
 {
     public class QueryCitationHandler : CitationHandler
     {

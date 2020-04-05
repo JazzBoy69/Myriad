@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Myriad.Library;
+using Myriad.Paragraph;
+using Myriad.CitationHandlers.Helpers;
 
 
-namespace Myriad.Parser
+namespace Myriad.CitationHandlers
 {
     public class CitationHandler
     {
@@ -12,7 +14,7 @@ namespace Myriad.Parser
         char lastToken;
         char tokenBeforeLast;
         Citation citation = new Citation();
-        CitedVerse verse = new CitedVerse();
+        readonly CitedVerse verse = new CitedVerse();
         List<Citation> results;
         ReadOnlyStringRange rangeToParse;
         StringRange labelRange;
@@ -254,11 +256,11 @@ namespace Myriad.Parser
             {
                 if (verse.First.Chapter == Result.notfound)
                 {
-                    verse.First.Chapter = results[results.Count - 1].CitationRange.LastChapter;
+                    verse.First.Chapter = results[Ordinals.last].CitationRange.LastChapter;
                 }
                 if (verse.First.Book == Result.notfound)
                 {
-                    verse.First.Book = results[results.Count - 1].CitationRange.Book;
+                    verse.First.Book = results[Ordinals.last].CitationRange.Book;
                 }
             }
             citation.Set(verse.First, verse.Second);
