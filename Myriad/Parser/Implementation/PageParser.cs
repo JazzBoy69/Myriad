@@ -12,63 +12,65 @@ namespace Myriad.Parser
         {
         }
 
-        protected override void HandleStart()
+        protected override async Task HandleStart()
         {
             citationLevel = 0;
             formats.Reset();
-            AddHTMLBeforeParagraph();
+            await AddHTMLBeforeParagraph();
             if (currentParagraph.Length > 1)
             {
-                foundEndToken = HandleStartToken();
+                foundEndToken = await HandleStartToken();
             }
             if (!formats.heading && !formats.figure)
             {
-                formatter.StartParagraph();
+                await formatter.Append(HTMLTags.StartParagraph);
                 if (formats.editable)
                 {
-                    formatter.StartEditSpan(paragraphInfo);
+                    await formatter.StartEditSpan(paragraphInfo);
                 }
             }
         }
 
-        protected override void HandleEnd()
+        protected override async Task HandleEnd()
         {
             mainRange.MoveEndToLimit();
             if (citationLevel > 0)
             {
                 mainRange.MoveStartTo(lastDash + 1);
                 mainRange.PullEnd();
-                HandleLastDashCitations();
+                await HandleLastDashCitations();
                 mainRange.BumpEnd();
             }
-            formatter.AppendString(currentParagraph, mainRange);
+            await formatter.AppendString(currentParagraph, mainRange);
 
-            HandleEditParagraphSpan();
+            await HandleEditParagraphSpan();
 
             if (formats.heading)
-                formatter.EndHeading();
+                await formatter.Append(HTMLTags.EndHeader);
             else
-                formatter.EndParagraph();
-            AddHTMLAfterParagraph();
+                await formatter.Append(HTMLTags.EndParagraph);
+            await AddHTMLAfterParagraph();
         }
-        protected override void AddHTMLBeforeParagraph()
-        {
-            formatter.StartSection();
-        }
-        private void HandleEditParagraphSpan()
+        private async Task HandleEditParagraphSpan()
         {
             if (formats.editable)
             {
-                formatter.EndEditSpan(paragraphInfo);
+                await formatter.EndEditSpan(paragraphInfo);
             }
         }
-        protected override void AddHTMLAfterParagraph()
+        protected override async Task AddHTMLAfterParagraph()
         {
             if (!formats.sidenote)
             {
-                formatter.EndSection();
-                formatter.AppendClearDiv();
+                await formatter.Append(HTMLTags.EndSection);
+                await formatter.AppendClearDiv();
             }
         }
+
+        internal async Task EndComments()
+        {
+            await formatter.Append(HTMLTags.EndDiv);
+        }
+
     }
 }

@@ -48,9 +48,9 @@ namespace Myriad.Pages
             return pageURL;
         }
 
-        protected override string GetTitle()
+        protected override async Task WriteTitle(HTMLWriter writer)
         {
-            return title;
+            await writer.Append(title);
         }
 
         protected override string PageScripts()
@@ -63,7 +63,7 @@ namespace Myriad.Pages
             var paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
             Parse(paragraphs);
-            await AddPageTitleData();
+            await AddPageTitleData(writer);
         }
         public List<string> GetPageParagraphs()
         {

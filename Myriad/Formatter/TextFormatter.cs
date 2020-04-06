@@ -2,121 +2,128 @@
 using System;
 using System.Collections.Generic;
 using Myriad.Library;
+using System.Threading.Tasks;
 
 namespace Myriad.Parser
 {
     internal class TextFormatter
     {
-        private readonly HTMLWriter builder;
+        private readonly HTMLWriter writer;
         private bool poetic;
-        public TextFormatter(HTMLWriter builder)
+        public TextFormatter(HTMLWriter writer)
         {
-            this.builder = builder;
+            this.writer = writer;
         }
 
-        public void AppendKeywords(List<Keyword> keywords)
+        public async Task AppendKeywords(List<Keyword> keywords)
         {
-            AppendFirstWord(keywords);
+            await AppendFirstWord(keywords);
             for (int index = Ordinals.second; index < keywords.Count; index++)
             {
-                AppendKeyword(keywords[index]);
+                await AppendKeyword(keywords[index]);
                 if ((keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound)
                     && (poetic))
                 {
-                    builder.Append(HTMLTags.EndParagraph);
+                    await writer.Append(HTMLTags.EndParagraph);
                     if (index < keywords.Count - 1)
                     {
-                        builder.StartParagraphWithClass(
+                        await writer.Append(HTMLTags.StartParagraphWithClass);
+                        await writer.Append(
                             (keywords[index + 1].WordIndex == Ordinals.first) ?
                             HTMLClasses.poetic1 :
                             HTMLClasses.poetic2);
+                        await writer.Append(HTMLTags.CloseQuoteEndTag);
                     }
                 }
             }
         }
 
-        private void AppendKeyword(Keyword keyword)
+        private async Task AppendKeyword(Keyword keyword)
         {
             if (keyword.WordIndex == Ordinals.first)
             {
-                AppendVerseNumber(keyword);
+                await AppendVerseNumber(keyword);
             }
             if (keyword.IsPoetic != poetic)
             {
                 if (poetic)
                 {
                     poetic = false;
-                    builder.Append(HTMLTags.EndParagraph);
+                    await writer.Append(HTMLTags.EndParagraph);
                 }
                 else
                 {
                     poetic = true;
-                    builder.StartParagraphWithClass(HTMLClasses.poetic1);
+                    await writer.Append(HTMLTags.StartParagraphWithClass);
+                    await writer.Append(HTMLClasses.poetic1);
+                    await writer.Append(HTMLTags.CloseQuoteEndTag);
                 }
             }
-            AppendTextOfKeyword(keyword);
+            await AppendTextOfKeyword(keyword);
         }
 
-        private bool AppendFirstWord(List<Keyword> keywords)
+        private async Task<bool> AppendFirstWord(List<Keyword> keywords)
         {
             poetic = keywords[Ordinals.first].IsPoetic;
             if (poetic)
             {
-                builder.StartParagraphWithClass(HTMLClasses.poetic1);
+                await writer.Append(HTMLTags.StartParagraphWithClass);
+                await writer.Append(HTMLClasses.poetic1);
+                await writer.Append(HTMLTags.CloseQuoteEndTag);
             }
             else
             {
-                builder.Append(HTMLTags.StartParagraph);
+                await writer.Append(HTMLTags.StartParagraph);
             }
-            AppendVerseNumber(keywords[Ordinals.first]);
+            await AppendVerseNumber(keywords[Ordinals.first]);
             if (keywords[Ordinals.first].WordIndex != Ordinals.first)
             {
-                builder.Append(Symbol.ellipsis);
+                await writer.Append(Symbol.ellipsis);
             }
-            AppendTextOfKeyword(keywords[Ordinals.first]);
+            await AppendTextOfKeyword(keywords[Ordinals.first]);
             return poetic;
         }
 
-        private void AppendTextOfKeyword(Keyword keyword)
+        private async Task AppendTextOfKeyword(Keyword keyword)
         {
-            builder.Append(keyword.LeadingSymbols.ToString());
+            await writer.Append(keyword.LeadingSymbols.ToString());
             if (keyword.IsCapitalized)
             {
-                builder.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                builder.Append(keyword.Text.Slice(Ordinals.second).ToString());
+                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
+                await writer.Append(keyword.Text.Slice(Ordinals.second).ToString());
             }
             else
             {
-                builder.Append(keyword.Text.ToString());
+                await writer.Append(keyword.Text.ToString());
             }
-            builder.Append(keyword.TrailingSymbols.ToString());
+            await writer.Append(keyword.TrailingSymbols.ToString());
         }
 
-        private void AppendVerseNumber(Keyword keyword)
+        private async Task AppendVerseNumber(Keyword keyword)
         {
             var citation = new Citation(keyword.ID, keyword.ID)
             {
                 CitationType = CitationTypes.Verse
             };
-            builder.Append(HTMLTags.StartBold);
-            PageFormatter.StartCitationAnchor(builder, citation);
-            builder.Append(keyword.Verse);
-            builder.Append(HTMLTags.EndAnchor);
-            builder.Append(HTMLTags.EndBold);
-            builder.Append(Symbol.space);
+            await writer.Append(HTMLTags.StartBold);
+            PageFormatter.StartCitationAnchor(writer, citation);
+            await writer.Append(keyword.Verse);
+            await writer.Append(HTMLTags.EndAnchor);
+            await writer.Append(HTMLTags.EndBold);
+            await writer.Append(Symbol.space);
         }
 
-        internal void AppendCitationData(Citation citation)
+        internal async Task AppendCitationData(Citation citation)
         {
-            builder.Append(HTMLTags.StartDivWithClass);
-            builder.Append(HTMLClasses.hidden + " " + HTMLClasses.active + " "+ HTMLClasses.rangeData);
-            builder.Append(HTMLTags.CloseQuote);
-            builder.Append(HTMLClasses.dataStart);
-            builder.Append(citation.CitationRange.StartID);
-            builder.Append(HTMLClasses.dataEnd);
-            builder.Append(citation.CitationRange.EndID);
-            builder.Append(HTMLTags.EndTag);
-            builder.Append(HTMLTags.EndDiv);
+            await writer.Append(HTMLTags.StartDivWithClass);
+            await writer.Append(HTMLClasses.hidden + " " + HTMLClasses.active + " "+ HTMLClasses.rangeData);
+            await writer.Append(HTMLTags.CloseQuote);
+            await writer.Append(HTMLClasses.dataStart);
+            await writer.Append(citation.CitationRange.StartID);
+            await writer.Append(HTMLClasses.dataEnd);
+            await writer.Append(citation.CitationRange.EndID);
+            await writer.Append(HTMLTags.EndTag);
+            await writer.Append(HTMLTags.EndDiv);
         }
     }
 }

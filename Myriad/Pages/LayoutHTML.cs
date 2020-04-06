@@ -149,6 +149,7 @@ namespace Myriad.Pages
 <div id=top></div><article><div id=editForm contenteditable=true class='hidden' data-pos=0 data-id=0 data-index=0 data-edittype=0></div><div id='mainPane'>
 ";
         public const string close = @"</div></article></div>";
+        public const string tocdiv = "<div id=tocdiv class=hidden></div>";
         public const string modalOverlay = "<div id='modal-overlay'></div>";
         public const string myriadJavaScript = "<script src='js/myriad27.01.21.js'></script>";
         public const string endofBody = "</body></html>";

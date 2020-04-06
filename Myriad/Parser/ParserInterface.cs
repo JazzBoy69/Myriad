@@ -22,16 +22,18 @@ namespace Myriad.Parser
     }
     public interface IParser
     {
-        abstract public void ParseParagraph(string paragraph, int index);
+        abstract public void SetStartHTML(string html);
+        abstract public void SetEndHTML(string html);
+        abstract public Task ParseParagraph(string paragraph, int index);
 
         IMarkedUpParagraph CurrentParagraph { get; }
 
         StringRange MainRange { get; }
        
         abstract void SearchForToken();
-        abstract void HandleToken();
+        abstract Task HandleToken();
         abstract int DecreaseCitationLevel();
-        abstract void HandleCitations();
+        abstract Task HandleCitations();
 
     }
 }

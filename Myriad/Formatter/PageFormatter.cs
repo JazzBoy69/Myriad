@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Myriad.Paragraph;
 using Myriad.Pages;
 using Myriad.Library;
@@ -20,188 +21,148 @@ namespace Myriad.Parser
             this.writer = writer;
         }
 
-        internal void StartSection()
-        {
-            writer.Append(HTMLTags.StartSection);
-        }
-
-        internal bool ToggleBold(bool bold)
+        internal async Task<bool> ToggleBold(bool bold)
         {
             if (bold)
             {
-                writer.Append(HTMLTags.EndBold);
+                await writer.Append(HTMLTags.EndBold);
                 bold = false;
             }
             else
             {
-                writer.Append(HTMLTags.StartBold);
+                await writer.Append(HTMLTags.StartBold);
                 bold = true;
             }
             return bold;
         }
 
-        internal void StartParagraph()
-        {
-            writer.Append(HTMLTags.StartParagraph);
-        }
-
-        internal bool ToggleSuperscription(bool super)
+        internal async Task<bool> ToggleSuperscription(bool super)
         {
             if (super)
             {
-                writer.Append(HTMLTags.EndSuper);
+                await writer.Append(HTMLTags.EndSuper);
                 super = false;
             }
             else
             {
-                writer.Append(HTMLTags.StartSuper);
+                await writer.Append(HTMLTags.StartSuper);
                 super = true;
             }
             return super;
         }
 
 
-        internal bool ToggleItalic(bool italic)
+        internal async Task<bool> ToggleItalic(bool italic)
         {
             if (italic)
             {
-                writer.Append(HTMLTags.EndItalic);
+                await writer.Append(HTMLTags.EndItalic);
                 italic = false;
             }
             else
             {
-                writer.Append(HTMLTags.StartItalic);
+                await writer.Append(HTMLTags.StartItalic);
                 italic = true;
             }
             return italic;
         }
 
-        internal void EndParagraph()
+        internal async Task AppendClearDiv()
         {
-            writer.Append(HTMLTags.EndParagraph);
+            await writer.Append(HTMLTags.StartDivWithClass);
+            await writer.Append(HTMLClasses.clear);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(HTMLTags.EndDiv);
         }
 
-        internal void StartHeading()
+        internal async Task StartComments()
         {
-            writer.Append(HTMLTags.StartHeader);
+            await writer.Append(HTMLTags.StartDivWithClass);
+            await writer.Append(HTMLClasses.comments);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        internal void AppendClearDiv()
-        {
-            writer.StartDivWithClass("clear");
-            writer.Append(HTMLTags.EndDiv);
-        }
 
-        internal void StartMainHeading()
-        {
-            writer.Append(HTMLTags.StartMainHeader);
-        }
-
-        internal void EndMainHeading()
-        {
-            writer.Append(HTMLTags.EndMainHeader);
-        }
-
-        internal void EndComments()
-        {
-            writer.Append(HTMLTags.EndDiv);
-        }
-
-        internal void StartComments()
-        {
-            writer.StartDivWithID(HTMLClasses.comments);
-        }
-
-        internal void EndHeading()
-        {
-            writer.Append(HTMLTags.EndHeader);
-        }
-
-        internal void Append(char c)
-        {
-            writer.Append(c);
-        }
-
-        internal bool ToggleHeading(Formats formats)
+        internal async Task<bool> ToggleHeading(Formats formats)
         {
             formats.editable = false;
             if (formats.heading)
             {
-                writer.Append(HTMLTags.EndHeader);
-                writer.Append(HTMLTags.EndSection);
+                await writer.Append(HTMLTags.EndHeader);
+                await writer.Append(HTMLTags.EndSection);
                 return false;
             }
-            writer.Append(HTMLTags.StartHeader);
+            await writer.Append(HTMLTags.StartHeader);
             return true;
         }
 
-        internal void StartEditSpan(ParagraphInfo info)
+        internal async Task StartEditSpan(ParagraphInfo info)
         {
             if (info.type == ParagraphType.Undefined) return;
-            writer.StartSpanWithClass(HTMLClasses.paragraphcontent);
+            await writer.Append(HTMLTags.StartSpanWithClass);
+            await writer.Append(HTMLClasses.paragraphcontent);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        internal void AppendString(IMarkedUpParagraph paragraph, StringRange range)
+        internal async Task AppendString(IMarkedUpParagraph paragraph, StringRange range)
         {
-            AppendString(paragraph, range.Start, range.End);
+            await AppendString(paragraph, range.Start, range.End);
         }
 
-        internal void AppendString(IMarkedUpParagraph paragraph, int start, int end)
+        internal async Task AppendString(IMarkedUpParagraph paragraph, int start, int end)
         {
             if (start > end) return;
-            writer.Append(paragraph.SpanAt(start, end).ToString());
+            await writer.Append(paragraph.SpanAt(start, end).ToString());
         }
 
-        internal void EndEditSpan(ParagraphInfo info)
+        internal async Task EndEditSpan(ParagraphInfo info)
         {
             if (info.type == ParagraphType.Undefined) return;
-            writer.Append(HTMLTags.EndSpan);
-            writer.Append(HTMLTags.StartSpanWithClass);
-            writer.Append(HTMLClasses.editparagraph);
-            writer.Append(HTMLTags.CloseQuote);
-            writer.Append(HTMLTags.Data_EditType);
-            writer.Append((int)info.type);
-            writer.Append(HTMLTags.Data_ID);
-            writer.Append(info.ID);
-            writer.Append(HTMLTags.Data_Index);
-            writer.Append(info.index);
-            writer.Append(HTMLTags.OnClick);
-            writer.Append(JavaScriptFunctions.EditParagraph);
-            writer.Append(HTMLTags.EndTag);
-            writer.Append(HTMLTags.NonbreakingSpace);
-            writer.Append("Edit");
-            writer.Append(HTMLTags.EndSpan);
+            await writer.Append(HTMLTags.EndSpan);
+            await writer.Append(HTMLTags.StartSpanWithClass);
+            await writer.Append(HTMLClasses.editparagraph);
+            await writer.Append(HTMLTags.CloseQuote);
+            await writer.Append(HTMLTags.Data_EditType);
+            await writer.Append((int)info.type);
+            await writer.Append(HTMLTags.Data_ID);
+            await writer.Append(info.ID);
+            await writer.Append(HTMLTags.Data_Index);
+            await writer.Append(info.index);
+            await writer.Append(HTMLTags.OnClick);
+            await writer.Append(JavaScriptFunctions.EditParagraph);
+            await writer.Append(HTMLTags.EndTag);
+            await writer.Append(HTMLTags.NonbreakingSpace);
+            await writer.Append("Edit");
+            await writer.Append(HTMLTags.EndAnchor);
+            await writer.Append(HTMLTags.EndSpan);
         }
 
-        internal void StartSidenoteWithHeading(Formats formats)
+        internal async Task StartSidenoteWithHeading(Formats formats)
         {
-            writer.StartDivWithClass(HTMLClasses.sidenote);
-            writer.Append(HTMLTags.StartHeader);
+            await StartSidenote();
+            await writer.Append(HTMLTags.StartHeader);
             formats.heading = true;
         }
-        internal void StartSidenote()
+        internal async Task StartSidenote()
         {
-            writer.StartDivWithClass(HTMLClasses.sidenote);
+            await writer.Append(HTMLTags.StartDivWithClass);
+            await writer.Append(HTMLClasses.sidenote);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        internal void EndSection()
+        internal async Task EndSidenote(Formats formats)
         {
-            writer.Append(HTMLTags.EndSection);
-        }
-
-        internal void EndSidenote(Formats formats)
-        {
-            writer.Append(HTMLTags.EndParagraph);
-            writer.Append(HTMLTags.EndDiv);
+            await writer.Append(HTMLTags.EndParagraph);
+            await writer.Append(HTMLTags.EndDiv);
             formats.editable = false;
         }
 
-        internal bool HandleDetails(bool detail, Formats formats)
+        internal async Task<bool> HandleDetails(bool detail, Formats formats)
         {
             bool startSpan = false;
             if ((formats.hideDetails) && (!detail))
             {
-                writer.Append(HTMLTags.StartSpan);
+                await writer.Append(HTMLTags.StartSpan);
                 startSpan = true;
             }
             if (formats.hideDetails)
@@ -209,153 +170,175 @@ namespace Myriad.Parser
                 if (detail)
                 {
                     detail = false;
-                    writer.Append(HTMLTags.EndSpan);
-                    writer.Append(HTMLTags.EndSpan);
+                    await writer.Append(HTMLTags.EndSpan);
+                    await writer.Append(HTMLTags.EndSpan);
                 }
                 else
                 {
                     detail = true;
                     if (startSpan)
                     {
-                        writer.Append(HTMLTags.EndSpan);
+                        await writer.Append(HTMLTags.EndSpan);
                     }
-                    writer.StartSpanWithClass(HTMLClasses.hiddendetail);
-                    writer.Append(HTMLTags.StartSpan);
+                    await writer.Append(HTMLTags.StartSpanWithClass);
+                    await writer.Append(HTMLClasses.hiddendetail);
+                    await writer.Append(HTMLTags.CloseQuoteEndTag);
+                    await writer.Append(HTMLTags.StartSpan);
                 }
             }
             return detail;
         }
 
 
-        internal void AppendTag(IMarkedUpParagraph paragraph, StringRange labelRange, StringRange tagRange)
+        internal async Task AppendTag(IMarkedUpParagraph paragraph, StringRange labelRange, StringRange tagRange)
         {
-            writer.StartAnchorWithClass(HTMLClasses.link);
-            writer.AppendHREF(ArticlePage.pageURL);
-            writer.Append(HTMLTags.StartQuery);
-            writer.Append(ArticlePage.queryKeyTitle);
-            writer.Append(paragraph.
+            await writer.Append(HTMLTags.StartAnchorWithClass);
+            await writer.Append(HTMLClasses.link);
+            await writer.Append(HTMLTags.CloseQuote);
+            await writer.Append(HTMLTags.HREF);
+            await writer.Append(ArticlePage.pageURL);
+            await writer.Append(HTMLTags.StartQuery);
+            await writer.Append(ArticlePage.queryKeyTitle);
+            await writer.Append(paragraph.
                 StringAt(tagRange).Replace(' ', '+').
                 Replace('[', '(').Replace(']', ')'));
-            AppendExtendedTarget();
-            AppendPartialPageLoad(writer);
-            AppendHandleLink(writer);
-            writer.Append(HTMLTags.EndTag);
-            AppendStringAsLabel(paragraph, labelRange);
-            writer.Append(HTMLTags.EndAnchor);
+            await AppendExtendedTarget();
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
+            await writer.Append(HTMLTags.EndTag);
+            await AppendStringAsLabel(paragraph, labelRange);
+            await writer.Append(HTMLTags.EndAnchor);
         }
 
-        private static void AppendPartialPageLoad(HTMLWriter writer)
+        private static async Task AppendPartialPageLoad(HTMLWriter writer)
         {
-            writer.Append(HTMLTags.Ampersand);
-            writer.Append(HTMLClasses.partial);
+            await writer.Append(HTMLTags.Ampersand);
+            await writer.Append(HTMLClasses.partial);
         }
 
-        private static void AppendHandleLink(HTMLWriter writer)
+        private static async Task AppendHandleLink(HTMLWriter writer)
         {
-            writer.Append(HTMLTags.OnClick);
-            writer.Append(JavaScriptFunctions.HandleLink);
+            await writer.Append(HTMLTags.OnClick);
+            await writer.Append(JavaScriptFunctions.HandleLink);
         }
 
-        internal void Append(string stringToAppend)
+        internal async Task Append(string stringToAppend)
         {
-            writer.Append(stringToAppend);
+            await writer.Append(stringToAppend);
         }
 
-        private void AppendStringAsLabel(IMarkedUpParagraph paragraph, StringRange range)
+        private async Task AppendStringAsLabel(IMarkedUpParagraph paragraph, StringRange range)
         {
-            writer.Append(paragraph.
+            await writer.Append(paragraph.
                 StringAt(range.Start, range.End).Replace('_', ' '));
         }
 
-        internal void AppendExtendedTarget()
+        internal async Task AppendExtendedTarget()
         {
             if (extendedTarget != null)
             {
-                writer.Append(HTMLTags.Ampersand);
-                writer.Append(ScripturePage.queryKeyTGStart);
-                writer.Append(extendedTarget.StartID);
-                writer.Append(HTMLTags.Ampersand);
-                writer.Append(ScripturePage.queryKeyTGEnd);
-                writer.Append(extendedTarget.EndID);
+                await writer.Append(HTMLTags.Ampersand);
+                await writer.Append(ScripturePage.queryKeyTGStart);
+                await writer.Append(extendedTarget.StartID);
+                await writer.Append(HTMLTags.Ampersand);
+                await writer.Append(ScripturePage.queryKeyTGEnd);
+                await writer.Append(extendedTarget.EndID);
             }
         }
 
-        public void AppendCitationLabels(IMarkedUpParagraph paragraph, List<Citation> citations)
+        public async Task AppendCitationLabels(IMarkedUpParagraph paragraph, List<Citation> citations)
         {
             foreach (var citation in citations)
             {
-                AppendCitationLabel(paragraph, citation);
+                await AppendCitationLabel(paragraph, citation);
             }
         }
 
-        internal void AppendCitationLabel(IMarkedUpParagraph paragraph, Citation citation)
+        internal async Task AppendCitationLabel(IMarkedUpParagraph paragraph, Citation citation)
         {
             if (citation.LeadingSymbols.Length > 0)
-                writer.Append(paragraph.
+                await writer.Append(paragraph.
                     SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End).ToString());
-            writer.Append(paragraph.SpanAt(citation.Label.Start,
+            await writer.Append(paragraph.SpanAt(citation.Label.Start,
                 citation.Label.End).ToString());
             if (citation.TrailingSymbols.Length > 0)
-                writer.Append(paragraph.
+                await writer.Append(paragraph.
                     SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
         }
 
-        public void AppendCitations(IMarkedUpParagraph paragraph, List<Citation> citations)
+        public async Task AppendCitations(IMarkedUpParagraph paragraph, List<Citation> citations)
         {
             foreach (var citation in citations)
             {
-                AppendCitation(paragraph, citation);
+                await AppendCitation(paragraph, citation);
             }
         }
-        internal void AppendCitationWithLabel(IMarkedUpParagraph paragraph, Citation citation)
+        internal async Task AppendCitationWithLabel(IMarkedUpParagraph paragraph, Citation citation)
         {
-            StartCitationAnchor(writer, citation);
-            writer.Append(paragraph.SpanAt(citation.DisplayLabel).ToString());
-            writer.Append(HTMLTags.EndAnchor);
+            await StartCitationAnchor(writer, citation);
+            await writer.Append(paragraph.SpanAt(citation.DisplayLabel).ToString());
+            await writer.Append(HTMLTags.EndAnchor);
         }
-        internal void AppendCitation(IMarkedUpParagraph paragraph, Citation citation)
+        internal async Task AppendCitation(IMarkedUpParagraph paragraph, Citation citation)
         {
             if (citation.LeadingSymbols.Length > 0)
-                writer.Append(paragraph.
+                await writer.Append(paragraph.
                     SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End).ToString());
-            StartCitationAnchor(writer, citation);
-            writer.Append(paragraph.SpanAt(citation.Label.Start,
+            await StartCitationAnchor(writer, citation);
+            await writer.Append(paragraph.SpanAt(citation.Label.Start,
                 citation.Label.End).ToString());
-            writer.Append(HTMLTags.EndAnchor);
+            await writer.Append(HTMLTags.EndAnchor);
             if (citation.TrailingSymbols.Length > 0)
-                writer.Append(paragraph.
+                await writer.Append(paragraph.
                     SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
         }
 
-        public static void StartCitationAnchor(HTMLWriter writer, Citation citation)
+        public static async Task StartCitationAnchor(HTMLWriter writer, Citation citation)
         {
-            writer.Append(HTMLTags.StartAnchor);
-            writer.AppendHREF(PageReferrer.URLs[citation.CitationType]);
-            writer.Append(HTMLTags.StartQuery);
-            PageReferrer.AppendQuery(writer, citation);
+            await writer.Append(HTMLTags.StartAnchor);
+            await writer.Append(HTMLTags.HREF);
+            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(HTMLTags.StartQuery);
+            await AppendQuery(writer, citation);
             AppendPartialPageLoad(writer);
             AppendHandleLink(writer);
-            writer.Append(HTMLTags.EndTag);
+            await writer.Append(HTMLTags.EndTag);
         }
 
-        internal void AppendFigure(string par, Formats formats)
+        internal static async Task AppendQuery(HTMLWriter writer, Citation citation)
         {
-            AppendFigure(new ImageElement(par));
+            await writer.Append("start=");
+            await writer.Append(citation.CitationRange.StartID);
+            await writer.Append("&end=");
+            await writer.Append(citation.CitationRange.EndID);
+        }
+        internal async Task AppendFigure(string par, Formats formats)
+        {
+            await AppendFigure(new ImageElement(par));
             formats.figure = true;
             formats.editable = false;
         }
 
-        internal void AppendFigure(ImageElement image)
+        internal async Task AppendFigure(ImageElement image)
         {
             if (image == null) return;
-            writer.StartFigure(image.Class);
-            writer.StartIMG(image.Path);
-            writer.AppendIMGWidth(ImageElement.WidthString);
-            writer.AppendClass(image.Class);
-            writer.Append(HTMLTags.OnClick);
-            writer.Append(JavaScriptFunctions.OpenModalPicture);
-            writer.Append(HTMLTags.EndSingleTag);
-            writer.Append(HTMLTags.EndFigure);
+            await writer.Append(HTMLTags.StartFigureWithClass);
+            await writer.Append(image.Class);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(HTMLTags.StartImg);
+            await writer.Append(image.Path);
+            await writer.Append(HTMLTags.CloseQuote);
+            await writer.Append(HTMLTags.Width);
+            await writer.Append(ImageElement.WidthString);
+            await writer.Append(HTMLTags.CloseQuote);
+            await writer.Append(HTMLTags.Class);
+            await writer.Append(image.Class);
+            await writer.Append(HTMLTags.CloseQuote);
+            await writer.Append(HTMLTags.OnClick);
+            await writer.Append(JavaScriptFunctions.OpenModalPicture);
+            await writer.Append(HTMLTags.EndSingleTag);
+            await writer.Append(HTMLTags.EndFigure);
+            await writer.Append(HTMLTags.EndSection);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        protected override string GetTitle()
+        protected override async Task WriteTitle(HTMLWriter writer)
         {
             throw new NotImplementedException();
         }

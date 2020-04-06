@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Myriad.Library;
 using Myriad.Writer;
 using Myriad.Paragraph;
@@ -21,87 +22,83 @@ namespace Myriad.Parser
                 new List<Citation>() { Citation.InvalidCitation };
         }
 
-        public static string ToString(Citation citation)
+        public static async Task ToString(Citation citation, HTMLWriter writer)
         {
-            HTMLWriter writer = WriterReference.New();
-            Append(writer, citation);
-            return writer.Response();
+            await Append(writer, citation);
         }
 
-        public static string ToString(List<Citation> citations)
+        public static async Task ToString(List<Citation> citations, HTMLWriter writer)
         {
-            HTMLWriter writer = WriterReference.New();
             for (var i = Ordinals.first; i < citations.Count; i++)
             {
-                if (i == Ordinals.first) Append(writer, citations[i]);
+                if (i == Ordinals.first) await Append(writer, citations[i]);
                 else
-                    AppendNext(writer, citations[i - 1], citations[i]);
+                    await AppendNext(writer, citations[i - 1], citations[i]);
             }
-            return writer.Response();
         }
 
-        internal static void Append(HTMLWriter writer, Citation citation)
+        internal async static Task Append(HTMLWriter writer, Citation citation)
         {
-            writer.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
-            writer.Append(" ");
+            await writer.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
+            await writer.Append(" ");
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
-                writer.Append(citation.CitationRange.FirstChapter);
+                await writer.Append(citation.CitationRange.FirstChapter);
                 if (citation.CitationType != CitationTypes.Chapter)
-                    writer.Append(":");
+                    await writer.Append(":");
             }
             if (citation.CitationType == CitationTypes.Chapter) return;
-            writer.Append(citation.CitationRange.FirstVerse);
+            await writer.Append(citation.CitationRange.FirstVerse);
             if (citation.CitationType == CitationTypes.Verse) return;
             if (!citation.CitationRange.IsOneVerse)
             {
                 if ((citation.CitationRange.FirstChapter == citation.CitationRange.LastChapter) &&
                     (citation.CitationRange.FirstVerse + 1 == citation.CitationRange.LastVerse))
-                    writer.Append(", ");
+                    await writer.Append(", ");
                 else
-                    writer.Append("-");
+                    await writer.Append("-");
                 if (!citation.CitationRange.OneChapter)
                 {
-                    writer.Append(citation.CitationRange.LastChapter);
-                    writer.Append(":");
+                    await writer.Append(citation.CitationRange.LastChapter);
+                    await writer.Append(":");
                 }
-                writer.Append(citation.CitationRange.LastVerse);
+                await writer.Append(citation.CitationRange.LastVerse);
             }
         }
 
-        private static void AppendNext(HTMLWriter writer, Citation precedingCitation, Citation currentCitation)
+        private static async Task AppendNext(HTMLWriter writer, Citation precedingCitation, Citation currentCitation)
         {
             if (precedingCitation.CitationRange.Book != currentCitation.CitationRange.Book)
             {
-                writer.Append("; ");
-                Append(writer, currentCitation);
+                await writer.Append("; ");
+                await Append(writer, currentCitation);
                 return;
             }
             else
             if (precedingCitation.CitationRange.LastChapter != currentCitation.CitationRange.FirstChapter)
             {
-                writer.Append("; ");
-                writer.Append(currentCitation.CitationRange.FirstChapter);
-                writer.Append(":");
+                await writer.Append("; ");
+                await writer.Append(currentCitation.CitationRange.FirstChapter);
+                await writer.Append(":");
             }
             else
             {
-                writer.Append(", ");
+                await writer.Append(", ");
             }
-            writer.Append(currentCitation.CitationRange.FirstVerse);
+            await writer.Append(currentCitation.CitationRange.FirstVerse);
             if (!currentCitation.CitationRange.IsOneVerse)
             {
                 if ((currentCitation.CitationRange.FirstChapter == currentCitation.CitationRange.LastChapter) &&
                     (currentCitation.CitationRange.FirstVerse + 1 == currentCitation.CitationRange.LastVerse))
-                    writer.Append(", ");
+                    await writer.Append(", ");
                 else
-                    writer.Append("-");
+                    await writer.Append("-");
                 if (!currentCitation.CitationRange.OneChapter)
                 {
-                    writer.Append(currentCitation.CitationRange.LastChapter);
-                    writer.Append(":");
+                    await writer.Append(currentCitation.CitationRange.LastChapter);
+                    await writer.Append(":");
                 }
-                writer.Append(currentCitation.CitationRange.LastVerse);
+                await writer.Append(currentCitation.CitationRange.LastVerse);
             }
         }
     }

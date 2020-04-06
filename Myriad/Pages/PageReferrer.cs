@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Myriad.Library;
 
 namespace Myriad.Pages
@@ -17,12 +18,5 @@ namespace Myriad.Pages
             { CitationTypes.Verse, VersePage.pageURL },
             { CitationTypes.Invalid, IndexPage.pageURL }
         };
-        internal static void AppendQuery(HTMLWriter writer, Citation citation)
-        {
-            writer.Append("start=");
-            writer.Append(citation.CitationRange.StartID);
-            writer.Append("&end=");
-            writer.Append(citation.CitationRange.EndID);
-        }
     }
 }

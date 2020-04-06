@@ -12,6 +12,8 @@ namespace Myriad.Parser
 {
     public class MarkupParser : IParser
     {
+        protected string startHTML;
+        protected string endHTML;
         protected int citationLevel = 0;
         protected IMarkedUpParagraph currentParagraph;
         protected StringRange mainRange = new StringRange();
@@ -44,14 +46,14 @@ namespace Myriad.Parser
             paragraphInfo.type = type;
             paragraphInfo.ID = ID;
         }
-        virtual protected void HandleStart()
+        virtual protected async Task HandleStart()
         {
             citationLevel = 0;
             formats.Reset();
-            AddHTMLBeforeParagraph();
+            await AddHTMLBeforeParagraph();
             if (currentParagraph.Length > 1)
             {
-                foundEndToken = HandleStartToken();
+                foundEndToken = await HandleStartToken();
             }
         }
         protected void Initialize()
@@ -64,30 +66,30 @@ namespace Myriad.Parser
             mainRange.SetLimit(currentParagraph.Length - 1);
             lastDash = GetLastDash();
         }
-        public void ParseParagraph(string paragraph, int index)
+        public async Task ParseParagraph(string paragraph, int index)
         {
             paragraphInfo.index = index;
             ResetCrossReferences();
             currentParagraph = ParagraphReference.New(paragraph);
-            ParseParagraph();
+            await ParseParagraph();
         }
-        protected void ParseParagraph()
+        protected async Task ParseParagraph()
         {
             try
             {
                 if (currentParagraph.Length == Number.nothing) return;
                 Initialize();
-                HandleStart();
+                await HandleStart();
                 if (foundEndToken) return;
                 SearchForToken();
                 foundEndToken = false;
                 while (mainRange.Valid)
                 {
-                    HandleToken();
+                    await HandleToken();
                     if (foundEndToken) break;
                     MoveToNextToken();
                 }
-                if (!foundEndToken) HandleEnd();
+                if (!foundEndToken) await HandleEnd();
             }
             catch (Exception ex)
             {
@@ -134,10 +136,7 @@ namespace Myriad.Parser
             return (r == Result.notfound) ?
                 Result.notfound :
                 p;
-
         }
-
-
 
         protected void MoveIndexToNextBracketToken()
         {
@@ -160,19 +159,20 @@ namespace Myriad.Parser
             allCitations.Clear();
             tags.Clear();
         }
-        virtual protected void AddHTMLBeforeParagraph()
+        virtual protected async Task AddHTMLBeforeParagraph()
         {
-
+            if (startHTML == null) return;
+            await formatter.Append(startHTML);
         }
 
-        protected bool HandleStartToken()
+        protected async Task<bool> HandleStartToken()
         {
             int token = currentParagraph.TokenAt(Ordinals.first);
             if (token == Tokens.headingToken)
             {
                 formats.editable = false;
                 formats.heading = true;
-                formatter.StartHeading(); 
+                await formatter.Append(HTMLTags.StartHeader);
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return false;
@@ -183,9 +183,9 @@ namespace Myriad.Parser
                 formats.editable = false;
                 formats.sidenote = true;
                 if (currentParagraph.Length > 2)
-                    formatter.StartSidenoteWithHeading(formats);
+                    await formatter.StartSidenoteWithHeading(formats);
                 else
-                    formatter.StartSidenote();
+                    await formatter.StartSidenote();
                 SkipLongToken();
                 return false;
             }
@@ -193,7 +193,7 @@ namespace Myriad.Parser
             {
                 formats.editable = false;
                 formats.figure = true;
-                formatter.AppendFigure(currentParagraph.Text, formats);
+                await formatter.AppendFigure(currentParagraph.Text, formats);
                 return true;
             }
             //Todo Handle Table tokens
@@ -201,40 +201,37 @@ namespace Myriad.Parser
             return false;
         }
 
-        virtual protected void HandleEnd()
+        virtual protected async Task HandleEnd()
         {
             mainRange.MoveEndToLimit();
             if (citationLevel > 0)
             {
                 mainRange.MoveStartTo(lastDash + 1);
                 mainRange.PullEnd();
-                HandleLastDashCitations();
+                await HandleLastDashCitations();
                 mainRange.BumpEnd();
             }
-            formatter.AppendString(currentParagraph, mainRange);
-
-            if (formats.heading)
-                formatter.EndHeading();
+            await formatter.AppendString(currentParagraph, mainRange);
+            await AddHTMLAfterParagraph();
         }
 
-        virtual protected void AddHTMLAfterParagraph()
+        virtual protected async Task AddHTMLAfterParagraph()
         {
             if (formats.heading)
-                formatter.EndHeading();
+            {
+                await formatter.Append(HTMLTags.EndHeader);
+            }
+            if (endHTML == null) return;
+            await formatter.Append(endHTML);
         }
 
-        public void ParseMainHeading(string paragraph)
+        public async Task ParseMainHeading(string paragraph)
         {
             currentParagraph = ParagraphReference.New(paragraph);
-            formatter.StartMainHeading();
-            formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
-            formatter.EndMainHeading();
-            formatter.StartComments();
-        }
-
-        public void EndComments()
-        {
-            formatter.EndComments();
+            await formatter.Append(HTMLTags.StartMainHeader);
+            await formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
+            await formatter.Append(HTMLTags.EndMainHeader);
+            await formatter.StartComments();
         }
 
         public void SearchForToken()
@@ -245,7 +242,7 @@ namespace Myriad.Parser
                 mainRange.MoveEndTo(lastDash);
             }
         }
-        public void HandleToken()
+        public async Task HandleToken()
         {
             char token = currentParagraph.CharAt(mainRange.End);
             int longToken = currentParagraph.TokenAt(mainRange.End);
@@ -258,56 +255,56 @@ namespace Myriad.Parser
             }
             if (citationLevel > Number.nothing)
                 HandleCitations();
-            AppendTextUpToToken();
+            await AppendTextUpToToken();
             if (longToken == Tokens.detail)
             {
-                formats.detail = formatter.HandleDetails(formats.detail, formats);
+                formats.detail = await formatter.HandleDetails(formats.detail, formats);
                 SkipLongToken();
                 return;
             }
 
             if (longToken == Tokens.bold)
             {
-                formats.bold = formatter.ToggleBold(formats.bold);
+                formats.bold = await formatter.ToggleBold(formats.bold);
                 SkipLongToken();
                 return;
             }
             if (token == '^')
             {
-                formats.super = formatter.ToggleSuperscription(formats.super);
+                formats.super = await formatter.ToggleSuperscription(formats.super);
                 SkipToken();
                 return;
             }
             if (longToken == Tokens.italic)
             {
-                formats.italic = formatter.ToggleItalic(formats.italic);
+                formats.italic = await formatter.ToggleItalic(formats.italic);
                 SkipLongToken();
                 return;
             }
             if (token == '/')
             {
-                AppendToken();
+                await AppendToken();
                 return;
             }
             if (longToken == Tokens.endSidenote)
             {
-                formatter.EndSidenote(formats);
-                HandleEndToken();
+                await formatter.EndSidenote(formats);
+                await HandleEndToken();
                 SkipLongToken();
                 return;
             }
 
             if (longToken == Tokens.headingToken)
             {
-                formatter.EndHeading();
-                HandleEndToken();
+                await formatter.Append(HTMLTags.EndHeader);
+                await HandleEndToken();
                 SkipLongToken();
                 return;
             }
             if ((token == '(') || (token == '[') || (token=='—'))
             {
                 citationLevel++;
-                AppendToken();
+                await AppendToken();
                 return;
             }
             if (token == '{')
@@ -319,14 +316,14 @@ namespace Myriad.Parser
             if (token == '~')
             {
                 citationLevel++;
-                formatter.Append('—');
+                await formatter.Append("—");
                 SkipToken();
                 return;
             }
             if ((token == ')') || (token == ']'))
             {
                 citationLevel = DecreaseCitationLevel();
-                AppendToken();
+                await AppendToken();
                 return;
             }
             if (token == '}')
@@ -337,7 +334,7 @@ namespace Myriad.Parser
             }
             if (token == '_')
             {
-                formatter.Append(HTMLTags.NonbreakingSpace);
+                await formatter.Append(HTMLTags.NonbreakingSpace);
                 SkipToken();
                 return;
             }
@@ -350,7 +347,7 @@ namespace Myriad.Parser
                     ResetCitationLevel();
                     string tag = currentParagraph.StringAt(mainRange);
                     tags.Add(tag);
-                    formatter.AppendTag(currentParagraph, labelRange, mainRange);
+                    await formatter.AppendTag(currentParagraph, labelRange, mainRange);
                     formats.labelExists = false;
                     labelRange.Invalidate();
                     mainRange.GoToNextStartPosition();
@@ -359,11 +356,11 @@ namespace Myriad.Parser
                 StringRange inlineLabelRange = new StringRange(mainRange.End+1, mainRange.End+1);
                 MoveIndexToEndOfWord();
                 inlineLabelRange.MoveEndTo(mainRange.End-1);
-                formatter.AppendTag(currentParagraph, inlineLabelRange, inlineLabelRange);
+                await formatter.AppendTag(currentParagraph, inlineLabelRange, inlineLabelRange);
                 mainRange.GoToNextStartPosition();
                 return;
             }
-            AppendToken();
+            await AppendToken();
         }
 
         internal void SetLabel()
@@ -373,9 +370,9 @@ namespace Myriad.Parser
             mainRange.GoToNextStartPosition();
             formats.labelExists = true;
         }
-        private void AppendToken()
+        private async Task AppendToken()
         {
-            formatter.AppendString(currentParagraph, mainRange.End, mainRange.End);
+            await formatter.AppendString(currentParagraph, mainRange.End, mainRange.End);
             mainRange.GoToNextStartPosition();
         }
 
@@ -390,19 +387,19 @@ namespace Myriad.Parser
             mainRange.GoToNextStartPosition();
         }
 
-        private void AppendTextUpToToken()
+        private async Task AppendTextUpToToken()
         {
-            formatter.AppendString(currentParagraph, mainRange.Start, mainRange.End - 1);
+            await formatter.AppendString(currentParagraph, mainRange.Start, mainRange.End - 1);
         }
 
-        protected void HandleEndToken()
+        protected async Task HandleEndToken()
         {
             foundEndToken = true;
             //todo handle closing for special tokens?
-            formatter.EndSection();
+            await formatter.Append(HTMLTags.EndSection);
         }
 
-        public void HandleLastDashCitations()
+        public async Task HandleLastDashCitations()
         {
             List<Citation> citations =
                 citationHandler.ParseCitations(mainRange, currentParagraph);
@@ -411,19 +408,19 @@ namespace Myriad.Parser
                 if (formats.labelExists)
                 {
                     citations[Ordinals.first].DisplayLabel = labelRange;
-                    formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
+                    await formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
                     mainRange.MoveStartTo(mainRange.End);
                     return;
                 }
                 else
                 {
                     citations.Last().Label.BumpEnd();
-                    formatter.AppendCitations(currentParagraph, citations);
+                    await formatter.AppendCitations(currentParagraph, citations);
                     mainRange.MoveStartTo(citations[Ordinals.last].Label.End+1);
                 }
             }
         }
-        public void HandleCitations()
+        public async Task HandleCitations()
         {
             var rangeToParse = new StringRange(mainRange.Start, mainRange.End - 1);
             List<Citation> citations =
@@ -433,13 +430,13 @@ namespace Myriad.Parser
             if (formats.labelExists)
             {
                 citations[Ordinals.first].DisplayLabel = labelRange;
-                formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
+                await formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
                 mainRange.MoveStartTo(mainRange.End);
                 return;
             }
             else
             {
-                formatter.AppendCitations(currentParagraph, citations);
+                await formatter.AppendCitations(currentParagraph, citations);
                 mainRange.MoveStartTo(citations[Ordinals.last].Label.End + 1);
             }
         }
@@ -450,6 +447,16 @@ namespace Myriad.Parser
             while ((!mainRange.AtLimit) &&
                 (Symbols.IsPartOfWord(currentParagraph.CharAt(mainRange.End))))
                 mainRange.BumpEnd();
+        }
+
+        public void SetStartHTML(string html)
+        {
+            startHTML = html;
+        }
+
+        public void SetEndHTML(string html)
+        {
+            endHTML = html;
         }
     }
 

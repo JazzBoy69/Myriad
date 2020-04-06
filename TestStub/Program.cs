@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Myriad.Parser;
 using Myriad.Pages;
 using Myriad.Writer;
+using Myriad.Library;
 
 namespace TestStub
 {
@@ -20,12 +21,12 @@ namespace TestStub
         }
         List<string> paragraphs;
         MarkupParser parser;
-        private void RunTest()
+        async private void RunTest()
         {
-            IndexPage page = new IndexPage();
-
-            var writer = WriterReference.New();
-            page.RenderBody(writer);
+            TextPage page = new TextPage();
+            page.SetResponse(DefaultResponse());
+            page.SetCitation(new Citation(319422720, 319422739));
+            await page.RenderPage();
         }
 
         private void InitializeParser()

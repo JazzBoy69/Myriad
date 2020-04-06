@@ -25,7 +25,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        protected override string GetTitle()
+        protected override async Task WriteTitle(HTMLWriter writer)
         {
             throw new NotImplementedException();
         }
@@ -38,7 +38,7 @@ namespace Myriad.Pages
         public async override Task RenderBody(HTMLWriter writer)
         {
             throw new NotImplementedException();
-            await AddPageTitleData();
+            await AddPageTitleData(writer);
         }
 
         public override Task AddTOC(HTMLWriter writer)

@@ -54,9 +54,9 @@ SetupPartialPageLoad();
             return CitationTypes.Text;
         }
 
-        protected override string GetTitle()
+        protected async override Task WriteTitle(HTMLWriter writer)
         {
-            return CitationConverter.ToString(citation);
+            await CitationConverter.ToString(citation, writer);
         }
 
         protected override string PageScripts()
@@ -71,19 +71,19 @@ SetupPartialPageLoad();
             bool readingView = commentIDs.Count > 1;
             if (readingView)
             {
-                writer.Append(HTMLTags.StartMainHeader);
-                writer.Append(GetTitle());
-                writer.Append(HTMLTags.EndMainHeader);
+                await writer.Append(HTMLTags.StartMainHeader);
+                await WriteTitle(writer);
+                await writer.Append(HTMLTags.EndMainHeader);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
-                    textSection.AddReadingViewSection(commentIDs[i]);
+                    await textSection.AddReadingViewSection(commentIDs[i]);
                 }
             }
             else
             {
-                textSection.AddTextSection(commentIDs[Ordinals.first], citation);
+                await textSection.AddTextSection(commentIDs[Ordinals.first], citation);
             }
-            await AddPageTitleData();
+            await AddPageTitleData(writer);
         }
 
         async internal void RenderMainPane(int startID, int endID)

@@ -8,6 +8,7 @@ namespace Myriad.Library
 
     public struct HTMLTags
     {
+        internal const string StartTitle = "<title>";
         internal const string StartSection = "<section>";
         internal const string StartMainHeader = "<h2>";
         internal const string StartHeader = "<h3>";
@@ -31,6 +32,7 @@ namespace Myriad.Library
         internal const string StartFigureWithClass = "<figure class='";
         internal const string StartImg = "<img src='";
         internal const string Width = " width='";
+        internal const string EndTitle = "</title>";
         internal const string EndSection = "</section>";
         internal const string EndSpan = "</span>";
         internal const string EndMainHeader = "</h2>";

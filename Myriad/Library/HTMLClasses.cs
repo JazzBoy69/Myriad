@@ -20,6 +20,7 @@ namespace Myriad.Library
         internal const string poetic1 = "firstpoetic";
         internal const string poetic2 = "poetic";
         internal const string comments = "comments";
+        internal const string comment = "comment";
         internal const string hiddendetail = "hiddendetail";
         internal const string link = "link";
         internal const string sidenote = "sidenote";
@@ -34,6 +35,7 @@ namespace Myriad.Library
         internal const string toc = "toc";
         internal const string TOCContainer = "tocdiv";
         internal const string visible = "visible";
+        internal const string clear = "clear";
     }
 
 }
