@@ -294,13 +294,13 @@ function showHideMenu() {
         article.classList.add('blur');
     }
     else {
+        article.classList.remove('blur');
         toc.classList.remove('visible');
         overlay.classList.remove('show');
         toc.classList.add('hidden');
         var tocListShowing = document.getElementById('toc');
         tocListShowing.classList.add('hidden');
         tocListShowing.classList.remove('visible');
-        article.classList.remove('blur');
     }
     return true;
 }

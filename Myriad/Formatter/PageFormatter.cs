@@ -334,6 +334,7 @@ namespace Myriad.Parser
             writer.Append(HTMLTags.StartQuery);
             PageReferrer.AppendQuery(writer, citation);
             AppendPartialPageLoad(writer);
+            AppendHandleLink(writer);
             writer.Append(HTMLTags.EndTag);
         }
 
