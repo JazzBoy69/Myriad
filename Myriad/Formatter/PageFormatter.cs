@@ -69,17 +69,17 @@ namespace Myriad.Parser
 
         internal async Task AppendClearDiv()
         {
-            await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append(HTMLClasses.clear);
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
-            await writer.Append(HTMLTags.EndDiv);
+            await writer.Append(HTMLTags.StartDivWithClass+
+                HTMLClasses.clear+
+                HTMLTags.CloseQuoteEndTag
+                +HTMLTags.EndDiv);
         }
 
         internal async Task StartComments()
         {
-            await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append(HTMLClasses.comments);
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(HTMLTags.StartDivWithClass+
+                HTMLClasses.comments+
+                HTMLTags.CloseQuoteEndTag);
         }
 
 
@@ -88,8 +88,8 @@ namespace Myriad.Parser
             formats.editable = false;
             if (formats.heading)
             {
-                await writer.Append(HTMLTags.EndHeader);
-                await writer.Append(HTMLTags.EndSection);
+                await writer.Append(HTMLTags.EndHeader+
+                    HTMLTags.EndSection);
                 return false;
             }
             await writer.Append(HTMLTags.StartHeader);
@@ -99,9 +99,9 @@ namespace Myriad.Parser
         internal async Task StartEditSpan(ParagraphInfo info)
         {
             if (info.type == ParagraphType.Undefined) return;
-            await writer.Append(HTMLTags.StartSpanWithClass);
-            await writer.Append(HTMLClasses.paragraphcontent);
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(HTMLTags.StartSpanWithClass+
+                HTMLClasses.paragraphcontent+
+                HTMLTags.CloseQuoteEndTag);
         }
 
         internal async Task AppendString(IMarkedUpParagraph paragraph, StringRange range)
@@ -118,23 +118,23 @@ namespace Myriad.Parser
         internal async Task EndEditSpan(ParagraphInfo info)
         {
             if (info.type == ParagraphType.Undefined) return;
-            await writer.Append(HTMLTags.EndSpan);
-            await writer.Append(HTMLTags.StartSpanWithClass);
-            await writer.Append(HTMLClasses.editparagraph);
-            await writer.Append(HTMLTags.CloseQuote);
-            await writer.Append(HTMLTags.Data_EditType);
+            await writer.Append(HTMLTags.EndSpan+
+                HTMLTags.StartSpanWithClass +
+                HTMLClasses.editparagraph +
+                HTMLTags.CloseQuote +
+                HTMLTags.Data_EditType);
             await writer.Append((int)info.type);
             await writer.Append(HTMLTags.Data_ID);
             await writer.Append(info.ID);
             await writer.Append(HTMLTags.Data_Index);
             await writer.Append(info.index);
-            await writer.Append(HTMLTags.OnClick);
-            await writer.Append(JavaScriptFunctions.EditParagraph);
-            await writer.Append(HTMLTags.EndTag);
-            await writer.Append(HTMLTags.NonbreakingSpace);
+            await writer.Append(HTMLTags.OnClick +
+                JavaScriptFunctions.EditParagraph +
+                HTMLTags.EndTag +
+                HTMLTags.NonbreakingSpace);
             await writer.Append("Edit");
-            await writer.Append(HTMLTags.EndAnchor);
-            await writer.Append(HTMLTags.EndSpan);
+            await writer.Append(HTMLTags.EndAnchor +
+                HTMLTags.EndSpan);
         }
 
         internal async Task StartSidenoteWithHeading(Formats formats)
@@ -145,15 +145,15 @@ namespace Myriad.Parser
         }
         internal async Task StartSidenote()
         {
-            await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append(HTMLClasses.sidenote);
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(HTMLTags.StartDivWithClass +
+                HTMLClasses.sidenote +
+                HTMLTags.CloseQuoteEndTag);
         }
 
         internal async Task EndSidenote(Formats formats)
         {
-            await writer.Append(HTMLTags.EndParagraph);
-            await writer.Append(HTMLTags.EndDiv);
+            await writer.Append(HTMLTags.EndParagraph +
+                HTMLTags.EndDiv);
             formats.editable = false;
         }
 
@@ -170,8 +170,8 @@ namespace Myriad.Parser
                 if (detail)
                 {
                     detail = false;
-                    await writer.Append(HTMLTags.EndSpan);
-                    await writer.Append(HTMLTags.EndSpan);
+                    await writer.Append(HTMLTags.EndSpan +
+                        HTMLTags.EndSpan);
                 }
                 else
                 {
@@ -180,10 +180,10 @@ namespace Myriad.Parser
                     {
                         await writer.Append(HTMLTags.EndSpan);
                     }
-                    await writer.Append(HTMLTags.StartSpanWithClass);
-                    await writer.Append(HTMLClasses.hiddendetail);
-                    await writer.Append(HTMLTags.CloseQuoteEndTag);
-                    await writer.Append(HTMLTags.StartSpan);
+                    await writer.Append(HTMLTags.StartSpanWithClass +
+                        HTMLClasses.hiddendetail +
+                        HTMLTags.CloseQuoteEndTag +
+                        HTMLTags.StartSpan);
                 }
             }
             return detail;
@@ -192,13 +192,13 @@ namespace Myriad.Parser
 
         internal async Task AppendTag(IMarkedUpParagraph paragraph, StringRange labelRange, StringRange tagRange)
         {
-            await writer.Append(HTMLTags.StartAnchorWithClass);
-            await writer.Append(HTMLClasses.link);
-            await writer.Append(HTMLTags.CloseQuote);
-            await writer.Append(HTMLTags.HREF);
-            await writer.Append(ArticlePage.pageURL);
-            await writer.Append(HTMLTags.StartQuery);
-            await writer.Append(ArticlePage.queryKeyTitle);
+            await writer.Append(HTMLTags.StartAnchorWithClass +
+                HTMLClasses.link +
+                HTMLTags.CloseQuote +
+                HTMLTags.HREF +
+                ArticlePage.pageURL +
+                HTMLTags.StartQuery +
+                ArticlePage.queryKeyTitle);
             await writer.Append(paragraph.
                 StringAt(tagRange).Replace(' ', '+').
                 Replace('[', '(').Replace(']', ')'));
@@ -212,14 +212,14 @@ namespace Myriad.Parser
 
         private static async Task AppendPartialPageLoad(HTMLWriter writer)
         {
-            await writer.Append(HTMLTags.Ampersand);
-            await writer.Append(HTMLClasses.partial);
+            await writer.Append(HTMLTags.Ampersand +
+                HTMLClasses.partial);
         }
 
         private static async Task AppendHandleLink(HTMLWriter writer)
         {
-            await writer.Append(HTMLTags.OnClick);
-            await writer.Append(JavaScriptFunctions.HandleLink);
+            await writer.Append(HTMLTags.OnClick +
+                JavaScriptFunctions.HandleLink);
         }
 
         internal async Task Append(string stringToAppend)
@@ -237,8 +237,8 @@ namespace Myriad.Parser
         {
             if (extendedTarget != null)
             {
-                await writer.Append(HTMLTags.Ampersand);
-                await writer.Append(ScripturePage.queryKeyTGStart);
+                await writer.Append(HTMLTags.Ampersand +
+                ScripturePage.queryKeyTGStart);
                 await writer.Append(extendedTarget.StartID);
                 await writer.Append(HTMLTags.Ampersand);
                 await writer.Append(ScripturePage.queryKeyTGEnd);
@@ -295,13 +295,13 @@ namespace Myriad.Parser
 
         public static async Task StartCitationAnchor(HTMLWriter writer, Citation citation)
         {
-            await writer.Append(HTMLTags.StartAnchor);
-            await writer.Append(HTMLTags.HREF);
+            await writer.Append(HTMLTags.StartAnchor +
+                HTMLTags.HREF);
             await writer.Append(PageReferrer.URLs[citation.CitationType]);
             await writer.Append(HTMLTags.StartQuery);
             await AppendQuery(writer, citation);
-            AppendPartialPageLoad(writer);
-            AppendHandleLink(writer);
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
             await writer.Append(HTMLTags.EndTag);
         }
 
@@ -324,21 +324,21 @@ namespace Myriad.Parser
             if (image == null) return;
             await writer.Append(HTMLTags.StartFigureWithClass);
             await writer.Append(image.Class);
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
-            await writer.Append(HTMLTags.StartImg);
+            await writer.Append(HTMLTags.CloseQuoteEndTag+
+                HTMLTags.StartImg);
             await writer.Append(image.Path);
-            await writer.Append(HTMLTags.CloseQuote);
-            await writer.Append(HTMLTags.Width);
+            await writer.Append(HTMLTags.CloseQuote+
+                HTMLTags.Width);
             await writer.Append(ImageElement.WidthString);
-            await writer.Append(HTMLTags.CloseQuote);
-            await writer.Append(HTMLTags.Class);
+            await writer.Append(HTMLTags.CloseQuote+
+                HTMLTags.Class);
             await writer.Append(image.Class);
-            await writer.Append(HTMLTags.CloseQuote);
-            await writer.Append(HTMLTags.OnClick);
-            await writer.Append(JavaScriptFunctions.OpenModalPicture);
-            await writer.Append(HTMLTags.EndSingleTag);
-            await writer.Append(HTMLTags.EndFigure);
-            await writer.Append(HTMLTags.EndSection);
+            await writer.Append(HTMLTags.CloseQuote+
+                HTMLTags.OnClick+
+                JavaScriptFunctions.OpenModalPicture+
+                HTMLTags.EndSingleTag+
+                HTMLTags.EndFigure+
+                HTMLTags.EndSection);
         }
     }
 }
