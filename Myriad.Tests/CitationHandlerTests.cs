@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 using NUnit.Framework;
 using Myriad.Parser;
@@ -32,50 +33,62 @@ namespace Myriad.Tests
     class CitationHandlerTests
     {
         [Test]
-        public void SimpleCitation()
+        public async Task SimpleCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.SimpleCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             TestCitation(citationText, citation);
         }
 
         [Test]
-        public void CommaCitation()
+        public async Task CommaCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.CommaCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New(); 
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             TestCitation(citationText, citation);
         }
 
         [Test]
-        public void BrokenCommaCitation()
+        public async Task BrokenCommaCitation()
         {
             string citationText;
             List<Citation> citations = CitationConverter.FromString(Citations.BrokenCommaCitation);
-            citationText = CitationConverter.ToString(citations);
+            var writer = WriterReference.New(); 
+            await CitationConverter.ToString(citations, writer);
+            citationText = writer.Response();
             Assert.AreEqual(Citations.BrokenCommaCitation, citationText);
         }
 
         [Test]
-        public void FullNameCitation()
+        public async Task FullNameCitation()
         {
             string citationText;
             List<Citation> citations = CitationConverter.FromString(Citations.FullNameCitation);
-            citationText = CitationConverter.ToString(citations);
+            var writer = WriterReference.New(); 
+            await CitationConverter.ToString(citations, writer);
+            citationText = writer.Response();
             Assert.AreEqual(Citations.NumberedBookCitationResult, citationText);
             citations = CitationConverter.FromString(Citations.SongOfSolomon);
-            citationText = CitationConverter.ToString(citations);
+            writer = WriterReference.New();
+            await CitationConverter.ToString(citations, writer);
+            citationText = writer.Response();
             Assert.AreEqual(Citations.SongOfSolomonResult, citationText);
         }
 
         [Test]
-        public void ChapterCitation()
+        public async Task ChapterCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.ChapterCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             TestCitation(citationText, citation);
             Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
             HTMLWriter builder = WriterReference.New();
@@ -85,52 +98,62 @@ namespace Myriad.Tests
             CitationHandler citationHandler = new CitationHandler();
             StringRange range = new StringRange(0, Citations.ChapterCitation.Length - 1);
             var citations = citationHandler.ParseCitations(range, paragraph);
-            formatter.AppendCitationLabels(paragraph, citations);
+            await formatter.AppendCitationLabels(paragraph, citations);
             Assert.AreEqual(Citations.ChapterCitation, builder.Response());
         }
 
         [Test]
-        public void NumberedBookCitation()
+        public async Task NumberedBookCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.NumberedBookCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             TestCitation(citationText, citation);
         }
 
         [Test]
-        public void ShortBookCitation()
+        public async Task ShortBookCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.ShortBookCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             Assert.AreEqual(Citations.ShortBookCitation, citationText);
         }
 
         [Test]
-        public void ShortBookCommaCitation()
+        public async Task ShortBookCommaCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.ShortBookCommaCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             Assert.AreEqual(Citations.ShortBookCommaCitation, citationText);
         }
 
         [Test]
-        public void ShortBookBrokenCitation()
+        public async Task ShortBookBrokenCitation()
         {
             string citationText;
             List<Citation> citations = CitationConverter.FromString(Citations.ShortBookBrokenCitation);
-            citationText = CitationConverter.ToString(citations);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citations, writer);
+            citationText = writer.Response();
             Assert.AreEqual(Citations.ShortBookBrokenCitation, citationText);
         }
 
         [Test]
-        public void MultipleCitation()
+        public async Task MultipleCitation()
         {
             string citationText;
             List<Citation> citation = CitationConverter.FromString(Citations.MultipleCitations);
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             Assert.AreEqual(Citations.MultipleCitations, citationText);
             HTMLWriter builder = WriterReference.New();
             IMarkedUpParagraph paragraph = ParagraphReference.New(citationText);
@@ -139,25 +162,29 @@ namespace Myriad.Tests
             CitationHandler citationHandler = new CitationHandler();
             StringRange range = new StringRange(0, Citations.MultipleCitations.Length - 1);
             var citations = citationHandler.ParseCitations(range, paragraph);
-            formatter.AppendCitationLabels(paragraph, citations);
+            await formatter.AppendCitationLabels(paragraph, citations);
             Assert.AreEqual(Citations.MultipleCitations, builder.Response());
         }
 
         [Test]
-        public void RangeCitation()
+        public async Task RangeCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.RangeCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             TestCitation(citationText, citation);
         }
 
         [Test]
-        public void BangCitation()
+        public async Task BangCitation()
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.BangCitation)[Ordinals.first];
-            citationText = CitationConverter.ToString(citation);
+            var writer = WriterReference.New();
+            await CitationConverter.ToString(citation, writer);
+            citationText = writer.Response();
             TestCitation(citationText, citation);
         }
         private static void TestCitation(string citationText, Citation citation)

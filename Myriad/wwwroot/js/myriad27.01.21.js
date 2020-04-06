@@ -5,7 +5,7 @@ function SetupPartialPageLoad() {
 }
 
 function HandleLink(event) {
-    history.pushState(null, null, event.target.href);
+    history.replaceState(null, null, event.target.href);
     event.preventDefault(); 
     LoadPage(event.target.href);
 }

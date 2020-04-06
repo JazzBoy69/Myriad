@@ -31,14 +31,14 @@ namespace Myriad.Tests
             Assert.That(paragraphs.Count > Number.nothing);
         }
         
-        public void ParseHomePage()
+        public async Task ParseHomePage()
         {
             ReadMarkupParagraphs();
 
             IndexPage page = new IndexPage();
 
             var writer = WriterReference.New();
-            page.RenderBody(writer);
+            await page.RenderBody(writer);
             string correctResult = "";
             using (StreamReader fs = new StreamReader(directory + name + "HTML.txt"))
             {

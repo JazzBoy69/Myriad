@@ -19,11 +19,11 @@ namespace Myriad.Tests
         }
 
         [Test]
-        public void ParserFormatting()
+        public async Task ParserFormatting()
         {
             InitializeParser();
             paragraphs.Add("testing **bold** //italic// **//bold italic//**");
-            parser.ParseParagraph(paragraphs[0], 0);
+            await parser.ParseParagraph(paragraphs[0], 0);
             string result = parser.ParsedText.ToString();
             Assert.AreEqual("testing <b>bold</b> <i>italic</i> <b><i>bold italic</i></b>", result);
         }
