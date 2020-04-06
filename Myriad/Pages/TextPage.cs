@@ -14,8 +14,6 @@ namespace Myriad.Pages
    window.onload = function () {
     AddShortcut();
     SetupIndex();
-    SetupModalPictures('."+HTMLClasses.scriptureComment+ @"');
-    SetupPagination(); 
 SetupPartialPageLoad();
 };
     </script>";

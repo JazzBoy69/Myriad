@@ -705,24 +705,6 @@ function SetThisVerseAsTarget() {
     }
 }
 
-function SetupPagination() {
-    if (screen.width < 961) {
-        var hammertime = new Hammer.Manager(document.getElementById('mainPane'));
-        hammertime.on('swipeleft', function () {
-            GoToNext();
-        });
-        hammertime.on('swiperight', function () {
-            GoToPreceding();
-        });
-    }
-    shortcut.add("Ctrl+Shift+F12", function () {
-        GoToPreceding();
-    });
-    shortcut.add("Ctrl+F12", function () {
-        GoToNext();
-    });
-}
-
 function GoToNext() {
     TurnPage('next');
 }

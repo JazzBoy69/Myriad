@@ -199,7 +199,7 @@ namespace Myriad.Pages
         {
             parser.SetStartHTML(HTMLTags.StartSectionWithClass+ HTMLClasses.scriptureComment+ HTMLTags.CloseQuoteEndTag);
             parser.SetEndHTML(HTMLTags.EndSection + HTMLTags.EndSection);
-            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            for (int i = Ordinals.second; i < paragraphs.Count; i++)
             {
                 await parser.ParseParagraph(paragraphs[i], i);
             }
