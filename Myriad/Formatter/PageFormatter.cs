@@ -149,7 +149,7 @@ namespace Myriad.Parser
         internal void AppendString(IMarkedUpParagraph paragraph, int start, int end)
         {
             if (start > end) return;
-            writer.Append(paragraph.SpanAt(start, end));
+            writer.Append(paragraph.SpanAt(start, end).ToString());
         }
 
         internal void EndEditSpan(ParagraphInfo info)
@@ -238,6 +238,7 @@ namespace Myriad.Parser
                 Replace('[', '(').Replace(']', ')'));
             AppendExtendedTarget();
             AppendPartialPageLoad(writer);
+            AppendHandleLink(writer);
             writer.Append(HTMLTags.EndTag);
             AppendStringAsLabel(paragraph, labelRange);
             writer.Append(HTMLTags.EndAnchor);
@@ -247,6 +248,12 @@ namespace Myriad.Parser
         {
             writer.Append(HTMLTags.Ampersand);
             writer.Append(HTMLClasses.partial);
+        }
+
+        private static void AppendHandleLink(HTMLWriter writer)
+        {
+            writer.Append(HTMLTags.OnClick);
+            writer.Append(JavaScriptFunctions.HandleLink);
         }
 
         internal void Append(string stringToAppend)
@@ -285,12 +292,12 @@ namespace Myriad.Parser
         {
             if (citation.LeadingSymbols.Length > 0)
                 writer.Append(paragraph.
-                    SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End));
+                    SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End).ToString());
             writer.Append(paragraph.SpanAt(citation.Label.Start,
-                citation.Label.End));
+                citation.Label.End).ToString());
             if (citation.TrailingSymbols.Length > 0)
                 writer.Append(paragraph.
-                    SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End));
+                    SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
         }
 
         public void AppendCitations(IMarkedUpParagraph paragraph, List<Citation> citations)
@@ -303,21 +310,21 @@ namespace Myriad.Parser
         internal void AppendCitationWithLabel(IMarkedUpParagraph paragraph, Citation citation)
         {
             StartCitationAnchor(writer, citation);
-            writer.Append(paragraph.SpanAt(citation.DisplayLabel));
+            writer.Append(paragraph.SpanAt(citation.DisplayLabel).ToString());
             writer.Append(HTMLTags.EndAnchor);
         }
         internal void AppendCitation(IMarkedUpParagraph paragraph, Citation citation)
         {
             if (citation.LeadingSymbols.Length > 0)
                 writer.Append(paragraph.
-                    SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End));
+                    SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End).ToString());
             StartCitationAnchor(writer, citation);
             writer.Append(paragraph.SpanAt(citation.Label.Start,
-                citation.Label.End));
+                citation.Label.End).ToString());
             writer.Append(HTMLTags.EndAnchor);
             if (citation.TrailingSymbols.Length > 0)
                 writer.Append(paragraph.
-                    SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End));
+                    SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
         }
 
         public static void StartCitationAnchor(HTMLWriter writer, Citation citation)

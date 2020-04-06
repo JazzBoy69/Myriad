@@ -10,5 +10,7 @@ namespace Myriad.Library
         internal const string HandleTabClick = "HandleTabClick(this)";
         internal const string EditParagraph = "EditParagraph(this)";
         internal const string OpenModalPicture = "OpenModalPicture(event)";
+        internal const string HandleTOCClick = "HandleTOCClick(event)";
+        internal const string HandleLink = "HandleLink(event)";
     }
 }

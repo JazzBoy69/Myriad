@@ -79,17 +79,17 @@ namespace Myriad.Parser
 
         private void AppendTextOfKeyword(Keyword keyword)
         {
-            builder.Append(keyword.LeadingSymbols);
+            builder.Append(keyword.LeadingSymbols.ToString());
             if (keyword.IsCapitalized)
             {
                 builder.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                builder.Append(keyword.Text.Slice(Ordinals.second));
+                builder.Append(keyword.Text.Slice(Ordinals.second).ToString());
             }
             else
             {
-                builder.Append(keyword.Text);
+                builder.Append(keyword.Text.ToString());
             }
-            builder.Append(keyword.TrailingSymbols);
+            builder.Append(keyword.TrailingSymbols.ToString());
         }
 
         private void AppendVerseNumber(Keyword keyword)

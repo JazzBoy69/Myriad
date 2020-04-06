@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using Myriad.Library;
 
 namespace Myriad.Writer.Implementation
@@ -13,100 +14,128 @@ namespace Myriad.Writer.Implementation
         {
             return Writer.ToString();
         }
-        public void StartSpanWithClass(string className)
+        public async Task StartSpanWithClass(string className)
         {
-            writer.Append(HTMLTags.StartSpanWithClass);
-            writer.Append(className);
-            writer.Append(HTMLTags.CloseQuoteEndTag);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartSpanWithClass);
+                writer.Append(className);
+                writer.Append(HTMLTags.CloseQuoteEndTag);
+            });
         }
 
-        public void StartAnchorWithClass(string className)
+        public async Task StartAnchorWithClass(string className)
         {
-            writer.Append(HTMLTags.StartAnchorWithClass);
-            writer.Append(className);
-            writer.Append(HTMLTags.CloseQuote);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartAnchorWithClass);
+                writer.Append(className);
+                writer.Append(HTMLTags.CloseQuote);
+            });
         }
 
-        public void Append(char c)
+        public async Task Append(char c)
         {
-            writer.Append(c);
+            await Task.Run(() => writer.Append(c));
         }
 
-        public void AppendHREF(string pageName)
+        public async Task AppendHREF(string pageName)
         {
-            writer.Append(HTMLTags.HREF);
-            writer.Append(pageName);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.HREF);
+                writer.Append(pageName);
+            });
         }
 
-        public void Append(string stringToAppend)
+        public async Task Append(string stringToAppend)
         {
-            writer.Append(stringToAppend);
+            await Task.Run(() => writer.Append(stringToAppend));
         }
 
-        public void Append(int number)
+        public async Task Append(int number)
         {
-            writer.Append(number);
+            await Task.Run(() => writer.Append(number));
         }
 
-        public void StartDivWithClass(string className)
+        public async Task StartDivWithClass(string className)
         {
-            writer.Append(HTMLTags.StartDivWithClass);
-            writer.Append(className);
-            writer.Append(HTMLTags.CloseQuoteEndTag);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartDivWithClass);
+                writer.Append(className);
+                writer.Append(HTMLTags.CloseQuoteEndTag);
+            });
         }
 
-        public void StartDivWithID(string id)
+        public async Task StartDivWithID(string id)
         {
-            writer.Append(HTMLTags.StartDivWithID);
-            writer.Append(id);
-            writer.Append(HTMLTags.CloseQuoteEndTag);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartDivWithID);
+                writer.Append(id);
+                writer.Append(HTMLTags.CloseQuoteEndTag);
+            });
         }
 
-        public void StartFigure(string className)
+        public async Task StartFigure(string className)
         {
-            writer.Append(HTMLTags.StartFigureWithClass);
-            writer.Append(className);
-            writer.Append(HTMLTags.CloseQuoteEndTag);        
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartFigureWithClass);
+                writer.Append(className);
+                writer.Append(HTMLTags.CloseQuoteEndTag);
+            });
         }
 
-        public void StartIMG(string path)
+        public async Task StartIMG(string path)
         {
-            writer.Append(HTMLTags.StartImg);
-            writer.Append(path);
-            writer.Append(HTMLTags.CloseQuote);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartImg);
+                writer.Append(path);
+                writer.Append(HTMLTags.CloseQuote);
+            });
         }
 
-        public void AppendIMGWidth(string widthString)
+        public async Task AppendIMGWidth(string widthString)
         {
-            writer.Append(HTMLTags.Width);
-            writer.Append(widthString);
-            writer.Append(HTMLTags.CloseQuote);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.Width);
+                writer.Append(widthString);
+                writer.Append(HTMLTags.CloseQuote);
+            });
         }
 
-        public void AppendClass(string className)
+        public async Task AppendClass(string className)
         {
-            writer.Append(HTMLTags.Class);
-            writer.Append(className);
-            writer.Append(HTMLTags.CloseQuote);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.Class);
+                writer.Append(className);
+                writer.Append(HTMLTags.CloseQuote);
+            });
         }
 
-        public void Append(ReadOnlySpan<char> span)
+        public async Task StartParagraphWithClass(string className)
         {
-            writer.Append(span);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartParagraphWithClass);
+                writer.Append(className);
+                writer.Append(HTMLTags.CloseQuoteEndTag);
+            });
         }
 
-        public void StartParagraphWithClass(string className)
+        public async Task StartSectionWithClass(string className)
         {
-            writer.Append(HTMLTags.StartParagraphWithClass);
-            writer.Append(className);
-            writer.Append(HTMLTags.CloseQuoteEndTag);
-        }
-
-        public void StartSectionWithClass(string className)
-        {
-            writer.Append(HTMLTags.StartSectionWithClass);
-            writer.Append(className);
-            writer.Append(HTMLTags.CloseQuoteEndTag);
+            await Task.Run(() =>
+            {
+                writer.Append(HTMLTags.StartSectionWithClass);
+                writer.Append(className);
+                writer.Append(HTMLTags.CloseQuoteEndTag);
+            });
         }
     }
 }

@@ -121,7 +121,12 @@ namespace Myriad.Pages
             parser.EndComments();
         }
 
-        public async override Task AddTOC()
+        public override Task AddTOC(HTMLWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task LoadTOCInfo()
         {
             throw new NotImplementedException();
         }

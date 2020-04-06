@@ -49,5 +49,15 @@ namespace Myriad.Pages
         {
             throw new NotImplementedException();
         }
+
+        public override Task AddTOC(HTMLWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task LoadTOCInfo()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

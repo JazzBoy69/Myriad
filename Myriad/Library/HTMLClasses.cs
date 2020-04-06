@@ -16,7 +16,7 @@ namespace Myriad.Library
         internal const string rangeData = " rangedata";
         internal const string dataStart = " data-start=";
         internal const string dataEnd = " data-end=";
-        internal const string partial = "partial=true onclick=HandleLink(event)";
+        internal const string partial = "partial=true";
         internal const string poetic1 = "firstpoetic";
         internal const string poetic2 = "poetic";
         internal const string comments = "comments";
@@ -32,6 +32,8 @@ namespace Myriad.Library
         internal const string citationEnd = "citationEnd";
         internal const string title = "pageTitle";
         internal const string toc = "toc";
+        internal const string TOCContainer = "tocdiv";
+        internal const string visible = "visible";
     }
 
 }

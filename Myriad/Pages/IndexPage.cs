@@ -26,26 +26,40 @@ SetupPartialPageLoad();
     {
         public const string pageURL = "/Index";
         public const string nameQuery = "name=";
-
+        private const string requestNameQuery = "name";
+        private const string defaultName = "home";
         List<string> paragraphs;
         int mainHeadingIndex;
         PageParser parser;
+        string name = defaultName;
         HTMLWriter writer;
         int ID;
         public IndexPage() 
         {
         }
-
+        public override void LoadQueryInfo(IQueryCollection query)
+        {
+            name = (query.ContainsKey(requestNameQuery)) ? 
+                query[requestNameQuery].ToString() :
+                defaultName;
+        }
         public async override Task RenderBody(HTMLWriter writer)
         {
-            //todo edit page
-            this.writer = writer;
-            ID = GetPageID();
-            paragraphs = GetPageParagraphs();
-            parser = new PageParser(writer);
-            parser.SetParagraphInfo(ParagraphType.Navigation, ID);
-            Parse();
-            await AddPageTitleData();
+            try
+            {
+                //todo edit page
+                this.writer = writer;
+                ID = GetPageID();
+                paragraphs = GetPageParagraphs();
+                parser = new PageParser(writer);
+                parser.SetParagraphInfo(ParagraphType.Navigation, ID);
+                Parse();
+                await AddPageTitleData();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         private void Parse()
@@ -71,7 +85,7 @@ SetupPartialPageLoad();
 
         private int GetPageID()
         {
-            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationID, "home");
+            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationID, name);
             int result = reader.GetDatum<int>();
             reader.Close();
             return result;
@@ -79,7 +93,7 @@ SetupPartialPageLoad();
 
         public List<string> GetPageParagraphs()
         {
-            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, "home");
+            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, name);
             var results = reader.GetData<string>();
             reader.Close();
             return results;
@@ -87,7 +101,10 @@ SetupPartialPageLoad();
 
         protected override string GetTitle()
         {
-            return "Myriad Study Bible";
+            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationTitle, name);
+            var result = reader.GetDatum<string>();
+            reader.Close();
+            return result;
         }
 
         protected override string PageScripts()
@@ -100,46 +117,60 @@ SetupPartialPageLoad();
             return pageURL;
         }
 
-        public override void LoadQueryInfo(IQueryCollection query)
-        {
-        }
-
         public override bool IsValid()
         {
             return true;
         }
 
-        public async override Task AddTOC()
+        public async override Task LoadTOCInfo()
         {
             await Task.Run(() =>
             {
-                writer.Append(HTMLTags.StartList);
-                writer.Append(HTMLTags.ID);
-                writer.Append(HTMLClasses.toc);
-                writer.Append(HTMLTags.Class);
-                writer.Append(HTMLClasses.hidden);
-                writer.Append(HTMLTags.CloseQuoteEndTag);
-                var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationTitle, "");
-                for (int index = Ordinals.first; index < mainHeadingIndex; index++)
+                paragraphs = GetPageParagraphs();
+                for (int index = Ordinals.first; index < paragraphs.Count; index++)
                 {
-                    reader.SetParameter(paragraphs[index]);
-                    string title = reader.GetDatum<string>();
-                    writer.Append(HTMLTags.StartListItem);
-                    writer.Append(HTMLTags.EndTag);
-                    writer.Append(HTMLTags.StartAnchor);
-                    writer.Append(HTMLTags.HREF);
-                    writer.Append(pageURL);
-                    writer.Append(HTMLTags.StartQuery);
-                    writer.Append(nameQuery);
-                    writer.Append(paragraphs[index]);
-                    writer.Append(HTMLTags.EndTag);
-                    writer.Append(title);
-                    writer.Append(HTMLTags.EndAnchor);
-                    writer.Append(HTMLTags.EndListItem);
+                    if ((paragraphs[index].Length > Number.nothing) &&
+                        (paragraphs[index][Ordinals.first] == '='))
+                    {
+                        mainHeadingIndex = index;
+                        break;
+                    }
                 }
-                reader.Close();
-                writer.Append(HTMLTags.EndList);
             });
+        }
+        public async override Task AddTOC(HTMLWriter writer)
+        {
+            await Write(HTMLTags.StartList);
+            await Write(HTMLTags.ID);
+            await Write(HTMLClasses.toc);
+            await Write(HTMLTags.Class);
+            await Write(HTMLClasses.visible);
+            await Write(HTMLTags.CloseQuoteEndTag);
+            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationTitle, "");
+            for (int index = Ordinals.first; index < mainHeadingIndex; index++)
+            {
+                reader.SetParameter(paragraphs[index]);
+                string title = reader.GetDatum<string>();
+                if (title == null) title = paragraphs[index];
+                await Write(HTMLTags.StartListItem);
+                await Write(HTMLTags.EndTag);
+                await Write(HTMLTags.StartAnchor);
+                await Write(HTMLTags.HREF);
+                await Write(pageURL);
+                await Write(HTMLTags.StartQuery);
+                await Write(nameQuery);
+                await Write(paragraphs[index]);
+                await Write(HTMLTags.Ampersand);
+                await Write(HTMLClasses.partial);
+                await Write(HTMLTags.OnClick);
+                await Write(JavaScriptFunctions.HandleTOCClick);
+                await Write(HTMLTags.EndTag);
+                await Write(title);
+                await Write(HTMLTags.EndAnchor);
+                await Write(HTMLTags.EndListItem);
+            }
+            reader.Close();
+            await Write(HTMLTags.EndList);
         }
     }
 }

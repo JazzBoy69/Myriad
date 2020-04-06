@@ -31,10 +31,5 @@ namespace Myriad.Pages
         {
             return (citation != null) && (citation.CitationRange.Valid);
         }
-
-        public async override Task AddTOC()
-        {
-
-        }
     }
 }

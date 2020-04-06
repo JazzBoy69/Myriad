@@ -15,8 +15,33 @@ function LoadPage(path) {
         window.location = path;
         return;
     }
-    var target = AddQueryToPath(path, 'partial=true');
-    LoadMainPane(target);
+    if (path.indexOf('partial') === -1) path = AddQueryToPath(path, 'partial=true');
+    LoadMainPane(path);
+}
+
+function HandleTOCClick(event) {
+    event.preventDefault();
+    showHideMenu();
+    LoadIndexPane(event.target.href);
+}
+
+function LoadIndexPane(path) {
+    postAjax(path, {},
+        function (data) {
+            var mainPane = document.getElementById('mainPane');
+            mainPane.innerHTML = data;
+            history.pushState(null, null, path);
+            SetTitle();
+        });
+}
+
+function LoadTOC() {
+    path = AddQueryToPath(CurrentPath() + document.location.search, 'toc=1');
+    postAjax(path, {},
+        function (data) {
+            var toc = document.getElementById('tocdiv');
+            toc.innerHTML = data;
+        });
 }
 
 function LoadHistoryPage(path) {
@@ -258,10 +283,11 @@ function showHideIndex() {
 }
 
 function showHideMenu() {
-    var toc = document.getElementById('toc');
+    var toc = document.getElementById('tocdiv');
     var overlay = document.getElementById('modal-overlay');
     var article = document.getElementById('mainPane');
     if (toc.classList.contains('hidden')) {
+        LoadTOC();
         toc.classList.remove('hidden');
         toc.classList.add('visible');
         overlay.classList.add('show');
@@ -271,6 +297,9 @@ function showHideMenu() {
         toc.classList.remove('visible');
         overlay.classList.remove('show');
         toc.classList.add('hidden');
+        var tocListShowing = document.getElementById('toc');
+        tocListShowing.classList.add('hidden');
+        tocListShowing.classList.remove('visible');
         article.classList.remove('blur');
     }
     return true;

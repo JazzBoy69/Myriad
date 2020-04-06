@@ -7,24 +7,22 @@ namespace Myriad
 {
     public interface HTMLWriter
     {
-        public void StartSpanWithClass(string className);
-        public void StartAnchorWithClass(string className);
-        public void StartDivWithClass(string className);
+        public Task StartSpanWithClass(string className);
+        public Task StartAnchorWithClass(string className);
+        public Task StartDivWithClass(string className);
 
-        public void StartSectionWithClass(string className);
+        public Task StartSectionWithClass(string className);
 
-        public void StartDivWithID(string id);
-        public void StartFigure(string className);
-        public void StartIMG(string path);
-        public void Append(char c);
-
-        public void Append(ReadOnlySpan<char> span);
-        public void Append(string stringToAppend);
-        public void Append(int number);
-        public void AppendHREF(string pageName);
-        public void AppendIMGWidth(string widthString);
-        public void AppendClass(string className);
+        public Task StartDivWithID(string id);
+        public Task StartFigure(string className);
+        public Task StartIMG(string path);
+        public Task Append(char c);
+        public Task Append(string stringToAppend);
+        public Task Append(int number);
+        public Task AppendHREF(string pageName);
+        public Task AppendIMGWidth(string widthString);
+        public Task AppendClass(string className);
         public string Response();
-        void StartParagraphWithClass(string className);
+        public Task StartParagraphWithClass(string className);
     }
 }

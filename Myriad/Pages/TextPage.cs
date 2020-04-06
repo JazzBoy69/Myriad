@@ -86,10 +86,10 @@ SetupPartialPageLoad();
             await AddPageTitleData();
         }
 
-        internal void RenderMainPane(int startID, int endID)
+        async internal void RenderMainPane(int startID, int endID)
         {
             citation = new Citation(startID, endID);
-            RenderBody(WriterReference.New(response));
+            await RenderBody(WriterReference.New(response));
         }
 
         public override void SetupNextPage()
@@ -121,6 +121,16 @@ SetupPartialPageLoad();
             var reader = DataReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetData<int>();
+        }
+
+        public override Task AddTOC(HTMLWriter writer)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task LoadTOCInfo()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -46,24 +46,14 @@ namespace Myriad
             });
             app.Run(async context =>
             {
+                if (context.Request.Query.ContainsKey("toc"))
+                {
+                    await HandleTOCRequest(context);
+                    return;
+                }
                 if (context.Request.Query.ContainsKey("partial"))
                 {
-                    CommonPage partialPage = RequestedPage(context);
-                    if (context.Request.Query.ContainsKey("next"))
-                    {
-                        ScripturePage scripturePage = (ScripturePage)partialPage;
-                        scripturePage.SetupNextPage();
-                        scripturePage.RenderBody(WriterReference.New(context.Response));
-                        return;
-                    }
-                    if (context.Request.Query.ContainsKey("preceding"))
-                    {
-                        ScripturePage scripturePage = (ScripturePage)partialPage;
-                        scripturePage.SetupPrecedingPage();
-                        scripturePage.RenderBody(WriterReference.New(context.Response));
-                        return;
-                    }
-                    partialPage.RenderBody(WriterReference.New(context.Response));
+                    await HandlePartialRequest(context);
                     return;
                 }
                 string path = context.Request.Path;
@@ -81,6 +71,34 @@ namespace Myriad
                 await page.RenderPage();
             });
 
+        }
+
+        public async Task HandleTOCRequest(HttpContext context)
+        {
+            CommonPage partialPage = RequestedPage(context);
+            await partialPage.LoadTOCInfo();
+            await partialPage.AddTOC(WriterReference.New(context.Response));
+        }
+
+        private async Task HandlePartialRequest(HttpContext context)
+        {
+            CommonPage partialPage = RequestedPage(context);
+            if (context.Request.Query.ContainsKey("next"))
+            {
+                ScripturePage scripturePage = (ScripturePage)partialPage;
+                scripturePage.SetupNextPage();
+                await scripturePage.RenderBody(WriterReference.New(context.Response));
+                return;
+            }
+            if (context.Request.Query.ContainsKey("preceding"))
+            {
+                ScripturePage scripturePage = (ScripturePage)partialPage;
+                scripturePage.SetupPrecedingPage();
+                await scripturePage.RenderBody(WriterReference.New(context.Response));
+                return;
+            }
+            await partialPage.RenderBody(WriterReference.New(context.Response));
+            return;
         }
 
         private CommonPage RequestedPage(HttpContext context)
