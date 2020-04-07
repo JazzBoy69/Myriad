@@ -4,6 +4,7 @@ using Myriad.Library;
 using Myriad.Data;
 using Myriad.Parser;
 using Myriad.Writer;
+using Myriad.Formatter;
 
 namespace Myriad.Pages
 {
@@ -35,7 +36,7 @@ SetupPartialPageLoad();
         public const string loadMainPane = "/Text-Load";
         HTMLWriter writer;
         List<int> commentIDs;
-        TextSection textSection;
+        TextSectionFormatter textSection;
 
         public void SetCitation(Citation citation)
         {
@@ -79,7 +80,7 @@ SetupPartialPageLoad();
             }
             else
             {
-                await textSection.AddTextSection(commentIDs[Ordinals.first], citation);
+                await textSection.AddTextSection(commentIDs[Ordinals.first], citation, readingView);
             }
             await AddPageTitleData(writer);
         }
@@ -110,7 +111,7 @@ SetupPartialPageLoad();
 
         private void Initialize()
         {
-            textSection = new TextSection(writer);
+            textSection = new TextSectionFormatter(writer);
             commentIDs = GetCommentIDs(citation);
         }
 

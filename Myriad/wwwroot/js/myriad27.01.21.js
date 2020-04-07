@@ -754,8 +754,8 @@ function AddShortcut() {
 function HandleShortcut(e) {
     if (e.keyCode) code = e.keyCode;
     else if (e.which) code = e.which;
-    if (code !== 121) return false; //not F10
-    if (!e.ctrlKey) return false; //Ctrl not pressed
+    if (code !== 121) return true; //not F10
+    if (!e.ctrlKey) return true; //Ctrl not pressed
     e.preventDefault();
-    document.getElementById('searchField').focus()
+    document.getElementById('searchField').focus();
 }
