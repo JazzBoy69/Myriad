@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Myriad.Library
+﻿namespace Myriad.Library
 {
     public enum CitationTypes
     {

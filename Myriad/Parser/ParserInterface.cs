@@ -7,6 +7,7 @@ using Myriad.Paragraph;
 namespace Myriad.Parser
 
 {
+    //todo move to parser library
     public struct Tokens
     {
         public const int headingToken = 0x3D3D;

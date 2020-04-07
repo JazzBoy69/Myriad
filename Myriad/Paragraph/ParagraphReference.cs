@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Myriad.Paragraph.Implementation;
-
+﻿using Myriad.Paragraph.Implementation;
+//todo generic paragraph and string range in library
 namespace Myriad.Paragraph
 {
     public class ParagraphReference

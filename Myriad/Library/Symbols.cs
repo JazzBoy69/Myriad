@@ -1,5 +1,6 @@
 ﻿namespace Myriad.Library
 {
+    //todo move to Feliciana Library
     public struct Symbol
     {
         public const string lineFeed = "\r\n";

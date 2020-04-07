@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 namespace Myriad.Library
 {
+    //TODO move to Feliciana library
     public struct Number
     {
         public const int nothing = 0;

@@ -5,6 +5,7 @@ using Myriad.Library;
 
 namespace Myriad.Writer.Implementation
 {
+    //todo move to writer library
     public class HTMLResponseWriter : HTMLWriter
     {
         private readonly HttpResponse response;

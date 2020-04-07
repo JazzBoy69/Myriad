@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Data.Common;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Myriad.Data.Implementation;
 
 namespace Myriad.Data
 {
+    //TODO move application specific objects to myriad namespace; general objects to feliciana namespace
     public enum DataOperation { ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID,
         ReadNavigationTitle,
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,

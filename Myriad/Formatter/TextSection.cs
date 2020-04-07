@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Myriad.Data;
 using Myriad.Parser;
 using Myriad.Library;
 
@@ -33,6 +32,8 @@ namespace Myriad.Formatter
             //todo reading view
         }
 
+
+        //todo make information object
         public async Task AddTextSection(int commentID, Citation sourceCitation, bool readingView)
         {
             activeSet = false;

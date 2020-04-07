@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Myriad.Paragraph;
 using Myriad.Pages;
 using Myriad.Library;
-using Myriad.Parser.Helpers;
 
 namespace Myriad.Parser
 {

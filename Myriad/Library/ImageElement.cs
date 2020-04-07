@@ -15,6 +15,8 @@ namespace Myriad.Library
         private double widthpercentage = 1;
         private double ratio;
         private bool valid = false;
+
+        //TODO remove application specific file information; move to Feliciana library
         public static string pictureDirectory = System.IO.Path.Combine(Directory.GetCurrentDirectory(),
                 "wwwroot", "pictures");
         public static string pictureSourceDirectory = "pictures";
@@ -110,31 +112,10 @@ namespace Myriad.Library
         {
             get
             {
-                return "<img src=\"" + path + "\" class='" + Class + " single' width=" + WidthString + " />";
+                return "<img src=\"" + path + "\" class='" + Class + " single' width=100% />";
             }
         }
 
         public string Path { get { return path; }}
-        public static string WidthString
-        {
-            get
-            {
-				return "100%";
-                /*double x = 960 * ratio;
-                if (Ratio < landscapeRatio)
-                {
-                    if (x > 500) return string.Format("{0:F4}% ", 500 / x * 100);
-                    return "100%";
-                }
-
-                if (Ratio > portraitRatio)
-                {
-                    if (x > 600) return string.Format("{0:F4}% ", 600 / x * 100);
-                    return "100%";
-                }
-                if (x>450) return string.Format("{0:F4}% ", 450 / x * 100);
-                return "100%";*/
-            }
-        }
     }
 }

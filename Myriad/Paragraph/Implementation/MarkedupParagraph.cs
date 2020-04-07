@@ -6,6 +6,7 @@ using Myriad.Library;
 
 namespace Myriad.Paragraph.Implementation
 {
+    //todo move to Feliciana Library
     public class MarkedUpParagraph : IMarkedUpParagraph
     {
         char[] text;

@@ -2,6 +2,7 @@
 
 namespace Myriad.Library
 {
+    //todo move to Feliciana Library
     public class ReadOnlyStringRange
     {
         protected int start = Ordinals.first;

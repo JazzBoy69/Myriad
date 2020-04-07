@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Myriad.Library
 {
+    //move to Citation library
     public class CitationRange
     {
         public const int invalidID = Number.nothing;

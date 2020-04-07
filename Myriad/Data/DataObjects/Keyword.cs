@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data.Common;
 using System.Threading.Tasks;
 using Myriad.Library;
-using System.Data.Common;
-using System.Data.SqlClient;
 
 namespace Myriad.Data
 {

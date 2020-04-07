@@ -758,4 +758,5 @@ function HandleShortcut(e) {
     if (!e.ctrlKey) return true; //Ctrl not pressed
     e.preventDefault();
     document.getElementById('searchField').focus();
+    return false;
 }
