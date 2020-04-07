@@ -6,32 +6,37 @@ using Myriad.Data;
 using Myriad.Parser;
 using Myriad.Library;
 
-namespace Myriad.Pages
+namespace Myriad.Formatter
 {
-    public class TextSection
+    public class TextSectionFormatter
     {
         List<string> paragraphs;
         readonly HTMLWriter writer;
         TextFormatter formatter;
         readonly PageParser parser;
+        readonly FigureFormatter figureFormatter;
         bool activeSet;
         Citation sourceCitation;
+        bool readingView;
         //todo cache sections?
-        public TextSection(HTMLWriter writer)
+        public TextSectionFormatter(HTMLWriter writer)
         {
             this.writer = writer;
             parser = new PageParser(writer);
+            figureFormatter = new FigureFormatter(writer);
         }
         public async Task AddReadingViewSection(int commentID)
         {
+
             throw new NotImplementedException();
             activeSet = false;
             //todo reading view
         }
 
-        public async Task AddTextSection(int commentID, Citation sourceCitation)
+        public async Task AddTextSection(int commentID, Citation sourceCitation, bool readingView)
         {
             activeSet = false;
+            this.readingView = readingView;
             this.sourceCitation = sourceCitation;
             List<(int start, int end)> idRanges = ReadLinks(commentID);
 
@@ -39,30 +44,42 @@ namespace Myriad.Pages
             paragraphs = ReadParagraphs(commentID);
             if (idRanges.Count > 1)
             {
+                await AppendTextHeader();
+                await writer.Append(HTMLTags.EndHeader);
+                await AppendFigures();
                 await AddTextTabs(idRanges, Ordinals.first);
+                await writer.Append(HTMLTags.EndDiv);
                 await AddScriptureTextToTabs(idRanges, Ordinals.first);
             }
-            else await AddSingleText(idRanges[Ordinals.first]);
+            else
+            {
+                await AppendTextHeader();
+                await AppendCitationReference(idRanges[Ordinals.first]);
+                await writer.Append(HTMLTags.EndHeader);
+                await AppendFigures(); 
+                await writer.Append(HTMLTags.EndDiv);
+                await AddScriptureText(idRanges[Ordinals.first]);
+            }
             await AddComment();
         }
 
-        private async Task AddSingleText((int start, int end) textRange)
+        private async Task AppendFigures()
         {
-            await writer.Append(HTMLTags.StartSectionWithClass+
-                HTMLClasses.scriptureSection+
-                HTMLTags.CloseQuoteEndTag+
-                HTMLTags.StartHeader);
-            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
-            Citation citation = new Citation(textRange.start, textRange.end);
-            await writer.Append(" (");
-            await CitationConverter.ToString(citation, writer);
-            await writer.Append(")"+
-                HTMLTags.EndHeader);
-            await AddScriptureText(citation);
+            if (!readingView) return;
+            await figureFormatter.GroupPictures(paragraphs);
         }
 
-        private async Task AddScriptureText(Citation citation)
+        private async Task AppendCitationReference((int start, int end) range)
         {
+            Citation citation = new Citation(range.start, range.end);
+            await writer.Append(" (");
+            await CitationConverter.ToString(citation, writer);
+            await writer.Append(")");
+        }
+
+        private async Task AddScriptureText((int start, int end) range)
+        {
+            Citation citation = new Citation(range.start, range.end);
             await writer.Append(HTMLTags.StartSectionWithClass+
                 HTMLClasses.scriptureText+
                 HTMLTags.CloseQuoteEndTag);
@@ -103,39 +120,34 @@ namespace Myriad.Pages
 
         private async Task AddTextTabs(List<(int start, int end)> idRanges, int index)
         {
-            await writer.Append(HTMLTags.StartSectionWithClass+
-                HTMLClasses.scriptureSection+
-                HTMLTags.CloseQuoteEndTag+
-                HTMLTags.StartHeader);
-            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
-            await writer.Append(HTMLTags.EndHeader+
-                HTMLTags.StartList+
-                HTMLTags.ID+
+            await writer.Append(
+                HTMLTags.StartList +
+                HTMLTags.ID +
                 HTMLClasses.tabs);
             await writer.Append(index);
-            await writer.Append(HTMLTags.Class+
-                HTMLClasses.tabs+
+            await writer.Append(HTMLTags.Class +
+                HTMLClasses.tabs +
                 HTMLTags.CloseQuoteEndTag);
             for (int i = Ordinals.first; i < idRanges.Count; i++)
             {
                 Citation range = new Citation(idRanges[i].start, idRanges[i].end);
-                await writer.Append(HTMLTags.StartListItem+
-                    HTMLTags.ID+
+                await writer.Append(HTMLTags.StartListItem +
+                    HTMLTags.ID +
                     HTMLClasses.tabs);
                 await writer.Append(index);
                 await writer.Append('-');
                 await writer.Append(i);
                 if ((!activeSet) && ((range.CitationRange.Contains(sourceCitation.CitationRange)) ||
-                    (sourceCitation.CitationRange.Contains(range.CitationRange)) || 
+                    (sourceCitation.CitationRange.Contains(range.CitationRange)) ||
                     (range.CitationRange.Book == sourceCitation.CitationRange.Book)))
                 {
-                    await writer.Append(HTMLTags.Class+
-                        HTMLClasses.active+
+                    await writer.Append(HTMLTags.Class +
+                        HTMLClasses.active +
                         HTMLTags.CloseQuote);
                     activeSet = true;
                 }
-                await writer.Append(HTMLTags.OnClick+
-                    JavaScriptFunctions.HandleTabClick+
+                await writer.Append(HTMLTags.OnClick +
+                    JavaScriptFunctions.HandleTabClick +
                     HTMLTags.EndTag);
                 await CitationConverter.ToString(range, writer);
                 await writer.Append(HTMLTags.EndListItem);
@@ -143,6 +155,22 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndList);
         }
 
+        private async Task AppendTextHeader()
+        {
+            await writer.Append(HTMLTags.StartDivWithClass +
+                HTMLClasses.marker +
+                HTMLTags.CloseQuoteEndTag);
+            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
+            await writer.Append(HTMLTags.EndDiv+
+                HTMLTags.StartSectionWithClass +
+                HTMLClasses.scriptureSection +
+                HTMLTags.CloseQuoteEndTag +
+                HTMLTags.StartDivWithClass +
+                HTMLClasses.scriptureHeader +
+                HTMLTags.CloseQuoteEndTag +
+                HTMLTags.StartHeader);
+            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
+        }
 
         private async Task AddScriptureTextToTabs(List<(int start, int end)> idRanges, int index)
         {
@@ -204,5 +232,6 @@ namespace Myriad.Pages
                 await parser.ParseParagraph(paragraphs[i], i);
             }
         }
+
     }
 }

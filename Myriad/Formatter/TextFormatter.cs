@@ -101,16 +101,37 @@ namespace Myriad.Parser
 
         private async Task AppendVerseNumber(Keyword keyword)
         {
+            await writer.Append(HTMLTags.StartSpanWithClass +
+                HTMLClasses.versenumber +
+                HTMLTags.CloseQuoteEndTag);
             var citation = new Citation(keyword.ID, keyword.ID)
             {
                 CitationType = CitationTypes.Verse
             };
+            if (keyword.Verse == 1)
+            {
+                await writer.Append(HTMLTags.StartSpanWithClass +
+                HTMLClasses.dropcap +
+                HTMLTags.CloseQuoteEndTag);
+            }
             await writer.Append(HTMLTags.StartBold);
-            PageFormatter.StartCitationAnchor(writer, citation);
-            await writer.Append(keyword.Verse);
-            await writer.Append(HTMLTags.EndAnchor);
-            await writer.Append(HTMLTags.EndBold);
-            await writer.Append(Symbol.space);
+            await PageFormatter.StartCitationAnchor(writer, citation);
+            if (keyword.Verse == 1)
+            {
+                await writer.Append(keyword.Chapter);
+            }
+            else
+            {
+                await writer.Append(keyword.Verse);
+            }
+            await writer.Append(HTMLTags.EndAnchor +
+                HTMLTags.EndBold+
+                HTMLTags.NonbreakingSpace+
+                HTMLTags.EndSpan);
+            if (keyword.Verse == 1)
+            {
+                await writer.Append(HTMLTags.EndSpan);
+            }
         }
 
         internal async Task AppendCitationData(Citation citation)

@@ -8,6 +8,7 @@ namespace Myriad.Library
     public struct HTMLClasses
     {
         internal const string scriptureSection = "scripture-section";
+        internal const string scriptureHeader = "scripture-header";
         internal const string scriptureText = "scripture-text";
         internal const string scriptureQuote = "scripture-quote";
         internal const string scriptureComment = "scripture-comment";
@@ -36,6 +37,11 @@ namespace Myriad.Library
         internal const string TOCContainer = "tocdiv";
         internal const string visible = "visible";
         internal const string clear = "clear";
+        internal const string marker = "marker";
+        internal const string versenumber = "versenumber";
+        internal const string dropcap = "dropcap";
+        internal const string landscape = "landscape";
+        internal const string portrait = "portrait";
     }
 
 }

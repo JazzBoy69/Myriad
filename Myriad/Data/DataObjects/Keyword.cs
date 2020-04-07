@@ -65,7 +65,7 @@ namespace Myriad.Data
 
         public int Chapter
         {
-            get { return id.Book; }
+            get { return id.Chapter; }
         }
 
         public int Verse

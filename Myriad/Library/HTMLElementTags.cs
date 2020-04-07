@@ -30,6 +30,7 @@ namespace Myriad.Library
         internal const string ID = " id=";
         internal const string HREF = " HREF=";
         internal const string StartFigureWithClass = "<figure class='";
+        internal const string StartFigure = "<figure>";
         internal const string StartImg = "<img src='";
         internal const string Width = " width='";
         internal const string EndTitle = "</title>";

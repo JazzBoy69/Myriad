@@ -40,7 +40,7 @@ namespace Myriad.Parser
         internal async static Task Append(HTMLWriter writer, Citation citation)
         {
             await writer.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
-            await writer.Append(" ");
+            await writer.Append(HTMLTags.NonbreakingSpace);
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
                 await writer.Append(citation.CitationRange.FirstChapter);
@@ -54,7 +54,7 @@ namespace Myriad.Parser
             {
                 if ((citation.CitationRange.FirstChapter == citation.CitationRange.LastChapter) &&
                     (citation.CitationRange.FirstVerse + 1 == citation.CitationRange.LastVerse))
-                    await writer.Append(", ");
+                    await writer.Append(","+HTMLTags.NonbreakingSpace);
                 else
                     await writer.Append("-");
                 if (!citation.CitationRange.OneChapter)
