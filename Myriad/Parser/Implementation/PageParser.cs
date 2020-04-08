@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using FelicianaHTML;
-using ResponseWriter;
+using Feliciana.HTML;
+using Feliciana.ResponseWriter;
 
 namespace Myriad.Parser
 {

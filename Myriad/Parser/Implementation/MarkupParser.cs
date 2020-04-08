@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FelicianaLibrary;
-using FelicianaHTML;
-using ResponseWriter;
+using Feliciana.Library;
+using Feliciana.HTML;
+using Feliciana.ResponseWriter;
 using Myriad.Library;
 using Myriad.CitationHandlers;
 using Myriad.Parser.Helpers;

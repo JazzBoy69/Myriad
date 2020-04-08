@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
-using FelicianaLibrary;
+using Feliciana.Library;
 
 namespace Myriad.Data.Implementation
 {
@@ -52,12 +52,7 @@ namespace Myriad.Data.Implementation
 
         };
 
-        internal static Dictionary<(DataOperation, int), System.Data.SqlDbType> parameterTypes = new Dictionary<(DataOperation, int), System.Data.SqlDbType>()
-        {
-
-        };
-
-        internal static Dictionary<DataOperation, string> Selectors = new Dictionary<DataOperation, string>()
+        internal static Dictionary<DataOperation, string> Commands = new Dictionary<DataOperation, string>()
         {
             { DataOperation.ReadNavigationPage,
                 "select text from navigationparagraphs where name="+

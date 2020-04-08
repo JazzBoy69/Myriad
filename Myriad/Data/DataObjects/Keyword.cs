@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
-using FelicianaLibrary;
+using Feliciana.Library;
 using Myriad.Library;
 
 namespace Myriad.Data

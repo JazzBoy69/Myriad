@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using FelicianaLibrary;
-using ResponseWriter;
+using Feliciana.Library;
+using Feliciana.ResponseWriter;
 using Myriad.Data;
 using Myriad.Parser;
 

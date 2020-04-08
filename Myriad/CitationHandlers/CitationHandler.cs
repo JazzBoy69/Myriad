@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using FelicianaLibrary;
+using Feliciana.Library;
 using Myriad.Library;
 using Myriad.CitationHandlers.Helpers;
 

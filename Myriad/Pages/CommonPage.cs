@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using FelicianaHTML;
-using ResponseWriter;
+using Feliciana.HTML;
+using Feliciana.ResponseWriter;
 using Myriad.Library;
 
 namespace Myriad.Pages

@@ -1,5 +1,5 @@
 ﻿using System;
-using FelicianaLibrary;
+using Feliciana.Library;
 
 namespace Myriad.Library
 {

@@ -2,7 +2,8 @@
 using BenchmarkDotNet.Running;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using FelicianaLibrary;
+using Feliciana.Library;
+using Feliciana.HTML;
 using Myriad.Pages;
 using Myriad.Library;
 using Myriad.CitationHandlers;
@@ -68,7 +69,7 @@ namespace Myriad.Benchmark
         public void GetImageFromFile()
         {
             string filename = "Ge0605.jpg";
-            ImageElement image = new Library.ImageElement(filename);
+            ImageElement image = new ImageElement(filename);
             for (int i = 0; i < 5; i++)
             {
                 image.GetDimensionsFromFile();

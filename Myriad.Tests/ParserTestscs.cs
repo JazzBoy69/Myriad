@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using ResponseWriter;
+using Feliciana.ResponseWriter;
 using Myriad.Parser;
 
 namespace Myriad.Tests

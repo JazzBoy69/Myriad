@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
-using FelicianaLibrary;
+using Feliciana.Library;
 
 namespace Myriad.Data.Implementation
 {
@@ -17,7 +17,7 @@ namespace Myriad.Data.Implementation
             this.operation = operation;
             connection = SqlServerInfo.Connection();
             connection.Open();
-            command = new SqlCommand(SqlServerInfo.Selectors[operation], connection);
+            command = new SqlCommand(SqlServerInfo.Commands[operation], connection);
             command.Parameters.AddWithValue(SqlServerInfo.parameterNames[(operation, Ordinals.first)], key);
         }
 
