@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Feliciana.Library;
 using Feliciana.HTML;
 using Feliciana.ResponseWriter;
+using Feliciana.Data;
 using Myriad.Parser;
 using Myriad.Library;
 using Myriad.Data;
@@ -100,7 +101,8 @@ namespace Myriad.Formatter
         }
         public List<(int start, int end)> ReadLinks(int commentID)
         {
-            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadCommentLinks,
+            var reader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadCommentLinks),
                 commentID);
             List<(int start, int end)> results = reader.GetData<int, int>();
             reader.Close();
@@ -108,7 +110,8 @@ namespace Myriad.Formatter
         }
         public List<Keyword> ReadKeywords(Citation citation)
         {
-            var reader = DataReaderProvider<int, int>.Reader(DataOperation.ReadKeywords,
+            var reader = new DataReaderProvider<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetClassData<Keyword>();
         }
@@ -116,7 +119,8 @@ namespace Myriad.Formatter
 
         public List<string> ReadParagraphs(int commentID)
         {
-            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadComment,
+            var reader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadComment),
                 commentID);
             var results = reader.GetData<string>();
             reader.Close();

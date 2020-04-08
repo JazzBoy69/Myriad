@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 using Feliciana.Library;
+using Feliciana.Data;
 
 namespace Myriad.Data
 {
@@ -20,24 +21,6 @@ namespace Myriad.Data
             this.text = text;
         }
 
-        public void AddParameterTo<DataType>(DataWriter<DataType> writer, int index) where DataType : DataObject
-        {
-            switch (index)
-            {
-                case Ordinals.first:
-                    writer.AddParameter<int>(index, id);
-                    break;
-                case Ordinals.second:
-                    writer.AddParameter<int>(index, this.index);
-                    break;
-                case Ordinals.third:
-                    writer.AddParameter<string>(index, text);
-                    break;
-                default:
-                    break;
-            }
-        }
-
         public void Create(DbCommand command)
         {
             throw new NotImplementedException();
@@ -46,6 +29,22 @@ namespace Myriad.Data
         public void Read(DbDataReader reader)
         {
             throw new NotImplementedException();
+        }
+
+        public object GetParameter(int index)
+        {
+            switch (index)
+            {
+                case Ordinals.first:
+                    return id;
+                case Ordinals.second:
+                    return this.index;
+                case Ordinals.third:
+                    return text;
+                default:
+                    break;
+            }
+            return null;
         }
     }
 }

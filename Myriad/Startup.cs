@@ -47,6 +47,7 @@ namespace Myriad
             });
             app.Run(async context =>
             {
+                //todo write change log
                 if (context.Request.Query.ContainsKey("toc"))
                 {
                     await HandleTOCRequest(context);

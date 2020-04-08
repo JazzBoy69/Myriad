@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Feliciana.Library;
 using Feliciana.HTML;
 using Feliciana.ResponseWriter;
+using Feliciana.Data;
 using Myriad.Parser;
 using Myriad.Data;
 using Myriad.Library;
@@ -81,7 +82,8 @@ SetupPartialPageLoad();
 
         private int GetPageID()
         {
-            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationID, name);
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNavigationID), name);
             int result = reader.GetDatum<int>();
             reader.Close();
             return result;
@@ -89,7 +91,8 @@ SetupPartialPageLoad();
 
         public List<string> GetPageParagraphs()
         {
-            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationPage, name);
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
             var results = reader.GetData<string>();
             reader.Close();
             return results;
@@ -97,7 +100,8 @@ SetupPartialPageLoad();
 
         protected override async Task WriteTitle(HTMLWriter writer)
         {
-            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationTitle, name);
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle), name);
             await writer.Append(reader.GetDatum<string>());
             reader.Close();
         }
@@ -141,7 +145,8 @@ SetupPartialPageLoad();
             await writer.Append(HTMLTags.Class);
             await writer.Append(HTMLClasses.visible);
             await writer.Append(HTMLTags.CloseQuoteEndTag);
-            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadNavigationTitle, "");
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle), "");
             for (int index = Ordinals.first; index < mainHeadingIndex; index++)
             {
                 reader.SetParameter(paragraphs[index]);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Feliciana.Library;
 using Feliciana.HTML;
 using Feliciana.ResponseWriter;
+using Feliciana.Data;
 using Myriad.Library;
 using Myriad.Data;
 using Myriad.Parser;
@@ -95,7 +96,8 @@ SetupPartialPageLoad();
 
         public override void SetupNextPage()
         {
-            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadNextCommentRange,
+            var reader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNextCommentRange),
                 citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();
             reader.Close();
@@ -104,7 +106,8 @@ SetupPartialPageLoad();
 
         public override void SetupPrecedingPage()
         {
-            var reader = DataReaderProvider<int>.Reader(DataOperation.ReadPrecedingCommentRange,
+            var reader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadPrecedingCommentRange),
                 citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();
             reader.Close();
@@ -119,7 +122,8 @@ SetupPartialPageLoad();
 
         private List<int> GetCommentIDs(Citation citation)
         {
-            var reader = DataReaderProvider<int, int>.Reader(DataOperation.ReadCommentIDs,
+            var reader = new DataReaderProvider<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
             return reader.GetData<int>();
         }

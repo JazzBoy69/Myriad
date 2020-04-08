@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Feliciana.Library;
 using Feliciana.ResponseWriter;
+using Feliciana.Data;
 using Myriad.Data;
 using Myriad.Parser;
 
@@ -67,7 +68,8 @@ namespace Myriad.Pages
         }
         public List<string> GetPageParagraphs()
         {
-            var reader = DataReaderProvider<string>.Reader(DataOperation.ReadArticle, id);
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadArticle), id);
             var results = reader.GetData<string>();
             reader.Close();
             return results;
@@ -77,8 +79,8 @@ namespace Myriad.Pages
             if (query.ContainsKey(queryKeyID))
             {
                 id = query[queryKeyID];
-                var titleReader = DataReaderProvider<string>.Reader(
-                    DataOperation.ReadArticleTitle, id);
+                var titleReader = new DataReaderProvider<string>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
                 title = titleReader.GetDatum<string>();
                 titleReader.Close();
                 return;
@@ -86,8 +88,8 @@ namespace Myriad.Pages
             if (query.ContainsKey(queryKeyTitle))
             {
                 title = query[queryKeyTitle];
-                var idReader = DataReaderProvider<string>.Reader(
-                    DataOperation.ReadArticleID, title);
+                var idReader = new DataReaderProvider<string>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
                 id = idReader.GetDatum<string>();
                 idReader.Close();
             }

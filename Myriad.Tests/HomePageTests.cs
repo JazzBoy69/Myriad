@@ -5,6 +5,7 @@ using System.IO;
 using NUnit.Framework;
 using Feliciana.Library;
 using Feliciana.ResponseWriter;
+using Feliciana.Data;
 using Myriad.Parser;
 using Myriad.Pages;
 using Myriad.Data;
@@ -65,7 +66,8 @@ namespace Myriad.Tests
         [Test]
         public void ReadEditParagraph()
         {
-            var reader = DataReaderProvider<int, int>.Reader(DataOperation.ReadNavigationParagraph,
+            var reader = new DataReaderProvider<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNavigationParagraph),
                 53, 7);
             string paragraph = reader.GetDatum<string>();
             ReadMarkupParagraphs();

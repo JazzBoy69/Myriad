@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Feliciana.ResponseWriter;
+using Feliciana.Data;
 using Myriad.Parser;
 using Myriad.Data;
 using Microsoft.Extensions.Primitives;
@@ -40,7 +41,7 @@ namespace Myriad.Pages
 
         private static void SendPlainTextParagraph(DataOperation operation, int articleID, int paragraphIndex, HttpResponse response)
         {
-            var reader = DataReaderProvider<int, int>.Reader(operation, articleID, paragraphIndex);
+            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(operation), articleID, paragraphIndex);
             response.WriteAsync(reader.GetDatum<string>());
         }
 
@@ -69,11 +70,8 @@ namespace Myriad.Pages
                     return;
             }
             ArticleParagraph articleParagraph = new ArticleParagraph(articleID, paragraphIndex, text);
-            var articleWriter = DataWriterProvider<ArticleParagraph>
-                .Writer(writeOperation);
-            articleWriter.BeginTransaction();
-            articleWriter.WriteData(articleParagraph);
-            articleWriter.Commit();
+            DataWriterProvider.WriteData(SqlServerInfo.GetCommand(writeOperation),
+                articleParagraph);
             MarkupParser parser = new MarkupParser(Writer.New(context.Response));
             parser.ParseParagraph(text, paragraphIndex);
         }

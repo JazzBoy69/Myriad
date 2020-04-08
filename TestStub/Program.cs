@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Myriad.Parser;
 using Myriad.Pages;
-using Myriad.Writer;
 using Myriad.Library;
 
 namespace TestStub
@@ -19,8 +18,6 @@ namespace TestStub
         {
             return new DefaultHttpContext().Response;
         }
-        List<string> paragraphs;
-        MarkupParser parser;
         async private void RunTest()
         {
             TextPage page = new TextPage();
@@ -29,10 +26,5 @@ namespace TestStub
             await page.RenderPage();
         }
 
-        private void InitializeParser()
-        {
-            parser = new MarkupParser(WriterReference.New());
-            paragraphs = new List<string>();
-        }
     }
 }

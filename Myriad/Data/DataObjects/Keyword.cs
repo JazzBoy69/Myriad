@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 using Feliciana.Library;
+using Feliciana.Data;
 using Myriad.Library;
 
 namespace Myriad.Data
@@ -33,7 +34,7 @@ namespace Myriad.Data
             throw new NotImplementedException();
         }
 
-        public void AddParameterTo<DataType>(DataWriter<DataType> writer, int index) where DataType : DataObject
+        public object GetParameter(int index)
         {
             throw new NotImplementedException();
         }
