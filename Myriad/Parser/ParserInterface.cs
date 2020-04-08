@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Myriad.Library;
-using Myriad.Paragraph;
+using FelicianaLibrary;
 
 namespace Myriad.Parser
 
@@ -27,7 +26,7 @@ namespace Myriad.Parser
         abstract public void SetEndHTML(string html);
         abstract public Task ParseParagraph(string paragraph, int index);
 
-        IMarkedUpParagraph CurrentParagraph { get; }
+        IParagraph CurrentParagraph { get; }
 
         StringRange MainRange { get; }
        

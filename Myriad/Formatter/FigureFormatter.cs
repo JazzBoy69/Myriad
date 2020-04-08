@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FelicianaLibrary;
 using Myriad.Library;
 
 namespace Myriad.Formatter
@@ -53,19 +54,12 @@ namespace Myriad.Formatter
         }
         private static ImageElement GetImageElement(string p)
         {
+
             string filename = p.Replace("[[", "").Replace("]]", "");
-            string path = System.IO.Path.Combine(ImageElement.pictureDirectory, filename);
-            if (File.Exists(path))
-            {
-                ImageElement result = new ImageElement(filename);
-                System.Drawing.Image img = System.Drawing.Image.FromFile(path);
-
-                result.Height = (double)img.Height;
-                result.Width = (double)img.Width;
-                return result;
-            }
-
-            return null;
+            ImageElement result = new ImageElement(filename);
+            return (result.Valid) ?
+                  result :
+                  null;
         }
 
         private async Task FigureElement(ImageElement imageElement1, ImageElement imageElement2)

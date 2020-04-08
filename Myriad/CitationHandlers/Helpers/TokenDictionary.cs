@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Myriad.Library;
+using FelicianaLibrary;
 
 namespace Myriad.CitationHandlers.Helpers
 {

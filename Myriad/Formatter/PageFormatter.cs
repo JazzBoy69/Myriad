@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Myriad.Paragraph;
+using FelicianaLibrary;
 using Myriad.Pages;
 using Myriad.Library;
+using Myriad.Parser.Helpers;
 
 namespace Myriad.Parser
 {
@@ -103,12 +104,12 @@ namespace Myriad.Parser
                 HTMLTags.CloseQuoteEndTag);
         }
 
-        internal async Task AppendString(IMarkedUpParagraph paragraph, StringRange range)
+        internal async Task AppendString(IParagraph paragraph, StringRange range)
         {
             await AppendString(paragraph, range.Start, range.End);
         }
 
-        internal async Task AppendString(IMarkedUpParagraph paragraph, int start, int end)
+        internal async Task AppendString(IParagraph paragraph, int start, int end)
         {
             if (start > end) return;
             await writer.Append(paragraph.SpanAt(start, end).ToString());
@@ -121,11 +122,11 @@ namespace Myriad.Parser
                 HTMLTags.StartSpanWithClass +
                 HTMLClasses.editparagraph +
                 HTMLTags.CloseQuote +
-                HTMLTags.Data_EditType);
+                HTMLClasses.Data_EditType);
             await writer.Append((int)info.type);
-            await writer.Append(HTMLTags.Data_ID);
+            await writer.Append(HTMLClasses.Data_ID);
             await writer.Append(info.ID);
-            await writer.Append(HTMLTags.Data_Index);
+            await writer.Append(HTMLClasses.Data_Index);
             await writer.Append(info.index);
             await writer.Append(HTMLTags.OnClick +
                 JavaScriptFunctions.EditParagraph +
@@ -189,7 +190,7 @@ namespace Myriad.Parser
         }
 
 
-        internal async Task AppendTag(IMarkedUpParagraph paragraph, StringRange labelRange, StringRange tagRange)
+        internal async Task AppendTag(IParagraph paragraph, StringRange labelRange, StringRange tagRange)
         {
             await writer.Append(HTMLTags.StartAnchorWithClass +
                 HTMLClasses.link +
@@ -226,7 +227,7 @@ namespace Myriad.Parser
             await writer.Append(stringToAppend);
         }
 
-        private async Task AppendStringAsLabel(IMarkedUpParagraph paragraph, StringRange range)
+        private async Task AppendStringAsLabel(IParagraph paragraph, StringRange range)
         {
             await writer.Append(paragraph.
                 StringAt(range.Start, range.End).Replace('_', ' '));
@@ -245,7 +246,7 @@ namespace Myriad.Parser
             }
         }
 
-        public async Task AppendCitationLabels(IMarkedUpParagraph paragraph, List<Citation> citations)
+        public async Task AppendCitationLabels(IParagraph paragraph, List<Citation> citations)
         {
             foreach (var citation in citations)
             {
@@ -253,7 +254,7 @@ namespace Myriad.Parser
             }
         }
 
-        internal async Task AppendCitationLabel(IMarkedUpParagraph paragraph, Citation citation)
+        internal async Task AppendCitationLabel(IParagraph paragraph, Citation citation)
         {
             if (citation.LeadingSymbols.Length > 0)
                 await writer.Append(paragraph.
@@ -265,20 +266,20 @@ namespace Myriad.Parser
                     SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
         }
 
-        public async Task AppendCitations(IMarkedUpParagraph paragraph, List<Citation> citations)
+        public async Task AppendCitations(IParagraph paragraph, List<Citation> citations)
         {
             foreach (var citation in citations)
             {
                 await AppendCitation(paragraph, citation);
             }
         }
-        internal async Task AppendCitationWithLabel(IMarkedUpParagraph paragraph, Citation citation)
+        internal async Task AppendCitationWithLabel(IParagraph paragraph, Citation citation)
         {
             await StartCitationAnchor(writer, citation);
             await writer.Append(paragraph.SpanAt(citation.DisplayLabel).ToString());
             await writer.Append(HTMLTags.EndAnchor);
         }
-        internal async Task AppendCitation(IMarkedUpParagraph paragraph, Citation citation)
+        internal async Task AppendCitation(IParagraph paragraph, Citation citation)
         {
             if (citation.LeadingSymbols.Length > 0)
                 await writer.Append(paragraph.
@@ -313,7 +314,8 @@ namespace Myriad.Parser
         }
         internal async Task AppendFigure(string par, Formats formats)
         {
-            await AppendFigure(new ImageElement(par));
+            string filename = par.Replace("[[", "").Replace("]]", "");
+            await AppendFigure(new ImageElement(filename));
             formats.figure = true;
             formats.editable = false;
         }
@@ -328,7 +330,7 @@ namespace Myriad.Parser
             await writer.Append(image.Path);
             await writer.Append(HTMLTags.CloseQuote+
                 HTMLTags.Width);
-            await writer.Append(ImageElement.WidthString);
+            await writer.Append("100%");
             await writer.Append(HTMLTags.CloseQuote+
                 HTMLTags.Class);
             await writer.Append(image.Class);

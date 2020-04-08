@@ -17,22 +17,32 @@ namespace Myriad.Library
         private bool valid = false;
 
         //TODO remove application specific file information; move to Feliciana library
-        public static string pictureDirectory = System.IO.Path.Combine(Directory.GetCurrentDirectory(),
+        private static string filesystemDirectory = System.IO.Path.Combine(Directory.GetCurrentDirectory(),
                 "wwwroot", "pictures");
-        public static string pictureSourceDirectory = "pictures";
+        private static string imgsrcDirectory = "pictures";
         string filename;
 
 
-        public ImageElement(string p)
+        public ImageElement(string filename)
         {
-            filename = p.Replace("[[", "").Replace("]]", "");
+            this.filename = filename;
+            string path = System.IO.Path.Combine(FileSystemDirectory(), filename);
+            this.path = System.IO.Path.Combine(ImgSrcDirectory(), filename);
             GetDimensionsFromFile();
+        }
+
+        protected virtual string FileSystemDirectory()
+        {
+            return filesystemDirectory;
+        }
+
+        protected virtual string ImgSrcDirectory()
+        {
+            return imgsrcDirectory;
         }
 
         public void GetDimensionsFromFile()
         {
-            string path = System.IO.Path.Combine(pictureDirectory, filename);
-            this.path = System.IO.Path.Combine(pictureSourceDirectory, filename);
             if (File.Exists(path))
             {
                 System.Drawing.Image img = System.Drawing.Image.FromFile(path);
@@ -66,7 +76,7 @@ namespace Myriad.Library
 
         public override string ToString()
         {
-            return "<img src=\"" + path + "\" width=\"" + string.Format("{0:F4}%", widthpercentage * 100) + "\" class="+Class+" />";
+            return "<img src='" + path + "' width='" + string.Format("{0:F4}%", widthpercentage * 100) + "' class="+Class+" />";
         }
 
 
@@ -84,35 +94,35 @@ namespace Myriad.Library
         {
             get
             {
-                return "<img src=\"" + path + "\" class=\"" + Class + "\" />";
+                return "<img src='" + path + "' class='" + Class + "' />";
             }
         }
         public string SiblingString
         {
             get
             {
-                return "<img src=\"" + path + "\" width=\"" + string.Format("{0:F4}%", widthpercentage * 100) +"\" class=\"" + Class + " sibling\" />";
+                return "<img src='" + path + "' width='" + string.Format("{0:F4}%", widthpercentage * 100) +"' class='" + Class + " sibling' />";
             }
         }
 		public string RightSiblingString
 		{
 			get
 			{
-				return "<img src=\"" + path + "\" width=\"" + string.Format("{0:F4}%", widthpercentage * 100) + "\" class=\"" + Class + " rightside sibling\" />";
+				return "<img src='" + path + "' width='" + string.Format("{0:F4}%", widthpercentage * 100) + "' class='" + Class + " rightside sibling' />";
 			}
 		}
 		public string LeftSiblingString
 		{
 			get
 			{
-				return "<img src=\"" + path + "\" width=\"" + string.Format("{0:F4}%", widthpercentage * 100) + "\" class=\"" + Class + " leftside sibling\" />";
+				return "<img src='" + path + "' width='" + string.Format("{0:F4}%", widthpercentage * 100) + "' class='" + Class + " leftside sibling' />";
 			}
 		}
 		public string OnlyChildString
         {
             get
             {
-                return "<img src=\"" + path + "\" class='" + Class + " single' width=100% />";
+                return "<img src='" + path + "' class='" + Class + " single' width=100% />";
             }
         }
 

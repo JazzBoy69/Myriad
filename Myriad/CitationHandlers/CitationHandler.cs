@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using FelicianaLibrary;
 using Myriad.Library;
-using Myriad.Paragraph;
 using Myriad.CitationHandlers.Helpers;
+
 
 
 namespace Myriad.CitationHandlers
@@ -18,7 +19,7 @@ namespace Myriad.CitationHandlers
         List<Citation> results;
         ReadOnlyStringRange rangeToParse;
         StringRange labelRange;
-        IMarkedUpParagraph paragraphToParse;
+        IParagraph paragraphToParse;
         bool first = true;
         int commaAt = Result.notfound;
         bool brokenComma = false;
@@ -54,7 +55,7 @@ namespace Myriad.CitationHandlers
                 return count;
             }
         }
-        public List<Citation> ParseCitations(StringRange givenRange, IMarkedUpParagraph givenParagraph)
+        public List<Citation> ParseCitations(StringRange givenRange, IParagraph givenParagraph)
         {
             InitializeParser(givenRange, givenParagraph);
             while (citation.Label.End <= rangeToParse.End)
@@ -222,7 +223,7 @@ namespace Myriad.CitationHandlers
             citation.Label.MoveEndTo(citation.Label.Start);
         }
 
-        public void InitializeParser(StringRange givenRange, IMarkedUpParagraph givenParagraph)
+        public void InitializeParser(StringRange givenRange, IParagraph givenParagraph)
         {
             rangeToParse = givenRange;
             paragraphToParse = givenParagraph;

@@ -42,6 +42,9 @@ namespace Myriad.Library
         internal const string dropcap = "dropcap";
         internal const string landscape = "landscape";
         internal const string portrait = "portrait";
+        internal const string Data_EditType = " data-edittype=";
+        internal const string Data_ID = " data-id=";
+        internal const string Data_Index = " data-index=";
     }
 
 }

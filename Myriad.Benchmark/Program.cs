@@ -1,12 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using System.Threading.Tasks;
-using Myriad;
 using Microsoft.AspNetCore.Http;
-using Myriad.Parser;
+using FelicianaLibrary;
 using Myriad.Pages;
 using Myriad.Library;
-using Myriad.Paragraph;
 using Myriad.CitationHandlers;
 
 
@@ -55,7 +53,10 @@ namespace Myriad.Benchmark
         {
             string textOfCitation = "({Mark 2:1|Mr 2:1!})";
             CitationHandler citationHandler = new CitationHandler();
-            IMarkedUpParagraph paragraph = ParagraphReference.New(textOfCitation);
+            IParagraph paragraph = new Paragraph()
+            {
+                Text = textOfCitation
+            };
             paragraph.Text = textOfCitation;
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(1);

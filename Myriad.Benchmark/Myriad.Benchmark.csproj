@@ -13,4 +13,10 @@
     <ProjectReference Include="..\Myriad\Myriad.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="FelicianaLibrary">
+      <HintPath>..\..\FelicianaLibrary\FelicianaLibrary\bin\Release\netcoreapp3.1\FelicianaLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

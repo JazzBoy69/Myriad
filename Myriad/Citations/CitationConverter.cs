@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using FelicianaLibrary;
 using Myriad.Library;
-using Myriad.Paragraph;
 using Myriad.CitationHandlers;
 
 namespace Myriad.Parser
@@ -11,7 +11,10 @@ namespace Myriad.Parser
         public static List<Citation> FromString(string stringToConvert)
         {
             var citationHandler = new QueryCitationHandler();
-            IMarkedUpParagraph paragraph = ParagraphReference.New(stringToConvert);
+            IParagraph paragraph = new Paragraph()
+            {
+                Text = stringToConvert
+            };
             StringRange mainRange = new StringRange();
             mainRange.MoveStartTo(Ordinals.first);
             mainRange.MoveEndTo(stringToConvert.Length-1);
@@ -82,7 +85,7 @@ namespace Myriad.Parser
             }
             else
             {
-                await writer.Append(", ");
+                await writer.Append(","+HTMLTags.NonbreakingSpace);
             }
             await writer.Append(currentCitation.CitationRange.FirstVerse);
             if (!currentCitation.CitationRange.IsOneVerse)

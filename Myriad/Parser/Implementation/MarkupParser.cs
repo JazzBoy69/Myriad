@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
+using FelicianaLibrary;
 using Myriad.Library;
-using Myriad.Paragraph;
 using Myriad.CitationHandlers;
 using Myriad.Parser.Helpers;
 
@@ -16,7 +16,7 @@ namespace Myriad.Parser
         protected string startHTML;
         protected string endHTML;
         protected int citationLevel = 0;
-        protected IMarkedUpParagraph currentParagraph;
+        protected IParagraph currentParagraph;
         protected StringRange mainRange = new StringRange();
         protected bool foundEndToken;
         protected int lastDash;
@@ -28,7 +28,7 @@ namespace Myriad.Parser
 
         readonly List<Citation> allCitations = new List<Citation>();
         readonly List<string> tags = new List<string>();
-        public IMarkedUpParagraph CurrentParagraph { get => currentParagraph; }
+        public IParagraph CurrentParagraph { get => currentParagraph; }
         public StringRange MainRange { get => mainRange; }
         public List<Citation> Citations => allCitations;
         public List<string> Tags => tags;
@@ -71,7 +71,10 @@ namespace Myriad.Parser
         {
             paragraphInfo.index = index;
             ResetCrossReferences();
-            currentParagraph = ParagraphReference.New(paragraph);
+            currentParagraph = new Paragraph()
+            {
+                Text = paragraph
+            };
             await ParseParagraph();
         }
         protected async Task ParseParagraph()
@@ -228,7 +231,11 @@ namespace Myriad.Parser
 
         public async Task ParseMainHeading(string paragraph)
         {
-            currentParagraph = ParagraphReference.New(paragraph);
+            currentParagraph = new Paragraph()
+            {
+                Text = paragraph
+            };
+
             await formatter.Append(HTMLTags.StartMainHeader);
             await formatter.AppendString(currentParagraph, Ordinals.third, currentParagraph.Length - 3);
             await formatter.Append(HTMLTags.EndMainHeader);
@@ -255,7 +262,7 @@ namespace Myriad.Parser
                 return;
             }
             if (citationLevel > Number.nothing)
-                HandleCitations();
+                await HandleCitations();
             await AppendTextUpToToken();
             if (longToken == Tokens.detail)
             {
@@ -446,10 +453,14 @@ namespace Myriad.Parser
         {
             mainRange.BumpEnd();
             while ((!mainRange.AtLimit) &&
-                (Symbols.IsPartOfWord(currentParagraph.CharAt(mainRange.End))))
+                (IsPartOfTag(currentParagraph.CharAt(mainRange.End))))
                 mainRange.BumpEnd();
         }
-
+        public static bool IsPartOfTag(char p)
+        {
+            if (((p >= 'A') && (p <= 'Z')) || ((p >= 'a') && (p <= 'z')) || (p == '\'') || (p == '`') || (p == '-') || (p == '_') || (p == '(') || (p == ')')) return true;
+            return false;
+        }
         public void SetStartHTML(string html)
         {
             startHTML = html;

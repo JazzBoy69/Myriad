@@ -1,4 +1,6 @@
-﻿namespace Myriad.Library
+﻿using FelicianaLibrary;
+
+namespace Myriad.Library
 {
     public enum CitationTypes
     {
