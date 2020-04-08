@@ -34,21 +34,25 @@ namespace Myriad.Library
         {
             get
             {
-                var citation = new Citation(-1, -1, -1);
-                citation.CitationType = CitationTypes.Invalid;
+                var citation = new Citation(-1, -1, -1)
+                {
+                    CitationType = CitationTypes.Invalid
+                };
                 return citation;
             }
         }
 
         internal Citation Copy()
         {
-            Citation newCitation = new Citation();
-            newCitation.Label = new StringRange(Label.Start, Label.End);
-            newCitation.CitationRange = new CitationRange(CitationRange.StartID,
-                CitationRange.EndID);
-            newCitation.CitationType = CitationType;
-            newCitation.LeadingSymbols = new StringRange(LeadingSymbols.Start, LeadingSymbols.End);
-            newCitation.TrailingSymbols = new StringRange(TrailingSymbols.Start, TrailingSymbols.End);
+            Citation newCitation = new Citation
+            {
+                Label = new StringRange(Label.Start, Label.End),
+                CitationRange = new CitationRange(CitationRange.StartID,
+                CitationRange.EndID),
+                CitationType = CitationType,
+                LeadingSymbols = new StringRange(LeadingSymbols.Start, LeadingSymbols.End),
+                TrailingSymbols = new StringRange(TrailingSymbols.Start, TrailingSymbols.End)
+            };
             return newCitation;
         }
 

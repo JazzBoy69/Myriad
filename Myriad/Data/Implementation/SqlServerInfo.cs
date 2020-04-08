@@ -142,6 +142,6 @@ namespace Myriad.Data.Implementation
         {
             return new SqlConnection(ConnectionString);
         }
-        static string ConnectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
+        static readonly string ConnectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
     }
 }

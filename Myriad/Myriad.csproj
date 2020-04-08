@@ -22,6 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="FelicianaHTML">
+      <HintPath>..\..\FelicianaHTML\FelicianaHTML\bin\Release\netcoreapp3.1\FelicianaHTML.dll</HintPath>
+    </Reference>
     <Reference Include="FelicianaLibrary">
       <HintPath>..\..\FelicianaLibrary\FelicianaLibrary\bin\Release\netcoreapp3.1\FelicianaLibrary.dll</HintPath>
     </Reference>

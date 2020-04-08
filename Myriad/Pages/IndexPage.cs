@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
 using FelicianaLibrary;
+using FelicianaHTML;
 using Myriad.Parser;
 using Myriad.Data;
 using Myriad.Library;

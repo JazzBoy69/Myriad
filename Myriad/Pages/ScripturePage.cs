@@ -20,8 +20,10 @@ namespace Myriad.Pages
         {
             if (!int.TryParse(query[queryKeyStart], out int start)) start = Result.notfound;
             if (!int.TryParse(query[queryKeyEnd], out int end)) end = Result.notfound;
-            citation = new Citation(start, end);
-            citation.CitationType = GetCitationType();
+            citation = new Citation(start, end)
+            {
+                CitationType = GetCitationType()
+            };
         }
         protected abstract CitationTypes GetCitationType();
 

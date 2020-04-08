@@ -62,7 +62,7 @@ namespace Myriad.Pages
         {
             var paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
-            Parse(paragraphs);
+            await Parse(paragraphs);
             await AddPageTitleData(writer);
         }
         public List<string> GetPageParagraphs()
@@ -99,7 +99,7 @@ namespace Myriad.Pages
             return (title != null) && (int.TryParse(id, out int result));
         }
 
-        public void Parse(List<string> paragraphs)
+        public async Task Parse(List<string> paragraphs)
         {
             bool foundFirstHeading = false;
             parser.SetParagraphInfo(ParagraphType.Article, idNumber);
@@ -110,15 +110,15 @@ namespace Myriad.Pages
                     if ((paragraphs[i].Length > Number.nothing) &&
                         (paragraphs[i][Ordinals.first] == '='))
                     {
-                        parser.ParseMainHeading(paragraphs[i]);
+                        await parser.ParseMainHeading(paragraphs[i]);
 
                         foundFirstHeading = true;
                     }
                     continue;
                 }
-                parser.ParseParagraph(paragraphs[i], i);
+                await parser.ParseParagraph(paragraphs[i], i);
             }
-            parser.EndComments();
+            await parser.EndComments();
         }
 
         public override Task AddTOC(HTMLWriter writer)

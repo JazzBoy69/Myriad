@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Text;
 using FelicianaLibrary;
+using FelicianaHTML;
 using Myriad.Library;
 using Myriad.CitationHandlers;
 using Myriad.Parser.Helpers;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FelicianaLibrary;
+using FelicianaHTML;
 using Myriad.Library;
 using Myriad.Data;
 using Myriad.Parser;

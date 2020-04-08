@@ -8,9 +8,9 @@ namespace Myriad.Data
 {
     public class ArticleParagraph : DataObject
     {
-        int id;
-        int index;
-        string text;
+        private readonly int id;
+        private readonly int index;
+        private readonly string text;
         public int ParameterCount => 3;
 
         public ArticleParagraph(int id, int index, string text)

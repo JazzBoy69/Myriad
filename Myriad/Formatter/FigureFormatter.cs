@@ -3,13 +3,14 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FelicianaLibrary;
+using FelicianaHTML;
 using Myriad.Library;
 
 namespace Myriad.Formatter
 {
     public class FigureFormatter
     {
-        private HTMLWriter writer;
+        private readonly HTMLWriter writer;
 
         public FigureFormatter(HTMLWriter writer)
         {
