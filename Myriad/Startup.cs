@@ -9,10 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Hosting;
 using FelicianaLibrary;
+using ResponseWriter;
 using Myriad.Library;
 using Myriad.Pages;
 using Myriad.Parser;
-using Myriad.Writer;
 
 namespace Myriad
 {
@@ -78,7 +78,7 @@ namespace Myriad
         {
             CommonPage partialPage = RequestedPage(context);
             await partialPage.LoadTOCInfo();
-            await partialPage.AddTOC(WriterReference.New(context.Response));
+            await partialPage.AddTOC(Writer.New(context.Response));
         }
 
         private async Task HandlePartialRequest(HttpContext context)
@@ -88,17 +88,17 @@ namespace Myriad
             {
                 ScripturePage scripturePage = (ScripturePage)partialPage;
                 scripturePage.SetupNextPage();
-                await scripturePage.RenderBody(WriterReference.New(context.Response));
+                await scripturePage.RenderBody(Writer.New(context.Response));
                 return;
             }
             if (context.Request.Query.ContainsKey("preceding"))
             {
                 ScripturePage scripturePage = (ScripturePage)partialPage;
                 scripturePage.SetupPrecedingPage();
-                await scripturePage.RenderBody(WriterReference.New(context.Response));
+                await scripturePage.RenderBody(Writer.New(context.Response));
                 return;
             }
-            await partialPage.RenderBody(WriterReference.New(context.Response));
+            await partialPage.RenderBody(Writer.New(context.Response));
             return;
         }
 

@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using FelicianaLibrary;
 using FelicianaHTML;
+using ResponseWriter;
 using Myriad.Library;
 using Myriad.Data;
 using Myriad.Parser;
-using Myriad.Writer;
 using Myriad.Formatter;
 
 namespace Myriad.Pages
@@ -90,7 +90,7 @@ SetupPartialPageLoad();
         async internal void RenderMainPane(int startID, int endID)
         {
             citation = new Citation(startID, endID);
-            await RenderBody(WriterReference.New(response));
+            await RenderBody(Writer.New(response));
         }
 
         public override void SetupNextPage()

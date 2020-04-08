@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using System.Text;
 using NUnit.Framework;
 using FelicianaLibrary;
+using FelicianaHTML;
+using ResponseWriter;
 using Myriad.Parser;
 using Myriad.Library;
-using Myriad.Writer;
 using Myriad.CitationHandlers;
 
 namespace Myriad.Tests
@@ -40,7 +41,7 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.SimpleCitation)[Ordinals.first];
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.SimpleCitation.Replace(" ", "&nbsp;"), citationText);
@@ -51,7 +52,7 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.CommaCitation)[Ordinals.first];
-            var writer = WriterReference.New(); 
+            var writer = Writer.New(); 
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.CommaCitation.Replace(" ", HTMLTags.NonbreakingSpace), citationText);
@@ -62,7 +63,7 @@ namespace Myriad.Tests
         {
             string citationText;
             List<Citation> citations = CitationConverter.FromString(Citations.BrokenCommaCitation);
-            var writer = WriterReference.New(); 
+            var writer = Writer.New(); 
             await CitationConverter.ToString(citations, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.BrokenCommaCitationResult, citationText);
@@ -73,12 +74,12 @@ namespace Myriad.Tests
         {
             string citationText;
             List<Citation> citations = CitationConverter.FromString(Citations.FullNameCitation);
-            var writer = WriterReference.New(); 
+            var writer = Writer.New(); 
             await CitationConverter.ToString(citations, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.NumberedBookCitationResult, citationText);
             citations = CitationConverter.FromString(Citations.SongOfSolomon);
-            writer = WriterReference.New();
+            writer = Writer.New();
             await CitationConverter.ToString(citations, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.SongOfSolomonResult, citationText);
@@ -89,11 +90,11 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.ChapterCitation)[Ordinals.first];
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(CitationTypes.Chapter, citation.CitationType);
-            HTMLWriter builder = WriterReference.New();
+            HTMLWriter builder = Writer.New();
             IParagraph paragraph = new Paragraph()
             {
                 Text = citationText
@@ -112,7 +113,7 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.NumberedBookCitation)[Ordinals.first];
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.NumberedBookCitationResult, citationText);
@@ -123,7 +124,7 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.ShortBookCitation)[Ordinals.first];
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.ShortBookCitation.Replace(" ", HTMLTags.NonbreakingSpace), citationText);
@@ -134,7 +135,7 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.ShortBookCommaCitation)[Ordinals.first];
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.ShortBookCommaCitation.Replace(" ", HTMLTags.NonbreakingSpace), citationText);
@@ -145,7 +146,7 @@ namespace Myriad.Tests
         {
             string citationText;
             List<Citation> citations = CitationConverter.FromString(Citations.ShortBookBrokenCitation);
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citations, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.ShortBookBrokenCitation.Replace(" ", HTMLTags.NonbreakingSpace), citationText);
@@ -156,11 +157,11 @@ namespace Myriad.Tests
         {
             string citationText;
             List<Citation> citation = CitationConverter.FromString(Citations.MultipleCitations);
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.MultipleCitationsResult, citationText);
-            HTMLWriter builder = WriterReference.New();
+            HTMLWriter builder = Writer.New();
             IParagraph paragraph = new Paragraph()
             {
                 Text = citationText
@@ -179,7 +180,7 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.RangeCitation)[Ordinals.first];
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.AreEqual(Citations.RangeCitation.Replace(" ", HTMLTags.NonbreakingSpace), citationText);
@@ -190,7 +191,7 @@ namespace Myriad.Tests
         {
             string citationText;
             Citation citation = CitationConverter.FromString(Citations.BangCitation)[Ordinals.first];
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await CitationConverter.ToString(citation, writer);
             citationText = writer.Response();
             Assert.That(citation.CitationType == CitationTypes.Verse);

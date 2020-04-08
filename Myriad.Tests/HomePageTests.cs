@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using NUnit.Framework;
 using FelicianaLibrary;
+using ResponseWriter;
 using Myriad.Parser;
 using Myriad.Pages;
 using Myriad.Data;
-using Myriad.Writer;
 using System;
 
 namespace Myriad.Tests
@@ -37,7 +37,7 @@ namespace Myriad.Tests
 
             IndexPage page = new IndexPage();
 
-            var writer = WriterReference.New();
+            var writer = Writer.New();
             await page.RenderBody(writer);
             string correctResult = "";
             using (StreamReader fs = new StreamReader(directory + name + "HTML.txt"))

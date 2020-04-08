@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using FelicianaHTML;
+using ResponseWriter;
 using Myriad.Library;
-using Myriad.Writer;
 
 namespace Myriad.Pages
 {
@@ -28,7 +28,7 @@ namespace Myriad.Pages
         public abstract string GetURL();
         async public Task RenderPage()
         {
-            var writer = WriterReference.New(response);
+            var writer = Writer.New(response);
             await WriteHeader(writer);
             await RenderBody(writer);
             await AddPageTitleData(writer);

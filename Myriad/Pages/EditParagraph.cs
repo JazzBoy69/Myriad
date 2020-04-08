@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Threading.Tasks;
+using ResponseWriter;
 using Myriad.Parser;
-using Myriad.Writer;
 using Myriad.Data;
 using Microsoft.Extensions.Primitives;
 
@@ -73,7 +74,7 @@ namespace Myriad.Pages
             articleWriter.BeginTransaction();
             articleWriter.WriteData(articleParagraph);
             articleWriter.Commit();
-            MarkupParser parser = new MarkupParser(WriterReference.New(context.Response));
+            MarkupParser parser = new MarkupParser(Writer.New(context.Response));
             parser.ParseParagraph(text, paragraphIndex);
         }
     }

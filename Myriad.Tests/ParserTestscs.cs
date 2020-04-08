@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using System.Text;
+using ResponseWriter;
 using Myriad.Parser;
-using Myriad.Writer;
 
 namespace Myriad.Tests
 {
@@ -29,7 +28,7 @@ namespace Myriad.Tests
         }
         private void InitializeParser()
         {
-            parser = new MarkupParser(WriterReference.New());
+            parser = new MarkupParser(Writer.New());
             paragraphs = new List<string>();
         }
 
