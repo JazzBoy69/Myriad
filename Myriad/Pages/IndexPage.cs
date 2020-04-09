@@ -91,19 +91,35 @@ SetupPartialPageLoad();
 
         public List<string> GetPageParagraphs()
         {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
-            var results = reader.GetData<string>();
-            reader.Close();
-            return results;
+            try
+            {
+                var reader = new DataReaderProvider<string>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
+                var results = reader.GetData<string>();
+                reader.Close();
+                return results;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
         }
 
         protected override async Task WriteTitle(HTMLWriter writer)
         {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle), name);
-            await writer.Append(reader.GetDatum<string>());
-            reader.Close();
+            try
+            {
+                var command = SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle);
+                var reader = new DataReaderProvider<string>(command, name);
+                await writer.Append(reader.GetDatum<string>());
+                reader.Close();
+                command.Connection.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         protected override string PageScripts()

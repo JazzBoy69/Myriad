@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Feliciana.Library;
 using Feliciana.HTML;
@@ -110,7 +111,6 @@ SetupPartialPageLoad();
                 SqlServerInfo.GetCommand(DataOperation.ReadPrecedingCommentRange),
                 citation.CitationRange.EndID);
             (int start, int end) = reader.GetDatum<int, int>();
-            reader.Close();
             citation = new Citation(start, end);
         }
 
