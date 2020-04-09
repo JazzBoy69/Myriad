@@ -12,6 +12,8 @@ namespace Myriad.Library
         internal const string scriptureText = "scripture-text";
         internal const string scriptureQuote = "scripture-quote";
         internal const string scriptureComment = "scripture-comment";
+        internal const string scriptureCommentHeader = "scripture-comment-header";
+        internal const string readingVerse = "readingverse";
         internal const string hidden = "hidden";
         internal const string active = "active";
         internal const string rangeData = " rangedata";
@@ -45,6 +47,7 @@ namespace Myriad.Library
         internal const string Data_EditType = " data-edittype=";
         internal const string Data_ID = " data-id=";
         internal const string Data_Index = " data-index=";
+        internal const string pageUrl = "pageUrlData";
     }
 
 }

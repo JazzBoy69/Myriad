@@ -48,5 +48,10 @@ namespace Myriad.Pages
         {
             throw new NotImplementedException();
         }
+
+        public override string GetQueryInfo()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

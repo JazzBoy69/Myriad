@@ -19,12 +19,12 @@ namespace Myriad.Parser
             this.writer = writer;
         }
 
-        public async Task AppendKeywords(List<Keyword> keywords)
+        public async Task AppendKeywords(List<Keyword> keywords, bool readingView)
         {
-            await AppendFirstWord(keywords);
+            await AppendFirstWord(keywords, readingView);
             for (int index = Ordinals.second; index < keywords.Count; index++)
             {
-                await AppendKeyword(keywords[index]);
+                await AppendKeyword(keywords[index], readingView);
                 if ((keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound)
                     && (poetic))
                 {
@@ -42,11 +42,11 @@ namespace Myriad.Parser
             }
         }
 
-        private async Task AppendKeyword(Keyword keyword)
+        private async Task AppendKeyword(Keyword keyword, bool readingView)
         {
             if (keyword.WordIndex == Ordinals.first)
             {
-                await AppendVerseNumber(keyword);
+                await AppendVerseNumber(keyword, readingView);
             }
             if (keyword.IsPoetic != poetic)
             {
@@ -66,7 +66,7 @@ namespace Myriad.Parser
             await AppendTextOfKeyword(keyword);
         }
 
-        private async Task<bool> AppendFirstWord(List<Keyword> keywords)
+        private async Task<bool> AppendFirstWord(List<Keyword> keywords, bool readingView)
         {
             poetic = keywords[Ordinals.first].IsPoetic;
             if (poetic)
@@ -79,7 +79,7 @@ namespace Myriad.Parser
             {
                 await writer.Append(HTMLTags.StartParagraph);
             }
-            await AppendVerseNumber(keywords[Ordinals.first]);
+            await AppendVerseNumber(keywords[Ordinals.first], readingView);
             if (keywords[Ordinals.first].WordIndex != Ordinals.first)
             {
                 await writer.Append(Symbol.ellipsis);
@@ -103,21 +103,33 @@ namespace Myriad.Parser
             await writer.Append(keyword.TrailingSymbols.ToString());
         }
 
-        private async Task AppendVerseNumber(Keyword keyword)
+        private async Task AppendVerseNumber(Keyword keyword, bool readingView)
         {
             await writer.Append(HTMLTags.StartSpanWithClass +
-                HTMLClasses.versenumber +
-                HTMLTags.CloseQuoteEndTag);
-            var citation = new Citation(keyword.ID, keyword.ID)
-            {
-                CitationType = CitationTypes.Verse
-            };
+                HTMLClasses.versenumber);
             if (keyword.Verse == 1)
             {
-                await writer.Append(HTMLTags.StartSpanWithClass +
+                await writer.Append(Symbol.space +
                 HTMLClasses.dropcap +
                 HTMLTags.CloseQuoteEndTag);
             }
+            else
+            if (readingView)
+            {
+                await writer.Append(Symbol.space + HTMLClasses.readingVerse
+                    + HTMLTags.CloseQuoteEndTag);
+            }
+            else
+            {
+                await writer.Append(HTMLTags.CloseQuoteEndTag);
+            }
+            var citation = new Citation(keyword.ID, keyword.ID);
+            if (readingView)
+                citation.CitationType = CitationTypes.Text;
+            else
+                citation.CitationType = CitationTypes.Verse;
+
+
             await writer.Append(HTMLTags.StartBold);
             await PageFormatter.StartCitationAnchor(writer, citation);
             if (keyword.Verse == 1)

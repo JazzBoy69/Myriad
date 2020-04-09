@@ -39,6 +39,7 @@ SetupPartialPageLoad();
         int ID;
         public IndexPage() 
         {
+            
         }
         public override void LoadQueryInfo(IQueryCollection query)
         {
@@ -55,13 +56,14 @@ SetupPartialPageLoad();
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             await Parse();
             await AddPageTitleData(writer);
+            await AddPageHistory(writer);
         }
 
         private async Task Parse()
         {
             bool foundFirstHeading = false;
-            parser.SetStartHTML(HTMLTags.StartSectionWithClass + HTMLClasses.comment + HTMLTags.CloseQuoteEndTag);
-            parser.SetEndHTML(HTMLTags.EndSection);
+            parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment + HTMLTags.CloseQuoteEndTag);
+            parser.SetEndHTML(HTMLTags.EndParagraph);
             for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {
                 if (!foundFirstHeading)
@@ -187,6 +189,11 @@ SetupPartialPageLoad();
             }
             reader.Close();
             await writer.Append(HTMLTags.EndList);
+        }
+
+        public override string GetQueryInfo()
+        {
+            return HTMLTags.StartQuery + nameQuery + name;
         }
     }
 }

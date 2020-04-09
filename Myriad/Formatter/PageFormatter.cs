@@ -340,8 +340,7 @@ namespace Myriad.Parser
                 HTMLTags.OnClick+
                 JavaScriptFunctions.OpenModalPicture+
                 HTMLTags.EndSingleTag+
-                HTMLTags.EndFigure+
-                HTMLTags.EndSection);
+                HTMLTags.EndFigure);
         }
     }
 }

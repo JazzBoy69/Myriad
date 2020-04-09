@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Feliciana.Library;
+using Feliciana.HTML;
 using Feliciana.ResponseWriter;
 using Feliciana.Data;
 using Myriad.Data;
@@ -131,6 +132,11 @@ namespace Myriad.Pages
         public override Task LoadTOCInfo()
         {
             throw new NotImplementedException();
+        }
+
+        public override string GetQueryInfo()
+        {
+            return HTMLTags.StartQuery + queryKeyID + id;
         }
     }
 }

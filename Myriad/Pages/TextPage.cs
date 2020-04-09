@@ -79,7 +79,7 @@ SetupPartialPageLoad();
                 await writer.Append(HTMLTags.EndMainHeader);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
-                    await textSection.AddReadingViewSection(commentIDs[i]);
+                    await textSection.AddTextSection(commentIDs[i], citation, readingView);
                 }
             }
             else
@@ -87,6 +87,7 @@ SetupPartialPageLoad();
                 await textSection.AddTextSection(commentIDs[Ordinals.first], citation, readingView);
             }
             await AddPageTitleData(writer);
+            await AddPageHistory(writer);
         }
 
         async internal void RenderMainPane(int startID, int endID)
@@ -137,5 +138,6 @@ SetupPartialPageLoad();
         {
             throw new System.NotImplementedException();
         }
+
     }
 }

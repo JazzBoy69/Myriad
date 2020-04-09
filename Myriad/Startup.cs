@@ -100,7 +100,6 @@ namespace Myriad
                 return;
             }
             await partialPage.RenderBody(Writer.New(context.Response));
-            return;
         }
 
         private CommonPage RequestedPage(HttpContext context)

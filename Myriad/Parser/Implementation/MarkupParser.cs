@@ -405,7 +405,7 @@ namespace Myriad.Parser
         {
             foundEndToken = true;
             //todo handle closing for special tokens?
-            await formatter.Append(HTMLTags.EndSection);
+            //await formatter.Append(HTMLTags.EndSection);
         }
 
         public async Task HandleLastDashCitations()

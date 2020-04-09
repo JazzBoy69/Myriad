@@ -1,11 +1,15 @@
 function SetupPartialPageLoad() {
+    var pageURL = document.getElementById('pageUrlData');
+    if (pageURL !== null) {
+        history.replaceState(null, null, pageURL.innerText);
+    }
     window.onpopstate = function (event) {
         LoadHistoryPage(document.location.href);
     }
 }
 
 function HandleLink(event) {
-    history.replaceState(null, null, event.target.href);
+    //history.replaceState(null, null, event.target.href);
     event.preventDefault(); 
     LoadPage(event.target.href);
 }
@@ -30,13 +34,13 @@ function LoadIndexPane(path) {
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
-            history.pushState(null, null, path);
+            history.pushState(null, null, CurrentPath());
             SetTitle();
         });
 }
 
 function LoadTOC() {
-    path = AddQueryToPath(CurrentPath() + document.location.search, 'toc=1');
+    path = AddQueryToPath(CurrentPath(), 'toc=1');
     postAjax(path, {},
         function (data) {
             var toc = document.getElementById('tocdiv');
@@ -65,10 +69,10 @@ function LoadMainPaneHistory(path) {
 function LoadMainPane(path) {
     postAjax(path, {},
         function (data) {
-            history.replaceState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
+            //history.replaceState(null, null, CurrentPath());
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
-            history.pushState(null, null, AddQueryToPath(CurrentPath(), GetRangeQuery()));
+            history.pushState(null, null, CurrentPath());
             SetTitle();
         });
 }
@@ -81,10 +85,14 @@ function AddQueryToPath(path, query) {
 }
 
 function CurrentPath() {
+    var pageURL = document.getElementById('pageUrlData');
+    if (pageURL !== null) {
+        return pageURL.innerText;
+    }
     if ((document.location.pathname === '/') || (document.location.pathname === '/Index')) {
         return '/Index';
     }
-    return document.location.pathname;
+    return document.location.pathname + document.location.search;
 }
 
 function HasQuery(path) {
@@ -714,7 +722,7 @@ function GoToPreceding() {
 }
 
 function TurnPage(direction) {
-    var path = AddQueryToPath(CurrentPath(), GetRangeQuery());
+    var path = CurrentPath();
     path = AddQueryToPath(path, direction + '=true');
     LoadPage(path);
 }

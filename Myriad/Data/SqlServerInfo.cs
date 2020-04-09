@@ -51,7 +51,7 @@ namespace Myriad.Data
              { DataOperation.UpdateArticleParagraph,
                  "update glossary set text=@key3 where id=@key1 and paragraphindex=@key2"},
              { DataOperation.ReadCommentIDs,
-                 "select id from commentlinks where originalword = 0 and last>=@key1 and start<=@key2"},
+                 "select id from commentlinks where originalword = 0 and last>=@key1 and start<=@key2 order by start"},
              {DataOperation.ReadNextCommentRange,
                  "select start, last from commentlinks where start>@key1 and originalword=0 order by start" },
              {DataOperation.ReadPrecedingCommentRange,

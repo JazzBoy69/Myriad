@@ -14,14 +14,13 @@ namespace Myriad.Parser
         {
             citationLevel = 0;
             formats.Reset();
-            await AddHTMLBeforeParagraph();
             if (currentParagraph.Length > 1)
             {
                 foundEndToken = await HandleStartToken();
             }
             if (!formats.heading && !formats.figure)
             {
-                await formatter.Append(HTMLTags.StartParagraph);
+                await AddHTMLBeforeParagraph();
                 if (formats.editable)
                 {
                     await formatter.StartEditSpan(paragraphInfo);
@@ -40,13 +39,7 @@ namespace Myriad.Parser
                 mainRange.BumpEnd();
             }
             await formatter.AppendString(currentParagraph, mainRange);
-
             await HandleEditParagraphSpan();
-
-            if (formats.heading)
-                await formatter.Append(HTMLTags.EndHeader);
-            else
-                await formatter.Append(HTMLTags.EndParagraph);
             await AddHTMLAfterParagraph();
         }
         private async Task HandleEditParagraphSpan()
@@ -58,9 +51,14 @@ namespace Myriad.Parser
         }
         protected override async Task AddHTMLAfterParagraph()
         {
+            if (formats.heading)
+            {
+                await formatter.Append(HTMLTags.EndHeader);
+                return;
+            }
             if (!formats.sidenote)
             {
-                await formatter.Append(HTMLTags.EndSection);
+                await formatter.Append(endHTML);
                 await formatter.AppendClearDiv();
             }
         }

@@ -22,23 +22,14 @@ namespace Myriad.Formatter
         bool activeSet;
         Citation sourceCitation;
         bool readingView;
-        //todo cache sections?
+
         public TextSectionFormatter(HTMLWriter writer)
         {
             this.writer = writer;
             parser = new PageParser(writer);
             figureFormatter = new FigureFormatter(writer);
         }
-        public async Task AddReadingViewSection(int commentID)
-        {
 
-            throw new NotImplementedException();
-            activeSet = false;
-            //todo reading view
-        }
-
-
-        //todo make information object
         public async Task AddTextSection(int commentID, Citation sourceCitation, bool readingView)
         {
             activeSet = false;
@@ -95,7 +86,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithClass+
                 HTMLClasses.scriptureQuote+
                 HTMLTags.CloseQuoteEndTag);
-            await formatter.AppendKeywords(keywords);
+            await formatter.AppendKeywords(keywords, readingView);
             await writer.Append(HTMLTags.EndDiv+
                 HTMLTags.EndSection);
         }
@@ -135,8 +126,12 @@ namespace Myriad.Formatter
                 HTMLClasses.tabs);
             await writer.Append(index);
             await writer.Append(HTMLTags.Class +
-                HTMLClasses.tabs +
-                HTMLTags.CloseQuoteEndTag);
+                HTMLClasses.tabs);
+            if (readingView)
+            {
+                await writer.Append(Symbol.space+HTMLClasses.hidden);
+            }
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
             for (int i = Ordinals.first; i < idRanges.Count; i++)
             {
                 Citation range = new Citation(idRanges[i].start, idRanges[i].end);
@@ -170,14 +165,23 @@ namespace Myriad.Formatter
                 HTMLClasses.marker +
                 HTMLTags.CloseQuoteEndTag);
             await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
-            await writer.Append(HTMLTags.EndDiv+
+            await writer.Append(HTMLTags.EndDiv +
                 HTMLTags.StartSectionWithClass +
                 HTMLClasses.scriptureSection +
                 HTMLTags.CloseQuoteEndTag +
                 HTMLTags.StartDivWithClass +
                 HTMLClasses.scriptureHeader +
-                HTMLTags.CloseQuoteEndTag +
-                HTMLTags.StartHeader);
+                HTMLTags.CloseQuoteEndTag);
+            if (readingView)
+            {
+                await writer.Append(HTMLTags.StartHeaderWithClass +
+                HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag);
+            }
+            else
+            {
+                await writer.Append(HTMLTags.StartHeader);
+            }
             await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
         }
 
@@ -225,7 +229,7 @@ namespace Myriad.Formatter
                 await writer.Append(HTMLTags.StartDivWithClass+
                     HTMLClasses.scriptureQuote+
                     HTMLTags.CloseQuoteEndTag);
-                await formatter.AppendKeywords(keywords);
+                await formatter.AppendKeywords(keywords, readingView);
                 await writer.Append(HTMLTags.EndDiv+
                     HTMLTags.EndSection+
                     HTMLTags.EndListItem);
@@ -234,13 +238,37 @@ namespace Myriad.Formatter
         }
         private async Task AddComment()
         {
-            parser.SetStartHTML(HTMLTags.StartSectionWithClass+ HTMLClasses.scriptureComment+ HTMLTags.CloseQuoteEndTag);
-            parser.SetEndHTML(HTMLTags.EndSection + HTMLTags.EndSection);
+            await AddCommentHeading();
+            await writer.Append(HTMLTags.StartSectionWithClass +
+                HTMLClasses.scriptureComment);
+            if (readingView)
+            {
+                await writer.Append(Symbol.space + HTMLClasses.hidden);
+            }
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
+                HTMLTags.CloseQuoteEndTag);
+            parser.SetEndHTML(HTMLTags.EndParagraph);
             for (int i = Ordinals.second; i < paragraphs.Count; i++)
             {
                 await parser.ParseParagraph(paragraphs[i], i);
             }
+            await writer.Append(HTMLTags.EndSection + HTMLTags.EndSection);
         }
 
+        private async Task AddCommentHeading()
+        {
+            if (!readingView) return;
+            await writer.Append(
+                HTMLTags.StartDivWithClass +
+                HTMLClasses.scriptureCommentHeader +
+                Symbol.space+
+                HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag +
+                HTMLTags.StartHeader);
+            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
+            await writer.Append(HTMLTags.EndHeader +
+                HTMLTags.EndDiv);
+        }
     }
 }

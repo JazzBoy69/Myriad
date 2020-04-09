@@ -23,6 +23,7 @@ namespace Myriad.Pages
         }
 
         public abstract void LoadQueryInfo(IQueryCollection query);
+        public abstract string GetQueryInfo();
 
         public abstract bool IsValid();
         public abstract string GetURL();
@@ -31,7 +32,7 @@ namespace Myriad.Pages
             var writer = Writer.New(response);
             await WriteHeader(writer);
             await RenderBody(writer);
-            await AddPageTitleData(writer);
+            await AddPageHistory(writer);
             await writer.Append(LayoutHTML.close);
             await writer.Append(LayoutHTML.tocdiv);
             await writer.Append(LayoutHTML.modalOverlay);
@@ -39,6 +40,19 @@ namespace Myriad.Pages
             await AddPageScripts();
             await writer.Append(LayoutHTML.endofBody);
         }
+
+        protected async Task AddPageHistory(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID);
+            await writer.Append(HTMLClasses.pageUrl);
+            await writer.Append(HTMLTags.CloseQuote);
+            await writer.Append(HTMLTags.Class);
+            await writer.Append(HTMLClasses.hidden);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(GetURL() + GetQueryInfo());
+            await writer.Append(HTMLTags.EndDiv);
+        }
+
         public async Task WriteHeader(HTMLWriter writer)
         {
             await writer.Append(LayoutHTML.startOfPage);
