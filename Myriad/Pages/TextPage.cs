@@ -134,7 +134,7 @@ SetupPartialPageLoad();
             throw new System.NotImplementedException();
         }
 
-        public override Task LoadTOCInfo()
+        public override void LoadTOCInfo()
         {
             throw new System.NotImplementedException();
         }

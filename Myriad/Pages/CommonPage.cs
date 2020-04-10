@@ -86,6 +86,6 @@ namespace Myriad.Pages
 
         public abstract Task AddTOC(HTMLWriter writer);
 
-        public abstract Task LoadTOCInfo();
+        public abstract void LoadTOCInfo();
     }
 }

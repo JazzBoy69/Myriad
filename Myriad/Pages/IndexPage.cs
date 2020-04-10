@@ -93,35 +93,20 @@ SetupPartialPageLoad();
 
         public List<string> GetPageParagraphs()
         {
-            try
-            {
-                var reader = new DataReaderProvider<string>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
-                var results = reader.GetData<string>();
-                reader.Close();
-                return results;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return null;
-            }
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
+            var results = reader.GetData<string>();
+            reader.Close();
+            return results;
         }
 
         protected override async Task WriteTitle(HTMLWriter writer)
         {
-            try
-            {
-                var command = SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle);
-                var reader = new DataReaderProvider<string>(command, name);
-                await writer.Append(reader.GetDatum<string>());
-                reader.Close();
-                command.Connection.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            var command = SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle);
+            var reader = new DataReaderProvider<string>(command, name);
+            await writer.Append(reader.GetDatum<string>());
+            reader.Close();
+            command.Connection.Close();
         }
 
         protected override string PageScripts()
@@ -139,22 +124,6 @@ SetupPartialPageLoad();
             return true;
         }
 
-        public async override Task LoadTOCInfo()
-        {
-            await Task.Run(() =>
-            {
-                paragraphs = GetPageParagraphs();
-                for (int index = Ordinals.first; index < paragraphs.Count; index++)
-                {
-                    if ((paragraphs[index].Length > Number.nothing) &&
-                        (paragraphs[index][Ordinals.first] == '='))
-                    {
-                        mainHeadingIndex = index;
-                        break;
-                    }
-                }
-            });
-        }
         public async override Task AddTOC(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartList);
@@ -169,7 +138,7 @@ SetupPartialPageLoad();
             {
                 reader.SetParameter(paragraphs[index]);
                 string title = reader.GetDatum<string>();
-                if (title == null) title = paragraphs[index];
+                if (string.IsNullOrEmpty(title)) title = paragraphs[index];
                 await writer.Append(HTMLTags.StartListItem);
                 await writer.Append(HTMLTags.EndTag);
                 await writer.Append(HTMLTags.StartAnchor);
@@ -194,6 +163,20 @@ SetupPartialPageLoad();
         public override string GetQueryInfo()
         {
             return HTMLTags.StartQuery + nameQuery + name;
+        }
+
+        public override void LoadTOCInfo()
+        {
+            paragraphs = GetPageParagraphs();
+            for (int index = Ordinals.first; index < paragraphs.Count; index++)
+            {
+                if ((paragraphs[index].Length > Number.nothing) &&
+                    (paragraphs[index][Ordinals.first] == '='))
+                {
+                    mainHeadingIndex = index;
+                    break;
+                }
+            }
         }
     }
 }
