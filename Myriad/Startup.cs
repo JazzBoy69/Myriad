@@ -61,12 +61,12 @@ namespace Myriad
                 string path = context.Request.Path;
                 if (path == EditParagraph.getDataURL)
                 {
-                    EditParagraph.GetPlainText(context);
+                    await EditParagraph.GetPlainText(context);
                     return;
                 }
                 if (path == EditParagraph.setDataURL)
                 {
-                    EditParagraph.SetText(context);
+                    await EditParagraph.SetText(context);
                     return;
                 }
                 CommonPage page = RequestedPage(context);

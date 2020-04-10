@@ -7,6 +7,7 @@ using Feliciana.HTML;
 using Feliciana.ResponseWriter;
 using Feliciana.Data;
 using Myriad.Data;
+using Myriad.Library;
 using Myriad.Parser;
 
 namespace Myriad.Pages
@@ -17,16 +18,11 @@ namespace Myriad.Pages
         public const string ArticleScripts = @"{
 <script>
    window.onload = function () {
-    shortcut.add('Ctrl+F10', function () {
-         document.getElementById('searchField').focus();
-    });
-    CreateTableOfContents('#comments');
+    AddShortcut();
     SetupIndex();
+    SetupPartialPageLoad();
     HandleHiddenDetails();
-	SetupOverlay();
-    SetupModalPictures();
     SetupSuppressedParagraphs();
-    SetupEditParagraph();
     ScrollToTarget();
     });
 </script>";
@@ -34,13 +30,12 @@ namespace Myriad.Pages
     public class ArticlePage : CommonPage
     {
         public const string pageURL = "/Article";
-        public const string queryKeyTitle = "Title=";
-        public const string queryKeyID = "ID=";
+        public const string queryKeyTitle = "Title";
+        public const string queryKeyID = "ID";
         PageParser parser;
 
         string title;
-        string id;
-        int idNumber;
+        int id = Result.error;
 
         //todo implement article page
         public ArticlePage()
@@ -64,14 +59,22 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
-            var paragraphs = GetPageParagraphs();
-            parser = new PageParser(writer);
-            await Parse(paragraphs);
-            await AddPageTitleData(writer);
+            try
+            {
+                var paragraphs = GetPageParagraphs();
+                parser = new PageParser(writer);
+                await Parse(paragraphs);
+                await AddPageTitleData(writer);
+                await AddPageHistory(writer);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
         public List<string> GetPageParagraphs()
         {
-            var reader = new DataReaderProvider<string>(
+            var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticle), id);
             var results = reader.GetData<string>();
             reader.Close();
@@ -79,48 +82,47 @@ namespace Myriad.Pages
         }
         public override void LoadQueryInfo(IQueryCollection query)
         {
-            if (query.ContainsKey(queryKeyID))
+            try
             {
-                id = query[queryKeyID];
-                var titleReader = new DataReaderProvider<string>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
-                title = titleReader.GetDatum<string>();
-                titleReader.Close();
-                return;
+                string idstring;
+                if (query.ContainsKey(queryKeyID))
+                {
+                    idstring = query[queryKeyID];
+                    id = Numbers.Convert(idstring);
+                    var titleReader = new DataReaderProvider<int>(
+                        SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
+                    title = titleReader.GetDatum<string>();
+                    titleReader.Close();
+                    return;
+                }
+                if (query.ContainsKey(queryKeyTitle))
+                {
+                    title = query[queryKeyTitle];
+                    var idReader = new DataReaderProvider<string>(
+                        SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
+                    id = idReader.GetDatum<int>();
+                    idReader.Close();
+                }
             }
-            if (query.ContainsKey(queryKeyTitle))
+            catch (Exception ex)
             {
-                title = query[queryKeyTitle];
-                var idReader = new DataReaderProvider<string>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
-                id = idReader.GetDatum<string>();
-                idReader.Close();
+                Console.WriteLine(ex.ToString());
             }
-            idNumber = Numbers.Convert(id);
         }
 
         public override bool IsValid()
         {
-            return (title != null) && (int.TryParse(id, out int result));
+            return (title != null) && (id != Result.error);
         }
 
         public async Task Parse(List<string> paragraphs)
         {
-            bool foundFirstHeading = false;
-            parser.SetParagraphInfo(ParagraphType.Article, idNumber);
+            parser.SetParagraphInfo(ParagraphType.Article, id);
+            parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
+                HTMLTags.CloseQuoteEndTag);
+            parser.SetEndHTML(HTMLTags.EndParagraph);
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
-                if (!foundFirstHeading)
-                {
-                    if ((paragraphs[i].Length > Number.nothing) &&
-                        (paragraphs[i][Ordinals.first] == '='))
-                    {
-                        await parser.ParseMainHeading(paragraphs[i]);
-
-                        foundFirstHeading = true;
-                    }
-                    continue;
-                }
                 await parser.ParseParagraph(paragraphs[i], i);
             }
             await parser.EndComments();
@@ -138,7 +140,7 @@ namespace Myriad.Pages
 
         public override string GetQueryInfo()
         {
-            return HTMLTags.StartQuery + queryKeyID + id;
+            return HTMLTags.StartQuery + queryKeyID + '=' + id;
         }
     }
 }

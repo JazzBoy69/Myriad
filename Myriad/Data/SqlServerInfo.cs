@@ -48,6 +48,8 @@ namespace Myriad.Data
                  "select id from tags where title=@key1"},
              { DataOperation.ReadArticleParagraph,
                  "select text from glossary where id=@key1 and paragraphindex=@key2"},
+            { DataOperation.ReadArticle,
+                "select text from glossary where id=@key1 order by paragraphindex" },
              { DataOperation.UpdateArticleParagraph,
                  "update glossary set text=@key3 where id=@key1 and paragraphindex=@key2"},
              { DataOperation.ReadCommentIDs,

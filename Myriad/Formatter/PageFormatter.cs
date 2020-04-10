@@ -200,7 +200,7 @@ namespace Myriad.Parser
                 HTMLTags.HREF +
                 ArticlePage.pageURL +
                 HTMLTags.StartQuery +
-                ArticlePage.queryKeyTitle);
+                ArticlePage.queryKeyTitle+'=');
             await writer.Append(paragraph.
                 StringAt(tagRange).Replace(' ', '+').
                 Replace('[', '(').Replace(']', ')'));
