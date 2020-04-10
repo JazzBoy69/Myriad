@@ -24,7 +24,6 @@ namespace Myriad.Pages
     HandleHiddenDetails();
     SetupSuppressedParagraphs();
     ScrollToTarget();
-    });
 </script>";
     }
     public class ArticlePage : CommonPage
@@ -33,11 +32,10 @@ namespace Myriad.Pages
         public const string queryKeyTitle = "Title";
         public const string queryKeyID = "ID";
         PageParser parser;
+        List<string> headings;
 
         string title;
         int id = Result.error;
-
-        //todo implement article page
         public ArticlePage()
         {
         }
@@ -59,19 +57,21 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
-            try
-            {
-                var paragraphs = GetPageParagraphs();
-                parser = new PageParser(writer);
-                await Parse(paragraphs);
-                await AddPageTitleData(writer);
-                await AddPageHistory(writer);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            var paragraphs = GetPageParagraphs();
+            parser = new PageParser(writer);
+            await AddMainHeading(writer);
+            await Parse(paragraphs);
+            await AddPageTitleData(writer);
+            await AddPageHistory(writer);
         }
+
+        private async Task AddMainHeading(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartMainHeader);
+            await WriteTitle(writer);
+            await writer.Append(HTMLTags.EndMainHeader);
+        }
+
         public List<string> GetPageParagraphs()
         {
             var reader = new DataReaderProvider<int>(
@@ -82,31 +82,31 @@ namespace Myriad.Pages
         }
         public override void LoadQueryInfo(IQueryCollection query)
         {
-            try
+            string idstring;
+            if ((query.ContainsKey(queryKeyID)) && (query.ContainsKey(queryKeyTitle)))
             {
-                string idstring;
-                if (query.ContainsKey(queryKeyID))
-                {
-                    idstring = query[queryKeyID];
-                    id = Numbers.Convert(idstring);
-                    var titleReader = new DataReaderProvider<int>(
-                        SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
-                    title = titleReader.GetDatum<string>();
-                    titleReader.Close();
-                    return;
-                }
-                if (query.ContainsKey(queryKeyTitle))
-                {
-                    title = query[queryKeyTitle];
-                    var idReader = new DataReaderProvider<string>(
-                        SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
-                    id = idReader.GetDatum<int>();
-                    idReader.Close();
-                }
+                idstring = query[queryKeyID];
+                id = Numbers.Convert(idstring);
+                title = query[queryKeyTitle];
+                return;
             }
-            catch (Exception ex)
+            if (query.ContainsKey(queryKeyID))
             {
-                Console.WriteLine(ex.ToString());
+                idstring = query[queryKeyID];
+                id = Numbers.Convert(idstring);
+                var titleReader = new DataReaderProvider<int>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
+                title = titleReader.GetDatum<string>();
+                titleReader.Close();
+                return;
+            }
+            if (query.ContainsKey(queryKeyTitle))
+            {
+                title = query[queryKeyTitle];
+                var idReader = new DataReaderProvider<string>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
+                id = idReader.GetDatum<int>();
+                idReader.Close();
             }
         }
 
@@ -128,14 +128,44 @@ namespace Myriad.Pages
             await parser.EndComments();
         }
 
-        public override Task AddTOC(HTMLWriter writer)
+        public override async Task AddTOC(HTMLWriter writer)
         {
-            throw new NotImplementedException();
+            await writer.Append(HTMLTags.StartList);
+            await writer.Append(HTMLTags.ID);
+            await writer.Append(HTMLClasses.toc);
+            await writer.Append(HTMLTags.Class);
+            await writer.Append(HTMLClasses.visible);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            for (int index = Ordinals.first; index < headings.Count; index++)
+            {
+                await writer.Append(HTMLTags.StartListItem);
+                await writer.Append(HTMLTags.EndTag);
+                await writer.Append(HTMLTags.StartAnchor);
+                await writer.Append(HTMLTags.HREF);
+                await writer.Append("#header");
+                await writer.Append(index);
+                await writer.Append(HTMLTags.OnClick);
+                await writer.Append(JavaScriptFunctions.HandleTOCClick);
+                await writer.Append(HTMLTags.EndTag);
+                await writer.Append(headings[index]);
+                await writer.Append(HTMLTags.EndAnchor);
+                await writer.Append(HTMLTags.EndListItem);
+            }
+            await writer.Append(HTMLTags.EndList);
         }
 
         public override void LoadTOCInfo()
         {
-            throw new NotImplementedException();
+            var paragraphs = GetPageParagraphs();
+            headings = new List<string>();
+            for (int index = Ordinals.first; index < paragraphs.Count; index++)
+            {
+                if ((paragraphs[index].Length > Number.nothing) &&
+                    (paragraphs[index][Ordinals.first] == '='))
+                {
+                    headings.Add(paragraphs[index].Replace("==", ""));
+                }
+            }
         }
 
         public override string GetQueryInfo()

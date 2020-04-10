@@ -27,7 +27,13 @@ function LoadPage(path) {
 function HandleTOCClick(event) {
     event.preventDefault();
     showHideMenu();
-    LoadIndexPane(event.target.href);
+    var path = event.target.href;
+    var hash = path.indexOf('#');
+    if (hash !== -1) {
+        ScrollToHeading(path.substr(hash+1));
+        return;
+    }
+    LoadIndexPane(path);
 }
 
 function LoadIndexPane(path) {
@@ -313,28 +319,12 @@ function showHideMenu() {
     return true;
 }
 
-function ScrollToHeading() {
-    var locationPath = filterPath(location.pathname);
-    var scrollElem = scrollableElement('html', 'body');
-
-    $('a[href*=#]').each(function () {
-        var thisPath = filterPath(this.pathname) || locationPath;
-        if (locationPath === thisPath
-            && (location.hostname === this.hostname || !this.hostname)
-            && this.hash.replace(/#/, '')) {
-            var $target = $(this.hash), target = this.hash;
-            if (target) {
-                $(this).click(function (event) {
-                    showHideMenu();
-                    var $t = $(this.hash), target = this.hash;
-                    var targetOffset = $t.offset().top;
-                    event.preventDefault();
-                    var h = $('header').height() + 20;
-                    $(scrollElem).animate({ scrollTop: targetOffset - h }, 600); 
-                });
-            }
-        }
-    });
+function ScrollToHeading(path) {
+    var header =
+        document.getElementById(path);
+    var targetOffset = header.offsetTop;
+    var h = document.getElementsByTagName('header')[0].offsetHeight;
+    window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
 }
 
 function ScrollToMarker() {
@@ -573,8 +563,8 @@ function HandleScriptureHeaderClicks() {
     RemoveClassFromGroup(commentheaders, 'hidden');
     event.target.parentNode.classList.add('hidden');
     var mark = event.target.closest('.scripture-section').getElementsByClassName('scripture-comment')[0];
-    var targetOffset = mark.offsetTop-15;
-    var h = document.getElementsByTagName('header')[0].offsetHeight + 40;
+    var targetOffset = mark.offsetTop;
+    var h = document.getElementsByTagName('header')[0].offsetHeight+40;
     window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
 }
 
@@ -591,8 +581,8 @@ function HandleCommentHeaderClicks() {
     var section = event.target.closest('.scripture-section');
     var header = section.getElementsByClassName('scripture-header')[0];
     header.classList.add('visible');
-    var targetOffset = header.offsetTop - 15;
-    var h = document.getElementsByTagName('header')[0].offsetHeight + 40;
+    var targetOffset = header.offsetTop;
+    var h = document.getElementsByTagName('header')[0].offsetHeight;
     window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
 }
 

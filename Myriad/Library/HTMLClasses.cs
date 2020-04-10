@@ -48,6 +48,7 @@ namespace Myriad.Library
         internal const string Data_ID = " data-id=";
         internal const string Data_Index = " data-index=";
         internal const string pageUrl = "pageUrlData";
+        internal const string headerid = "header";
     }
 
 }

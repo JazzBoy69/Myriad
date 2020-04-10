@@ -26,6 +26,7 @@ namespace Myriad.Parser
         readonly CitationHandler citationHandler;
         readonly StringRange labelRange = new StringRange();
         protected ParagraphInfo paragraphInfo;
+        int headerCount = Number.nothing;
 
         readonly List<Citation> allCitations = new List<Citation>();
         readonly List<string> tags = new List<string>();
@@ -177,7 +178,10 @@ namespace Myriad.Parser
             {
                 formats.editable = false;
                 formats.heading = true;
-                await formatter.Append(HTMLTags.StartHeader);
+                await formatter.Append(HTMLTags.StartHeaderWithID+HTMLClasses.headerid);
+                await formatter.Append(headerCount.ToString());
+                await formatter.Append(HTMLTags.EndTag);
+                headerCount++;
                 mainRange.BumpStart();
                 mainRange.BumpStart();
                 return false;
