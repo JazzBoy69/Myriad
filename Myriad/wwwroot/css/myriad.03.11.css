@@ -51,6 +51,10 @@ rt {
 /* SPECIAL CLASSES */
 .invalid {color:red;}
 .versenumber a{font-weight :600;}
+.readingverse.versenumber a {font-size:1rem; font-weight:400;}
+.scripture-header h3{display:none;}
+.scripture-header.visible h3{display:inherit;}
+.scripture-header.visible figure{display:none}
 #ellipsis {max-height: 1.5rem;position: absolute;top: 5rem;right: 20rem;opacity:.5;}
 
 #modal-image-box {
@@ -302,8 +306,8 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 .scripture ul.tab li{display:none;}
 .scripture ul.tab li.active{display:block;}
 /*SCRIPTURE SECTION TABS*/
-.scripture-section ul.tabs.hidden{display:none;}
-.scripture-section ul.tabs{background:none;vertical-align:top;border-bottom:1px solid #d3d3d3;display:inline-block;}
+.scripture-section .scripture-header ul.tabs{display:none;}
+.scripture-section .scripture-header.visible ul.tabs{background:none;vertical-align:top;border-bottom:1px solid #d3d3d3;display:inline-block;}
 .scripture-section ul.tabs li{padding:.4em 5px 0;background:none;background-color:whiteSmoke;font-size:.75em;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #d3d3d3;border-right:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;margin:.1em 0 0;height:28px;float:left;cursor:pointer;}
 .scripture-section ul.tabs li + li{border-left:0px;}
 .scripture-section ul.tabs li:last-child{border-bottom:0;}
@@ -498,7 +502,7 @@ body{text-rendering:optimizeSpeed;}
 /*HORIZONTAL SPACING */
 article{width:20rem;padding-left:1em;font-size:1rem;}
 .readingverse {position:relative;left:0rem;display:none;}
-.readingverse.visible{display:inline;}
+.readingverse.visible{display:inline;font-weight:600;}
 figure.portrait, figure.square, .sidenote{float:none;width:16rem; border-left:none;}
 figure.portrait, figure.square{padding-left: 0;}
 .sidenote.crossrefs{width:18rem;}

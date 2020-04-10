@@ -404,7 +404,6 @@ namespace Myriad.Parser
         protected async Task HandleEndToken()
         {
             foundEndToken = true;
-            //todo handle closing for special tokens?
         }
 
         public async Task HandleLastDashCitations()

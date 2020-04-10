@@ -79,12 +79,12 @@ SetupPartialPageLoad();
                 await writer.Append(HTMLTags.EndMainHeader);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
-                    await textSection.AddTextSection(commentIDs[i], citation, readingView);
+                    await textSection.AddTextSection(commentIDs, i, citation, readingView);
                 }
             }
             else
             {
-                await textSection.AddTextSection(commentIDs[Ordinals.first], citation, readingView);
+                await textSection.AddTextSection(commentIDs, Ordinals.first, citation, readingView);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
