@@ -13,7 +13,7 @@ namespace Myriad.Pages
     {
         internal static string getDataURL = "/EditParagraph/GetData";
         internal static string setDataURL = "/EditParagraph/SetData";
-        internal static void GetPlainText(HttpContext context)
+        internal static async Task GetPlainText(HttpContext context)
         {
             context.Request.Form.TryGetValue("edittype", out var editType);
             ParagraphType paragraphType = (ParagraphType)Convert.ToInt32(editType);
@@ -24,13 +24,13 @@ namespace Myriad.Pages
             switch (paragraphType)
             {
                 case ParagraphType.Article:
-                    SendPlainTextParagraph(DataOperation.ReadArticleParagraph, articleID, paragraphIndex, context.Response);
+                    await SendPlainTextParagraph(DataOperation.ReadArticleParagraph, articleID, paragraphIndex, context.Response);
                     break;
                 case ParagraphType.Comment:
-                    SendPlainTextParagraph(DataOperation.ReadCommentParagraph, articleID, paragraphIndex, context.Response);
+                    await SendPlainTextParagraph(DataOperation.ReadCommentParagraph, articleID, paragraphIndex, context.Response);
                     break;
                 case ParagraphType.Navigation:
-                    SendPlainTextParagraph(DataOperation.ReadNavigationParagraph, articleID, paragraphIndex, context.Response);
+                    await SendPlainTextParagraph(DataOperation.ReadNavigationParagraph, articleID, paragraphIndex, context.Response);
                     break;
                 case ParagraphType.Undefined:
                     break;
@@ -39,13 +39,13 @@ namespace Myriad.Pages
             }
         }
 
-        private static void SendPlainTextParagraph(DataOperation operation, int articleID, int paragraphIndex, HttpResponse response)
+        private static async Task SendPlainTextParagraph(DataOperation operation, int articleID, int paragraphIndex, HttpResponse response)
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(operation), articleID, paragraphIndex);
-            response.WriteAsync(reader.GetDatum<string>());
+            await response.WriteAsync(reader.GetDatum<string>());
         }
 
-        internal static void SetText(HttpContext context)
+        internal static async Task SetText(HttpContext context)
         {
             context.Request.Form.TryGetValue("edittype", out var editType);
             ParagraphType paragraphType = (ParagraphType)Convert.ToInt32(editType);
@@ -73,7 +73,7 @@ namespace Myriad.Pages
             DataWriterProvider.WriteData(SqlServerInfo.GetCommand(writeOperation),
                 articleParagraph);
             MarkupParser parser = new MarkupParser(Writer.New(context.Response));
-            parser.ParseParagraph(text, paragraphIndex);
+            await parser.ParseParagraph(text, paragraphIndex);
         }
     }
 }

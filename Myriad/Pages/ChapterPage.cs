@@ -8,6 +8,8 @@ namespace Myriad.Pages
     public class ChapterPage : ScripturePage
     {
         public const string pageURL = "/Chapter";
+
+        //todo implement chapter page
         internal ChapterPage()
         {
         }

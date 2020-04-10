@@ -8,6 +8,7 @@ namespace Myriad.Pages
     public class SearchPage : CommonPage
     {
         public const string pageURL = "/Search";
+        //todo implement search page
         public override string GetURL()
         {
             throw new NotImplementedException();

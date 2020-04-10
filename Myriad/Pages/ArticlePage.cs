@@ -41,6 +41,8 @@ namespace Myriad.Pages
         string title;
         string id;
         int idNumber;
+
+        //todo implement article page
         public ArticlePage()
         {
         }

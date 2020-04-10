@@ -9,7 +9,6 @@ namespace Myriad.Pages
         internal static ChapterPage chapterPage = new ChapterPage();
         internal static TextPage textPage = new TextPage();
         internal static VersePage versePage = new VersePage();
-        internal static ScriptureErrorPage errorPage = new ScriptureErrorPage();
 
         internal static Dictionary<CitationTypes, string> URLs = new Dictionary<CitationTypes, string>()
         {

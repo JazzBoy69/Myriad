@@ -9,6 +9,8 @@ namespace Myriad.Pages
     public class VersePage : ScripturePage
     {
         public const string pageURL = "/Verse";
+
+        //todo implement verse page
         public override string GetURL()
         {
             return pageURL;
