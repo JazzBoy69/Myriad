@@ -78,7 +78,7 @@ namespace Myriad
         public async Task HandleTOCRequest(HttpContext context)
         {
             CommonPage partialPage = RequestedPage(context);
-            partialPage.LoadTOCInfo();
+            partialPage.LoadTOCInfo(context);
             await partialPage.AddTOC(Writer.New(context.Response));
         }
 

@@ -45,7 +45,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void LoadTOCInfo()
+        public override void LoadTOCInfo(HttpContext context)
         {
             throw new NotImplementedException();
         }

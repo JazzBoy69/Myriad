@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Feliciana.ResponseWriter;
 using Myriad.Library;
 
@@ -55,7 +56,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void LoadTOCInfo()
+        public override void LoadTOCInfo(HttpContext context)
         {
             throw new NotImplementedException();
         }

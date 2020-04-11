@@ -165,7 +165,7 @@ SetupPartialPageLoad();
             return HTMLTags.StartQuery + nameQuery + name;
         }
 
-        public override void LoadTOCInfo()
+        public override void LoadTOCInfo(HttpContext context)
         {
             paragraphs = GetPageParagraphs();
             for (int index = Ordinals.first; index < paragraphs.Count; index++)

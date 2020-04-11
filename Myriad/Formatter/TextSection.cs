@@ -22,6 +22,7 @@ namespace Myriad.Formatter
         bool activeSet;
         Citation sourceCitation;
         bool readingView;
+        int headerCount = Ordinals.first;
 
         public TextSectionFormatter(HTMLWriter writer)
         {
@@ -114,7 +115,7 @@ namespace Myriad.Formatter
         }
 
 
-        public List<string> ReadParagraphs(int commentID)
+        public static List<string> ReadParagraphs(int commentID)
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadComment),
@@ -163,11 +164,15 @@ namespace Myriad.Formatter
 
         private async Task AppendTextHeader()
         {
-            await writer.Append(HTMLTags.StartDivWithClass +
+            await writer.Append(HTMLTags.StartDivWithID +
+                "header");
+            await writer.Append(headerCount);
+            headerCount++;
+            await writer.Append(HTMLTags.CloseQuote+
+                HTMLTags.Class+
                 HTMLClasses.marker +
-                HTMLTags.CloseQuoteEndTag);
-            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
-            await writer.Append(HTMLTags.EndDiv +
+                HTMLTags.CloseQuoteEndTag+
+                HTMLTags.EndDiv +
                 HTMLTags.StartSectionWithClass +
                 HTMLClasses.scriptureSection +
                 HTMLTags.CloseQuoteEndTag +

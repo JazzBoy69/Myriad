@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Feliciana.Library;
 using Feliciana.HTML;
 using Feliciana.ResponseWriter;
@@ -129,14 +130,39 @@ SetupPartialPageLoad();
             return reader.GetData<int>();
         }
 
-        public override Task AddTOC(HTMLWriter writer)
+        public override async Task AddTOC(HTMLWriter writer)
         {
-            throw new System.NotImplementedException();
+            var ids = GetCommentIDs(citation);
+            if (ids.Count < 2) return;
+            await writer.Append(HTMLTags.StartList);
+            await writer.Append(HTMLTags.ID);
+            await writer.Append(HTMLClasses.toc);
+            await writer.Append(HTMLTags.Class);
+            await writer.Append(HTMLClasses.visible);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+
+            for (int index = Ordinals.first; index < ids.Count; index++)
+            {
+                await writer.Append(HTMLTags.StartListItem);
+                await writer.Append(HTMLTags.EndTag);
+                await writer.Append(HTMLTags.StartAnchor);
+                await writer.Append(HTMLTags.HREF);
+                await writer.Append("#header");
+                await writer.Append(index);
+                await writer.Append(HTMLTags.OnClick);
+                await writer.Append(JavaScriptFunctions.HandleTOCClick);
+                await writer.Append(HTMLTags.EndTag);
+                var paragraphs = TextSectionFormatter.ReadParagraphs(ids[index]);
+                await writer.Append(paragraphs[Ordinals.first].Replace("==", ""));
+                await writer.Append(HTMLTags.EndAnchor);
+                await writer.Append(HTMLTags.EndListItem);
+            }
+            await writer.Append(HTMLTags.EndList);
         }
 
-        public override void LoadTOCInfo()
+        public override void LoadTOCInfo(HttpContext context)
         {
-            throw new System.NotImplementedException();
+            LoadQueryInfo(context.Request.Query);
         }
 
     }

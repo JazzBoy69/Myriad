@@ -107,7 +107,8 @@ rt {
 }
 .clear{clear:both;}
 p.suppressed, .suppressed p {padding-left: .5em; padding-top: .25em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color:#eee;}
-.hidden, .marker{display:none;}
+.hidden{display:none;}
+.marker{}
 .hiddendetail span{display: none;}
 .hiddendetail::before {content: "...";color: #4477a1;background-color: whiteSmoke;}
 .hiddendetail + .hiddendetail::before{content:"";}

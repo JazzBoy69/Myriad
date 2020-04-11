@@ -50,8 +50,15 @@ function LoadTOC() {
     path = AddQueryToPath(CurrentPath(), 'toc=1');
     postAjax(path, {},
         function (data) {
+            if (data.length === 0) return;
             var toc = document.getElementById('tocdiv');
+            var overlay = document.getElementById('modal-overlay');
+            var article = document.getElementById('mainPane');
             toc.innerHTML = data;
+            toc.classList.remove('hidden');
+            toc.classList.add('visible');
+            overlay.classList.add('show');
+            article.classList.add('blur');
         });
 }
 
@@ -302,12 +309,9 @@ function showHideMenu() {
     var article = document.getElementById('mainPane');
     if (toc.classList.contains('hidden')) {
         LoadTOC();
-        toc.classList.remove('hidden');
-        toc.classList.add('visible');
-        overlay.classList.add('show');
-        article.classList.add('blur');
+        return;
     }
-    else {
+    if (toc.classList.contains('visible')) {
         article.classList.remove('blur');
         toc.classList.remove('visible');
         overlay.classList.remove('show');

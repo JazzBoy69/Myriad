@@ -154,7 +154,7 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndList);
         }
 
-        public override void LoadTOCInfo()
+        public override void LoadTOCInfo(HttpContext context)
         {
             var paragraphs = GetPageParagraphs();
             headings = new List<string>();
