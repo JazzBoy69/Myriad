@@ -156,9 +156,9 @@ namespace Myriad.Parser
             await writer.Append(HTMLClasses.hidden + " " + HTMLClasses.active + " "+ HTMLClasses.rangeData);
             await writer.Append(HTMLTags.CloseQuote);
             await writer.Append(HTMLClasses.dataStart);
-            await writer.Append(citation.CitationRange.StartID);
+            await writer.Append(citation.CitationRange.StartID.ID);
             await writer.Append(HTMLClasses.dataEnd);
-            await writer.Append(citation.CitationRange.EndID);
+            await writer.Append(citation.CitationRange.EndID.ID);
             await writer.Append(HTMLTags.EndTag);
             await writer.Append(HTMLTags.EndDiv);
         }

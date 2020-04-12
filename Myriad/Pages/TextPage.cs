@@ -101,7 +101,7 @@ SetupPartialPageLoad();
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNextCommentRange),
-                citation.CitationRange.EndID);
+                citation.CitationRange.EndID.ID);
             (int start, int end) = await reader.GetDatum<int, int>();
             reader.Close();
             citation = new Citation(start, end);
@@ -111,7 +111,7 @@ SetupPartialPageLoad();
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadPrecedingCommentRange),
-                citation.CitationRange.EndID);
+                citation.CitationRange.EndID.ID);
             (int start, int end) = await reader.GetDatum<int, int>();
             citation = new Citation(start, end);
         }
@@ -126,7 +126,7 @@ SetupPartialPageLoad();
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
-                citation.CitationRange.StartID, citation.CitationRange.EndID);
+                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             return await reader.GetData<int>();
         }
 

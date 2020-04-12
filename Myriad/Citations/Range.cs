@@ -42,6 +42,12 @@ namespace Myriad.Library
         {
             return !((String.IsNullOrEmpty(start)) && (String.IsNullOrEmpty(end)));
         }
+
+        internal void SetWordIndex(int wordIndex)
+        {
+            start.SetWordIndex(wordIndex);
+        }
+
         public CitationRange(string start, string end)
         {
             if (!GoodStrings(start, end))
@@ -59,6 +65,12 @@ namespace Myriad.Library
         public CitationRange(int book, int chapter, int verse)
         {
             Set(book, chapter, verse);
+        }
+
+        public CitationRange(KeyID start, KeyID end)
+        {
+            this.start = start;
+            this.end = end;
         }
 
         internal void Set(int book, int chapter)
@@ -104,18 +116,18 @@ namespace Myriad.Library
                 return start.SameChapter(end);
             }
         }
-        public int StartID
+        public KeyID StartID
         {
             get
             {
-                return start.ID;
+                return start;
             }
         }
-        public int EndID
+        public KeyID EndID
         {
             get
             {
-                return end.ID;
+                return end;
             }
         }
 
@@ -211,6 +223,23 @@ namespace Myriad.Library
                 return (start.SameVerse(end));
             }
         }
+
+        public bool WordIndexIsDeferred
+        {
+            get
+            {
+                return end.WordIndex == KeyID.DeferredWordIndex;
+            }
+        }
+
+        public string Word
+        {
+            get
+            {
+                return start.Word;
+            }
+        }
+
 
         internal static bool InRange(CitationRange range, CitationRange targetRange)
         {

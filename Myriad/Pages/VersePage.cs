@@ -19,7 +19,7 @@ namespace Myriad.Pages
 
         protected override CitationTypes GetCitationType()
         {
-            throw new NotImplementedException();
+            return CitationTypes.Verse;
         }
 
         protected override async Task WriteTitle(HTMLWriter writer)

@@ -25,6 +25,11 @@ namespace Myriad.Library
             CitationRange = new CitationRange(start, end);
         }
 
+        public Citation(KeyID start, KeyID end)
+        {
+            CitationRange = new CitationRange(start, end);
+        }
+
         public Citation(int book, int chapter, int verse)
         {
             CitationRange = new CitationRange(book, chapter, verse);

@@ -15,7 +15,8 @@ namespace Myriad.Data
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadPrecedingCommentRange,
-        ReadKeywords, ReadImageSize,
+        ReadKeywords, ReadWordIndex,
+        ReadImageSize,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -68,7 +69,9 @@ namespace Myriad.Data
                  "select start, last from commentlinks where id=@key1" },
              { DataOperation.ReadKeywords,
                  "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
-                 " where keyid>=@key1 and keyid<=@key2" }
+                 " where keyid>=@key1 and keyid<=@key2" },
+            { DataOperation.ReadWordIndex,
+                "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" }
          }; 
 
         public static DataCommand GetCommand(DataOperation operation)

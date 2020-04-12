@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Feliciana.Library;
+using Feliciana.Data;
 using Feliciana.HTML;
 using Myriad.Library;
+using Myriad.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace Myriad.Pages
 {
@@ -29,7 +31,30 @@ namespace Myriad.Pages
                 };
                 return citation;
             });
+            if (citation.CitationRange.WordIndexIsDeferred)
+            {
+                citation.CitationRange.SetWordIndex(
+                    await ReadDeferredWord(query["word"].ToString())
+                    );
+            }
         }
+
+        private async Task<int> ReadDeferredWord(string indexWord)
+        {
+            try
+            {
+                var reader = new DataReaderProvider<string, int, int>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadWordIndex),
+                    indexWord, citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+                return await reader.GetDatum<int>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return -1;
+            }
+        }
+
         protected abstract CitationTypes GetCitationType();
 
         public abstract Task SetupNextPage();

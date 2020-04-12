@@ -110,7 +110,7 @@ namespace Myriad.Formatter
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
-                citation.CitationRange.StartID, citation.CitationRange.EndID);
+                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             return await reader.GetClassData<Keyword>();
         }
 

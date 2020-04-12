@@ -7,7 +7,8 @@ namespace Myriad.Library
     {
         public const int MinimumID = chapterMultiplier + verseMultiplier;
         public const int MaximumID = bookMulitiplier * 65 + chapterMultiplier * 22 + verseMultiplier * 21 + 255;
-        public const int MaxWordIndex = 255;      
+        public const int MaxWordIndex = 255;
+        public const int DeferredWordIndex = 254;
         public const int InvalidBook = Result.error;
 
         const int bookMulitiplier = 256 * 256 * 256;
@@ -18,6 +19,7 @@ namespace Myriad.Library
         const int versemask = 255 << 8;
         const int wordmask = 255;
         int id;
+        string word;
         public KeyID(int? id)
         {
             this.id = id ?? Result.error;
@@ -36,8 +38,23 @@ namespace Myriad.Library
 
         public KeyID(int book, int chapter, int verse, int index)
         {
-            id = (book * bookMulitiplier) + (chapter * chapterMultiplier) + 
+            SetID(book, chapter, verse, index);
+        }
+
+        internal void SetWordIndex(int wordIndex)
+        {
+            id = Book*bookMulitiplier+Chapter*chapterMultiplier+Verse*verseMultiplier + wordIndex;
+        }
+
+        private void SetID(int book, int chapter, int verse, int index)
+        {
+            id = (book * bookMulitiplier) + (chapter * chapterMultiplier) +
                 (verse * verseMultiplier) + index;
+        }
+        public KeyID(int book, int chapter, int verse, string word)
+        {
+            this.word = word;
+            SetID(book, chapter, verse, Ordinals.first);
         }
 
         public void Set(int newID)
@@ -85,6 +102,14 @@ namespace Myriad.Library
             }
         }
 
+        public string Word
+        {
+            get
+            {
+                return word;
+            }
+        }
+
         public Tuple<int, int, int> Key
         {
             get
@@ -117,9 +142,9 @@ namespace Myriad.Library
         {
             get
             {
-                return Book >= 0 && Book <= 65 && Chapter >= 1 && Chapter <= Bible.Chapters[Book].Length &&
-                    Verse >= 0 && Verse <= Bible.Chapters[Book][Chapter];
-                
+                return Book >= 0 && Book <= 65 && Chapter >= 1 && 
+                    Chapter <= Bible.Chapters[Book].Length &&
+                    Verse >= 0 && Verse <= Bible.Chapters[Book][Chapter];      
             }
         }
     }

@@ -38,7 +38,7 @@ namespace Myriad.Pages
 
         protected override CitationTypes GetCitationType()
         {
-            throw new NotImplementedException();
+            return CitationTypes.Chapter;
         }
 
         public override async Task SetupNextPage()

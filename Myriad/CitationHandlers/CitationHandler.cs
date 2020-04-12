@@ -12,7 +12,9 @@ namespace Myriad.CitationHandlers
     {
         int count = 0;
         char token;
+        int tokenAt;
         char lastToken;
+        int lastTokenAt = Result.notfound;
         char tokenBeforeLast;
         Citation citation = new Citation();
         readonly CitedVerse verse = new CitedVerse();
@@ -21,10 +23,10 @@ namespace Myriad.CitationHandlers
         StringRange labelRange;
         IParagraph paragraphToParse;
         bool first = true;
-        int commaAt = Result.notfound;
         bool brokenComma = false;
         int currentBook;
         int currentChapter;
+        string currentWord;
 
         public Citation Citation
         {
@@ -81,13 +83,20 @@ namespace Myriad.CitationHandlers
             int action = TokenDictionary.Lookup(tokenBeforeLast, lastToken, token, count);
             if (action == Result.notfound) 
                 return false;
+            if (action == TokenDictionary.DeferWordIndex)
+            {
+                count = KeyID.DeferredWordIndex;
+                currentWord = paragraphToParse.StringAt(tokenAt+1, citation.Label.End);
+            }
             if (count == Result.notfound)
             {
-                string book = paragraphToParse.StringAt(citation.Label.Start, citation.Label.End - 1);
-                count = IndexOfBook(book);
+                currentWord = paragraphToParse.StringAt(citation.Label.Start, citation.Label.End - 1);
+                count = IndexOfBook(currentWord);
                 if (count == Result.notfound)
                 {
-                    if ((book == "First") || (book == "Second") || (book == "Third") || (book == "Song") || (book=="Song of"))
+                    if ((currentWord == "First") || (currentWord == "Second") || 
+                        (currentWord == "Third") || (currentWord == "Song") || 
+                        (currentWord == "Song of"))
                     {
                         count = Number.nothing;
                         citation.Label.BumpEnd();
@@ -98,7 +107,10 @@ namespace Myriad.CitationHandlers
             }
             if (count == Result.notfound) return false;
 
-            verse.Set(action & 7, count);
+            if (action != TokenDictionary.DeferWordIndex)
+            {
+                verse.Set(action & 7, count);
+            }
             if (action > 0xF)
             {
                 ApplyVerseToCitation();
@@ -130,6 +142,8 @@ namespace Myriad.CitationHandlers
                     (token == '.') || (token == ';') ||
                     (token == '!'))
                 {
+                    lastTokenAt = tokenAt;
+                    tokenAt = citation.Label.End;
                     foundToken = true;
                     break;
                 }
@@ -254,8 +268,8 @@ namespace Myriad.CitationHandlers
                 verse.First.Verse = verse.Second.Verse;
             }
             if ((verse.Second.Verse != Result.notfound) &&
-                ((lastToken == ',') && (Math.Abs(verse.Second.Verse - verse.First.Verse)>1)))
-             {
+                ((lastToken == ',') && (Math.Abs(verse.Second.Verse - verse.First.Verse) > 1)))
+            {
                 if (verse.First.Verse == verse.Second.Verse)
                 {
                     lastToken = ';';
@@ -274,6 +288,16 @@ namespace Myriad.CitationHandlers
                 {
                     verse.First.Book = results[Ordinals.last].CitationRange.Book;
                 }
+            }
+            if (count == KeyID.DeferredWordIndex)
+            {
+                KeyID start = new KeyID(verse.First.Book, verse.First.Chapter,
+                    verse.First.Verse, currentWord);
+                KeyID end = new KeyID(verse.First.Book, verse.First.Chapter,
+                    verse.First.Verse, KeyID.DeferredWordIndex);
+                citation.CitationType = CitationTypes.Verse;
+                citation.CitationRange = new CitationRange(start, end);
+                return;
             }
             citation.Set(verse.First, verse.Second);
             currentBook = citation.CitationRange.Book;
@@ -298,10 +322,10 @@ namespace Myriad.CitationHandlers
             int pointer = citation.Label.End;
             if (brokenComma)
             {
-                pointer = commaAt;
-                citation.Label.MoveEndTo(commaAt);
-                citation.TrailingSymbols.MoveStartTo(commaAt+1);
-                citation.TrailingSymbols.MoveEndTo(commaAt+1);
+                pointer = lastTokenAt;
+                citation.Label.MoveEndTo(lastTokenAt);
+                citation.TrailingSymbols.MoveStartTo(lastTokenAt+1);
+                citation.TrailingSymbols.MoveEndTo(lastTokenAt+1);
                 lastToken = ';';
             }
             else
@@ -316,8 +340,7 @@ namespace Myriad.CitationHandlers
                 citation.Label.PullEnd();
             }
             pointer++;
-            Citation newCitation = citation.Copy();
-            results.Add(newCitation);
+            results.Add(citation);
             citation = new Citation();
             citation.Label.MoveStartTo(pointer);
             citation.Label.MoveEndTo(pointer);
@@ -338,7 +361,6 @@ namespace Myriad.CitationHandlers
             citation.Label.BumpEnd();
             if (lastToken == ',')
             {
-                commaAt = citation.Label.End-1;
                 citation.Label.BumpEnd();
             }
             first = false;

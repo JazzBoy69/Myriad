@@ -241,10 +241,10 @@ namespace Myriad.Parser
             {
                 await writer.Append(HTMLTags.Ampersand +
                 ScripturePage.queryKeyTGStart);
-                await writer.Append(extendedTarget.StartID);
+                await writer.Append(extendedTarget.StartID.ID);
                 await writer.Append(HTMLTags.Ampersand);
                 await writer.Append(ScripturePage.queryKeyTGEnd);
-                await writer.Append(extendedTarget.EndID);
+                await writer.Append(extendedTarget.EndID.ID);
             }
         }
 
@@ -310,9 +310,14 @@ namespace Myriad.Parser
         internal static async Task AppendQuery(HTMLWriter writer, Citation citation)
         {
             await writer.Append("start=");
-            await writer.Append(citation.CitationRange.StartID);
+            await writer.Append(citation.CitationRange.StartID.ID);
             await writer.Append("&end=");
-            await writer.Append(citation.CitationRange.EndID);
+            await writer.Append(citation.CitationRange.EndID.ID);
+            if (citation.CitationRange.WordIndexIsDeferred)
+            {
+                await writer.Append("&word=");
+                await writer.Append(citation.CitationRange.Word);
+            }
         }
         internal async Task AppendFigure(string par, Formats formats)
         {
