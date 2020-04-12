@@ -70,7 +70,7 @@ namespace Myriad.Pages
                     return;
             }
             ArticleParagraph articleParagraph = new ArticleParagraph(articleID, paragraphIndex, text);
-            DataWriterProvider.WriteData(SqlServerInfo.GetCommand(writeOperation),
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(writeOperation),
                 articleParagraph);
             MarkupParser parser = new MarkupParser(Writer.New(context.Response));
             await parser.ParseParagraph(text, paragraphIndex);
