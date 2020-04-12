@@ -34,8 +34,7 @@ namespace Myriad.Pages
         PageParser parser;
         List<string> headings;
 
-        string title;
-        int id = Result.error;
+        (string Title, int ID) pageInfo = ("", Result.error);
         public ArticlePage()
         {
         }
@@ -47,7 +46,7 @@ namespace Myriad.Pages
 
         protected override async Task WriteTitle(HTMLWriter writer)
         {
-            await writer.Append(title);
+            await writer.Append(pageInfo.Title);
         }
 
         protected override string PageScripts()
@@ -57,7 +56,7 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
-            var paragraphs = GetPageParagraphs();
+            var paragraphs = await GetPageParagraphs();
             parser = new PageParser(writer);
             await AddMainHeading(writer);
             await Parse(paragraphs);
@@ -72,52 +71,74 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndMainHeader);
         }
 
-        public List<string> GetPageParagraphs()
+        public async Task<List<string>> GetPageParagraphs()
         {
             var reader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadArticle), id);
-            var results = reader.GetData<string>();
+                SqlServerInfo.GetCommand(DataOperation.ReadArticle), pageInfo.ID);
+            var results = await reader.GetData<string>();
             reader.Close();
             return results;
         }
-        public override void LoadQueryInfo(IQueryCollection query)
+        public override async Task LoadQueryInfo(IQueryCollection query)
         {
-            string idstring;
             if ((query.ContainsKey(queryKeyID)) && (query.ContainsKey(queryKeyTitle)))
             {
-                idstring = query[queryKeyID];
-                id = Numbers.Convert(idstring);
-                title = query[queryKeyTitle];
+                pageInfo = await GetInfoFromQuery(query);
                 return;
             }
             if (query.ContainsKey(queryKeyID))
             {
-                idstring = query[queryKeyID];
-                id = Numbers.Convert(idstring);
-                var titleReader = new DataReaderProvider<int>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
-                title = titleReader.GetDatum<string>();
-                titleReader.Close();
+                pageInfo = await GetTitle(query);
                 return;
             }
             if (query.ContainsKey(queryKeyTitle))
             {
-                title = query[queryKeyTitle];
-                var idReader = new DataReaderProvider<string>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
-                id = idReader.GetDatum<int>();
-                idReader.Close();
+                pageInfo = await GetID(query);
             }
+        }
+
+        private async Task<(string Title, int ID)> GetInfoFromQuery(IQueryCollection query)
+        {
+            (string Title, int ID) result =
+            await Task.Run(() =>
+            {
+                string idString = query[queryKeyID];
+                int id = Numbers.Convert(idString);
+                string title = query[queryKeyTitle];
+                return result = (title, id);
+            });
+            return result;
+        }
+
+        private async Task<(string title, int id)> GetID(IQueryCollection query)
+        {
+            string title = query[queryKeyTitle];
+            var idReader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
+            int id = await idReader.GetDatum<int>();
+            idReader.Close();
+            return (title, id);
+        }
+
+        private async Task<(string title, int id)> GetTitle(IQueryCollection query)
+        {
+            string idstring = query[queryKeyID];
+            int id = Numbers.Convert(idstring);
+            var titleReader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
+            string title = await titleReader.GetDatum<string>();
+            titleReader.Close();
+            return (title, id);
         }
 
         public override bool IsValid()
         {
-            return (title != null) && (id != Result.error);
+            return (pageInfo.Title != null) && (pageInfo.ID != Result.error);
         }
 
         public async Task Parse(List<string> paragraphs)
         {
-            parser.SetParagraphInfo(ParagraphType.Article, id);
+            parser.SetParagraphInfo(ParagraphType.Article, pageInfo.ID);
             parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
                 HTMLTags.CloseQuoteEndTag);
             parser.SetEndHTML(HTMLTags.EndParagraph);
@@ -154,9 +175,9 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndList);
         }
 
-        public override void LoadTOCInfo(HttpContext context)
+        public override async Task LoadTOCInfo(HttpContext context)
         {
-            var paragraphs = GetPageParagraphs();
+            var paragraphs = await GetPageParagraphs();
             headings = new List<string>();
             for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {
@@ -170,7 +191,7 @@ namespace Myriad.Pages
 
         public override string GetQueryInfo()
         {
-            return HTMLTags.StartQuery + queryKeyID + '=' + id;
+            return HTMLTags.StartQuery + queryKeyID + '=' + pageInfo.ID;
         }
     }
 }

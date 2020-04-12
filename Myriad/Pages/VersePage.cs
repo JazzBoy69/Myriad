@@ -38,12 +38,12 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
         }
 
-        public override void SetupNextPage()
+        public override Task SetupNextPage()
         {
             throw new NotImplementedException();
         }
 
-        public override void SetupPrecedingPage()
+        public override Task SetupPrecedingPage()
         {
             throw new NotImplementedException();
         }
@@ -53,7 +53,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void LoadTOCInfo(HttpContext context)
+        public override Task LoadTOCInfo(HttpContext context)
         {
             throw new NotImplementedException();
         }

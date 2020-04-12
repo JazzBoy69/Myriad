@@ -71,7 +71,7 @@ SetupPartialPageLoad();
         public async override Task RenderBody(HTMLWriter writer)
         {
             this.writer = writer;
-            Initialize();
+            await Initialize();
             bool readingView = commentIDs.Count > 1;
             if (readingView)
             {
@@ -97,42 +97,42 @@ SetupPartialPageLoad();
             await RenderBody(Writer.New(response));
         }
 
-        public override void SetupNextPage()
+        public override async Task SetupNextPage()
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNextCommentRange),
                 citation.CitationRange.EndID);
-            (int start, int end) = reader.GetDatum<int, int>();
+            (int start, int end) = await reader.GetDatum<int, int>();
             reader.Close();
             citation = new Citation(start, end);
         }
 
-        public override void SetupPrecedingPage()
+        public override async Task SetupPrecedingPage()
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadPrecedingCommentRange),
                 citation.CitationRange.EndID);
-            (int start, int end) = reader.GetDatum<int, int>();
+            (int start, int end) = await reader.GetDatum<int, int>();
             citation = new Citation(start, end);
         }
 
-        private void Initialize()
+        private async Task Initialize()
         {
             textSection = new TextSectionFormatter(writer);
-            commentIDs = GetCommentIDs(citation);
+            commentIDs = await GetCommentIDs(citation);
         }
 
-        private List<int> GetCommentIDs(Citation citation)
+        private async Task<List<int>> GetCommentIDs(Citation citation)
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
                 citation.CitationRange.StartID, citation.CitationRange.EndID);
-            return reader.GetData<int>();
+            return await reader.GetData<int>();
         }
 
         public override async Task AddTOC(HTMLWriter writer)
         {
-            var ids = GetCommentIDs(citation);
+            var ids = await GetCommentIDs(citation);
             if (ids.Count < 2) return;
             await writer.Append(HTMLTags.StartList);
             await writer.Append(HTMLTags.ID);
@@ -152,7 +152,7 @@ SetupPartialPageLoad();
                 await writer.Append(HTMLTags.OnClick);
                 await writer.Append(JavaScriptFunctions.HandleTOCClick);
                 await writer.Append(HTMLTags.EndTag);
-                var paragraphs = TextSectionFormatter.ReadParagraphs(ids[index]);
+                var paragraphs = await TextSectionFormatter.ReadParagraphs(ids[index]);
                 await writer.Append(paragraphs[Ordinals.first].Replace("==", ""));
                 await writer.Append(HTMLTags.EndAnchor);
                 await writer.Append(HTMLTags.EndListItem);
@@ -160,9 +160,9 @@ SetupPartialPageLoad();
             await writer.Append(HTMLTags.EndList);
         }
 
-        public override void LoadTOCInfo(HttpContext context)
+        public override async Task LoadTOCInfo(HttpContext context)
         {
-            LoadQueryInfo(context.Request.Query);
+            await LoadQueryInfo(context.Request.Query);
         }
 
     }

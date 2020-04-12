@@ -22,7 +22,7 @@ namespace Myriad.Pages
             this.response = response;
         }
 
-        public abstract void LoadQueryInfo(IQueryCollection query);
+        public abstract Task LoadQueryInfo(IQueryCollection query);
         public abstract string GetQueryInfo();
 
         public abstract bool IsValid();
@@ -86,6 +86,6 @@ namespace Myriad.Pages
 
         public abstract Task AddTOC(HTMLWriter writer);
 
-        public abstract void LoadTOCInfo(HttpContext context);
+        public abstract Task LoadTOCInfo(HttpContext context);
     }
 }

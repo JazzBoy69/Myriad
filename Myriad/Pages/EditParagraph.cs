@@ -42,7 +42,7 @@ namespace Myriad.Pages
         private static async Task SendPlainTextParagraph(DataOperation operation, int articleID, int paragraphIndex, HttpResponse response)
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(operation), articleID, paragraphIndex);
-            await response.WriteAsync(reader.GetDatum<string>());
+            await response.WriteAsync(await reader.GetDatum<string>());
         }
 
         internal static async Task SetText(HttpContext context)

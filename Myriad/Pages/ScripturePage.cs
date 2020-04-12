@@ -17,19 +17,23 @@ namespace Myriad.Pages
         public const string queryKeyEnd = "end=";
 
         protected Citation citation;
-        public override void LoadQueryInfo(IQueryCollection query)
+        public override async Task LoadQueryInfo(IQueryCollection query)
         {
-            if (!int.TryParse(query["start"], out int start)) start = Result.notfound;
-            if (!int.TryParse(query["end"], out int end)) end = Result.notfound;
-            citation = new Citation(start, end)
+            citation = await Task.Run(() =>
             {
-                CitationType = GetCitationType()
-            };
+                if (!int.TryParse(query["start"], out int start)) start = Result.notfound;
+                if (!int.TryParse(query["end"], out int end)) end = Result.notfound;
+                citation = new Citation(start, end)
+                {
+                    CitationType = GetCitationType()
+                };
+                return citation;
+            });
         }
         protected abstract CitationTypes GetCitationType();
 
-        public abstract void SetupNextPage();
-        public abstract void SetupPrecedingPage();
+        public abstract Task SetupNextPage();
+        public abstract Task SetupPrecedingPage();
         public override bool IsValid()
         {
             return (citation != null) && (citation.CitationRange.Valid);

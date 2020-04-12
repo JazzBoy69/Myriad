@@ -26,7 +26,7 @@ namespace Myriad.Data
             throw new NotImplementedException();
         }
 
-        public void Read(DbDataReader reader)
+        public Task Read(DbDataReader reader)
         {
             throw new NotImplementedException();
         }

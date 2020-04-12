@@ -41,12 +41,12 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void SetupNextPage()
+        public override async Task SetupNextPage()
         {
             throw new NotImplementedException();
         }
 
-        public override void SetupPrecedingPage()
+        public override async Task SetupPrecedingPage()
         {
             throw new NotImplementedException();
         }
@@ -56,7 +56,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void LoadTOCInfo(HttpContext context)
+        public override Task LoadTOCInfo(HttpContext context)
         {
             throw new NotImplementedException();
         }

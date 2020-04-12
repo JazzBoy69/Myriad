@@ -69,7 +69,7 @@ namespace Myriad
                     await EditParagraph.SetText(context);
                     return;
                 }
-                CommonPage page = RequestedPage(context);
+                CommonPage page = await RequestedPage(context);
                 await page.RenderPage();
             });
 
@@ -77,32 +77,32 @@ namespace Myriad
 
         public async Task HandleTOCRequest(HttpContext context)
         {
-            CommonPage partialPage = RequestedPage(context);
-            partialPage.LoadTOCInfo(context);
+            CommonPage partialPage = await RequestedPage(context);
+            await partialPage.LoadTOCInfo(context);
             await partialPage.AddTOC(Writer.New(context.Response));
         }
 
         private async Task HandlePartialRequest(HttpContext context)
         {
-            CommonPage partialPage = RequestedPage(context);
+            CommonPage partialPage = await RequestedPage(context);
             if (context.Request.Query.ContainsKey("next"))
             {
                 ScripturePage scripturePage = (ScripturePage)partialPage;
-                scripturePage.SetupNextPage();
+                await scripturePage.SetupNextPage();
                 await scripturePage.RenderBody(Writer.New(context.Response));
                 return;
             }
             if (context.Request.Query.ContainsKey("preceding"))
             {
                 ScripturePage scripturePage = (ScripturePage)partialPage;
-                scripturePage.SetupPrecedingPage();
+                await scripturePage.SetupPrecedingPage();
                 await scripturePage.RenderBody(Writer.New(context.Response));
                 return;
             }
             await partialPage.RenderBody(Writer.New(context.Response));
         }
 
-        private CommonPage RequestedPage(HttpContext context)
+        private async Task<CommonPage> RequestedPage(HttpContext context)
         {
             string path = context.Request.Path;
             var query = context.Request.Query;
@@ -165,7 +165,7 @@ namespace Myriad
                     page = new IndexPage();
                     break;
             }
-            page.LoadQueryInfo(query);
+            await page.LoadQueryInfo(query);
             if (!page.IsValid()) page = new IndexPage();
             page.SetResponse(context.Response);
             return page;

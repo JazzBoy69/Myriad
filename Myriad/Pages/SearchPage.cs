@@ -19,7 +19,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void LoadQueryInfo(IQueryCollection query)
+        public override Task LoadQueryInfo(IQueryCollection query)
         {
             throw new NotImplementedException();
         }
@@ -45,7 +45,7 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override void LoadTOCInfo(HttpContext context)
+        public override Task LoadTOCInfo(HttpContext context)
         {
             throw new NotImplementedException();
         }

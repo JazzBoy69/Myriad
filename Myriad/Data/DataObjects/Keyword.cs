@@ -18,15 +18,15 @@ namespace Myriad.Data
         private bool isCapitalized;
         private bool isPoetic;
 
-        public void Read(DbDataReader reader)
+        public async Task Read(DbDataReader reader)
         {
-            id = new KeyID(reader.GetInt32(Ordinals.first));
-            leadingSymbols = reader.GetString(Ordinals.second);
-            text = reader.GetString(Ordinals.third);
-            trailingSymbols = reader.GetString(Ordinals.fourth);
-            isCapitalized = reader.GetInt32(Ordinals.fifth) != 0;
-            isPoetic = reader.GetInt32(Ordinals.sixth) != 0;
-            paragraphWordIndex = reader.GetInt32(Ordinals.seventh);
+            id = new KeyID(await reader.GetFieldValueAsync<int>(Ordinals.first));
+            leadingSymbols = await reader.GetFieldValueAsync<string>(Ordinals.second);
+            text = await reader.GetFieldValueAsync<string>(Ordinals.third);
+            trailingSymbols = await reader.GetFieldValueAsync<string>(Ordinals.fourth);
+            isCapitalized = await reader.GetFieldValueAsync<int>(Ordinals.fifth) != 0;
+            isPoetic = await reader.GetFieldValueAsync<int>(Ordinals.sixth) != 0;
+            paragraphWordIndex = await reader.GetFieldValueAsync<int>(Ordinals.seventh);
         }
 
         public void Create(DbCommand command)

@@ -41,17 +41,21 @@ SetupPartialPageLoad();
         {
             
         }
-        public override void LoadQueryInfo(IQueryCollection query)
+        public override async Task LoadQueryInfo(IQueryCollection query)
         {
-            name = (query.ContainsKey(requestNameQuery)) ? 
-                query[requestNameQuery].ToString() :
-                defaultName;
+            name = await Task.Run(() =>
+            {
+                if (query.ContainsKey(requestNameQuery))
+                    return query[requestNameQuery].ToString();
+                return defaultName;
+            });
         }
+
         public async override Task RenderBody(HTMLWriter writer)
         {
             //todo edit page
-            ID = GetPageID();
-            paragraphs = GetPageParagraphs();
+            ID = await GetPageID();
+            paragraphs = await GetPageParagraphs();
             parser = new PageParser(writer);
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             await Parse();
@@ -82,20 +86,20 @@ SetupPartialPageLoad();
             await parser.EndComments();
         }
 
-        private int GetPageID()
+        private async Task<int> GetPageID()
         {
             var reader = new DataReaderProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNavigationID), name);
-            int result = reader.GetDatum<int>();
+            int result = await reader.GetDatum<int>();
             reader.Close();
             return result;
         }
 
-        public List<string> GetPageParagraphs()
+        public async Task<List<string>> GetPageParagraphs()
         {
             var reader = new DataReaderProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
-            var results = reader.GetData<string>();
+            var results = await reader.GetData<string>();
             reader.Close();
             return results;
         }
@@ -104,7 +108,7 @@ SetupPartialPageLoad();
         {
             var command = SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle);
             var reader = new DataReaderProvider<string>(command, name);
-            await writer.Append(reader.GetDatum<string>());
+            await writer.Append(await reader.GetDatum<string>());
             reader.Close();
             command.Connection.Close();
         }
@@ -137,7 +141,7 @@ SetupPartialPageLoad();
             for (int index = Ordinals.first; index < mainHeadingIndex; index++)
             {
                 reader.SetParameter(paragraphs[index]);
-                string title = reader.GetDatum<string>();
+                string title = await reader.GetDatum<string>();
                 if (string.IsNullOrEmpty(title)) title = paragraphs[index];
                 await writer.Append(HTMLTags.StartListItem);
                 await writer.Append(HTMLTags.EndTag);
@@ -165,9 +169,9 @@ SetupPartialPageLoad();
             return HTMLTags.StartQuery + nameQuery + name;
         }
 
-        public override void LoadTOCInfo(HttpContext context)
+        public override async Task LoadTOCInfo(HttpContext context)
         {
-            paragraphs = GetPageParagraphs();
+            paragraphs = await GetPageParagraphs();
             for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {
                 if ((paragraphs[index].Length > Number.nothing) &&
