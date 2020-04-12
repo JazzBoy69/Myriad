@@ -16,7 +16,6 @@ namespace Myriad.Parser
         public const int bold = 0x2A2A;
         public const int italic = 0x2F2F;
         public const int detail = 0x2B2B;
-        public static readonly char[] citationTokens = new char[] { '(', '[', '{', ')', ']', '}' };
         public static readonly char[] brackettokens = new char[] { '|', '}' };
         public static readonly char[] tokens = new char[] { '*', '^', '/', '=', '(', '[', '{', ')', ']', '}', '~', '#', '|', '_', '+' };
     }

@@ -67,15 +67,19 @@ namespace Myriad.Parser
             }
             mainRange = new StringRange();
             mainRange.SetLimit(currentParagraph.Length - 1);
-            lastDash = GetLastDash();
         }
         public async Task ParseParagraph(string paragraph, int index)
         {
             paragraphInfo.index = index;
             ResetCrossReferences();
+            lastDash = paragraph.LastIndexOf('—');
+
             currentParagraph = new Paragraph()
             {
-                Text = paragraph
+                Text = ((lastDash != Result.notfound) && (lastDash < paragraph.Length - 1)) ?
+                paragraph.Substring(Ordinals.first, lastDash).Replace('\u0a00', '_') + '~' +
+                paragraph.Substring(lastDash + 1).Replace('\u0a00', '_') :
+                paragraph
             };
             await ParseParagraph();
         }
@@ -128,20 +132,6 @@ namespace Myriad.Parser
             if (citationLevel > 0)
                 citationLevel--;
             return citationLevel;
-        }
-        private int GetLastDash()
-        {
-            int p = currentParagraph.LastIndexOf('—');
-            if (p == Result.notfound) return Result.notfound;
-            int q = currentParagraph.IndexOf('.', p);
-            int r = currentParagraph.LastIndexOf('.');
-            if (q != r) return Result.notfound;
-            q = currentParagraph.IndexOf(' ', p);
-            if (q == Result.notfound) return Result.notfound;
-            r = Bible.IndexOfBook(currentParagraph.StringAt(p + 1, q - 1));
-            return (r == Result.notfound) ?
-                Result.notfound :
-                p;
         }
 
         protected void MoveIndexToNextBracketToken()
@@ -215,11 +205,8 @@ namespace Myriad.Parser
             mainRange.MoveEndToLimit();
             if (citationLevel > 0)
             {
-                mainRange.MoveStartTo(lastDash + 1);
-                mainRange.PullEnd();
-                await HandleLastDashCitations();
-                mainRange.BumpEnd();
-            }
+                await HandleCitations();
+            } 
             await formatter.AppendString(currentParagraph, mainRange);
             await AddHTMLAfterParagraph();
         }
@@ -250,10 +237,6 @@ namespace Myriad.Parser
         public void SearchForToken()
         {
             mainRange.MoveEndTo(currentParagraph.IndexOfAny(Tokens.tokens, mainRange.Start));
-            if ((mainRange.End == Result.notfound) || ((mainRange.Start < lastDash) && (mainRange.End > lastDash)))
-            {
-                mainRange.MoveEndTo(lastDash);
-            }
         }
         public async Task HandleToken()
         {
@@ -267,7 +250,9 @@ namespace Myriad.Parser
                 return;
             }
             if (citationLevel > Number.nothing)
+            {
                 await HandleCitations();
+            }
             await AppendTextUpToToken();
             if (longToken == Tokens.detail)
             {

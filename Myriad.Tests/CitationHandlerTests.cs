@@ -187,6 +187,16 @@ namespace Myriad.Tests
         }
 
         [Test]
+        public async Task LongCitation()
+        {
+            string citationText;
+            var citations = CitationConverter.FromString("Lu 14:26, 27, 33; Joh 13:35; 15:8; Mr 10:29, 30");
+            citationText = await CitationConverter.ToString(citations);
+            Assert.AreEqual("Lu&nbsp;14:26,&nbsp;27,&nbsp;33; Joh&nbsp;13:35; 15:8; Mr&nbsp;10:29,&nbsp;30",
+                citationText);
+        }
+
+        [Test]
         public async Task BangCitation()
         {
             string citationText;

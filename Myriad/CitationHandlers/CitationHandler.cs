@@ -23,6 +23,8 @@ namespace Myriad.CitationHandlers
         bool first = true;
         int commaAt = Result.notfound;
         bool brokenComma = false;
+        int currentBook;
+        int currentChapter;
 
         public Citation Citation
         {
@@ -243,7 +245,16 @@ namespace Myriad.CitationHandlers
             int stashVerse = Result.notfound;
             brokenComma = false;
             if ((verse.Second.Verse != Result.notfound) &&
-                ((lastToken == ',') && (verse.First.Verse + 1 != verse.Second.Verse)))
+                (verse.First.Book == Result.notfound) &&
+                (verse.First.Chapter == Result.notfound) &&
+                (verse.First.Verse == Result.notfound))
+            {
+                verse.First.Book = currentBook;
+                verse.First.Chapter = currentChapter;
+                verse.First.Verse = verse.Second.Verse;
+            }
+            if ((verse.Second.Verse != Result.notfound) &&
+                ((lastToken == ',') && (Math.Abs(verse.Second.Verse - verse.First.Verse)>1)))
              {
                 if (verse.First.Verse == verse.Second.Verse)
                 {
@@ -265,6 +276,8 @@ namespace Myriad.CitationHandlers
                 }
             }
             citation.Set(verse.First, verse.Second);
+            currentBook = citation.CitationRange.Book;
+            currentChapter = citation.CitationRange.LastChapter;
             if ((token == '!') && (citation.CitationType == CitationTypes.Text))
                 citation.CitationType = CitationTypes.Verse;
             if (stashVerse != Result.notfound)

@@ -26,6 +26,20 @@ namespace Myriad.Parser
                 new List<Citation>() { Citation.InvalidCitation };
         }
 
+        public static async Task<string> ToString(Citation citation)
+        {
+            var writer = Writer.New();
+            await ToString(citation, writer);
+            return writer.Response();
+        }
+
+        public static async Task<string> ToString(List<Citation> citations)
+        {
+            var writer = Writer.New();
+            await ToString(citations, writer);
+            return writer.Response();
+        }
+
         public static async Task ToString(Citation citation, HTMLWriter writer)
         {
             await Append(writer, citation);
@@ -43,6 +57,8 @@ namespace Myriad.Parser
 
         internal async static Task Append(HTMLWriter writer, Citation citation)
         {
+            if ((citation.CitationRange.Book < Ordinals.first) ||
+                (citation.CitationRange.Book >= Bible.Abbreviations.Count)) return;
             await writer.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
             await writer.Append(HTMLTags.NonbreakingSpace);
             if (!Bible.IsShortBook(citation.CitationRange.Book))

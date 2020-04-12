@@ -25,10 +25,10 @@ namespace Myriad.Tests
             return new DefaultHttpContext().Response;
         }
         [Test]
-         public void CanGetData()
+         public async Task CanGetData()
         {
             IndexPage indexPage = new IndexPage();
-            paragraphs = indexPage.GetPageParagraphs();
+            paragraphs = await indexPage.GetPageParagraphs();
             Assert.That(paragraphs.Count > Number.nothing);
         }
         
@@ -64,12 +64,12 @@ namespace Myriad.Tests
         }
 
         [Test]
-        public void ReadEditParagraph()
+        public async Task ReadEditParagraph()
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNavigationParagraph),
                 53, 7);
-            string paragraph = reader.GetDatum<string>();
+            string paragraph = await reader.GetDatum<string>();
             ReadMarkupParagraphs();
             Assert.AreEqual(paragraphs[Ordinals.second], paragraph);
         }

@@ -31,7 +31,8 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1085, 0x01 }, //Set first chapter Mt 24:14 =>  _24:
             { 0x1234, 0x12 }, //Set first verse and add results Mt 25:31-33, 40; => -xx, 40;
             { 0x1324, 0x16 }, //Set second verse and add results Mt 24:14, 16-18 => , xx-18;
-            { 0x1424, 0x16 }, //Set second verse and add results Mt 24:14, 16-18 => , xx-18;
+            { 0x1334, 0x16 }, //Set second verse and add results Mt 24:14, 16, 18 => , xx, 18;
+            { 0x1424, 0x16 }, //Set second verse and add results Mt 24:14, 16, 18 => , xx-18;
             { 0x1452, 0x02 }, //Set first verse Mt 6:33; 24:45-47 => ;xx:45-
             { 0x1453, 0x02 }, //Set first verse Mt 24:14; 28:19, 20 => ; xx:19,
             { 0x1454, 0x12 }, //Set first verse and add results Mt 24:14; 28:20; => ; xx:20;
@@ -42,9 +43,11 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1523, 0x16 }, //Set second verse and add results Re 16:14-16, 18; => :xx-16,
             { 0x1524, 0x16 }, //Set second verse and add results Mt 24:45-47 => :xx-47;
             { 0x1525, 0x05 }, //Set second chapter 2Co 6:14-7:1 => :xx-7:
+            { 0x1533, 0x16 }, //Set second verse and add results Re 16:14, 16, 18; => :xx, 16,
             { 0x1534, 0x16 }, //Set second verse and add results Re 16:14, 16; => :xx, 16;
             { 0x1532, 0x16 }, //Set second verse and add results Re 16:14, 16-18 => :xx, 16-
             { 0x1832, 0x16 }, //Set second verse and add results 2Jo 10, 12-14 => _xx, 12-
+            { 0x1833, 0x16 }, //Set second verse and add results 2Jo 10, 12, 14 => _xx, 12,
             { 0x1834, 0x15 }, //Set second chapter and add results Ge 6, 7; => _xx, 7;
             { 0x1844, 0x16 }, //Set second verse of short book and add results 2Jo 10, 12
             { 0x1852, 0x02 }, //Set first verse Mt 24:45-47 => _xx:45- 

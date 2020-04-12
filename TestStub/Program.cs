@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Myriad.Parser;
-using Myriad.Pages;
 using Myriad.Library;
+using Feliciana.Library;
+using Feliciana.HTML;
+using Feliciana.ResponseWriter;
+using Myriad.CitationHandlers;
 
 namespace TestStub
 {
@@ -20,10 +23,10 @@ namespace TestStub
         }
         async private void RunTest()
         {
-            TextPage page = new TextPage();
-            page.SetResponse(DefaultResponse());
-            page.SetCitation(new Citation(319422720, 319422739));
-            await page.RenderPage();
+            string citationText;
+            var citations = CitationConverter.FromString("Mt 24:14, 16-18");
+            citationText = await CitationConverter.ToString(citations);
+            Console.WriteLine(citationText);
         }
 
     }

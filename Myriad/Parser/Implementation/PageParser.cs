@@ -33,11 +33,8 @@ namespace Myriad.Parser
             mainRange.MoveEndToLimit();
             if (citationLevel > 0)
             {
-                mainRange.MoveStartTo(lastDash + 1);
-                mainRange.PullEnd();
-                await HandleLastDashCitations();
-                mainRange.BumpEnd();
-            }
+                await HandleCitations();
+            } 
             await formatter.AppendString(currentParagraph, mainRange);
             await HandleEditParagraphSpan();
             await AddHTMLAfterParagraph();
