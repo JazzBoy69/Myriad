@@ -443,6 +443,7 @@ namespace Myriad.Parser
                 citations[Ordinals.first].DisplayLabel = labelRange;
                 await formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
                 mainRange.MoveStartTo(mainRange.End);
+                formats.labelExists = false;
                 return;
             }
             else
