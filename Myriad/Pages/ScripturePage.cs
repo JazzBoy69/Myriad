@@ -34,25 +34,20 @@ namespace Myriad.Pages
             if (citation.CitationRange.WordIndexIsDeferred)
             {
                 citation.CitationRange.SetWordIndex(
-                    await ReadDeferredWord(query["word"].ToString())
+                    await ReadDeferredWord(query["word"].ToString(), 
+                    citation.CitationRange.StartID.ID,
+                    citation.CitationRange.EndID.ID)
                     );
             }
         }
 
-        private async Task<int> ReadDeferredWord(string indexWord)
+        //todo find where to put this method
+        public static async Task<int> ReadDeferredWord(string indexWord, int start, int end)
         {
-            try
-            {
-                var reader = new DataReaderProvider<string, int, int>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadWordIndex),
-                    indexWord, citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-                return await reader.GetDatum<int>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return -1;
-            }
+            var reader = new DataReaderProvider<string, int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadWordIndex),
+                indexWord, start, end);
+            return await reader.GetDatum<int>();
         }
 
         protected abstract CitationTypes GetCitationType();

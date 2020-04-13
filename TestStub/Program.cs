@@ -24,7 +24,7 @@ namespace TestStub
         async private void RunTest()
         {
             string citationText;
-            var citations = CitationConverter.FromString("Mt 24:14.preached");
+            var citations = CitationConverter.FromString("Mt 24:14, 16-18");
             citationText = await CitationConverter.ToString(citations);
             Console.WriteLine(citationText);
         }

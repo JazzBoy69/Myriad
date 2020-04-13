@@ -11,6 +11,7 @@ namespace Myriad.CitationHandlers.Helpers
         public const int SetSecondChapter = 5;
         public const int SetFirstChapterAndAddResults = 0x11;
         public const int SetFirstVerseAndAddResults = 0x12;
+        public const int SetFirstWordAndAddResults = 0x13;
         public const int SetSecondChapterAndAddResults = 0x15;
         public const int SetSecondVerseAndAddResults = 0x16;
         public const int DeferWordIndex = 0x18;
@@ -44,7 +45,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1234, SetFirstVerseAndAddResults },    //Mt 25:31-33, 40; => -xx, 40;
             { 0x1324, SetSecondVerseAndAddResults },   //Mt 24:14, 16-18 => , xx-18;
             { 0x1334, SetSecondVerseAndAddResults },   //Mt 24:14, 16, 18 => , xx, 18;
-            { 0x1424, SetSecondVerseAndAddResults },   //Mt 24:14, 16, 18 => , xx-18;
+            { 0x1424, SetSecondVerseAndAddResults },   //Mt 24:14, 16, 18 => , xx, 18;
             { 0x1452, SetFirstVerse },                 //Mt 6:33; 24:45-47 => ;xx:45-
             { 0x1453, SetFirstVerse },                 //Mt 24:14; 28:19, 20 => ; xx:19,
             { 0x1454, SetFirstVerseAndAddResults },    //Mt 24:14; 28:20; => ; xx:20;
@@ -58,6 +59,8 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1533, SetSecondVerseAndAddResults },   //Re 16:14, 16, 18; => :xx, 16,
             { 0x1534, SetSecondVerseAndAddResults },   //Re 16:14, 16; => :xx, 16;
             { 0x1532, SetSecondVerseAndAddResults },   //Re 16:14, 16-18 => :xx, 16-
+            { 0x1544, SetFirstVerseAndAddResults },    //Mt 2:12, 22 => :xx, 22
+            { 0x1574, SetFirstWordAndAddResults },     //Mt 24:14.8 => :xx.8
             { 0x1832, SetSecondVerseAndAddResults },   //2Jo 10, 12-14 => _xx, 12-
             { 0x1833, SetSecondVerseAndAddResults },   //2Jo 10, 12, 14 => _xx, 12,
             { 0x1834, SetSecondChapterAndAddResults }, //Ge 6, 7; => _xx, 7;

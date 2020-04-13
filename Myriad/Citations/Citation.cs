@@ -69,7 +69,7 @@ namespace Myriad.Library
                     firstVerse.WordIndex, secondVerse.Chapter, secondVerse.Verse,
                     secondVerse.WordIndex);
 
-                CitationType = CitationTypes.Text;
+                CitationType = CitationTypes.Verse;
             }
             if (secondVerse.Verse != Result.notfound)
             {
@@ -102,7 +102,7 @@ namespace Myriad.Library
             {
                 CitationRange.Set(firstVerse.Book, firstVerse.Chapter, firstVerse.Verse,
                     firstVerse.WordIndex);
-                CitationType = CitationTypes.Text;
+                CitationType = CitationTypes.Verse;
                 return;
             }
             if (firstVerse.Verse != Result.notfound)

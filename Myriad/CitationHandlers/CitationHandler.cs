@@ -86,7 +86,7 @@ namespace Myriad.CitationHandlers
             if (action == TokenDictionary.DeferWordIndex)
             {
                 count = KeyID.DeferredWordIndex;
-                currentWord = paragraphToParse.StringAt(tokenAt+1, citation.Label.End);
+                currentWord = paragraphToParse.StringAt(lastTokenAt+1, citation.Label.End);
             }
             if (count == Result.notfound)
             {
@@ -153,6 +153,8 @@ namespace Myriad.CitationHandlers
             if (!foundToken)
             {
                 token = ';';
+                lastTokenAt = tokenAt;
+                tokenAt = rangeToParse.End;
             }
             if (citation.Label.End > rangeToParse.End)
                 citation.Label.MoveEndTo(rangeToParse.End);
@@ -324,8 +326,8 @@ namespace Myriad.CitationHandlers
             {
                 pointer = lastTokenAt;
                 citation.Label.MoveEndTo(lastTokenAt);
-                citation.TrailingSymbols.MoveStartTo(lastTokenAt+1);
-                citation.TrailingSymbols.MoveEndTo(lastTokenAt+1);
+                citation.TrailingSymbols.MoveStartTo(lastTokenAt + 1);
+                citation.TrailingSymbols.MoveEndTo(lastTokenAt + 1);
                 lastToken = ';';
             }
             else
@@ -340,7 +342,8 @@ namespace Myriad.CitationHandlers
                 citation.Label.PullEnd();
             }
             pointer++;
-            results.Add(citation);
+            var newCitation = citation.Copy();
+            results.Add(newCitation);
             citation = new Citation();
             citation.Label.MoveStartTo(pointer);
             citation.Label.MoveEndTo(pointer);
