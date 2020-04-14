@@ -46,7 +46,7 @@ namespace Myriad.Data
               { DataOperation.ReadNavigationTitle,
                  "select heading from navigation where name=@key1"},
              { DataOperation.ReadArticleTitle,
-                 "select title from tags where id=@key1"},
+                 "select RTrim(title) from tags where id=@key1"},
              { DataOperation.ReadArticleID,
                  "select id from tags where title=@key1"},
              { DataOperation.ReadArticleParagraph,

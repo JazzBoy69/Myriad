@@ -251,7 +251,7 @@ namespace Myriad.Search
         {
             var reader = new DataReaderProvider<int>(SqlServerInfo.CreateCommandFromQuery(query), -1);
             List<(int sentence, int wordindex, int id)> preliminaryResults = 
-                await reader.GetData<(int, int, int)>();
+                await reader.GetData<int, int, int>();
             reader.Close();
             var results = new Dictionary<(int, int), int>();
             for (int index = Ordinals.first; index < preliminaryResults.Count; index++)

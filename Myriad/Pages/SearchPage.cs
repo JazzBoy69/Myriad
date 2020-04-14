@@ -52,6 +52,10 @@ namespace Myriad.Pages
                 ids = query["ids"].ToString();
                 idList = ids.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
             }
+            else
+            {
+                ids = "";
+            }
         }
 
         private (CitationRange r, string q) SearchRange(string query)
