@@ -8,11 +8,17 @@ namespace Myriad.Library
     //move to Citation library
     public class CitationRange
     {
-        public const int invalidID = Number.nothing;
-        internal static CitationRange InvalidRange = new CitationRange(invalidID, invalidID);
+        public const int invalidID = Result.error;
 
         KeyID start;
         KeyID end;
+
+        public static CitationRange InvalidRange()
+        {
+            return new CitationRange(-1);
+        }
+
+
 
         public CitationRange(int? startID, int? endID)
         {

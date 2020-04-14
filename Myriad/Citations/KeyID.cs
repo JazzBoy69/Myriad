@@ -30,9 +30,10 @@ namespace Myriad.Library
             this.id = Numbers.Convert(id);
         }
 
-            public KeyID(int book, int chapter, int verse)
+        public KeyID(int book, int chapter, int verse)
         {
-            id = (book * bookMulitiplier) + (chapter * chapterMultiplier) + 
+            id = (book == Result.error) ? -1 :
+            (book * bookMulitiplier) + (chapter * chapterMultiplier) +
                 (verse * verseMultiplier) + Ordinals.first;
         }
 
@@ -74,7 +75,7 @@ namespace Myriad.Library
         {
             get
             {
-                return (id & bookmask) >> 24;
+                return id / bookMulitiplier;
             }
         }
 
@@ -82,7 +83,7 @@ namespace Myriad.Library
         {
             get
             {
-                return (id & chaptermask) >> 16;
+                return (id-Book*bookMulitiplier) / chapterMultiplier;
             }
         }
 
@@ -90,7 +91,7 @@ namespace Myriad.Library
         {
             get
             {
-                return (id & versemask) >> 8;
+                return (id - Book * bookMulitiplier-Chapter-chapterMultiplier)/verseMultiplier;
             }
         }
 
@@ -146,6 +147,11 @@ namespace Myriad.Library
                     Chapter <= Bible.Chapters[Book].Length &&
                     Verse >= 0 && Verse <= Bible.Chapters[Book][Chapter];      
             }
+        }
+
+        public override string ToString()
+        {
+            return id.ToString();
         }
     }
 }

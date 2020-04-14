@@ -90,7 +90,7 @@ namespace Myriad.Data
             {DataOperation.ReadDefinitionIDs,
                 "select id from synonyms where text=@key1" },
             {DataOperation.ReadSynonyms,
-                "select RTrim(text) from synonyms where id=@key1 order by synIndex" }
+                "select RTrim(text) from synonyms where id=@key1 and text!=@key2 order by synIndex" }
          }; 
 
         public static DataCommand GetCommand(DataOperation operation)

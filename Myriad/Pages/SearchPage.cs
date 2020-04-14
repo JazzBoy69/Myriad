@@ -59,18 +59,18 @@ namespace Myriad.Pages
             int p = query.IndexOf(':');
             if (p == Result.notfound)
             {
-                return (CitationRange.InvalidRange, query);
+                return (CitationRange.InvalidRange(), query);
             }
             return (QueryToRange(query.Substring(0, p)), query.Substring(p + 1).Trim());
         }
 
         private CitationRange QueryToRange(string rangeString)
         {
-            if (string.IsNullOrEmpty(rangeString)) return CitationRange.InvalidRange;
+            if (string.IsNullOrEmpty(rangeString)) return CitationRange.InvalidRange();
             string[] parts = rangeString.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
             string[] startparts = parts[Ordinals.first].Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries);
             (int startBook, int startChapter) = GetBookAndChapter(parts[Ordinals.first]);
-            if (startBook == Result.error) return CitationRange.InvalidRange;
+            if (startBook == Result.error) return CitationRange.InvalidRange();
             int endBook = Result.error;
             int endChapter = Result.error;
             if (parts.Length > 1)

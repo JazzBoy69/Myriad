@@ -14,7 +14,8 @@ namespace Myriad.Search
     {
         private const string definitionSelector = @"select sentence, wordindex, id from definitionsearch
             where ";
-        internal async static Task<List<SearchSentence>> Search(List<string> phrases, CitationRange citationRange, List<List<string>> synonyms,
+        internal async static Task<List<SearchSentence>> Search(List<string> phrases, 
+            CitationRange citationRange, List<List<string>> synonyms,
             List<int> usedDefinitions)
         {
             var commonWords = new List<string>();
@@ -194,7 +195,7 @@ namespace Myriad.Search
                 //get definition ids for phrase
                 List<int> definitionIDs = await GetDefinitionIDs(roots);
                 //get synonyms for phrase
-                var thisPhraseSynonyms = await GetSynonyms(definitionIDs);
+                var thisPhraseSynonyms = await GetSynonyms(definitionIDs, phrase);
                 if (thisPhraseSynonyms.Count > 0) needSynonymQuery = true;
                 synonyms.Add(thisPhraseSynonyms);
 
@@ -203,14 +204,14 @@ namespace Myriad.Search
             return (needSynonymQuery, synonyms);
         }
 
-        private static async Task<List<string>> GetSynonyms(List<int> definitionIDs)
+        private static async Task<List<string>> GetSynonyms(List<int> definitionIDs, string root)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSynonyms),
-                -1);
+            var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadSynonyms),
+                -1, "");
             var results = new List<string>();
             for (int index = Ordinals.first; index < definitionIDs.Count; index++)
             {
-                reader.SetParameter(definitionIDs[index]);
+                reader.SetParameter(definitionIDs[index], root);
                 results.AddRange(await reader.GetData<string>());
             }
             return results;

@@ -12,7 +12,7 @@ namespace Myriad.Library
         public StringRange Label = new StringRange();
         public StringRange LeadingSymbols = new StringRange();
         public StringRange TrailingSymbols = new StringRange();
-        public CitationRange CitationRange = CitationRange.InvalidRange;
+        public CitationRange CitationRange = CitationRange.InvalidRange();
         public CitationTypes CitationType = CitationTypes.Invalid;
 
         public Citation()
