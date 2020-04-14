@@ -9,9 +9,9 @@ namespace Myriad.Data
 {
     public class ArticleParagraph : DataObject
     {
-        private readonly int id;
-        private readonly int index;
-        private readonly string text;
+        private int id;
+        private int index;
+        private string text;
         public int ParameterCount => 3;
 
         public ArticleParagraph(int id, int index, string text)
@@ -26,9 +26,14 @@ namespace Myriad.Data
             throw new NotImplementedException();
         }
 
-        public Task Read(DbDataReader reader)
+        public async Task Read(DbDataReader reader)
         {
-            throw new NotImplementedException();
+            if (reader.Read())
+            {
+                id = await reader.GetFieldValueAsync<int>(Ordinals.first);
+                index = await reader.GetFieldValueAsync<int>(Ordinals.second);
+                text = await reader.GetFieldValueAsync<string>(Ordinals.third);
+            }
         }
 
         public object GetParameter(int index)

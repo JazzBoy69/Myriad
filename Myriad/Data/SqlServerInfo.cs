@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Feliciana.Library;
 using Feliciana.Data;
+using System.Text;
 
 namespace Myriad.Data
 {
@@ -14,9 +15,10 @@ namespace Myriad.Data
         ReadNavigationTitle,
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
-        ReadPrecedingCommentRange,
-        ReadKeywords, ReadWordIndex,
-        ReadImageSize,
+        ReadPrecedingCommentRange, ReadRelatedParagraphIndex,
+        ReadKeywords, ReadWordIndex, ReadKeywordSentence,
+        ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases,
+        ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -71,7 +73,24 @@ namespace Myriad.Data
                  "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
                  " where keyid>=@key1 and keyid<=@key2" },
             { DataOperation.ReadWordIndex,
-                "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" }
+                "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" },
+            {DataOperation.ReadKeywordSentence,
+                "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
+                " where sentence=@key1" },
+            { DataOperation.ReadFromAllWords,
+                "select text from allwords where text=@key1" },
+            { DataOperation.ReadRoots,
+                "select Rtrim(root) from inflections where inflection=@key1" },
+            { DataOperation.ReadPhrases,
+                "select RTrim(phrase) from phrases where first=@key1 or first=@key2" },
+            { DataOperation.ReadRelatedParagraphIndex,
+                "select paragraphindex from RelatedTags where articleID=@key1 and relatedid=@key2" },
+            {DataOperation.ReadSynonymsFromID,
+                "select RTrim(text) from synonyms where id=@key1 order by synIndex" },
+            {DataOperation.ReadDefinitionIDs,
+                "select id from synonyms where text=@key1" },
+            {DataOperation.ReadSynonyms,
+                "select RTrim(text) from synonyms where id=@key1 order by synIndex" }
          }; 
 
         public static DataCommand GetCommand(DataOperation operation)
@@ -83,5 +102,10 @@ namespace Myriad.Data
             return new SqlConnection(ConnectionString);
         }
         static readonly string ConnectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Trusted_Connection=Yes;";
+
+        internal static DataCommand CreateCommandFromQuery(string query)
+        {
+            return new DataCommand(query, Connection()); 
+        }
     }
 }

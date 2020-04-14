@@ -86,6 +86,12 @@ namespace Myriad.Parser
             }
         }
 
+        public static async Task AppendLink(HTMLWriter writer, Citation citation)
+        {
+            await PageFormatter.StartCitationAnchor(writer, citation);
+            await Append(writer, citation);
+            await writer.Append(HTMLTags.EndAnchor);
+        }
         private static async Task AppendNext(HTMLWriter writer, Citation precedingCitation, Citation currentCitation)
         {
             if (precedingCitation.CitationRange.Book != currentCitation.CitationRange.Book)

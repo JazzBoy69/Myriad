@@ -37,9 +37,9 @@ namespace Myriad.Parser
 
         public string ParsedText { get { return formatter.Result; } }
 
-        public MarkupParser(HTMLWriter builder)
+        public MarkupParser(HTMLWriter writer)
         {
-            formatter = new PageFormatter(builder);
+            formatter = new PageFormatter(writer);
             citationHandler = new CitationHandler();
             paragraphInfo.type = ParagraphType.Undefined;
         }

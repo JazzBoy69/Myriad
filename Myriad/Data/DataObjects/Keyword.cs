@@ -53,6 +53,12 @@ namespace Myriad.Data
             get { return trailingSymbols.AsSpan(); }
         }
 
+        public string TrailingSymbolString => trailingSymbols;
+
+        public string LeadingSymbolString => leadingSymbols;
+
+        public string TextString => text;
+
         public bool IsCapitalized
         {
             get { return isCapitalized; }

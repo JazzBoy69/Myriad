@@ -73,8 +73,13 @@ namespace Myriad.Pages
 
         public async Task<List<string>> GetPageParagraphs()
         {
+            return await GetPageParagraphs(pageInfo.ID);
+        }
+
+        public static async Task<List<string>> GetPageParagraphs(int id)
+        {
             var reader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadArticle), pageInfo.ID);
+                SqlServerInfo.GetCommand(DataOperation.ReadArticle), id);
             var results = await reader.GetData<string>();
             reader.Close();
             return results;
@@ -124,13 +129,18 @@ namespace Myriad.Pages
         {
             string idstring = query[queryKeyID];
             int id = Numbers.Convert(idstring);
+            string title = await ReadTitle(id);
+            return (title, id);
+        }
+
+        public static async Task<string> ReadTitle(int id)
+        {
             var titleReader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
             string title = await titleReader.GetDatum<string>();
             titleReader.Close();
-            return (title, id);
+            return title;
         }
-
         public override bool IsValid()
         {
             return (pageInfo.Title != null) && (pageInfo.ID != Result.error);
