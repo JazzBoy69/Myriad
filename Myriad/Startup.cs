@@ -109,33 +109,39 @@ namespace Myriad
 
             if ((path == SearchPage.pageURL) && (query.ContainsKey("q")))
             {
-                Citation citation = CitationConverter.FromString(query["q"])[Ordinals.first]; ;
-                if (citation.CitationType != CitationTypes.Invalid)
+                Citation citation = CitationConverter.FromString(query["q"])[Ordinals.first];
+                if (citation.CitationType == CitationTypes.Invalid)
                 {
-                    switch (citation.CitationType)
-                    {
-                        case CitationTypes.Chapter:
-                            {
-                                path = ChapterPage.pageURL;
-                                break;
-                            }
-                        case CitationTypes.Text:
-                            {
-                                path = TextPage.pageURL;
-                                break;
-                            }
-                        case CitationTypes.Verse:
-                            {
-                                path = VersePage.pageURL;
-                                break;
-                            }
-                    }
-                    query = new QueryCollection(new Dictionary<string, StringValues>()
+                    CommonPage searchPage = new SearchPage();
+                    await searchPage.LoadQueryInfo(query);
+                    if (!searchPage.IsValid()) searchPage = new IndexPage();
+                    searchPage.SetResponse(context.Response);
+                    return searchPage;
+                }
+
+                switch (citation.CitationType)
+                {
+                    case CitationTypes.Chapter:
+                        {
+                            path = ChapterPage.pageURL;
+                            break;
+                        }
+                    case CitationTypes.Text:
+                        {
+                            path = TextPage.pageURL;
+                            break;
+                        }
+                    case CitationTypes.Verse:
+                        {
+                            path = VersePage.pageURL;
+                            break;
+                        }
+                }
+                query = new QueryCollection(new Dictionary<string, StringValues>()
                     {
                         { "start", citation.CitationRange.StartID.ToString() },
                         {"end", citation.CitationRange.EndID.ToString() }
                     });
-                }
             }
 
             CommonPage page;

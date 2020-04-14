@@ -17,6 +17,8 @@ namespace Myriad.Pages
     public class SearchPage : CommonPage
     {
         public const string pageURL = "/Search";
+        public const string queryKeyQ = "q";
+        public const string queryKeyIDs = "ids";
         CitationRange citationRange;
         string query;
         string all;
@@ -32,12 +34,12 @@ namespace Myriad.Pages
 
         public override bool IsValid()
         {
-            return (query != null) && (idList != null);
+            return (query != null) || (idList != null);
         }
 
         public override async Task LoadQueryInfo(IQueryCollection query)
         {
-            if (query.ContainsKey("q"))
+            if (query.ContainsKey(queryKeyQ))
             {
                 string searchQuery = query["q"].ToString();
                 (CitationRange r, string q) = SearchRange(searchQuery);
@@ -45,7 +47,7 @@ namespace Myriad.Pages
                 this.query = await AllWords.Conform(q);
             }
             else this.query = "";
-            if (query.ContainsKey("ids"))
+            if (query.ContainsKey(queryKeyIDs))
             {
                 ids = query["ids"].ToString();
                 idList = ids.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -138,7 +140,7 @@ namespace Myriad.Pages
 
         protected override string PageScripts()
         {
-            throw new NotImplementedException();
+            return TextHTML.TextScripts;
         }
 
         public async override Task RenderBody(HTMLWriter writer)
@@ -277,9 +279,6 @@ namespace Myriad.Pages
             {
                 int id = entry.Value;
                 string word = entry.Key;
-
-                //Add tabs in parallel
-
                 await writer.Append("<li id=\"tabs0-");
                 await writer.Append(itemCount);
                 await writer.Append("-tab\" ");
@@ -351,22 +350,34 @@ namespace Myriad.Pages
             await writer.Append("</ul></div></section>");
         }
 
-
-
-
-        public override Task AddTOC(HTMLWriter writer)
+        public override async Task AddTOC(HTMLWriter writer)
         {
-            throw new NotImplementedException();
+            await writer.Append(HTMLTags.StartList+
+                HTMLTags.StartListItem+
+                HTMLTags.ID);
+            await writer.Append("link");
+            await writer.Append(HTMLTags.CloseQuoteEndTag +
+                HTMLTags.StartAnchor +
+                HTMLTags.HREF);
+            await writer.Append("#top");
+            await writer.Append(HTMLTags.EndTag);
+            await writer.Append("Top of page");
+            await writer.Append(HTMLTags.EndAnchor +
+                HTMLTags.EndListItem +
+                HTMLTags.EndList);
         }
 
         public override Task LoadTOCInfo(HttpContext context)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public override string GetQueryInfo()
         {
-            throw new NotImplementedException();
+            return (string.IsNullOrEmpty(ids)) ?
+                HTMLTags.StartQuery + queryKeyQ + query :
+                HTMLTags.StartQuery + queryKeyQ + query +
+                HTMLTags.Ampersand + queryKeyIDs + ids;
         }
     }
 }
