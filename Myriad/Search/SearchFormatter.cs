@@ -79,10 +79,10 @@ namespace Myriad.Search
             {
                 int start = word.WordIndex - 4;
                 if (start < 0) start = Ordinals.first;
-                if (startID == -1) startID = searchresultwords[start].ID;
+                if (startID == -1) startID = sentenceKeywords[start].ID;
                 int end = word.WordIndex + word.Length + 3;
                 if (end >= searchresultwords.Count) end = searchresultwords.Count - 1;
-                endID = searchresultwords[end].ID;
+                endID = sentenceKeywords[end].ID;
                 int highlight = word.WordIndex + word.Length - 1;
                 if (highlight >= searchresultwords.Count) highlight = searchresultwords.Count - 1;
                 if (word.ArticleID != -1)
@@ -142,13 +142,13 @@ namespace Myriad.Search
                 }
             }
             Citation citation = new Citation(startID, endID);
+            citation.CitationType = CitationTypes.Text;
             await CitationConverter.AppendLink(writer, citation);
             await writer.Append(": ");
             bool ellipsis = false;
 
             for (int idx = Ordinals.first; idx<searchresultwords.Count; idx++)
             {
-                idx++;
                 if (searchresultwords[idx].Erased)
                 {
                     if (endLinks.Contains(idx)) await writer.Append(HTMLTags.EndAnchor);

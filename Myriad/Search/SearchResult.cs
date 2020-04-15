@@ -69,13 +69,10 @@ namespace Myriad.Search
 
         public async Task Read(DbDataReader reader)
         {
-            if (reader.Read())
-            {
-                sentenceID = await reader.GetFieldValueAsync<int>(Ordinals.first);
-                wordIndex = await reader.GetFieldValueAsync<int>(Ordinals.second);
-                length = await reader.GetFieldValueAsync<int>(Ordinals.third);
-                queryIndex = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
-            }
+            sentenceID = await reader.GetFieldValueAsync<int>(Ordinals.first);
+            wordIndex = await reader.GetFieldValueAsync<int>(Ordinals.second);
+            length = await reader.GetFieldValueAsync<int>(Ordinals.third);
+            queryIndex = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
         }
 
         public void Create(DbCommand command)

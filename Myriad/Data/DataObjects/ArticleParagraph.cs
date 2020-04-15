@@ -28,12 +28,9 @@ namespace Myriad.Data
 
         public async Task Read(DbDataReader reader)
         {
-            if (reader.Read())
-            {
-                id = await reader.GetFieldValueAsync<int>(Ordinals.first);
-                index = await reader.GetFieldValueAsync<int>(Ordinals.second);
-                text = await reader.GetFieldValueAsync<string>(Ordinals.third);
-            }
+            id = await reader.GetFieldValueAsync<int>(Ordinals.first);
+            index = await reader.GetFieldValueAsync<int>(Ordinals.second);
+            text = await reader.GetFieldValueAsync<string>(Ordinals.third);
         }
 
         public object GetParameter(int index)

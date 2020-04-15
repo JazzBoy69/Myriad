@@ -75,7 +75,7 @@ namespace Myriad.Library
         {
             get
             {
-                return id / bookMulitiplier;
+                return (id & bookmask) >> 24;
             }
         }
 
@@ -83,7 +83,7 @@ namespace Myriad.Library
         {
             get
             {
-                return (id-Book*bookMulitiplier) / chapterMultiplier;
+                return (id & chaptermask) >> 16;
             }
         }
 
@@ -91,7 +91,7 @@ namespace Myriad.Library
         {
             get
             {
-                return (id - Book * bookMulitiplier-Chapter-chapterMultiplier)/verseMultiplier;
+                return (id & versemask) >> 8;
             }
         }
 

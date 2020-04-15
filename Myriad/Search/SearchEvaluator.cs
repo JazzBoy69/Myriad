@@ -27,6 +27,7 @@ namespace Myriad.Search
             // var ids = (from idstring in idStrings
             // select Numbers.Convert(idstring)).ToList();
             string rangeSelection = RangeSelection(citationRange);
+            bool needSynonymQuery = false;
             for (int index = Ordinals.first; index < phrases.Count; index++)
             {
                 if (EnglishDictionary.IsCommonWord(phrases[index]))
@@ -44,6 +45,7 @@ namespace Myriad.Search
 
                     if (synonyms[queryIndex].Count > 0)
                     {
+                        needSynonymQuery = true;
                         var synResults =
                             await ReadPhrasesResults(queryIndex, synonyms, rangeSelection);
                         searchResults.AddRange(synResults);
@@ -106,13 +108,17 @@ namespace Myriad.Search
                 await SetDistance(currentSentence, commonWordCommand);
                 //SetDistance(currentSentence, commonWords);
                 orSentences.Add(currentSentence);
-                filteredOrSentences = 
+                filteredOrSentences = (needSynonymQuery) ?
                     (from sentence in orSentences
                      where sentence.Score < 25 && sentence.Type > 1
                      orderby sentence.Type, sentence.Score
+                     select sentence).ToList() :
+                    (from sentence in orSentences
+                     where sentence.Score < 25
+                     orderby sentence.Type, sentence.Score
                      select sentence).ToList();
             }
-            return filteredOrSentences ?? new List<SearchSentence>();
+            return filteredOrSentences ?? new List<SearchSentence>(); //filteredOrSentences
         }
 
         private static string RangeSelection(CitationRange searchRange)
@@ -139,7 +145,7 @@ namespace Myriad.Search
 
         private static async Task<List<SearchResult>> ReadSearchResults(string query)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.CreateCommandFromQuery(query), -1);
+            var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(query));
             var result = await reader.GetClassData<SearchResult>();
             reader.Close();
             return result;

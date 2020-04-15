@@ -76,7 +76,7 @@ namespace Myriad.Data
                 "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" },
             {DataOperation.ReadKeywordSentence,
                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
-                " where sentence=@key1" },
+                " where sentenceID=@key1 order by keyid" },
             { DataOperation.ReadFromAllWords,
                 "select text from allwords where text=@key1" },
             { DataOperation.ReadRoots,
