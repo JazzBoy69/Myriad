@@ -143,7 +143,8 @@ namespace Myriad.Pages
             var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
             var searchEvaluator = new SearchEvaluator();
             await searchEvaluator.EvaluateSynonyms(phrases);
-            pageInfo.SetResults(await searchEvaluator.Search(phrases, pageInfo.CitationRange));
+            var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange);
+            pageInfo.SetResults(results);
             pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
             await SearchFormatter.FormatBody(writer, pageInfo);
             await AddPageTitleData(writer);

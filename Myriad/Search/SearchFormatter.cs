@@ -9,6 +9,10 @@ using Myriad.Library;
 using Myriad.Pages;
 using Myriad.Data;
 using Myriad.Parser;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
+using System.Runtime.CompilerServices;
+using System.ComponentModel.Design;
 
 namespace Myriad.Search
 {
@@ -41,11 +45,129 @@ namespace Myriad.Search
             await writer.Append(HTMLTags.CloseQuote +
                 HTMLTags.Class);
             await writer.Append("searchTabs");
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
         internal async static Task WriteDefinitionsBlock(HTMLWriter writer, SearchPageInfo pageInfo)
         {
-            //identify main definition
+            int mainDefinition = await IdentifyMainDefinition(pageInfo);
+            await StartDefinitionsTitles(writer);
+            bool active = false;
+            int itemCount = Ordinals.first;
+            Dictionary<string, int> headings = await GetDefinitionHeadings(pageInfo);
+            await WriteDefinitionHeadings(writer, mainDefinition, headings, pageInfo);
+            active = false;
+            itemCount = Ordinals.first;
+            MarkupParser parser = new MarkupParser(writer);
+            foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
+            {
+                int id = entry.Value;
+                bool setActive = (mainDefinition == Result.notfound) || (entry.Value == mainDefinition);
+                await StartDefinitionTab(writer, setActive, itemCount);
+                string definition = await GetArticleParagraph(id, Ordinals.first);
+                if (!string.IsNullOrEmpty(definition))
+                {
+                    await WriteDefinition(writer, parser, id, definition);
+                    List<(int id, int index)> usedParagraphs = new List<(int, int)>() { (id, 0) };
+                    foreach (int otherID in pageInfo.UsedDefinitions)
+                    {
+                        if (otherID == id) continue;
+                        parser.SetParagraphInfo(ParagraphType.Article, otherID);
+                        List<int> relatedParagraphIndices = await GetRelatedParagraphIndices(id, otherID);
+                        foreach (int paragraphIndex in relatedParagraphIndices)
+                        {
+                            (int id, int index) key = (id, paragraphIndex);
+                            if (usedParagraphs.Contains(key)) continue;
+                            usedParagraphs.Add(key);
+                            await WriteRelatedParagraph(writer, parser, otherID, paragraphIndex);
+                        }
+                    }
+                }
+                await writer.Append("<p class=\"definitionnav\">");
+                if ((!string.IsNullOrEmpty(definition)) &&
+                    (pageInfo.IDs != null) && (!pageInfo.IDs.Contains(id.ToString())))
+                {
+                    await writer.Append("<a HREF=" + SearchPage.pageURL + "?q=");
+                    await writer.Append(pageInfo.Query.Replace(' ', '+'));
+                    await writer.Append("&ids=");
+                    if (!string.IsNullOrEmpty(pageInfo.IDs))
+                    {
+                        await writer.Append(pageInfo.IDs);
+                        await writer.Append("+");
+                    }
+                    await writer.Append(id);
+                    await writer.Append(">Search&nbsp;for&nbsp;this&nbsp;definition</a> ");
+                }
+                await writer.Append("</li>");
+                itemCount++;
+            }
+            await writer.Append("</ul></div></section>");
+        }
+
+        private static async Task WriteRelatedParagraph(HTMLWriter writer, MarkupParser parser, int otherID, int paragraphIndex)
+        {
+            await writer.Append("<p class=\"definition\">");
+            string paragraphText = await GetArticleParagraph(otherID, paragraphIndex);
+            await parser.ParseParagraph(paragraphText, paragraphIndex);
+            await writer.Append("</p>");
+        }
+
+        private static async Task<List<int>> GetRelatedParagraphIndices(int id, int otherID)
+        {
+            var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
+                            DataOperation.ReadRelatedParagraphIndex), id, otherID);
+            List<int> paragraphs = await relatedReader.GetData<int>();
+            relatedReader.Close();
+            return paragraphs;
+        }
+
+        private static async Task WriteDefinition(HTMLWriter writer, MarkupParser parser, int id, string definition)
+        {
+            await writer.Append("<p class=\"definition\">");
+            parser.SetParagraphInfo(ParagraphType.Article, id);
+            await parser.ParseParagraph(definition, Ordinals.first);
+            await writer.Append("</p>");
+        }
+
+        private static async Task<string> GetArticleParagraph(int id, int index)
+        {
+            var reader = new DataReaderProvider<int, int>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
+                    id, index);
+
+            string definition = await reader.GetDatum<string>();
+            reader.Close();
+            return definition;
+        }
+
+        private static async Task StartDefinitionTab(HTMLWriter writer, bool setActive, int itemCount)
+        {
+            await writer.Append("<li id=\"tabs0-");
+            await writer.Append(itemCount);
+            await writer.Append("-tab\" ");
+            if (setActive)
+            {
+                 await writer.Append(" class=\"active\"");
+            }
+            await writer.Append(">");
+        }
+
+        private static async Task StartDefinitionsTitles(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithClass);
+            await writer.Append("definitionsheader");
+            await writer.Append(HTMLTags.CloseQuoteEndTag +
+                HTMLTags.StartList +
+                HTMLTags.ID);
+            await writer.Append("tabs0");
+            await writer.Append(HTMLTags.CloseQuote +
+                HTMLTags.Class);
+            await writer.Append("tabs");
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+        }
+
+        private static async Task<int> IdentifyMainDefinition(SearchPageInfo pageInfo)
+        {
             int mainDefinition = Result.notfound;
             int lowestIndex = 10000;
             var synonymReader = new DataReaderProvider<int>(
@@ -72,19 +194,11 @@ namespace Myriad.Search
                 }
             }
             synonymReader.Close();
-            //Add tabs
-            await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append("definitionsheader");
-            await writer.Append(HTMLTags.CloseQuoteEndTag +
-                HTMLTags.StartList +
-                HTMLTags.ID);
-            await writer.Append("tabs0");
-            await writer.Append(HTMLTags.CloseQuote +
-                HTMLTags.Class);
-            await writer.Append("tabs");
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
-            bool active = false;
-            int itemCount = Ordinals.first;
+            return mainDefinition;
+        }
+
+        private static async Task<Dictionary<string, int>> GetDefinitionHeadings(SearchPageInfo pageInfo)
+        {
             Dictionary<string, int> headings = new Dictionary<string, int>();
             foreach (int id in pageInfo.UsedDefinitions)
             {
@@ -98,7 +212,14 @@ namespace Myriad.Search
                 }
                 headings.Add(heading, id);
             }
+            return headings;
+        }
 
+        private static async Task WriteDefinitionHeadings(HTMLWriter writer, int mainDefinition, 
+            Dictionary<string, int> headings, SearchPageInfo pageInfo)
+        {
+            int itemCount = Ordinals.first;
+            bool active = false;
             foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
             {
                 int id = entry.Value;
@@ -136,86 +257,7 @@ namespace Myriad.Search
                 await writer.Append("</li>");
             }
             await writer.Append("</ul></div><div class='definitions'><ul id=\"tabs-0-tab\" class=\"tab\">");
-            active = false;
-            itemCount = Ordinals.first;
-            MarkupParser parser = new MarkupParser(writer);
-            foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
-            {
-                int id = entry.Value;
-                string word = entry.Key;
-                await writer.Append("<li id=\"tabs0-");
-                await writer.Append(itemCount);
-                await writer.Append("-tab\" ");
-                if (mainDefinition != Result.notfound)
-                {
-                    if (entry.Value == mainDefinition)
-                    {
-                        await writer.Append(" class=\"active\"");
-                        active = true;
-                    }
-                }
-                else
-                if (!active)
-                {
-                    await writer.Append("class=\"active\"");
-                    active = true;
-                }
-                var reader = new DataReaderProvider<int, int>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
-                    id, Ordinals.first);
-
-                string definition = await reader.GetDatum<string>();
-                reader.Close();
-                if (string.IsNullOrEmpty(definition)) await writer.Append(">");
-                else
-                {
-                    await writer.Append("><p class=\"definition\">");
-                    parser.SetParagraphInfo(ParagraphType.Article, id);
-                    await parser.ParseParagraph(definition, Ordinals.first);
-                    await writer.Append("</p>");
-                    List<(int id, int index)> usedParagraphs = new List<(int, int)>() { (id, 0) };
-                    foreach (int otherID in pageInfo.UsedDefinitions)
-                    {
-                        if (otherID == id) continue;
-                        var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
-                            DataOperation.ReadRelatedParagraphIndex), id, otherID);
-                        List<int> paragraphs = await reader.GetData<int>();
-                        relatedReader.Close();
-                        foreach (int paragraph in paragraphs)
-                        {
-                            (int id, int index) key = (id, paragraph);
-                            if (usedParagraphs.Contains(key)) continue;
-                            usedParagraphs.Add(key);
-                            await writer.Append("<p class=\"definition\">");
-                            reader.SetParameter(id, paragraph);
-                            await parser.ParseParagraph(await reader.GetDatum<string>(), paragraph);
-                            await writer.Append("</p>");
-                        }
-                    }
-                }
-                reader.Close();
-                await writer.Append("<p class=\"definitionnav\">");
-                if ((!string.IsNullOrEmpty(definition)) && 
-                    (pageInfo.IDs != null) && (!pageInfo.IDs.Contains(id.ToString())))
-                {
-                    await writer.Append("<a HREF=" + SearchPage.pageURL + "?q=");
-                    await writer.Append(pageInfo.Query.Replace(' ', '+'));
-                    await writer.Append("&ids=");
-                    if (!string.IsNullOrEmpty(pageInfo.IDs))
-                    {
-                        await writer.Append(pageInfo.IDs);
-                        await writer.Append("+");
-                    }
-                    await writer.Append(id);
-                    await writer.Append(">Search&nbsp;for&nbsp;this&nbsp;definition</a> ");
-                }
-                await writer.Append("</li>");
-                itemCount++;
-            }
-            await writer.Append("</ul></div></section>");
         }
-
-
         private async Task AppendSearchResults(HTMLWriter writer, List<SearchSentence> results)
         {
             await writer.Append(HTMLTags.StartDivWithID);
