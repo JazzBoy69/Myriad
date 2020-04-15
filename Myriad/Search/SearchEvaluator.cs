@@ -12,11 +12,16 @@ namespace Myriad.Search
 {
     public class SearchEvaluator
     {
+        bool needSynonymQuery = false;
+        List<int> usedDefinitions = new List<int>();
+        List<List<string>> synonyms = new List<List<string>>();
         private const string definitionSelector = @"select sentence, wordindex, id from definitionsearch
             where ";
-        internal async static Task<List<SearchSentence>> Search(List<string> phrases, 
-            CitationRange citationRange, List<List<string>> synonyms,
-            List<int> usedDefinitions)
+
+        public List<int> UsedDefinitions => usedDefinitions;
+
+        internal async Task<List<SearchSentence>> Search(List<string> phrases, 
+            CitationRange citationRange)
         {
             var commonWords = new List<string>();
             Dictionary<int, int> sentences = null;
@@ -77,48 +82,66 @@ namespace Myriad.Search
             Dictionary<(int, int), int> definitionSearchesInSentences =
                 await ReadDefinitionSearches(definitionQuery.ToString());
 
-            int lastSentence = -1;
-            SearchSentence currentSentence = null;
-            var orSentences = new List<SearchSentence>();
-            var commonWordCommand = CreateCommonWordQuery(commonWords);
-
-            foreach (SearchResult result in filteredResults)
-            {
-                if ((definitionSearchesInSentences != null) &&
-                    (definitionSearchesInSentences.ContainsKey(result.Key)))
-                    result.SetArticleID(definitionSearchesInSentences[result.Key]);
-                if (result.SentenceID != lastSentence)
-                {
-                    lastSentence = result.SentenceID;
-                    if (currentSentence != null)
-                    {
-                        await SetDistance(currentSentence, commonWordCommand);
-                        orSentences.Add(currentSentence);
-                    }
-                    currentSentence = new SearchSentence(
-                        result.SentenceID,
-                        queryIndex,
-                        sentences[result.SentenceID]);
-                }
-                currentSentence.Add(result);
-            }
-            List<SearchSentence> filteredOrSentences = null;
-            if (currentSentence != null)
-            {
-                await SetDistance(currentSentence, commonWordCommand);
-                //SetDistance(currentSentence, commonWords);
-                orSentences.Add(currentSentence);
-                filteredOrSentences = (needSynonymQuery) ?
-                    (from sentence in orSentences
-                     where sentence.Score < 25 && sentence.Type > 1
-                     orderby sentence.Type, sentence.Score
-                     select sentence).ToList() :
-                    (from sentence in orSentences
-                     where sentence.Score < 25
-                     orderby sentence.Type, sentence.Score
-                     select sentence).ToList();
-            }
+            List<SearchSentence> filteredOrSentences = 
+                await SetScores(commonWords, sentences, 
+                queryIndex, needSynonymQuery, filteredResults, 
+                definitionSearchesInSentences);
             return filteredOrSentences ?? new List<SearchSentence>(); //filteredOrSentences
+        }
+
+        private static async Task<List<SearchSentence>> SetScores(List<string> commonWords, Dictionary<int, int> sentences, int queryIndex, bool needSynonymQuery, List<SearchResult> filteredResults, Dictionary<(int, int), int> definitionSearchesInSentences)
+        {
+            try
+            {
+                int lastSentence = -1;
+                SearchSentence currentSentence = null;
+                var orSentences = new List<SearchSentence>();
+                var commonWordCommand = CreateCommonWordQuery(commonWords);
+
+                foreach (SearchResult result in filteredResults)
+                {
+                    if ((definitionSearchesInSentences != null) &&
+                        (definitionSearchesInSentences.ContainsKey(result.Key)))
+                        result.SetArticleID(definitionSearchesInSentences[result.Key]);
+                    if (result.SentenceID != lastSentence)
+                    {
+                        lastSentence = result.SentenceID;
+                        if (currentSentence != null)
+                        {
+                            await SetDistance(currentSentence, commonWordCommand);
+                            orSentences.Add(currentSentence);
+                        }
+                        currentSentence = new SearchSentence(
+                            result.SentenceID,
+                            queryIndex,
+                            sentences[result.SentenceID]);
+                    }
+                    currentSentence.Add(result);
+                }
+                List<SearchSentence> filteredOrSentences = null;
+                if (currentSentence != null)
+                {
+                    await SetDistance(currentSentence, commonWordCommand);
+                    //SetDistance(currentSentence, commonWords);
+                    orSentences.Add(currentSentence);
+                    filteredOrSentences = (needSynonymQuery) ?
+                        (from sentence in orSentences
+                         where sentence.Score < 25 && sentence.Type > 1
+                         orderby sentence.Type, sentence.Score
+                         select sentence).ToList() :
+                        (from sentence in orSentences
+                         where sentence.Score < 25
+                         orderby sentence.Type, sentence.Score
+                         select sentence).ToList();
+                }
+
+                return filteredOrSentences;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return new List<SearchSentence>();
+            }
         }
 
         private static string RangeSelection(CitationRange searchRange)
@@ -189,11 +212,8 @@ namespace Myriad.Search
             builder.Append(") ");
         }
 
-        internal static async Task<(bool needSynonymQuery, List<List<string>> synonyms)>
-            EvaluateSynonyms(List<string> phrases, List<int> usedDefinitions)
+        internal async Task EvaluateSynonyms(List<string> phrases)
         {
-            var synonyms = new List<List<string>>();
-            bool needSynonymQuery = false;
             foreach (string phrase in phrases)
             {
                 if (EnglishDictionary.IsCommonWord(phrase)) continue;
@@ -207,7 +227,6 @@ namespace Myriad.Search
 
                 usedDefinitions.AddRange(definitionIDs);
             }
-            return (needSynonymQuery, synonyms);
         }
 
         private static async Task<List<string>> GetSynonyms(List<int> definitionIDs, string root)
@@ -272,18 +291,26 @@ namespace Myriad.Search
         private static async Task SetDistance(SearchSentence currentSentence,
             string commonWordQuery)
         {
-            currentSentence.CalculateDistance();
-            if (string.IsNullOrEmpty(commonWordQuery)) return;
-            if ((currentSentence.Space < 1) || (currentSentence.Space > 7)) return;
-            List<int> wordIndices =
-                 await LookupCommonWords(commonWordQuery, currentSentence);
-            if (wordIndices.Count > Number.nothing)
+            try
             {
-                foreach (int index in wordIndices)
+                currentSentence.CalculateDistance();
+                if (string.IsNullOrEmpty(commonWordQuery)) return;
+                if ((currentSentence.Space < 1) || (currentSentence.Space > 7)) return;
+                return;
+                List<int> wordIndices =
+                    await LookupCommonWords(commonWordQuery, currentSentence);
+                if (wordIndices.Count > Number.nothing)
                 {
-                    currentSentence.Add(new SearchResult(currentSentence.SentenceID, index, 1, 0));
+                    foreach (int index in wordIndices)
+                    {
+                        currentSentence.Add(new SearchResult(currentSentence.SentenceID, index, 1, 0));
+                    }
+                    currentSentence.Type--;
                 }
-                currentSentence.Type--;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -298,12 +325,20 @@ and wordindex>@key2 and wordindex<@key3 and ");
 
         private static async Task<List<int>> LookupCommonWords(string query, SearchSentence sentence)
         {
-            var reader = new DataReaderProvider<int, int, int>(
-                SqlServerInfo.CreateCommandFromQuery(query), 
-                sentence.SentenceID,
-                sentence.FirstPosition,
-                sentence.LastPosition);
-            return await reader.GetData<int>();
+            try
+            {
+                var reader = new DataReaderProvider<int, int, int>(
+                    SqlServerInfo.CreateCommandFromQuery(query),
+                    sentence.SentenceID,
+                    sentence.FirstPosition,
+                    sentence.LastPosition);
+                return await reader.GetData<int>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return new List<int>();
+            }
         }
 
     }

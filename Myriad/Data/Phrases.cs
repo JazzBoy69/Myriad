@@ -11,7 +11,7 @@ namespace Myriad.Data
     public class Phrases
     {
         //todo refactor this class
-        internal static async Task<List<string>> GetPhrases(List<string> words)
+        internal static async Task<List<string>> GetPhrases(List<string> words) //todo refactor
         {
             var result = new List<string>();
             if (words.Count == 1)
@@ -46,30 +46,29 @@ namespace Myriad.Data
             }
             return result;
         }
-
-        internal static async Task<bool> Compare(List<string> roots, int index, string testPhrase)
+        //todo refactor
+        internal static async Task<bool> Compare(List<string> words, int index, string testPhrase)
         {
             string[] testWords = testPhrase.Split(new char[] { ' ' });
-            if ((index + testWords.Length) > roots.Count) return false;
+            if ((index + testWords.Length) > words.Count) return false;
             int testIndex = Ordinals.first;
             while (testIndex < testWords.Length)
             {
-                if (roots[testIndex] != testWords[testIndex]) break;
+                if (words[testIndex] != testWords[testIndex]) break;
                 testIndex++;
             }
             if (testIndex >= testWords.Length) return true;
             testIndex = Ordinals.first;
             while (testIndex < testWords.Length)
             {
-                var testRoots = await Inflections.RootsOf(testWords[testIndex]);
-                if (!testRoots.Contains(roots[index + testIndex]))
+                var testWordRoots = await Inflections.RootsOf(testWords[testIndex]);
+                if (!testWordRoots.Contains(words[index + testIndex]))
                 {
                     bool found = false;
-
-                    foreach (string root in testRoots.Distinct())
+                    var offsetRoots = await Inflections.RootsOf(words[index + testIndex]);
+                    foreach (string root in offsetRoots.Distinct())
                     {
-                        var rootsToTry = await Inflections.RootsOf(testWords[testIndex]);
-                        if (rootsToTry.Contains(root))
+                        if (testWordRoots.Contains(root))
                         {
                             found = true;
                             break;

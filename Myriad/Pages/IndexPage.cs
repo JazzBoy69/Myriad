@@ -108,7 +108,8 @@ SetupPartialPageLoad();
         {
             var command = SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle);
             var reader = new DataReaderProvider<string>(command, name);
-            await writer.Append(await reader.GetDatum<string>());
+            string title = await reader.GetDatum<string>();
+            await writer.Append(title);
             reader.Close();
             command.Connection.Close();
         }

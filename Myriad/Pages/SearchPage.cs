@@ -19,13 +19,9 @@ namespace Myriad.Pages
         public const string pageURL = "/Search";
         public const string queryKeyQ = "q";
         public const string queryKeyIDs = "ids";
-        CitationRange citationRange;
-        string query;
-        string all;
-        List<string> idList;
-        string ids;
-        List<SearchSentence> results;
-        List<int> usedDefinitions;
+
+        SearchPageInfo pageInfo = new SearchPageInfo();
+
         //todo implement search page
         public override string GetURL()
         {
@@ -34,7 +30,7 @@ namespace Myriad.Pages
 
         public override bool IsValid()
         {
-            return (query != null) || (idList != null);
+            return (pageInfo.Query != null) || (pageInfo.IDList != null);
         }
 
         public override async Task LoadQueryInfo(IQueryCollection query)
@@ -43,18 +39,13 @@ namespace Myriad.Pages
             {
                 string searchQuery = query["q"].ToString();
                 (CitationRange r, string q) = SearchRange(searchQuery);
-                citationRange = r;
-                this.query = await AllWords.Conform(q);
+                pageInfo.SetCitationRange(r);
+                pageInfo.SetQuery(await AllWords.Conform(q));
             }
-            else this.query = "";
             if (query.ContainsKey(queryKeyIDs))
             {
-                ids = query["ids"].ToString();
-                idList = ids.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
-            }
-            else
-            {
-                ids = "";
+                pageInfo.SetIDs(query["ids"].ToString());
+  
             }
         }
 
@@ -139,7 +130,7 @@ namespace Myriad.Pages
         protected override async Task WriteTitle(HTMLWriter writer)
         {
             await writer.Append("Search: ");
-            await writer.Append(query);
+            await writer.Append(pageInfo.Query);
         }
 
         protected override string PageScripts()
@@ -149,209 +140,13 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
-            usedDefinitions = new List<int>();
-            var phrases = await Phrases.GetPhrases(
-                query.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList());
-            (bool needSynonymQuery, List<List<string>> synonyms) =
-                await SearchEvaluator.EvaluateSynonyms(phrases, usedDefinitions);
-            results = await SearchEvaluator.Search(phrases, citationRange, synonyms, usedDefinitions);
-            await FormatBody(writer);
-        }
-
-        internal async Task FormatBody(HTMLWriter writer)
-        {
-            await writer.Append("<a ID=querystring class=hidden href=");
-            await writer.Append(query.Replace(' ', '_'));
-            await writer.Append(">");
-            await writer.Append(HTMLTags.EndAnchor);
-            await writer.Append(HTMLTags.StartDivWithID);
-            await writer.Append("definitionDiv");
-            await writer.Append(HTMLTags.CloseQuote +
-                HTMLTags.Class);
-            await writer.Append("searchTabs");
-
-            await AppendDefinitionsBlock(writer, usedDefinitions.Distinct().ToList(), idList, query);
-            await writer.Append(HTMLTags.EndDiv);
-            await SearchFormatter.AppendSearchResults(0, 100, writer, results);
-            await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append("synresults");
-            await writer.Append(HTMLTags.CloseQuoteEndTag +
-                HTMLTags.EndDiv +
-                HTMLTags.EndDiv);
+            var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
+            var searchEvaluator = new SearchEvaluator();
+            await searchEvaluator.EvaluateSynonyms(phrases);
+            pageInfo.SetResults(await searchEvaluator.Search(phrases, pageInfo.CitationRange));
+            pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
+            await SearchFormatter.FormatBody(writer, pageInfo);
             await AddPageTitleData(writer);
-        }
-
-
-        internal async Task AppendDefinitionsBlock(HTMLWriter writer, List<int> definitions, List<string> searchIDs, string query)
-        { 
-            string[] words = query.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries);
-            //identify main definition
-            int mainDefinition = Result.notfound;
-            int lowestIndex = 10000;
-            var synonymReader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadSynonymsFromID),
-                -1);
-            foreach (int id in definitions)
-            {
-                synonymReader.SetParameter(id);
-                List<string> synonyms = await synonymReader.GetData<string>();
-                if (synonyms.Count == 0) continue;
-                int synIndex = Ordinals.first;
-                foreach (string synonym in synonyms)
-                {
-                    if (query.Contains(synonym))
-                    {
-                        if (synIndex < lowestIndex)
-                        {
-                            lowestIndex = synIndex;
-                            mainDefinition = id;
-                            break;
-                        }
-                    }
-                    synIndex++;
-                }
-            }
-            synonymReader.Close();
-            //Add tabs
-            await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append("definitionsheader");
-            await writer.Append(HTMLTags.CloseQuoteEndTag +
-                HTMLTags.StartList +
-                HTMLTags.ID);
-            await writer.Append("tabs0");
-            await writer.Append(HTMLTags.CloseQuote +
-                HTMLTags.Class);
-            await writer.Append("tabs");
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
-            bool active = false;
-            int itemCount = Ordinals.first;
-            Dictionary<string, int> headings = new Dictionary<string, int>();
-            foreach (int id in definitions)
-            {
-                string title = await ArticlePage.ReadTitle(id);
-                int count = 1;
-                string heading = title;
-                while (headings.ContainsKey(heading))
-                {
-                    count++;
-                    heading = title + ' ' + count;
-                }
-                headings.Add(heading, id);
-            }
-
-            foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
-            {
-                int id = entry.Value;
-                string word = entry.Key;
-                await writer.Append("<li id=\"tabs0-");
-                await writer.Append(itemCount);
-                await writer.Append("\"");
-                if (mainDefinition != Result.notfound)
-                {
-                    if (entry.Value == mainDefinition)
-                    {
-                        await writer.Append(" class=\"active\"");
-                        active = true;
-                    }
-                }
-                else
-                if (!active)
-                {
-                    await writer.Append(" class=\"active\"");
-                    active = true;
-                }
-                await writer.Append(">");
-                await writer.Append(word);
-                await writer.Append("</li>");
-                itemCount++;
-            }
-            if (!string.IsNullOrEmpty(query))
-            {
-                await writer.Append("<li id=\"tabs0-");
-                await writer.Append(itemCount);
-                await writer.Append("\"");
-                if (!active) await writer.Append(" class='active'");
-                await writer.Append(">");
-                await writer.Append("Add New Article");
-                await writer.Append("</li>");
-            }
-            await writer.Append("</ul></div><div class='definitions'><ul id=\"tabs-0-tab\" class=\"tab\">");
-            active = false;
-            itemCount = Ordinals.first;
-            MarkupParser parser = new MarkupParser(writer);
-            foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
-            {
-                int id = entry.Value;
-                string word = entry.Key;
-                await writer.Append("<li id=\"tabs0-");
-                await writer.Append(itemCount);
-                await writer.Append("-tab\" ");
-                if (mainDefinition != Result.notfound)
-                {
-                    if (entry.Value == mainDefinition)
-                    {
-                        await writer.Append(" class=\"active\"");
-                        active = true;
-                    }
-                }
-                else
-                if (!active)
-                {
-                    await writer.Append("class=\"active\"");
-                    active = true;
-                }
-                var reader = new DataReaderProvider<int, int>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
-                    id, Ordinals.first);
-
-                string definition = await reader.GetDatum<string>();
-                reader.Close();
-                if (string.IsNullOrEmpty(definition)) await writer.Append(">");
-                else
-                {
-                    await writer.Append("><p class=\"definition\">");
-                    parser.SetParagraphInfo(ParagraphType.Article, id);
-                    await parser.ParseParagraph(definition, Ordinals.first);
-                    await writer.Append("</p>");
-                    List<Tuple<int, int>> usedParagraphs = new List<Tuple<int, int>>() { Tuple.Create(id, 0) };
-                    foreach (int otherID in definitions)
-                    {
-                        if (otherID == id) continue;
-                        var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
-                            DataOperation.ReadRelatedParagraphIndex), id, otherID);
-                        List<int> paragraphs = await reader.GetData<int>();
-                        relatedReader.Close();
-                        foreach (int paragraph in paragraphs)
-                        {
-                            Tuple<int, int> key = Tuple.Create(id, paragraph);
-                            if (usedParagraphs.Contains(key)) continue;
-                            usedParagraphs.Add(key);
-                            await writer.Append("<p class=\"definition\">");
-                            reader.SetParameter(id, paragraph);
-                            await parser.ParseParagraph(await reader.GetDatum<string>(), paragraph);
-                            await writer.Append("</p>");
-                        }
-                    }
-                }
-                reader.Close();
-                await writer.Append("<p class=\"definitionnav\">");
-                if ((!string.IsNullOrEmpty(definition)) && (!ids.Contains(id.ToString())))
-                {
-                    await writer.Append("<a HREF=" + SearchPage.pageURL + "?q=");
-                    await writer.Append(query.Replace(' ', '+'));
-                    await writer.Append("&ids=");
-                    if (!string.IsNullOrEmpty(ids))
-                    {
-                        await writer.Append(ids);
-                        await writer.Append("+");
-                    }
-                    await writer.Append(id);
-                    await writer.Append(">Search&nbsp;for&nbsp;this&nbsp;definition</a> ");
-                }
-                await writer.Append("</li>");
-                itemCount++;
-            }
-            await writer.Append("</ul></div></section>");
         }
 
         public override async Task AddTOC(HTMLWriter writer)
@@ -378,10 +173,10 @@ namespace Myriad.Pages
 
         public override string GetQueryInfo()
         {
-            return (string.IsNullOrEmpty(ids)) ?
-                HTMLTags.StartQuery + queryKeyQ + query :
-                HTMLTags.StartQuery + queryKeyQ + query +
-                HTMLTags.Ampersand + queryKeyIDs + ids;
+            return (string.IsNullOrEmpty(pageInfo.IDs)) ?
+                HTMLTags.StartQuery + queryKeyQ + pageInfo.Query :
+                HTMLTags.StartQuery + queryKeyQ + pageInfo.Query +
+                HTMLTags.Ampersand + queryKeyIDs + pageInfo.IDs;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using Feliciana.Library;
 using Feliciana.HTML;
 using Feliciana.Data;
@@ -13,6 +14,208 @@ namespace Myriad.Search
 {
     internal class SearchFormatter
     {
+        internal static async Task FormatBody(HTMLWriter writer, SearchPageInfo pageInfo)
+        {
+            await WriteInitialHTML(writer, pageInfo);
+
+            await WriteDefinitionsBlock(writer, pageInfo);
+            await writer.Append(HTMLTags.EndDiv);
+
+            await AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
+
+            await writer.Append(HTMLTags.StartDivWithClass);
+            await writer.Append("synresults");
+            await writer.Append(HTMLTags.CloseQuoteEndTag +
+                HTMLTags.EndDiv +
+                HTMLTags.EndDiv);
+        }
+
+        private static async Task WriteInitialHTML(HTMLWriter writer, SearchPageInfo pageInfo)
+        {
+            await writer.Append("<a ID=querystring class=hidden href=");
+            await writer.Append(pageInfo.Query.Replace(' ', '_'));
+            await writer.Append(">");
+            await writer.Append(HTMLTags.EndAnchor);
+            await writer.Append(HTMLTags.StartDivWithID);
+            await writer.Append("definitionDiv");
+            await writer.Append(HTMLTags.CloseQuote +
+                HTMLTags.Class);
+            await writer.Append("searchTabs");
+        }
+
+        internal async static Task WriteDefinitionsBlock(HTMLWriter writer, SearchPageInfo pageInfo)
+        {
+            //identify main definition
+            int mainDefinition = Result.notfound;
+            int lowestIndex = 10000;
+            var synonymReader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadSynonymsFromID),
+                -1);
+            foreach (int id in pageInfo.UsedDefinitions)
+            {
+                synonymReader.SetParameter(id);
+                List<string> synonyms = await synonymReader.GetData<string>();
+                if (synonyms.Count == 0) continue;
+                int synIndex = Ordinals.first;
+                foreach (string synonym in synonyms)
+                {
+                    if (pageInfo.Query.Contains(synonym))
+                    {
+                        if (synIndex < lowestIndex)
+                        {
+                            lowestIndex = synIndex;
+                            mainDefinition = id;
+                            break;
+                        }
+                    }
+                    synIndex++;
+                }
+            }
+            synonymReader.Close();
+            //Add tabs
+            await writer.Append(HTMLTags.StartDivWithClass);
+            await writer.Append("definitionsheader");
+            await writer.Append(HTMLTags.CloseQuoteEndTag +
+                HTMLTags.StartList +
+                HTMLTags.ID);
+            await writer.Append("tabs0");
+            await writer.Append(HTMLTags.CloseQuote +
+                HTMLTags.Class);
+            await writer.Append("tabs");
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            bool active = false;
+            int itemCount = Ordinals.first;
+            Dictionary<string, int> headings = new Dictionary<string, int>();
+            foreach (int id in pageInfo.UsedDefinitions)
+            {
+                string title = await ArticlePage.ReadTitle(id);
+                int count = 1;
+                string heading = title;
+                while (headings.ContainsKey(heading))
+                {
+                    count++;
+                    heading = title + ' ' + count;
+                }
+                headings.Add(heading, id);
+            }
+
+            foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
+            {
+                int id = entry.Value;
+                string word = entry.Key;
+                await writer.Append("<li id=\"tabs0-");
+                await writer.Append(itemCount);
+                await writer.Append("\"");
+                if (mainDefinition != Result.notfound)
+                {
+                    if (entry.Value == mainDefinition)
+                    {
+                        await writer.Append(" class=\"active\"");
+                        active = true;
+                    }
+                }
+                else
+                if (!active)
+                {
+                    await writer.Append(" class=\"active\"");
+                    active = true;
+                }
+                await writer.Append(">");
+                await writer.Append(word);
+                await writer.Append("</li>");
+                itemCount++;
+            }
+            if (!string.IsNullOrEmpty(pageInfo.Query))
+            {
+                await writer.Append("<li id=\"tabs0-");
+                await writer.Append(itemCount);
+                await writer.Append("\"");
+                if (!active) await writer.Append(" class='active'");
+                await writer.Append(">");
+                await writer.Append("Add New Article");
+                await writer.Append("</li>");
+            }
+            await writer.Append("</ul></div><div class='definitions'><ul id=\"tabs-0-tab\" class=\"tab\">");
+            active = false;
+            itemCount = Ordinals.first;
+            MarkupParser parser = new MarkupParser(writer);
+            foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
+            {
+                int id = entry.Value;
+                string word = entry.Key;
+                await writer.Append("<li id=\"tabs0-");
+                await writer.Append(itemCount);
+                await writer.Append("-tab\" ");
+                if (mainDefinition != Result.notfound)
+                {
+                    if (entry.Value == mainDefinition)
+                    {
+                        await writer.Append(" class=\"active\"");
+                        active = true;
+                    }
+                }
+                else
+                if (!active)
+                {
+                    await writer.Append("class=\"active\"");
+                    active = true;
+                }
+                var reader = new DataReaderProvider<int, int>(
+                    SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
+                    id, Ordinals.first);
+
+                string definition = await reader.GetDatum<string>();
+                reader.Close();
+                if (string.IsNullOrEmpty(definition)) await writer.Append(">");
+                else
+                {
+                    await writer.Append("><p class=\"definition\">");
+                    parser.SetParagraphInfo(ParagraphType.Article, id);
+                    await parser.ParseParagraph(definition, Ordinals.first);
+                    await writer.Append("</p>");
+                    List<(int id, int index)> usedParagraphs = new List<(int, int)>() { (id, 0) };
+                    foreach (int otherID in pageInfo.UsedDefinitions)
+                    {
+                        if (otherID == id) continue;
+                        var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
+                            DataOperation.ReadRelatedParagraphIndex), id, otherID);
+                        List<int> paragraphs = await reader.GetData<int>();
+                        relatedReader.Close();
+                        foreach (int paragraph in paragraphs)
+                        {
+                            (int id, int index) key = (id, paragraph);
+                            if (usedParagraphs.Contains(key)) continue;
+                            usedParagraphs.Add(key);
+                            await writer.Append("<p class=\"definition\">");
+                            reader.SetParameter(id, paragraph);
+                            await parser.ParseParagraph(await reader.GetDatum<string>(), paragraph);
+                            await writer.Append("</p>");
+                        }
+                    }
+                }
+                reader.Close();
+                await writer.Append("<p class=\"definitionnav\">");
+                if ((!string.IsNullOrEmpty(definition)) && 
+                    (pageInfo.IDs != null) && (!pageInfo.IDs.Contains(id.ToString())))
+                {
+                    await writer.Append("<a HREF=" + SearchPage.pageURL + "?q=");
+                    await writer.Append(pageInfo.Query.Replace(' ', '+'));
+                    await writer.Append("&ids=");
+                    if (!string.IsNullOrEmpty(pageInfo.IDs))
+                    {
+                        await writer.Append(pageInfo.IDs);
+                        await writer.Append("+");
+                    }
+                    await writer.Append(id);
+                    await writer.Append(">Search&nbsp;for&nbsp;this&nbsp;definition</a> ");
+                }
+                await writer.Append("</li>");
+                itemCount++;
+            }
+            await writer.Append("</ul></div></section>");
+        }
+
+
         private async Task AppendSearchResults(HTMLWriter writer, List<SearchSentence> results)
         {
             await writer.Append(HTMLTags.StartDivWithID);
@@ -113,7 +316,6 @@ namespace Myriad.Search
                     if (word.Length > 1)
                     {
                         int i = word.WordIndex + 1;
-                        string trailing = "";
                         while ((i < word.WordIndex + word.Length) && (i < searchresultwords.Count))
                         {
                             searchresultwords[i].Erased = true;
