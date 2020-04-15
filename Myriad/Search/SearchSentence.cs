@@ -22,7 +22,10 @@ namespace Myriad.Search
         public int Space
         { get { return space; } }
 
-        public int Type { get { return type; } internal set { type = value; } }
+        public int Type { get { return type; } }
+        public int WordCount => wordCount;
+        public List<int> WordCounts => wordCounts;
+
         public SearchSentence(int sentenceID, int wordCount)
         {
             this.sentenceID = sentenceID;
@@ -35,7 +38,15 @@ namespace Myriad.Search
                 index++;
             }
         }
+        public void SetType(int typeNumber)
+        {
+            type = typeNumber;
+        }
 
+        public void SetScore(int score)
+        {
+            this.score = score;
+        }
         public SearchSentence(int sentenceID, int wordCount, int sentenceType)
         {
             type = sentenceType;
@@ -63,19 +74,11 @@ namespace Myriad.Search
         ///         
         internal void Add(SearchResult searchResult)
         {
-            try
-            {
-                if (searchResult.QueryIndex >= wordLists.Count) return;
-                totalWeight += searchResult.Weight;
-                wordLists[searchResult.QueryIndex].Add(searchResult);
-                wordCounts[searchResult.QueryIndex]++;
-                wordPositions.Add(new WordPosition(searchResult.WordIndex,
-                    searchResult.QueryIndex, searchResult.Length));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            if (searchResult.QueryIndex >= wordLists.Count) return;
+            wordLists[searchResult.QueryIndex].Add(searchResult);
+            wordCounts[searchResult.QueryIndex]++;
+            wordPositions.Add(new WordPosition(searchResult.WordIndex,
+                searchResult.QueryIndex, searchResult.Length));
         }
         internal void Add(SearchResult searchResult, int queryIndex)
         {
@@ -84,134 +87,6 @@ namespace Myriad.Search
             wordLists[queryIndex].Add(searchResult);
             wordCounts[queryIndex]++;
             wordPositions.Add(new WordPosition(searchResult.WordIndex, queryIndex, searchResult.Length));
-        }
-
-        internal void CalculateScoreNew()
-        {
-            if (wordCount > 1)
-            {
-                //If there is a word missing return a really bad score
-                foreach (int count in wordCounts)
-                {
-                    if (count == 0)
-                    {
-                        score = -20000;
-                        return;
-                    }
-                }
-
-                int extra = wordPositions.Count - wordCount;
-                wordPositions.Sort();
-                //Find smallest union of search phrases
-                if (extra > 0)
-                {
-                    WordPosition first = wordPositions.First();
-                    WordPosition last = wordPositions.Last();
-                    while ((wordPositions.Count > wordCount) && ((wordCounts[first.QueryIndex] > 1) ||
-                        (wordCounts[last.QueryIndex] > 1)))
-                    {
-                        int low = 1000000;
-                        int high = 1000000;
-                        if (wordCounts[first.QueryIndex] > 1)
-                        {
-                            low = last.WordIndex - wordPositions.ElementAt(Ordinals.second).WordIndex;
-                        }
-                        if (wordCounts[last.QueryIndex] > 1)
-                        {
-                            high = wordPositions.ElementAt(wordPositions.Count - 2).WordIndex - first.WordIndex;
-                        }
-                        if (low < high)
-                        {
-                            wordCounts[first.QueryIndex]--;
-                            wordPositions.RemoveAt(Ordinals.first);
-                            first = wordPositions.First();
-                        }
-                        else
-                        {
-                            wordCounts[last.QueryIndex]--;
-                            wordPositions.RemoveAt(wordPositions.Count - 1);
-                            last = wordPositions.Last();
-                        }
-                    }
-                }
-                int coverage = 0;
-                foreach (WordPosition entry in wordPositions) coverage += entry.Length;
-                int space = (wordPositions.Last().WordIndex - wordPositions.First().WordIndex + 1) - coverage;
-                //test how ordered the results are
-                int disorder = EditDistance();
-                if ((space <= 0) && (disorder == 0))
-                    score = 100000000 + totalWeight;
-                else
-                    score = 20000 + totalWeight - (space * 1000) - (disorder * 1000);
-            }
-            else //calculate score for single word query
-            {
-                score = 5000;
-                if (wordLists.Count > Number.nothing)
-                {
-                    foreach (SearchResult word in wordLists[Ordinals.first])
-                    {
-                        score += word.Weight;
-                    }
-                }
-            }
-        }
-
-        internal void CalculateDistance()
-        {
-            if (wordCount == 1) //todo weight single word searches
-            {
-                score = 0;
-                return;
-            }
-            try
-            {
-                int extra = wordPositions.Count - wordCount;
-                wordPositions.Sort();
-                //Find smallest union of search phrases
-                if (extra > 0)
-                {
-                    WordPosition first = wordPositions.First();
-                    WordPosition last = wordPositions.Last();
-                    while ((wordPositions.Count > wordCount) && ((wordCounts[first.QueryIndex] > 1) ||
-                        (wordCounts[last.QueryIndex] > 1)))
-                    {
-                        int low = 1000000;
-                        int high = 1000000;
-                        if (wordCounts[first.QueryIndex] > 1)
-                        {
-                            low = last.WordIndex - wordPositions.ElementAt(Ordinals.second).WordIndex;
-                        }
-                        if (wordCounts[last.QueryIndex] > 1)
-                        {
-                            high = wordPositions.ElementAt(wordPositions.Count - 2).WordIndex - first.WordIndex;
-                        }
-                        if (low < high)
-                        {
-                            wordCounts[first.QueryIndex]--;
-                            wordPositions.RemoveAt(Ordinals.first);
-                            first = wordPositions.First();
-                        }
-                        else
-                        {
-                            wordCounts[last.QueryIndex]--;
-                            wordPositions.RemoveAt(wordPositions.Count - 1);
-                            last = wordPositions.Last();
-                        }
-                    }
-                }
-                int coverage = 0;
-                foreach (WordPosition entry in wordPositions) coverage += entry.Length;
-                space = (wordPositions.Last().WordIndex - wordPositions.First().WordIndex + 1) - coverage;
-                if ((space < 0) || (space > 7)) space = 300;
-                //test how ordered the results are
-                int disorder = EditDistance();
-                score = space + disorder;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
         }
 
         internal int FirstPosition
@@ -299,6 +174,13 @@ namespace Myriad.Search
         public int SentenceID { get { return sentenceID; } }
 
         public int WordsCount { get { return words.Count; } }
+
+        public List<WordPosition> WordPositions => wordPositions;
+
+        internal void Sort()
+        {
+            wordPositions.Sort();
+        }
     }
 
 }

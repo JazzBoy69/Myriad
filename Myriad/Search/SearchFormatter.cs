@@ -85,7 +85,7 @@ namespace Myriad.Search
                 }
                 await writer.Append("<p class=\"definitionnav\">");
                 if ((!string.IsNullOrEmpty(definition)) &&
-                    (pageInfo.IDs != null) && (!pageInfo.IDs.Contains(id.ToString())))
+                  ((pageInfo.IDs == null) || (!pageInfo.IDs.Contains(id.ToString()))))
                 {
                     await writer.Append("<a HREF=" + SearchPage.pageURL + "?q=");
                     await writer.Append(pageInfo.Query.Replace(' ', '+'));
