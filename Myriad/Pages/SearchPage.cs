@@ -135,7 +135,7 @@ namespace Myriad.Pages
 
         protected override string PageScripts()
         {
-            return TextHTML.TextScripts;
+            return Scripts.Search;
         }
 
         public async override Task RenderBody(HTMLWriter writer)

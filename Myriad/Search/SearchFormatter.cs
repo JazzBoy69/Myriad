@@ -36,10 +36,9 @@ namespace Myriad.Search
 
         private static async Task WriteInitialHTML(HTMLWriter writer, SearchPageInfo pageInfo)
         {
-            await writer.Append("<a ID=querystring class=hidden href=");
-            await writer.Append(pageInfo.Query.Replace(' ', '_'));
-            await writer.Append(">");
-            await writer.Append(HTMLTags.EndAnchor);
+            await writer.Append("<div ID=querystring class=hidden>");
+            await writer.Append(pageInfo.Query);
+            await writer.Append(HTMLTags.EndDiv);
             await writer.Append(HTMLTags.StartDivWithID);
             await writer.Append("definitionDiv");
             await writer.Append(HTMLTags.CloseQuote +
@@ -98,6 +97,11 @@ namespace Myriad.Search
                     await writer.Append(id);
                     await writer.Append(">Search&nbsp;for&nbsp;this&nbsp;definition</a> ");
                 }
+                await writer.Append("<a HREF=" + ArticlePage.pageURL + "?q=");
+                await writer.Append(pageInfo.Query.Replace(' ', '+'));
+                await writer.Append("&id=");
+                await writer.Append(id);
+                await writer.Append(">Read&nbsp;more&hellip;</a></p>");
                 await writer.Append("</li>");
                 itemCount++;
             }
@@ -238,12 +242,16 @@ namespace Myriad.Search
                 else
                 if (!active)
                 {
-                    await writer.Append(" class=\"active\"");
+                    await writer.Append(HTMLTags.Class+
+                        HTMLClasses.active+
+                        HTMLTags.CloseQuote);
                     active = true;
                 }
-                await writer.Append(">");
+                await writer.Append(HTMLTags.OnClick);
+                await writer.Append(JavaScriptFunctions.HandleDefinitionClick);
+                await writer.Append(HTMLTags.EndTag);
                 await writer.Append(word);
-                await writer.Append("</li>");
+                await writer.Append(HTMLTags.EndListItem);
                 itemCount++;
             }
             if (!string.IsNullOrEmpty(pageInfo.Query))

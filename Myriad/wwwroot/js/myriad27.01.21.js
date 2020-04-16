@@ -8,8 +8,6 @@ function SetupPartialPageLoad() {
     }
 }
 
-//todo handle reading view events
-
 function HandleLink(event) {
     event.preventDefault(); 
     LoadPage(event.target.href);
@@ -110,6 +108,19 @@ function CurrentPath() {
 
 function HasQuery(path) {
     return path.indexOf('?') !== -1;
+}
+
+function DefinitionTabClick(target) {
+    if (!target.classList.contains('active')) {
+        var tabID = target.id + "-tab";
+        target.classList.add('active');
+        var siblings = getSiblings(target);
+        RemoveClassFromGroup(siblings, 'active');
+        var relatedTab = document.getElementById(tabID);
+        relatedTab.classList.add('active');
+        var relatedSiblings = getSiblings(relatedTab);
+        RemoveClassFromGroup(relatedSiblings, 'active');
+    }
 }
 
 function SetupCopytoClipboardWithLabel() {

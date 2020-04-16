@@ -13,26 +13,6 @@ using Myriad.Formatter;
 
 namespace Myriad.Pages
 {
-    public struct TextHTML
-    {
-        public const string TextScripts = @"
-<script>
-   window.onload = function () {
-    AddShortcut();
-    SetupIndex();
-SetupPartialPageLoad();
-};
-    </script>";
-    }
-
-    /*        
-    SetThisVerseAsTarget();
-    SetupPagination(); 
-    HandleReadingView();
-    ScrollToTarget();
-
-    */
-
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
@@ -65,7 +45,7 @@ SetupPartialPageLoad();
 
         protected override string PageScripts()
         {
-            return TextHTML.TextScripts;
+            return Scripts.Text;
         }
 
         public async override Task RenderBody(HTMLWriter writer)

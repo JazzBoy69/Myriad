@@ -12,5 +12,6 @@ namespace Myriad.Library
         internal const string OpenModalPicture = "OpenModalPicture(event)";
         internal const string HandleTOCClick = "HandleTOCClick(event)";
         internal const string HandleLink = "HandleLink(event)";
+        internal const string HandleDefinitionClick = "DefinitionTabClick(this)";
     }
 }
