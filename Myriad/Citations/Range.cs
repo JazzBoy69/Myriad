@@ -68,6 +68,11 @@ namespace Myriad.Library
             }
         }
 
+        internal bool Contains(int id)
+        {
+            return id >= start.ID && id <= end.ID;
+        }
+
         public CitationRange(int book, int chapter, int verse)
         {
             Set(book, chapter, verse);

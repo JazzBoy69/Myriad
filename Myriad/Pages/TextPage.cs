@@ -60,12 +60,12 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.EndMainHeader);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
-                    await textSection.AddTextSection(commentIDs, i, citation, readingView);
+                    await textSection.AddTextSection(commentIDs, i, citation, navigating, readingView);
                 }
             }
             else
             {
-                await textSection.AddTextSection(commentIDs, Ordinals.first, citation, readingView);
+                await textSection.AddTextSection(commentIDs, Ordinals.first, citation, navigating, readingView);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);

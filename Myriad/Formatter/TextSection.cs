@@ -31,7 +31,7 @@ namespace Myriad.Formatter
             figureFormatter = new FigureFormatter(writer);
         }
 
-        public async Task AddTextSection(List<int> commentIDs, int index, Citation sourceCitation, bool readingView)
+        public async Task AddTextSection(List<int> commentIDs, int index, Citation sourceCitation, bool navigating, bool readingView)
         {
             activeSet = false;
             this.readingView = readingView;
@@ -47,7 +47,7 @@ namespace Myriad.Formatter
                 await AppendFigures();
                 await AddTextTabs(idRanges, index);
                 await writer.Append(HTMLTags.EndDiv);
-                await AddScriptureTextToTabs(idRanges, index);
+                await AddScriptureTextToTabs(idRanges, index, navigating);
             }
             else
             {
@@ -56,7 +56,7 @@ namespace Myriad.Formatter
                 await writer.Append(HTMLTags.EndHeader);
                 await AppendFigures(); 
                 await writer.Append(HTMLTags.EndDiv);
-                await AddScriptureText(idRanges[Ordinals.first]);
+                await AddScriptureText(idRanges[Ordinals.first], navigating);
             }
             await AddComment();
         }
@@ -75,7 +75,7 @@ namespace Myriad.Formatter
             await writer.Append(")");
         }
 
-        private async Task AddScriptureText((int start, int end) range)
+        private async Task AddScriptureText((int start, int end) range, bool navigating)
         {
             Citation citation = new Citation(range.start, range.end);
             await writer.Append(HTMLTags.StartSectionWithClass +
@@ -93,7 +93,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithClass+
                 HTMLClasses.scriptureQuote+
                 HTMLTags.CloseQuoteEndTag);
-            await formatter.AppendKeywords(keywords, readingView);
+            await formatter.AppendKeywords(keywords, sourceCitation.CitationRange, navigating, readingView);
             await writer.Append(HTMLTags.EndDiv+
                 HTMLTags.EndSection);
         }
@@ -195,7 +195,7 @@ namespace Myriad.Formatter
             await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
         }
         //todo refactor
-        private async Task AddScriptureTextToTabs(List<(int start, int end)> idRanges, int index)
+        private async Task AddScriptureTextToTabs(List<(int start, int end)> idRanges, int index, bool navigating)
         {
             await writer.Append(HTMLTags.StartList+
                 HTMLTags.ID+
@@ -245,7 +245,7 @@ namespace Myriad.Formatter
                 await writer.Append(HTMLTags.StartDivWithClass+
                     HTMLClasses.scriptureQuote+
                     HTMLTags.CloseQuoteEndTag);
-                await formatter.AppendKeywords(keywords, readingView);
+                await formatter.AppendKeywords(keywords, sourceCitation.CitationRange, navigating, readingView);
                 await writer.Append(HTMLTags.EndDiv+
                     HTMLTags.EndSection+
                     HTMLTags.EndListItem);

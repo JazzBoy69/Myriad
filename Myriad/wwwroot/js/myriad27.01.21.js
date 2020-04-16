@@ -689,7 +689,7 @@ function GoToPreceding() {
 
 function TurnPage(direction) {
     var path = CurrentPath();
-    path = AddQueryToPath(path, direction + '=true');
+    path = AddQueryToPath(path, direction + '=true&navigating=true');
     LoadPage(path);
 }
 

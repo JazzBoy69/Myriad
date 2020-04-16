@@ -13,19 +13,23 @@ namespace Myriad.Pages
 {
     public abstract class ScripturePage : CommonPage
     {
-        internal const string queryKeyTGStart = "tgstart=";
-        internal const string queryKeyTGEnd = "tgend=";
-        public const string queryKeyStart = "start=";
-        public const string queryKeyEnd = "end=";
+        internal const string queryKeyTGStart = "tgstart";
+        internal const string queryKeyTGEnd = "tgend";
+        public const string queryKeyStart = "start";
+        public const string queryKeyEnd = "end";
+        public const string queryKeyWord = "word";
+        public const string queryKeyNavigating = "navigating";
 
         protected Citation citation;
+        protected bool navigating;
         public override async Task LoadQueryInfo(IQueryCollection query)
         {
+            navigating = query.ContainsKey(queryKeyNavigating);
             citation = await Task.Run(() =>
             {
-                if (!int.TryParse(query["start"], out int start)) start = Result.notfound;
-                if (!int.TryParse(query["end"], out int end)) end = Result.notfound;
-                citation = new Citation(start, end)
+                if (!int.TryParse(query[queryKeyStart], out int start)) start = Result.notfound;
+                if (!int.TryParse(query[queryKeyEnd], out int end)) end = Result.notfound;
+                Citation citation = new Citation(start, end)
                 {
                     CitationType = GetCitationType()
                 };
@@ -34,7 +38,7 @@ namespace Myriad.Pages
             if (citation.CitationRange.WordIndexIsDeferred)
             {
                 citation.CitationRange.SetWordIndex(
-                    await ReadDeferredWord(query["word"].ToString(), 
+                    await ReadDeferredWord(query[queryKeyWord].ToString(), 
                     citation.CitationRange.StartID.ID,
                     citation.CitationRange.EndID.ID)
                     );
@@ -61,8 +65,11 @@ namespace Myriad.Pages
 
         public override string GetQueryInfo()
         {
-            return HTMLTags.StartQuery + queryKeyStart + citation.CitationRange.StartID +
-                HTMLTags.Ampersand + queryKeyEnd + citation.CitationRange.EndID;
+            string info = HTMLTags.StartQuery + queryKeyStart + Symbol.equal + citation.CitationRange.StartID +
+                HTMLTags.Ampersand + queryKeyEnd + Symbol.equal + citation.CitationRange.EndID;
+            return (navigating) ?
+                info + HTMLTags.Ampersand + queryKeyNavigating + "=true" :
+                info;
         }
     }
 }
