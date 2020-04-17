@@ -75,6 +75,7 @@ function LoadMainPaneHistory(path) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
             SetTitle();
+            SetSearchFieldText();
         });
 }
 
@@ -83,7 +84,11 @@ function LoadMainPane(path) {
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
-            history.pushState(null, null, CurrentPath());
+            var path = CurrentPath();
+            if (path.indexOf('/Search')>-1) {
+                SetSearchFieldText();
+            }
+            history.pushState(null, null, path);
             SetTitle();
         });
 }
@@ -121,6 +126,22 @@ function DefinitionTabClick(target) {
         var relatedSiblings = getSiblings(relatedTab);
         RemoveClassFromGroup(relatedSiblings, 'active');
     }
+}
+
+function HandleSearch() {
+    var searchField = document.getElementById('searchField');
+    var path = AddQueryToPath('/Search', 'q=' + searchField.value);
+    LoadPage(path);
+    return false;
+}
+
+
+function SetSearchFieldText() {
+    var queryElement = document.getElementById('querystring');
+    if (queryElement === null) return;
+    var query = queryElement.innerText;
+    var searchField = document.getElementById('searchField');
+    searchField.value = query;
 }
 
 function SetupCopytoClipboardWithLabel() {

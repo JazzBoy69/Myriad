@@ -29,10 +29,7 @@ SetupPartialPageLoad();
    window.onload = function () {
     AddShortcut();
     SetupIndex();
-var queryElement = document.getElementById('querystring');
-var query = queryElement.innerText;
-var searchField = document.getElementById('searchField');
-searchField.value = query;
+SetSearchFieldText();
 };
     </script>";
         }

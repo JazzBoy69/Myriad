@@ -148,6 +148,7 @@ namespace Myriad.Pages
             pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
             await SearchFormatter.FormatBody(writer, pageInfo);
             await AddPageTitleData(writer);
+            await AddPageHistory(writer);
         }
 
         public override async Task AddTOC(HTMLWriter writer)
@@ -175,9 +176,9 @@ namespace Myriad.Pages
         public override string GetQueryInfo()
         {
             return (string.IsNullOrEmpty(pageInfo.IDs)) ?
-                HTMLTags.StartQuery + queryKeyQ + pageInfo.Query :
-                HTMLTags.StartQuery + queryKeyQ + pageInfo.Query +
-                HTMLTags.Ampersand + queryKeyIDs + pageInfo.IDs;
+                HTMLTags.StartQuery + queryKeyQ + Symbol.equal+pageInfo.Query.Replace(' ','+') :
+                HTMLTags.StartQuery + queryKeyQ + Symbol.equal + pageInfo.Query.Replace(' ', '+') +
+                HTMLTags.Ampersand + queryKeyIDs + Symbol.equal + pageInfo.IDs;
         }
     }
 }

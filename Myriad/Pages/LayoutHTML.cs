@@ -23,7 +23,7 @@ namespace Myriad.Pages
             <div class='menu'>
                 <!--SEARCHBAR-->
                 <div id='searchbar'> 
-                    <form id='searchForm' class='section' method='GET' action='/Search'>
+                    <form id='searchForm' class='section' onsubmit='event.preventDefault(); HandleSearch();'>
                         <div id='toolbarSearchField' >
                             <input id='searchField' name='q' type='search' autocomplete='off' autocapitalize='off' maxlength='256' />
                         </div>
