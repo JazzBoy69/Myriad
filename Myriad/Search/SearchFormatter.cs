@@ -287,47 +287,22 @@ namespace Myriad.Search
             }
             await writer.Append("</ul></div><div class='definitions'><ul id=\"tabs-0-tab\" class=\"tab\">");
         }
-        private async Task AppendSearchResults(HTMLWriter writer, List<SearchSentence> results)
-        {
-            await writer.Append(HTMLTags.StartDivWithID);
-            await writer.Append("results");
-            await writer.Append(HTMLTags.CloseQuote +
-                HTMLTags.Class);
-            await writer.Append("searchResults");
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
-            if (results.Count > Number.nothing)
-            {
-                await AppendSearchResults(0, 100, writer, results);
-            }
-            else
-                await AppendNoResults(writer);
-        }
-
 
         public static async Task AppendSearchResults(int startIndex, int endIndex, HTMLWriter writer, List<SearchSentence> searchResults)
         {
             if ((searchResults == null) ||
                 ((searchResults.Count == 1) && (searchResults[0].SentenceID == Result.notfound)))
             {
-                await AppendNoResults(writer);
                 return;
             }
             int index = startIndex;
-            bool hasResults = false;
             while ((index <= endIndex) && (index < searchResults.Count))
             {
                 await writer.Append(HTMLTags.StartParagraph);
                 await FormatSearchResult(writer, searchResults[index]);
                 await writer.Append(HTMLTags.EndParagraph);
-                hasResults = true;
                 index++;
             }
-            if (!hasResults) await AppendNoResults(writer);
-        }
-
-        internal static async Task AppendNoResults(HTMLWriter writer)
-        {
-            await writer.Append("<p>No results.</p>");
         }
 
         private static async Task FormatSearchResult(HTMLWriter writer, SearchSentence searchSentence)
