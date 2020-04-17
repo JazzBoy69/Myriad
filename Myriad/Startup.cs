@@ -16,10 +16,9 @@ using Myriad.Parser;
 
 namespace Myriad
 {
+    //todo Change all object methods to static. Use separate info object to pass state between functions
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -27,7 +26,6 @@ namespace Myriad
             services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env == null) return;

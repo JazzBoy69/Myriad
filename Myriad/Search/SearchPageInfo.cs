@@ -10,6 +10,7 @@ namespace Myriad.Search
     public class SearchPageInfo
     {
         CitationRange citationRange;
+        string searchQuery;
         string query;
         string all;
         List<string> idList;
@@ -17,6 +18,7 @@ namespace Myriad.Search
         List<SearchSentence> results;
         List<int> usedDefinitions;
 
+        internal string SearchQuery => searchQuery;
         internal CitationRange CitationRange => citationRange;
         internal string Query => query;
         internal string All => all;
@@ -36,6 +38,11 @@ namespace Myriad.Search
         internal void SetQuery(string query)
         {
             this.query = query;
+        }
+
+        internal void SetSearchQuery(string query)
+        {
+            searchQuery = query;
         }
 
         internal void SetIDs(string ids)

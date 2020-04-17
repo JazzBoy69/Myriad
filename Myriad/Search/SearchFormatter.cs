@@ -51,11 +51,9 @@ namespace Myriad.Search
         {
             int mainDefinition = await IdentifyMainDefinition(pageInfo);
             await StartDefinitionsTitles(writer);
-            bool active = false;
             int itemCount = Ordinals.first;
             Dictionary<string, int> headings = await GetDefinitionHeadings(pageInfo);
             await WriteDefinitionHeadings(writer, mainDefinition, headings, pageInfo);
-            active = false;
             itemCount = Ordinals.first;
             MarkupParser parser = new MarkupParser(writer);
             foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
@@ -71,14 +69,14 @@ namespace Myriad.Search
                     foreach (int otherID in pageInfo.UsedDefinitions)
                     {
                         if (otherID == id) continue;
-                        parser.SetParagraphInfo(ParagraphType.Article, otherID);
+                        parser.SetParagraphInfo(ParagraphType.Article, id);
                         List<int> relatedParagraphIndices = await GetRelatedParagraphIndices(id, otherID);
                         foreach (int paragraphIndex in relatedParagraphIndices)
                         {
                             (int id, int index) key = (id, paragraphIndex);
                             if (usedParagraphs.Contains(key)) continue;
                             usedParagraphs.Add(key);
-                            await WriteRelatedParagraph(writer, parser, otherID, paragraphIndex);
+                            await WriteRelatedParagraph(writer, parser, id, paragraphIndex);
                         }
                     }
                 }
@@ -105,13 +103,32 @@ namespace Myriad.Search
                 await writer.Append("</li>");
                 itemCount++;
             }
+            if (!string.IsNullOrEmpty(pageInfo.Query))
+            {
+                bool setActive = (mainDefinition == Result.notfound);
+                await StartDefinitionTab(writer, setActive, itemCount);
+                string[] words = pageInfo.Query.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string word in words)
+                {
+                    await writer.Append("<p class=\"definitionnav\"> ");
+                    await writer.Append("<a HREF=/AddArticle?q=");
+                    await writer.Append(word);
+                    await writer.Append(">Add Article for ");
+                    await writer.Append("<b>");
+                    await writer.Append(word.Replace('_', ' '));
+                    await writer.Append("</b></a></p>");
+                }
+
+
+                await writer.Append("</li>");
+            }
             await writer.Append("</ul></div></section>");
         }
 
-        private static async Task WriteRelatedParagraph(HTMLWriter writer, MarkupParser parser, int otherID, int paragraphIndex)
+        private static async Task WriteRelatedParagraph(HTMLWriter writer, MarkupParser parser, int id, int paragraphIndex)
         {
             await writer.Append("<p class=\"definition\">");
-            string paragraphText = await GetArticleParagraph(otherID, paragraphIndex);
+            string paragraphText = await GetArticleParagraph(id, paragraphIndex);
             await parser.ParseParagraph(paragraphText, paragraphIndex);
             await writer.Append("</p>");
         }
@@ -259,6 +276,8 @@ namespace Myriad.Search
                 await writer.Append("<li id=\"tabs0-");
                 await writer.Append(itemCount);
                 await writer.Append("\"");
+                await writer.Append(HTMLTags.OnClick +
+                    JavaScriptFunctions.HandleDefinitionClick);
                 if (!active) await writer.Append(" class='active'");
                 await writer.Append(">");
                 await writer.Append("Add New Article");

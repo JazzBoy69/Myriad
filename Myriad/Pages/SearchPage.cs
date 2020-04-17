@@ -37,8 +37,8 @@ namespace Myriad.Pages
         {
             if (query.ContainsKey(queryKeyQ))
             {
-                string searchQuery = query["q"].ToString();
-                (CitationRange r, string q) = SearchRange(searchQuery);
+                pageInfo.SetSearchQuery(query["q"].ToString());
+                (CitationRange r, string q) = SearchRange(pageInfo.SearchQuery);
                 pageInfo.SetCitationRange(r);
                 pageInfo.SetQuery(await AllWords.Conform(q));
             }
@@ -116,8 +116,9 @@ namespace Myriad.Pages
         private (int book, int chapter) GetBookAndChapter(string citationString)
         {
             string[] parts = citationString.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries);
-            if (!Bible.QueryBibleNames.ContainsKey(parts[Ordinals.first])) return (Result.error, Result.error);
-            string bookString = Bible.QueryBibleNames[parts[Ordinals.first]];
+            string bookName = parts[Ordinals.first].ToUpper();
+            if (!Bible.QueryBibleNames.ContainsKey(bookName)) return (Result.error, Result.error);
+            string bookString = Bible.QueryBibleNames[bookName];
             int book = Bible.IndexOfBook(bookString);
             if (book == Result.error) return (Result.error, Result.error);
 
@@ -199,8 +200,8 @@ namespace Myriad.Pages
         public override string GetQueryInfo()
         {
             return (string.IsNullOrEmpty(pageInfo.IDs)) ?
-                HTMLTags.StartQuery + queryKeyQ + Symbol.equal+pageInfo.Query.Replace(' ','+') :
-                HTMLTags.StartQuery + queryKeyQ + Symbol.equal + pageInfo.Query.Replace(' ', '+') +
+                HTMLTags.StartQuery + queryKeyQ + Symbol.equal+pageInfo.SearchQuery.Replace(' ','+') :
+                HTMLTags.StartQuery + queryKeyQ + Symbol.equal + pageInfo.SearchQuery.Replace(' ', '+') +
                 HTMLTags.Ampersand + queryKeyIDs + Symbol.equal + pageInfo.IDs;
         }
     }
