@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using Myriad.Parser;
+using Myriad.Pages;
 using Myriad.Library;
 using Feliciana.Library;
 using Feliciana.HTML;
 using Feliciana.ResponseWriter;
 using Myriad.CitationHandlers;
+using Myriad.Search;
 
 namespace TestStub
 {
@@ -21,12 +23,26 @@ namespace TestStub
         {
             return new DefaultHttpContext().Response;
         }
-        async private void RunTest()
+        async private void RunTest2()
         {
             string citationText;
             var citations = CitationConverter.FromString("Mt 24:14, 16-18");
             citationText = await CitationConverter.ToString(citations);
             Console.WriteLine(citationText);
+        }
+
+        async private void RunTest()
+        {
+            var searchPage = new SearchPage();
+            var pageInfo = new SearchPageInfo();
+            pageInfo.SetSearchQuery("?q=intelligent");
+            (CitationRange r, string q) = SearchPage.SearchRange(pageInfo.SearchQuery);
+            pageInfo.SetCitationRange(r);
+            pageInfo.SetQuery("intelligent");
+            searchPage.SetPageInfo(pageInfo);
+            if (!searchPage.IsValid()) return;
+            await searchPage.WriteSynonymResults(Writer.New());
+            pageInfo.SetQuery("");
         }
 
     }

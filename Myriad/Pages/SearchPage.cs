@@ -33,6 +33,11 @@ namespace Myriad.Pages
             return (pageInfo.Query != null) || (pageInfo.IDList != null);
         }
 
+        public void SetPageInfo(SearchPageInfo info)
+        {
+            pageInfo = info;
+        }
+
         public override async Task LoadQueryInfo(IQueryCollection query)
         {
             if (query.ContainsKey(queryKeyQ))
@@ -49,7 +54,7 @@ namespace Myriad.Pages
             }
         }
 
-        private (CitationRange r, string q) SearchRange(string query)
+        public static (CitationRange r, string q) SearchRange(string query)
         {
             int p = query.IndexOf(':');
             if (p == Result.notfound)
@@ -59,7 +64,7 @@ namespace Myriad.Pages
             return (QueryToRange(query.Substring(0, p)), query.Substring(p + 1).Trim());
         }
 
-        private CitationRange QueryToRange(string rangeString)
+        private static CitationRange QueryToRange(string rangeString)
         {
             if (string.IsNullOrEmpty(rangeString)) return CitationRange.InvalidRange();
             string[] parts = rangeString.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
@@ -113,7 +118,7 @@ namespace Myriad.Pages
             return new CitationRange(startID, endID);
         }
 
-        private (int book, int chapter) GetBookAndChapter(string citationString)
+        private static (int book, int chapter) GetBookAndChapter(string citationString)
         {
             string[] parts = citationString.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries);
             string bookName = parts[Ordinals.first].ToUpper();

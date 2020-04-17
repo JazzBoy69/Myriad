@@ -49,10 +49,14 @@ namespace Myriad.Search
 
         internal async static Task WriteDefinitionsBlock(HTMLWriter writer, SearchPageInfo pageInfo)
         {
-            int mainDefinition = await IdentifyMainDefinition(pageInfo);
+            int mainDefinition = (pageInfo.UsedDefinitions.Count > Number.nothing) ?
+                await IdentifyMainDefinition(pageInfo) :
+                Result.error;
             await StartDefinitionsTitles(writer);
             int itemCount = Ordinals.first;
-            Dictionary<string, int> headings = await GetDefinitionHeadings(pageInfo);
+            Dictionary<string, int> headings = (pageInfo.UsedDefinitions.Count > Number.nothing) ?
+                await GetDefinitionHeadings(pageInfo) :
+                new Dictionary<string, int>();
             await WriteDefinitionHeadings(writer, mainDefinition, headings, pageInfo);
             itemCount = Ordinals.first;
             MarkupParser parser = new MarkupParser(writer);

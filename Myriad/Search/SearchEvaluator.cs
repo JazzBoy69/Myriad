@@ -74,12 +74,15 @@ namespace Myriad.Search
                                    select result).ToList();
 
             //2) Load Definition searches
-            var definitionQuery = new StringBuilder(definitionSelector);
-            AppendORSelection(definitionQuery, usedDefinitions.Distinct().ToList(), "id =");
-            definitionQuery.Append(rangeSelection);
-            Dictionary<(int, int), int> definitionSearchesInSentences =
-                await ReadDefinitionSearches(definitionQuery.ToString());
-
+            Dictionary<(int, int), int> definitionSearchesInSentences = new Dictionary<(int, int), int>();
+            if (usedDefinitions.Count > Number.nothing)
+            {
+                var definitionQuery = new StringBuilder(definitionSelector);
+                AppendORSelection(definitionQuery, usedDefinitions.Distinct().ToList(), "id =");
+                definitionQuery.Append(rangeSelection);
+                definitionSearchesInSentences =
+                    await ReadDefinitionSearches(definitionQuery.ToString());
+            }
             List<SearchSentence> filteredOrSentences = 
                 await SetScores(commonWords, sentences, 
                 queryIndex, isSynonymQuery, filteredResults, 
@@ -275,7 +278,7 @@ namespace Myriad.Search
         private static async Task<List<SearchResult>> ReadSearchResults(string query)
         {
             var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(query));
-            var result = await reader.GetClassData<SearchResult>();
+            var result = await reader.reader.GetClassData<SearchResult>();
             reader.Close();
             return result;
         }
@@ -379,9 +382,9 @@ namespace Myriad.Search
         }
         private static async Task<Dictionary<(int, int), int>> ReadDefinitionSearches(string query)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.CreateCommandFromQuery(query), -1);
+            var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(query));
             List<(int sentence, int wordindex, int id)> preliminaryResults = 
-                await reader.GetData<int, int, int>();
+                await reader.reader.GetData<int, int, int>();
             reader.Close();
             var results = new Dictionary<(int, int), int>();
             for (int index = Ordinals.first; index < preliminaryResults.Count; index++)
