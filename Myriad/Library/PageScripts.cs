@@ -30,6 +30,7 @@ SetupPartialPageLoad();
     AddShortcut();
     SetupIndex();
 SetSearchFieldText();
+SetupPartialPageLoad();
 };
     </script>";
         }

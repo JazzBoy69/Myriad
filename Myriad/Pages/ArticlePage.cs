@@ -24,6 +24,7 @@ namespace Myriad.Pages
     HandleHiddenDetails();
     SetupSuppressedParagraphs();
     ScrollToTarget();
+};
 </script>";
     }
     public class ArticlePage : CommonPage

@@ -16,6 +16,7 @@ function HandleLink(event) {
 function LoadPage(path) {
     if (performance.navigation.type === 1) {
         window.location = path.replace("&partial=true", "");
+        HandleAdditionalSearchTasks();
         return;
     }
     if (path.indexOf('partial') === -1) path = AddQueryToPath(path, 'partial=true');
@@ -63,6 +64,7 @@ function LoadTOC() {
 function LoadHistoryPage(path) {
     if (performance.navigation.type === 1) {
         window.location = path;
+        HandleAdditionalSearchTasks();
         return;
     }
     var target = AddQueryToPath(path, 'partial=true');
@@ -75,13 +77,13 @@ function LoadMainPaneHistory(path) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
             SetTitle();
-            var queryElement = document.getElementById('querystring');
-            if (queryElement === null) return;
             HandleAdditionalSearchTasks();
         });
 }
 
 function HandleAdditionalSearchTasks() {
+    var queryElement = document.getElementById('querystring');
+    if (queryElement === null) return;
     SetSearchFieldText();
     LoadSynonymSearchResults();
 }
@@ -97,8 +99,6 @@ function LoadMainPane(path) {
             }
             history.pushState(null, null, path);
             SetTitle();
-            var queryElement = document.getElementById('querystring');
-            if (queryElement === null) return;
             HandleAdditionalSearchTasks();
         });
 }
@@ -695,9 +695,6 @@ function SetupSuppressedParagraphs() {
         RemoveClassFromGroup(extraInfo, 'extrainfo');
         AddClassToGroup(extraInfo, 'suppressed');
      };
-    $('.suppressed').click(function (event) {
-        $(this).removeClass('suppressed');
-    });
 }
 
 function SetupEditParagraph() {

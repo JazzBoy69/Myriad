@@ -93,12 +93,14 @@ namespace Myriad.Search
                         await writer.Append("+");
                     }
                     await writer.Append(id);
+                    await AppendPartialPageHandler(writer);
                     await writer.Append(">Search&nbsp;for&nbsp;this&nbsp;definition</a> ");
                 }
                 await writer.Append("<a HREF=" + ArticlePage.pageURL + "?q=");
                 await writer.Append(pageInfo.Query.Replace(' ', '+'));
                 await writer.Append("&id=");
                 await writer.Append(id);
+                await AppendPartialPageHandler(writer);
                 await writer.Append(">Read&nbsp;more&hellip;</a></p>");
                 await writer.Append("</li>");
                 itemCount++;
@@ -445,6 +447,7 @@ namespace Myriad.Search
                     await writer.Append(startID);
                     await writer.Append("&tgend=");
                     await writer.Append(endID);
+                    await AppendPartialPageHandler(writer);
                     await writer.Append(">");
 
                 }
@@ -453,6 +456,14 @@ namespace Myriad.Search
             }
         }
 
+        private static async Task AppendPartialPageHandler(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.Ampersand +
+                HTMLClasses.partial +
+                HTMLTags.CloseQuote +
+                HTMLTags.OnClick +
+            JavaScriptFunctions.HandleLink);
+        }
 
         public static async Task AppendSearchResultWord(HTMLWriter writer, SearchResultWord searchResultWord, Keyword keyword)
         {
