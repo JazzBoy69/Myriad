@@ -45,7 +45,8 @@ namespace Myriad.Pages
                 pageInfo.SetSearchQuery(query["q"].ToString());
                 (CitationRange r, string q) = SearchRange(pageInfo.SearchQuery);
                 pageInfo.SetCitationRange(r);
-                pageInfo.SetQuery(await AllWords.Conform(q));
+                string conformed = await AllWords.Conform(q);
+                pageInfo.SetQuery(conformed);
             }
             if (query.ContainsKey(queryKeyIDs))
             {
@@ -148,14 +149,18 @@ namespace Myriad.Pages
         {
             await SaveQuery(writer);
             var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
-            var searchEvaluator = new SearchEvaluator();
-            await searchEvaluator.EvaluateSynonyms(phrases);
-            var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, false);
-            pageInfo.SetResults(results);
-            pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
-            await SearchFormatter.FormatBody(writer, pageInfo);
-            await AddPageTitleData(writer);
+            if (phrases.Count > Number.nothing)
+            {
+                var searchEvaluator = new SearchEvaluator();
+                await searchEvaluator.EvaluateSynonyms(phrases);
+                var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, false);
+                pageInfo.SetResults(results);
+                pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
+                await SearchFormatter.FormatBody(writer, pageInfo);
+            }
             await AddPageHistory(writer);
+            if (phrases.Count == 0) pageInfo.SetQuery("no results");
+            await AddPageTitleData(writer);
         }
 
         private async Task SaveQuery(HTMLWriter writer)

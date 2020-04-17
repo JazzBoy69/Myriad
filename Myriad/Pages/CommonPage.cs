@@ -43,12 +43,12 @@ namespace Myriad.Pages
 
         protected async Task AddPageHistory(HTMLWriter writer)
         {
-            await writer.Append(HTMLTags.StartDivWithID);
-            await writer.Append(HTMLClasses.pageUrl);
-            await writer.Append(HTMLTags.CloseQuote);
-            await writer.Append(HTMLTags.Class);
-            await writer.Append(HTMLClasses.hidden);
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(HTMLTags.StartDivWithID+
+                HTMLClasses.pageUrl+
+                HTMLTags.CloseQuote+
+                HTMLTags.Class+
+                HTMLClasses.hidden+
+                HTMLTags.CloseQuoteEndTag);
             await writer.Append(GetURL() + GetQueryInfo());
             await writer.Append(HTMLTags.EndDiv);
         }
@@ -63,12 +63,12 @@ namespace Myriad.Pages
         }
         protected async Task AddPageTitleData(HTMLWriter writer)
         {
-            await writer.Append(HTMLTags.StartDivWithID);
-            await writer.Append(HTMLClasses.title);
-            await writer.Append(HTMLTags.CloseQuote);
-            await writer.Append(HTMLTags.Class);
-            await writer.Append(HTMLClasses.hidden);
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(HTMLTags.StartDivWithID+
+                HTMLClasses.title+
+                HTMLTags.CloseQuote+
+                HTMLTags.Class+
+                HTMLClasses.hidden+
+                HTMLTags.CloseQuoteEndTag);
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndDiv);
         }
