@@ -20,7 +20,7 @@ namespace Myriad.Search
         public List<int> UsedDefinitions => usedDefinitions;
 
         internal async Task<List<SearchSentence>> Search(List<string> phrases, 
-            CitationRange citationRange)
+            CitationRange citationRange, bool isSynonymQuery)
         {
             var commonWords = new List<string>();
             Dictionary<int, int> sentences = null;
@@ -31,7 +31,6 @@ namespace Myriad.Search
             // var ids = (from idstring in idStrings
             // select Numbers.Convert(idstring)).ToList();
             string rangeSelection = RangeSelection(citationRange);
-            bool needSynonymQuery = false;
             for (int index = Ordinals.first; index < phrases.Count; index++)
             {
                 if (EnglishDictionary.IsCommonWord(phrases[index]))
@@ -46,7 +45,7 @@ namespace Myriad.Search
                     searchResults.AddRange(results);
                     var phraseSentences = AddResultsToSentences(sentences, results, 1);
                     Dictionary<int, int> synSentences = null;
-                    if (needSynonymQuery)
+                    if (isSynonymQuery)
                     {
                         if (synonyms[queryIndex].Count > 0)
                         {
@@ -83,12 +82,12 @@ namespace Myriad.Search
 
             List<SearchSentence> filteredOrSentences = 
                 await SetScores(commonWords, sentences, 
-                queryIndex, needSynonymQuery, filteredResults, 
+                queryIndex, isSynonymQuery, filteredResults, 
                 definitionSearchesInSentences);
             return filteredOrSentences ?? new List<SearchSentence>();
         }
 
-        private static async Task<List<SearchSentence>> SetScores(List<string> commonWords, Dictionary<int, int> sentences, int queryIndex, bool needSynonymQuery, List<SearchResult> filteredResults, Dictionary<(int, int), int> definitionSearchesInSentences)
+        private static async Task<List<SearchSentence>> SetScores(List<string> commonWords, Dictionary<int, int> sentences, int queryIndex, bool isSynonymQuery, List<SearchResult> filteredResults, Dictionary<(int, int), int> definitionSearchesInSentences)
         {
             int lastSentence = -1;
             SearchSentence currentSentence = null;
@@ -140,7 +139,7 @@ namespace Myriad.Search
                     currentSentence.SetType(currentSentence.Type - 1);
                 }
                 orSentences.Add(currentSentence);
-                filteredOrSentences = (needSynonymQuery) ?
+                filteredOrSentences = (isSynonymQuery) ?
                     (from sentence in orSentences
                      where sentence.Score < 25 && sentence.Type > 1
                      orderby sentence.Type, sentence.Score

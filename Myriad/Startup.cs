@@ -48,6 +48,15 @@ namespace Myriad
             app.Run(async context =>
             {
                 //todo write change log
+                if (context.Request.Path == "/SynonymSearch")
+                {
+                    var searchPage = new SearchPage();
+                    await searchPage.LoadQueryInfo(context.Request.Query);
+                    if (!searchPage.IsValid()) return;
+                    searchPage.SetResponse(context.Response);
+                    await searchPage.WriteSynonymResults(Writer.New(context.Response));
+                    return;
+                }
                 if (context.Request.Query.ContainsKey("toc"))
                 {
                     await HandleTOCRequest(context);

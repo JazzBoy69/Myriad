@@ -75,8 +75,15 @@ function LoadMainPaneHistory(path) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
             SetTitle();
-            SetSearchFieldText();
+            var queryElement = document.getElementById('querystring');
+            if (queryElement === null) return;
+            HandleAdditionalSearchTasks();
         });
+}
+
+function HandleAdditionalSearchTasks() {
+    SetSearchFieldText();
+    LoadSynonymSearchResults();
 }
 
 function LoadMainPane(path) {
@@ -90,6 +97,9 @@ function LoadMainPane(path) {
             }
             history.pushState(null, null, path);
             SetTitle();
+            var queryElement = document.getElementById('querystring');
+            if (queryElement === null) return;
+            HandleAdditionalSearchTasks();
         });
 }
 
@@ -142,6 +152,16 @@ function SetSearchFieldText() {
     var query = queryElement.innerText;
     var searchField = document.getElementById('searchField');
     searchField.value = query;
+}
+
+function LoadSynonymSearchResults() {
+    var query = document.getElementById('searchqueryinfo');
+    var path = '/SynonymSearch' + query.innerText;
+    postAjax(path, {},
+        function (data) {
+            var synResults = document.getElementById('synresults');
+            synResults.innerHTML = data;
+        });
 }
 
 function SetupCopytoClipboardWithLabel() {

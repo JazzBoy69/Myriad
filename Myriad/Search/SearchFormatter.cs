@@ -27,8 +27,8 @@ namespace Myriad.Search
 
             await AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
 
-            await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append("synresults");
+            await writer.Append(HTMLTags.StartDivWithID);
+            await writer.Append("synresults"); 
             await writer.Append(HTMLTags.CloseQuoteEndTag +
                 HTMLTags.EndDiv +
                 HTMLTags.EndDiv);

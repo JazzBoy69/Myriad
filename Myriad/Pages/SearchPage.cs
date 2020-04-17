@@ -140,15 +140,38 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
+            await SaveQuery(writer);
             var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
             var searchEvaluator = new SearchEvaluator();
             await searchEvaluator.EvaluateSynonyms(phrases);
-            var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange);
+            var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, false);
             pageInfo.SetResults(results);
             pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
             await SearchFormatter.FormatBody(writer, pageInfo);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+        }
+
+        private async Task SaveQuery(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.searchqueryinfo +
+                HTMLTags.CloseQuote +
+                HTMLTags.Class +
+                HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag);
+            await writer.Append(GetQueryInfo());
+            await writer.Append(HTMLTags.EndDiv);
+        }
+        public async Task WriteSynonymResults(HTMLWriter writer)
+        {
+            var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
+            var searchEvaluator = new SearchEvaluator();
+            await searchEvaluator.EvaluateSynonyms(phrases);
+            var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, true);
+            pageInfo.SetResults(results);
+            pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
+            await SearchFormatter.AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
         }
 
         public override async Task AddTOC(HTMLWriter writer)
