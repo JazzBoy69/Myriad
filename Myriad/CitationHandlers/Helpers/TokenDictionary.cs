@@ -52,6 +52,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1334, SetSecondVerseAndAddResults },   //Mt 24:14, 16, 18 => , xx, 18;
             { 0x1424, SetSecondVerseAndAddResults },   //Mt 24:14, 16, 18 => , xx, 18;
             { 0x1432, AddBrokenCommaMarker },          //Mt 3:1, 6, 13-17; => xx, xx, 13-
+            { 0x1434, SetSecondVerseAndAddResults },   //Joh 8:26, 28, 38; => , xx, 38;
             { 0x1452, SetFirstVerse },                 //Mt 6:33; 24:45-47 =>; xx:45-
             { 0x1453, SetFirstVerse },                 //Mt 24:14; 28:19, 20 => ; xx:19,
             { 0x1454, SetFirstVerseAndAddResults },    //Mt 24:14; 28:20; => ; xx:20;
@@ -68,6 +69,8 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1543, SetFirstVerse },                 //Mt 3:1, 6, 13-17; => :xx, 6,
             { 0x1544, SetFirstVerseAndAddResults },    //Mt 2:12, 22 => :xx, 22
             { 0x1574, SetFirstWordAndAddResults },     //Mt 24:14.8 => :xx.8
+            { 0x1592, SetFirstVerse },                 //Mr 6:1, 4-6; => :xx, 4- 
+            { 0x1593, SetFirstVerse },                 //Joh 8:26, 28, 38; => :xx, 28,
             { 0x1832, SetSecondVerseAndAddResults },   //2Jo 10, 12-14 => _xx, 12-
             { 0x1833, SetSecondVerseAndAddResults },   //2Jo 10, 12, 14 => _xx, 12,
             { 0x1834, SetSecondChapterAndAddResults }, //Ge 6, 7; => _xx, 7;
@@ -77,7 +80,11 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1854, SetFirstVerseAndAddResults },    //Mt 24:14; => _xx:14;
             { 0x1856, SetFirstVerseAndAddResults },    //Mr 2:1! => _xx:1!
             { 0x1857, SetFirstVerse },                 // Mt 24:14.preached => xx:14.
-            { 0x1924, SetSecondVerseAndAddResults }    //Mt 3:1, 6, 13-17; => , xx-17;
+            { 0x1892, SetFirstVerse },                 //3Jo 1, 5-8 => _xx, 5-
+            { 0x1924, SetSecondVerseAndAddResults },    //Mt 3:1, 6, 13-17; => , xx-17;
+            { 0x1932, AddBrokenCommaMarker },          //Mt 3:1, 6, 13-17; => xx, xx, 13-
+            { 0x1934, SetSecondVerseAndAddResults },   //Joh 8:26, 28, 38; => , xx, 38;
+            { 0x1994, SetFirstVerseAndAddResults }   //Joh 8:26, 28, 38; => , xx, 38;
         };
 
         public static int Lookup(char nextToLastToken, char lastToken, char token, int count)

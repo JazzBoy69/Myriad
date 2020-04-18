@@ -282,7 +282,7 @@ namespace Myriad.CitationHandlers
             {
                 if (verse.First.Verse == verse.Second.Verse)
                 {
-                    lastToken = ';';
+                    lastToken = '~';
                 }
                 stashVerse = verse.Second.Verse;
                 brokenComma = true;
@@ -336,7 +336,7 @@ namespace Myriad.CitationHandlers
                 citation.Label.MoveEndTo(lastTokenAt);
                 citation.TrailingSymbols.MoveStartTo(lastTokenAt + 1);
                 citation.TrailingSymbols.MoveEndTo(lastTokenAt + 1);
-                lastToken = ';';
+                lastToken = '~';
             }
             else
             {
