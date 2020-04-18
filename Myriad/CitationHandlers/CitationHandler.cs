@@ -107,7 +107,7 @@ namespace Myriad.CitationHandlers
             }
             if (count == Result.notfound) return false;
 
-            if (action != TokenDictionary.DeferWordIndex)
+            if (action < TokenDictionary.DeferWordIndex)
             {
                 verse.Set(action & 7, count);
             }
@@ -120,6 +120,14 @@ namespace Myriad.CitationHandlers
                     return true;
                 }
                 AddCitationToResults();
+                if (action == TokenDictionary.AddBrokenCommaMarker)
+                {
+                    tokenBeforeLast = '~';
+                    verse.First.Book = currentBook;
+                    verse.First.Chapter = currentChapter;
+                    verse.First.Verse = count;
+                }
+                count = Number.nothing;
             }
             else
                 MoveToNext();
@@ -353,7 +361,6 @@ namespace Myriad.CitationHandlers
                 tokenBeforeLast = lastToken;
                 lastToken = token;
             }
-            count = Number.nothing;
         }
 
         public void MoveToNext()
