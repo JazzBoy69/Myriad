@@ -76,6 +76,7 @@ function LoadMainPaneHistory(path) {
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
+            ScrollToTarget();
             SetTitle();
             HandleAdditionalSearchTasks();
         });
@@ -93,6 +94,7 @@ function LoadMainPane(path) {
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
+            ScrollToTarget();
             var path = CurrentPath();
             if (path.indexOf('/Search')>-1) {
                 SetSearchFieldText();
@@ -164,6 +166,20 @@ function LoadSynonymSearchResults() {
         });
 }
 
+function ScrollToTarget() {
+    var targets = document.getElementsByClassName('target');
+    var target = (targets === null) || (targets.length === 0) ?
+        document.getElementById('top') :
+        targets[0];
+    var targetOffset = target.offsetTop;
+    var h = document.getElementsByTagName('header')[0].offsetHeight;
+    window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
+}
+
+function ScrollToTop() {
+    window.scrollTo(0, 0);
+}
+
 function SetupCopytoClipboardWithLabel() {
     document.addEventListener('copy', function (e) {
         var plaintext = document.getSelection().toString();
@@ -183,20 +199,6 @@ function SetupCopytoClipboardWithLabel() {
         e.clipboardData.setData('text/plain', plaintext);
         e.preventDefault();
     });
-}
-
-function CreateTableOfContents(section) {
-    var toc = document.getElementsByClassName('#toc');
-    toc.append('<li><a id="link" href="#top">Top of page</a></li>');
-    var headings = document.getElementById(section).querySelectorAll("h3");
-    for (var i = 0; i < headings.length; i++) {
-        headings[i].id = "title" + i;
-
-        toc.append("<li><a id='link" + i + "' href='#title" +
-            i + "'>" +
-            headings[i].innerHTML + "</a></li>");
-        headings[i].onclick = TOCScroll;
-    }
 }
 
 function TOCScroll(event) {
@@ -383,56 +385,6 @@ function ScrollToHeading(path) {
     window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
 }
 
-function ScrollToMarker() {
-    var locationPath = filterPath(location.pathname);
-    var scrollElem = scrollableElement('html', 'body');
-
-    $('a[href*=#]').each(function () {
-        var thisPath = filterPath(this.pathname) || locationPath;
-        if (locationPath === thisPath
-            && (location.hostname === this.hostname || !this.hostname)
-            && this.hash.replace(/#/, '')) {
-            var $target = $(this.hash), target = this.hash;
-            if (target) {
-                $(this).click(function (event) {
-                    showHideMenu();
-                    var $t = $(this.hash), target = this.hash;
-                    var targetOffset = $t.next().offset().top;
-                    event.preventDefault();
-                    var h = $('header').height() + 20;
-                    $(scrollElem).animate({ scrollTop: targetOffset - h }, 600); 
-                });
-            }
-        }
-    });
-}
-
-
-function ScrollToTop(event) {
-        event.preventDefault();
-        var scrollElem = scrollableElement('html', 'body');
-        showHideMenu();
-        $(scrollElem).animate({ scrollTop: 0 }, 600);
-}
-
-function scrollableElement(els) {
-    for (var i = 0, argLength = arguments.length; i < argLength; i++) {
-        var el = arguments[i],
-            $scrollElement = $(el);
-        if ($scrollElement.scrollTop() > 0) {
-            return el;
-        } else {
-            $scrollElement.scrollTop(1);
-            var isScrollable = $scrollElement.scrollTop() > 0;
-            $scrollElement.scrollTop(0);
-            if (isScrollable) {
-                return el;
-            }
-        }
-    }
-    return [];
-}
-
 function EditParagraph(editlink) {
     var edittype = editlink.getAttribute('data-edittype');
     var ID = editlink.getAttribute('data-id');
@@ -561,43 +513,6 @@ function HandleHiddenDetails()
             RemoveClassFromGroup(hiddenSiblings, "hiddendetail");
         }
     }
-}
-
-function ScrollToTarget()
-{
-    const marks = document.getElementsByClassName('target');
-    for (var i = 0; i < marks.length; i++) {
-        var grandparent = marks[i].parent().parent();
-        if (grandparent.classList.contains('hiddendetail')) {
-            grandparent.classList.add("showdetail");
-            grandparent.classList.remove('hiddendetail');
-        }
-    }
-            
-    const distanceToTop = el => Math.floor(el.getBoundingClientRect().top);
-    const targetAnchor = marks[0];
-    if (!targetAnchor) return;
-    const originalTop = distanceToTop(targetAnchor);
-    window.scrollBy({ top: originalTop, left: 0, behavior: 'smooth' });
-    const checkIfDone = setInterval(function () {
-        const atBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 2;
-        if (distanceToTop(targetAnchor) === 0 || atBottom) {
-            targetAnchor.tabIndex = '-1';
-            targetAnchor.focus();
-            window.history.pushState('', '', targetID);
-            clearInterval(checkIfDone);
-        }
-    }, 100);
-}
-
-
-function ScrollToScriptureTarget() {
-	var $mark = $('.scripture.target,mark.target');
-	var targetOffset = $mark.parent().offset().top + 5;
-	var h = $('header').height() + 40;
-	$('html, body').animate({
-		scrollTop: targetOffset - h
-	}, 1000);
 }
 
 

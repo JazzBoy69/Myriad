@@ -13,6 +13,7 @@ namespace Myriad.Library
     AddShortcut();
     SetupIndex();
 SetupPartialPageLoad();
+ScrollToTarget();
 };
     </script>";
 
@@ -31,6 +32,7 @@ SetupPartialPageLoad();
     SetupIndex();
 SetSearchFieldText();
 SetupPartialPageLoad();
+ScrollToTop();
 };
     </script>";
         }

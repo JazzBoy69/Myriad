@@ -22,6 +22,7 @@ namespace Myriad.Pages
     AddShortcut();
     SetupIndex();
 SetupPartialPageLoad();
+ScrollToTop();
 };
     </script>";
     }
