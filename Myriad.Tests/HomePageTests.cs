@@ -25,10 +25,10 @@ namespace Myriad.Tests
             return new DefaultHttpContext().Response;
         }
         [Test]
-         public async Task CanGetData()
+         public void CanGetData()
         {
             IndexPage indexPage = new IndexPage();
-            paragraphs = await indexPage.GetPageParagraphs();
+            paragraphs = indexPage.GetPageParagraphs();
             Assert.That(paragraphs.Count > Number.nothing);
         }
         

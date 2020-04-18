@@ -23,15 +23,15 @@ namespace TestStub
         {
             return new DefaultHttpContext().Response;
         }
-        async private void RunTest2()
+        async private void RunTest()
         {
             string citationText;
-            var citations = CitationConverter.FromString("Mt 24:14, 16-18");
+            var citations = CitationConverter.FromString("Mt 1:20-25; 2:13, 14, 19-21; Lu 1:26-38; 2:8-38");
             citationText = await CitationConverter.ToString(citations);
             Console.WriteLine(citationText);
         }
 
-        async private void RunTest()
+        async private void RunTest2()
         {
             var searchPage = new SearchPage();
             var pageInfo = new SearchPageInfo();
