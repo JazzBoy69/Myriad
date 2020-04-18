@@ -22,7 +22,6 @@ namespace Myriad.Pages
 
         SearchPageInfo pageInfo = new SearchPageInfo();
 
-        //todo implement search page
         public override string GetURL()
         {
             return pageURL;
@@ -153,7 +152,7 @@ namespace Myriad.Pages
             {
                 var searchEvaluator = new SearchEvaluator();
                 searchEvaluator.EvaluateSynonyms(phrases);
-                var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, false);
+                var results = await searchEvaluator.Search(phrases, pageInfo, false);
                 pageInfo.SetResults(results);
                 pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
                 await SearchFormatter.FormatBody(writer, pageInfo);
@@ -169,7 +168,7 @@ namespace Myriad.Pages
             {
                 var searchEvaluator = new SearchEvaluator();
                 searchEvaluator.EvaluateSynonyms(phrases);
-                var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, true);
+                var results = await searchEvaluator.Search(phrases, pageInfo, true);
                 pageInfo.SetResults(results);
                 pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
                 await SearchFormatter.AppendSearchResults(0, 100, writer, pageInfo.SearchResults);

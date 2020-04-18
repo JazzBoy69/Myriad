@@ -20,17 +20,14 @@ namespace Myriad.Search
         public List<int> UsedDefinitions => usedDefinitions;
 
         internal async Task<List<SearchSentence>> Search(List<string> phrases, 
-            CitationRange citationRange, bool isSynonymQuery)
+            SearchPageInfo pageInfo, bool isSynonymQuery)
         {
             var commonWords = new List<string>();
             Dictionary<int, int> sentences = null;
             var searchResults = new List<SearchResult>();
             int queryIndex = Ordinals.first;
 
-            //TODO: Add search for this definition filter
-            // var ids = (from idstring in idStrings
-            // select Numbers.Convert(idstring)).ToList();
-            string rangeSelection = RangeSelection(citationRange);
+            string rangeSelection = RangeSelection(pageInfo.CitationRange);
             for (int index = Ordinals.first; index < phrases.Count; index++)
             {
                 if (EnglishDictionary.IsCommonWord(phrases[index]))
@@ -67,12 +64,6 @@ namespace Myriad.Search
                     queryIndex++;
                 }
             }
-            var filteredResults = (from sentence in sentences
-                                   join result in searchResults
-                                   on sentence.Key equals result.SentenceID
-                                   orderby sentence.Key
-                                   select result).ToList();
-
             //2) Load Definition searches
             Dictionary<(int, int), int> definitionSearchesInSentences = new Dictionary<(int, int), int>();
             if (usedDefinitions.Count > Number.nothing)
@@ -83,6 +74,31 @@ namespace Myriad.Search
                 definitionSearchesInSentences =
                     await ReadDefinitionSearches(definitionQuery.ToString());
             }
+            IEnumerable<KeyValuePair<int, int>> filteredSentences;
+            if (pageInfo.IDList != null)
+            {
+                var ids = new List<int>();
+                for (int i = Ordinals.first; i < pageInfo.IDList.Count; i++)
+                {
+                    ids.Add(Numbers.Convert(pageInfo.IDList[i]));
+                }
+                var idSentences = from sr in definitionSearchesInSentences
+                                  join id in ids on
+                                  sr.Value equals id
+                                  select sr.Key.Item1;
+                filteredSentences = from sentence in sentences
+                                    join idSentence in idSentences
+                                    on sentence.Key equals idSentence
+                                    select sentence;
+            }
+            else
+                filteredSentences = sentences;
+
+            var filteredResults = (from sentence in filteredSentences
+                                   join result in searchResults
+                                   on sentence.Key equals result.SentenceID
+                                   orderby sentence.Key
+                                   select result).ToList();
             List<SearchSentence> filteredOrSentences = 
                 SetScores(commonWords, sentences, 
                 queryIndex, isSynonymQuery, filteredResults, 
