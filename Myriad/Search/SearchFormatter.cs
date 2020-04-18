@@ -25,7 +25,7 @@ namespace Myriad.Search
             await WriteDefinitionsBlock(writer, pageInfo);
             await writer.Append(HTMLTags.EndDiv);
 
-            await AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
+            await AppendSearchResults(0, 200, writer, pageInfo.SearchResults);
 
             await writer.Append(HTMLTags.StartDivWithID);
             await writer.Append("synresults"); 
@@ -50,7 +50,7 @@ namespace Myriad.Search
         internal async static Task WriteDefinitionsBlock(HTMLWriter writer, SearchPageInfo pageInfo)
         {
             int mainDefinition = (pageInfo.UsedDefinitions.Count > Number.nothing) ?
-                await IdentifyMainDefinition(pageInfo) :
+                IdentifyMainDefinition(pageInfo) :
                 Result.error;
             await StartDefinitionsTitles(writer);
             int itemCount = Ordinals.first;
@@ -74,7 +74,7 @@ namespace Myriad.Search
                     {
                         if (otherID == id) continue;
                         parser.SetParagraphInfo(ParagraphType.Article, id);
-                        List<int> relatedParagraphIndices = await GetRelatedParagraphIndices(id, otherID);
+                        List<int> relatedParagraphIndices = GetRelatedParagraphIndices(id, otherID);
                         foreach (int paragraphIndex in relatedParagraphIndices)
                         {
                             (int id, int index) key = (id, paragraphIndex);
@@ -139,11 +139,11 @@ namespace Myriad.Search
             await writer.Append("</p>");
         }
 
-        private static async Task<List<int>> GetRelatedParagraphIndices(int id, int otherID)
+        private static List<int> GetRelatedParagraphIndices(int id, int otherID)
         {
             var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
                             DataOperation.ReadRelatedParagraphIndex), id, otherID);
-            List<int> paragraphs = await relatedReader.GetData<int>();
+            List<int> paragraphs = relatedReader.GetData<int>();
             relatedReader.Close();
             return paragraphs;
         }
@@ -193,7 +193,7 @@ namespace Myriad.Search
             await writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        private static async Task<int> IdentifyMainDefinition(SearchPageInfo pageInfo)
+        private static int IdentifyMainDefinition(SearchPageInfo pageInfo)
         {
             int mainDefinition = Result.notfound;
             int lowestIndex = 10000;
@@ -203,7 +203,7 @@ namespace Myriad.Search
             foreach (int id in pageInfo.UsedDefinitions)
             {
                 synonymReader.SetParameter(id);
-                List<string> synonyms = await synonymReader.GetData<string>();
+                List<string> synonyms = synonymReader.GetData<string>();
                 if (synonyms.Count == 0) continue;
                 int synIndex = Ordinals.first;
                 foreach (string synonym in synonyms)
@@ -318,7 +318,7 @@ namespace Myriad.Search
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadKeywordSentence),
                 sentenceID);
-            List<Keyword> sentenceKeywords = await reader.GetClassData<Keyword>();
+            List<Keyword> sentenceKeywords = reader.GetClassData<Keyword>();
             reader.Close();
             List<SearchResultWord> searchresultwords = new List<SearchResultWord>();
             for (int index = Ordinals.first; index < sentenceKeywords.Count; index++)

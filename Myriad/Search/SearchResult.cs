@@ -69,11 +69,20 @@ namespace Myriad.Search
 
         public async Task Read(DbDataReader reader)
         {
-            sentenceID = await reader.GetFieldValueAsync<int>(Ordinals.first);
-            wordIndex = await reader.GetFieldValueAsync<int>(Ordinals.second);
-            length = await reader.GetFieldValueAsync<int>(Ordinals.third);
-            queryIndex = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
+            try
+            {
+                sentenceID = await reader.GetFieldValueAsync<int>(Ordinals.first);
+                wordIndex = await reader.GetFieldValueAsync<int>(Ordinals.second);
+                length = await reader.GetFieldValueAsync<int>(Ordinals.third);
+                queryIndex = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
+
+
 
         public void Create(DbCommand command)
         {
@@ -83,6 +92,14 @@ namespace Myriad.Search
         public object GetParameter(int index)
         {
             throw new NotImplementedException();
+        }
+
+        public void ReadSync(DbDataReader reader)
+        {
+            sentenceID = reader.GetFieldValue<int>(Ordinals.first);
+            wordIndex = reader.GetFieldValue<int>(Ordinals.second);
+            length = reader.GetFieldValue<int>(Ordinals.third);
+            queryIndex = reader.GetFieldValue<int>(Ordinals.fourth);
         }
     }
 }

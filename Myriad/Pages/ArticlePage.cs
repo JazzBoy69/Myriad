@@ -57,7 +57,7 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
-            var paragraphs = await GetPageParagraphs();
+            var paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
             await AddMainHeading(writer);
             await Parse(paragraphs);
@@ -72,16 +72,16 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndMainHeader);
         }
 
-        public async Task<List<string>> GetPageParagraphs()
+        public List<string> GetPageParagraphs()
         {
-            return await GetPageParagraphs(pageInfo.ID);
+            return GetPageParagraphs(pageInfo.ID);
         }
 
-        public static async Task<List<string>> GetPageParagraphs(int id)
+        public static List<string> GetPageParagraphs(int id)
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticle), id);
-            var results = await reader.GetData<string>();
+            var results = reader.GetData<string>();
             reader.Close();
             return results;
         }
@@ -188,7 +188,7 @@ namespace Myriad.Pages
 
         public override async Task LoadTOCInfo(HttpContext context)
         {
-            var paragraphs = await GetPageParagraphs();
+            var paragraphs = GetPageParagraphs();
             headings = new List<string>();
             for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {

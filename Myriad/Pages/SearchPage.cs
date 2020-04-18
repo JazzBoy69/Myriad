@@ -152,7 +152,7 @@ namespace Myriad.Pages
             if (phrases.Count > Number.nothing)
             {
                 var searchEvaluator = new SearchEvaluator();
-                await searchEvaluator.EvaluateSynonyms(phrases);
+                searchEvaluator.EvaluateSynonyms(phrases);
                 var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, false);
                 pageInfo.SetResults(results);
                 pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
@@ -162,7 +162,19 @@ namespace Myriad.Pages
             if (phrases.Count == 0) pageInfo.SetQuery("no results");
             await AddPageTitleData(writer);
         }
-
+        public async Task WriteSynonymResults(HTMLWriter writer)
+        {
+            var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
+            if (phrases.Count > Number.nothing)
+            {
+                var searchEvaluator = new SearchEvaluator();
+                searchEvaluator.EvaluateSynonyms(phrases);
+                var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, true);
+                pageInfo.SetResults(results);
+                pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
+                await SearchFormatter.AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
+            }
+        }
         private async Task SaveQuery(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartDivWithID +
@@ -174,17 +186,6 @@ namespace Myriad.Pages
             await writer.Append(GetQueryInfo());
             await writer.Append(HTMLTags.EndDiv);
         }
-        public async Task WriteSynonymResults(HTMLWriter writer)
-        {
-            var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
-            var searchEvaluator = new SearchEvaluator();
-            await searchEvaluator.EvaluateSynonyms(phrases);
-            var results = await searchEvaluator.Search(phrases, pageInfo.CitationRange, true);
-            pageInfo.SetResults(results);
-            pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
-            await SearchFormatter.AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
-        }
-
         public override async Task AddTOC(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartList+

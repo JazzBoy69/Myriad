@@ -21,10 +21,10 @@ namespace Myriad.Data
             }
             for (int index = Ordinals.first; index < words.Count; index++)
             {
-                var roots = await Inflections.HardRootsOf(words[index]);
+                var roots = Inflections.HardRootsOf(words[index]);
                 foreach (string root in roots)
                 {
-                    var possibilities = (from phrase in await PhrasesThatStartWith(words[index], root)
+                    var possibilities = (from phrase in PhrasesThatStartWith(words[index], root)
                                          orderby phrase.Count(c => c == ' ') descending
                                          select phrase).ToList();
                     bool found = false;
@@ -32,7 +32,7 @@ namespace Myriad.Data
                     {
                         foreach (string possibility in possibilities)
                         {
-                            if (await Compare(words, index, possibility))
+                            if (Compare(words, index, possibility))
                             {
                                 result.Add(possibility);
                                 index += possibility.Count(c => c == ' ');
@@ -47,7 +47,7 @@ namespace Myriad.Data
             return result;
         }
         //todo refactor
-        internal static async Task<bool> Compare(List<string> words, int index, string testPhrase)
+        internal static bool Compare(List<string> words, int index, string testPhrase)
         {
             string[] testWords = testPhrase.Split(new char[] { ' ' });
             if ((index + testWords.Length) > words.Count) return false;
@@ -61,11 +61,11 @@ namespace Myriad.Data
             testIndex = Ordinals.first;
             while (testIndex < testWords.Length)
             {
-                var testWordRoots = await Inflections.RootsOf(testWords[testIndex]);
+                var testWordRoots = Inflections.RootsOf(testWords[testIndex]);
                 if (!testWordRoots.Contains(words[index + testIndex]))
                 {
                     bool found = false;
-                    var offsetRoots = await Inflections.RootsOf(words[index + testIndex]);
+                    var offsetRoots = Inflections.RootsOf(words[index + testIndex]);
                     foreach (string root in offsetRoots.Distinct())
                     {
                         if (testWordRoots.Contains(root))
@@ -81,16 +81,16 @@ namespace Myriad.Data
             return true;
         }
 
-        internal static async Task<List<string>> RootsOf(string words)
+        internal static List<string> RootsOf(string words)
         {
-            List<string> result = await Inflections.EnglishRootsOf(words);
+            List<string> result = Inflections.EnglishRootsOf(words);
             if (result.Count > 0) return result;
             StringBuilder phrase = new StringBuilder();
             string[] wordList = words.Split(new char[] { ' ', '_' });
             int count = wordList.Length;
             foreach (string word in wordList)
             {
-                var roots = await Inflections.EnglishRootsOf(word);
+                var roots = Inflections.EnglishRootsOf(word);
                 string root = (roots.Contains(word)) ? word : roots[Ordinals.first];
                 phrase.Append(root);
                 if (count > 1) phrase.Append(' ');
@@ -98,12 +98,12 @@ namespace Myriad.Data
             }
             return new List<string>() { phrase.ToString() };
         }
-        internal static async Task<List<string>> PhrasesThatStartWith(string word, string root)
+        internal static List<string> PhrasesThatStartWith(string word, string root)
         {
             var reader = new DataReaderProvider<string, 
                 string>(SqlServerInfo.GetCommand(DataOperation.ReadPhrases),
                 word, root);
-            return await reader.GetData<string>();
+            return reader.GetData<string>();
         }
     }
 }

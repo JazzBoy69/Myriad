@@ -35,13 +35,16 @@ namespace TestStub
         {
             var searchPage = new SearchPage();
             var pageInfo = new SearchPageInfo();
-            pageInfo.SetSearchQuery("?q=intelligent");
+            //pageInfo.SetSearchQuery("?q=Jehovah+is+the+true+God");
+            pageInfo.SetSearchQuery("Jehovah");
             (CitationRange r, string q) = SearchPage.SearchRange(pageInfo.SearchQuery);
             pageInfo.SetCitationRange(r);
-            pageInfo.SetQuery("intelligent");
+            //pageInfo.SetQuery("Jehovah is the true God");
+            pageInfo.SetQuery("Jehovah");
             searchPage.SetPageInfo(pageInfo);
+            searchPage.SetResponse(DefaultResponse());
             if (!searchPage.IsValid()) return;
-            await searchPage.WriteSynonymResults(Writer.New());
+            await searchPage.RenderBody(Writer.New());
             pageInfo.SetQuery("");
         }
 

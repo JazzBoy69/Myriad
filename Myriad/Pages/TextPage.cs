@@ -51,7 +51,7 @@ namespace Myriad.Pages
         public async override Task RenderBody(HTMLWriter writer)
         {
             this.writer = writer;
-            await Initialize();
+            Initialize();
             bool readingView = commentIDs.Count > 1;
             if (readingView)
             {
@@ -94,25 +94,26 @@ namespace Myriad.Pages
                 citation.CitationRange.EndID.ID);
             (int start, int end) = await reader.GetDatum<int, int>();
             citation = new Citation(start, end);
+            reader.Close();
         }
 
-        private async Task Initialize()
+        private void Initialize()
         {
             textSection = new TextSectionFormatter(writer);
-            commentIDs = await GetCommentIDs(citation);
+            commentIDs = GetCommentIDs(citation);
         }
 
-        private async Task<List<int>> GetCommentIDs(Citation citation)
+        private List<int> GetCommentIDs(Citation citation)
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            return await reader.GetData<int>();
+            return reader.GetData<int>();
         }
 
         public override async Task AddTOC(HTMLWriter writer)
         {
-            var ids = await GetCommentIDs(citation);
+            var ids = GetCommentIDs(citation);
             if (ids.Count < 2) return;
             await writer.Append(HTMLTags.StartList);
             await writer.Append(HTMLTags.ID);
@@ -132,7 +133,7 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.OnClick);
                 await writer.Append(JavaScriptFunctions.HandleTOCClick);
                 await writer.Append(HTMLTags.EndTag);
-                var paragraphs = await TextSectionFormatter.ReadParagraphs(ids[index]);
+                var paragraphs = TextSectionFormatter.ReadParagraphs(ids[index]);
                 await writer.Append(paragraphs[Ordinals.first].Replace("==", ""));
                 await writer.Append(HTMLTags.EndAnchor);
                 await writer.Append(HTMLTags.EndListItem);

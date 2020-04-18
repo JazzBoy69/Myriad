@@ -39,7 +39,7 @@ namespace Myriad.Formatter
             List<(int start, int end)> idRanges = await ReadLinks(commentIDs[index]);
 
             parser.SetParagraphInfo(ParagraphType.Comment, commentIDs[index]);
-            paragraphs = await ReadParagraphs(commentIDs[index]);
+            paragraphs = ReadParagraphs(commentIDs[index]);
             if (idRanges.Count > 1)
             {
                 await AppendTextHeader();
@@ -87,7 +87,7 @@ namespace Myriad.Formatter
                 "ExpandReadingViewText(event)");
             }
             await writer.Append(HTMLTags.EndTag);
-            List<Keyword> keywords = await ReadKeywords(citation); //todo db async
+            List<Keyword> keywords = ReadKeywords(citation); //todo db async
             formatter = new TextFormatter(writer);
             await formatter.AppendCitationData(citation);
             await writer.Append(HTMLTags.StartDivWithClass+
@@ -106,21 +106,21 @@ namespace Myriad.Formatter
             reader.Close();
             return results;
         }
-        public async Task<List<Keyword>> ReadKeywords(Citation citation)
+        public List<Keyword> ReadKeywords(Citation citation)
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            return await reader.GetClassData<Keyword>();
+            return reader.GetClassData<Keyword>();
         }
 
 
-        public static async Task<List<string>> ReadParagraphs(int commentID)
+        public static List<string> ReadParagraphs(int commentID)
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadComment),
                 commentID);
-            var results = await reader.GetData<string>();
+            var results = reader.GetData<string>();
             reader.Close();
             return results;
         }
@@ -240,7 +240,7 @@ namespace Myriad.Formatter
                     "ExpandReadingViewText(event)");
                 }
                 await writer.Append(HTMLTags.EndTag);
-                List<Keyword> keywords = await ReadKeywords(range);
+                List<Keyword> keywords = ReadKeywords(range);
                 formatter = new TextFormatter(writer);
                 await writer.Append(HTMLTags.StartDivWithClass+
                     HTMLClasses.scriptureQuote+

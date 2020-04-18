@@ -48,5 +48,12 @@ namespace Myriad.Data
             }
             return null;
         }
+
+        public void ReadSync(DbDataReader reader)
+        {
+            id =  reader.GetFieldValue<int>(Ordinals.first);
+            index =  reader.GetFieldValue<int>(Ordinals.second);
+            text =  reader.GetFieldValue<string>(Ordinals.third);
+        }
     }
 }

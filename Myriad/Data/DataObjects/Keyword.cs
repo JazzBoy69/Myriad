@@ -39,6 +39,17 @@ namespace Myriad.Data
             throw new NotImplementedException();
         }
 
+        public void ReadSync(DbDataReader reader)
+        {
+            id = new KeyID( reader.GetFieldValue<int>(Ordinals.first));
+            leadingSymbols =  reader.GetFieldValue<string>(Ordinals.second);
+            text =  reader.GetFieldValue<string>(Ordinals.third);
+            trailingSymbols =  reader.GetFieldValue<string>(Ordinals.fourth);
+            isCapitalized =  reader.GetFieldValue<int>(Ordinals.fifth) != 0;
+            isPoetic =  reader.GetFieldValue<int>(Ordinals.sixth) != 0;
+            paragraphWordIndex =  reader.GetFieldValue<int>(Ordinals.seventh);
+        }
+
         public ReadOnlySpan<char> LeadingSymbols
         {
             get { return leadingSymbols.AsSpan(); }

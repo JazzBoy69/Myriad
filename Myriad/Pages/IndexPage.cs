@@ -55,7 +55,7 @@ SetupPartialPageLoad();
         {
             //todo edit page
             ID = await GetPageID();
-            paragraphs = await GetPageParagraphs();
+            paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             await Parse();
@@ -95,11 +95,11 @@ SetupPartialPageLoad();
             return result;
         }
 
-        public async Task<List<string>> GetPageParagraphs()
+        public List<string> GetPageParagraphs()
         {
             var reader = new DataReaderProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
-            var results = await reader.GetData<string>();
+            var results = reader.GetData<string>();
             reader.Close();
             return results;
         }
@@ -170,9 +170,9 @@ SetupPartialPageLoad();
             return HTMLTags.StartQuery + nameQuery + name;
         }
 
-        public override async Task LoadTOCInfo(HttpContext context)
+        public override Task LoadTOCInfo(HttpContext context)
         {
-            paragraphs = await GetPageParagraphs();
+            paragraphs = GetPageParagraphs();
             for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {
                 if ((paragraphs[index].Length > Number.nothing) &&
@@ -182,6 +182,7 @@ SetupPartialPageLoad();
                     break;
                 }
             }
+            return Task.CompletedTask;
         }
     }
 }

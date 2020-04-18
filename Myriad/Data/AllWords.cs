@@ -36,7 +36,7 @@ namespace Myriad.Data
                     result.Append(newWord);
                     continue;
                 }
-                result.Append(await GetClosestMatch(newWord));
+                result.Append(GetClosestMatch(newWord));
                 result.Append(' ');
             }
             if (result.Length == 0) return "";
@@ -52,17 +52,17 @@ namespace Myriad.Data
             return result != null;
         }
 
-        internal static async Task<string> GetClosestMatch(string word)
+        internal static string GetClosestMatch(string word)
         {
             string posibleResult = word;
-            var roots = await Inflections.RootsOf(word);
+            var roots = Inflections.RootsOf(word);
             if (roots.Contains(word)) return word;
             int distance = 2000;
             if (word.Length > 1)
             {
                 var reader = new DataReaderProvider(
                     SqlServerInfo.CreateCommandFromQuery("select RTrim(text) from synonyms"));
-                var words = await reader.GetData<string>();
+                var words = reader.GetData<string>();
                 reader.Close();
                 foreach (string s in words)
                 {
@@ -78,7 +78,7 @@ namespace Myriad.Data
             if (distance < 3) return posibleResult;
             var allreader = new DataReaderProvider(
                 SqlServerInfo.CreateCommandFromQuery("select RTrim(text) from allwords"));
-            var allwords = await allreader.GetData<string>();
+            var allwords = allreader.GetData<string>();
             allreader.Close();
             foreach (string w in allwords)
             {
