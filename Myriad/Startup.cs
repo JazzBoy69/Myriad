@@ -106,6 +106,13 @@ namespace Myriad
                 await paginationPage.RenderBody(Writer.New(context.Response));
                 return;
             }
+            if (context.Request.Query.ContainsKey("up"))
+            {
+                PaginationPage paginationPage = (PaginationPage)partialPage;
+                await paginationPage.SetupParentPage();
+                await paginationPage.RenderBody(Writer.New(context.Response));
+                return;
+            }
             await partialPage.RenderBody(Writer.New(context.Response));
         }
 

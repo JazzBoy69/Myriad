@@ -57,5 +57,11 @@ namespace Myriad.Pages
         {
             throw new NotImplementedException();
         }
+
+        public override Task SetupParentPage()
+        {
+            citation.CitationType = CitationTypes.Text;
+            return Task.CompletedTask;
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace Myriad.Pages
 {
     public abstract class PaginationPage : CommonPage
     {
+        public abstract Task SetupParentPage();
         public abstract Task SetupNextPage();
         public abstract Task SetupPrecedingPage();
     }

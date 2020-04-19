@@ -22,6 +22,11 @@ namespace Myriad.Pages
 
         protected Citation citation;
         protected bool navigating;
+
+        public void SetCitation(Citation citation)
+        {
+            this.citation = citation;
+        }
         public override async Task LoadQueryInfo(IQueryCollection query)
         {
             navigating = query.ContainsKey(queryKeyNavigating);

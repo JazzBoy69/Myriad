@@ -16,26 +16,21 @@ namespace Myriad.Pages
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
-        public const string precedingURL = "/Text-Preceding";
-        public const string nextURL = "/Text-Next";
-        public const string loadMainPane = "/Text-Load";
         HTMLWriter writer;
         List<int> commentIDs;
         TextSectionFormatter textSection;
 
-        public void SetCitation(Citation citation)
-        {
-            this.citation = citation;
-        }
-
         public override string GetURL()
         {
+            if (citation.CitationType == CitationTypes.Chapter) return ChapterPage.pageURL;
             return pageURL;
         }
 
         protected override CitationTypes GetCitationType()
         {
-            return CitationTypes.Text;
+            return (citation == null) ?
+               CitationTypes.Text :
+               citation.CitationType;
         }
 
         protected async override Task WriteTitle(HTMLWriter writer)
@@ -50,6 +45,14 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
+            if (citation.CitationType == CitationTypes.Chapter)
+            {
+                ChapterPage chapterPage = new ChapterPage();
+                chapterPage.SetCitation(citation);
+                chapterPage.SetResponse(response);
+                await chapterPage.RenderBody(writer);
+                return;
+            }
             this.writer = writer;
             Initialize();
             bool readingView = commentIDs.Count > 1;
@@ -76,7 +79,15 @@ namespace Myriad.Pages
             citation = new Citation(startID, endID);
             await RenderBody(Writer.New(response));
         }
-
+        public override Task SetupParentPage()
+        {
+            KeyID start = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter, 0);
+            KeyID end = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter,
+                Bible.Chapters[citation.CitationRange.Book][citation.CitationRange.FirstChapter], KeyID.MaxWordIndex);
+            citation = new Citation(start, end);
+            citation.CitationType = CitationTypes.Chapter;
+            return Task.CompletedTask;
+        }
         public override async Task SetupNextPage()
         {
             var reader = new DataReaderProvider<int>(
@@ -150,6 +161,5 @@ namespace Myriad.Pages
         {
             await LoadQueryInfo(context.Request.Query);
         }
-
     }
 }

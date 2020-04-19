@@ -210,5 +210,17 @@ ScrollToTop();
                 newName;
             reader.Close();
         }
+
+        public override async Task SetupParentPage()
+        {
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadParentNavigationName),
+                name);
+            string newName = await reader.GetDatum<string>();
+            name = (string.IsNullOrEmpty(newName)) ?
+                name :
+                newName;
+            reader.Close();
+        }
     }
 }

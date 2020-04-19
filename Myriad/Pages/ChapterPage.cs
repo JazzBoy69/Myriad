@@ -142,5 +142,9 @@ namespace Myriad.Pages
             await LoadQueryInfo(context.Request.Query);
         }
 
+        public override Task SetupParentPage()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

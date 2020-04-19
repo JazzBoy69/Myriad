@@ -632,6 +632,12 @@ function SetThisVerseAsTarget() {
     }
 }
 
+function GoUp() {
+    var path = CurrentPath();
+    path = AddQueryToPath(path, 'up=true&navigating=true');
+    LoadPage(path);
+}
+
 function GoToNext() {
     TurnPage('next');
 }
