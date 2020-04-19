@@ -28,7 +28,7 @@ namespace Myriad.Pages
 
         protected override async Task WriteTitle(HTMLWriter writer)
         {
-            await CitationConverter.ToString(citation, writer);
+            await CitationConverter.ToLongString(citation, writer);
         }
 
         protected override string PageScripts()
@@ -61,8 +61,17 @@ namespace Myriad.Pages
 
         private void Initialize()
         {
+            Citation chapterCitation = GetChapterCitation();
             textSection = new TextSectionFormatter(writer);
-            commentIDs = GetCommentIDs(citation);
+            commentIDs = GetCommentIDs(chapterCitation);
+        }
+
+        private Citation GetChapterCitation()
+        {
+            KeyID start = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter, 0);
+            KeyID end = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter,
+                Bible.Chapters[citation.CitationRange.Book][citation.CitationRange.FirstChapter], KeyID.MaxWordIndex);
+            return new Citation(start, end);
         }
         private List<int> GetCommentIDs(Citation citation)
         {
@@ -84,21 +93,25 @@ namespace Myriad.Pages
 
         public override async Task SetupNextPage()
         {
+            var chapterCitation = GetChapterCitation();
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNextCommentRange),
-                citation.CitationRange.EndID.ID);
+                chapterCitation.CitationRange.EndID.ID);
             (int start, int end) = await reader.GetDatum<int, int>();
             reader.Close();
             citation = new Citation(start, end);
+            citation.CitationType = CitationTypes.Chapter;
         }
 
         public override async Task SetupPrecedingPage()
         {
+            var chapterCitation = GetChapterCitation();
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadPrecedingCommentRange),
-                citation.CitationRange.EndID.ID);
+                chapterCitation.CitationRange.StartID.ID);
             (int start, int end) = await reader.GetDatum<int, int>();
             citation = new Citation(start, end);
+            citation.CitationType = CitationTypes.Chapter;
             reader.Close();
         }
 

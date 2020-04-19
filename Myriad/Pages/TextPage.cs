@@ -81,10 +81,6 @@ namespace Myriad.Pages
         }
         public override Task SetupParentPage()
         {
-            KeyID start = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter, 0);
-            KeyID end = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter,
-                Bible.Chapters[citation.CitationRange.Book][citation.CitationRange.FirstChapter], KeyID.MaxWordIndex);
-            citation = new Citation(start, end);
             citation.CitationType = CitationTypes.Chapter;
             return Task.CompletedTask;
         }
@@ -102,7 +98,7 @@ namespace Myriad.Pages
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadPrecedingCommentRange),
-                citation.CitationRange.EndID.ID);
+                citation.CitationRange.StartID.ID);
             (int start, int end) = await reader.GetDatum<int, int>();
             citation = new Citation(start, end);
             reader.Close();
