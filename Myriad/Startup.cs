@@ -94,16 +94,16 @@ namespace Myriad
             CommonPage partialPage = await RequestedPage(context);
             if (context.Request.Query.ContainsKey("next"))
             {
-                ScripturePage scripturePage = (ScripturePage)partialPage;
-                await scripturePage.SetupNextPage();
-                await scripturePage.RenderBody(Writer.New(context.Response));
+                PaginationPage paginationPage = (PaginationPage)partialPage;
+                await paginationPage.SetupNextPage();
+                await paginationPage.RenderBody(Writer.New(context.Response));
                 return;
             }
             if (context.Request.Query.ContainsKey("preceding"))
             {
-                ScripturePage scripturePage = (ScripturePage)partialPage;
-                await scripturePage.SetupPrecedingPage();
-                await scripturePage.RenderBody(Writer.New(context.Response));
+                PaginationPage paginationPage = (PaginationPage)partialPage;
+                await paginationPage.SetupPrecedingPage();
+                await paginationPage.RenderBody(Writer.New(context.Response));
                 return;
             }
             await partialPage.RenderBody(Writer.New(context.Response));

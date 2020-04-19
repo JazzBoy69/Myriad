@@ -87,7 +87,7 @@ namespace Myriad.Formatter
                 "ExpandReadingViewText(event)");
             }
             await writer.Append(HTMLTags.EndTag);
-            List<Keyword> keywords = ReadKeywords(citation); //todo db async
+            List<Keyword> keywords = ReadKeywords(citation);
             formatter = new TextFormatter(writer);
             await formatter.AppendCitationData(citation);
             await writer.Append(HTMLTags.StartDivWithClass+

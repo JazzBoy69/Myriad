@@ -11,7 +11,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Myriad.Pages
 {
-    public abstract class ScripturePage : CommonPage
+    public abstract class ScripturePage : PaginationPage
     {
         internal const string queryKeyTGStart = "tgstart";
         internal const string queryKeyTGEnd = "tgend";
@@ -55,9 +55,6 @@ namespace Myriad.Pages
         }
 
         protected abstract CitationTypes GetCitationType();
-
-        public abstract Task SetupNextPage();
-        public abstract Task SetupPrecedingPage();
         public override bool IsValid()
         {
             return (citation != null) && (citation.CitationRange.Valid);

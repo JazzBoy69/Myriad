@@ -27,7 +27,7 @@ ScrollToTop();
     </script>";
     }
 
-    public class IndexPage : CommonPage
+    public class IndexPage : PaginationPage
     {
         public const string pageURL = "/Index";
         public const string nameQuery = "name=";
@@ -55,6 +55,7 @@ ScrollToTop();
         public async override Task RenderBody(HTMLWriter writer)
         {
             //todo edit page
+            if (string.IsNullOrEmpty(name)) name = defaultName;
             ID = await GetPageID();
             paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
@@ -184,6 +185,30 @@ ScrollToTop();
                 }
             }
             return Task.CompletedTask;
+        }
+
+        public override async Task SetupNextPage()
+        {
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNextNavigationName),
+                name);
+            string newName = await reader.GetDatum<string>();
+            name = ((string.IsNullOrEmpty(newName)) || (newName.Contains("=="))) ?
+                name :
+                newName;
+            reader.Close();
+        }
+
+        public override async Task SetupPrecedingPage()
+        {
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadPrecedingNavigationName),
+                name);
+            string newName = await reader.GetDatum<string>();
+            name = (string.IsNullOrEmpty(newName)) ?
+                name :
+                newName;
+            reader.Close();
         }
     }
 }

@@ -12,10 +12,10 @@ namespace Myriad.Data
     public enum DataOperation
     {
         ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID,
-        ReadNavigationTitle,
+        ReadNavigationTitle, ReadNextNavigationName, ReadPrecedingNavigationName,
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
-        ReadPrecedingCommentRange, ReadRelatedParagraphIndex,
+        ReadPrecedingCommentRange, ReadCommentTitle, ReadRelatedParagraphIndex,
         ReadKeywords, ReadWordIndex, ReadKeywordSentence,
         ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases,
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
@@ -34,24 +34,28 @@ namespace Myriad.Data
         };
 
         internal static Dictionary<DataOperation, string> Commands = new Dictionary<DataOperation, string>()
-         {
+        {
              { DataOperation.ReadNavigationPage,
                  "select text from navigationparagraphs where name=@key1 order by paragraphindex" },
              { DataOperation.ReadNavigationParagraph,
                  "select text from navigationparagraphs where articleid=@key1 and paragraphindex=@key2" },
              { DataOperation.UpdateNavigationParagraph,
                  "update navigationparagraphs set text=@key3 where articleid=@key1 and paragraphindex=@key2" },
-              { DataOperation.ReadNavigationID,
+             { DataOperation.ReadNavigationID,
                  "select _id from navigation where name=@key1"},
-              { DataOperation.ReadNavigationTitle,
+             { DataOperation.ReadNavigationTitle,
                  "select heading from navigation where name=@key1"},
+             { DataOperation.ReadNextNavigationName,
+                "select text from navigationparagraphs join (select name, paragraphindex from navigationparagraphs where text=@key1) as s on navigationparagraphs.name = s.name and navigationparagraphs.paragraphindex=s.paragraphindex+1" },
+             { DataOperation.ReadPrecedingNavigationName,
+                "select text from navigationparagraphs join (select name, paragraphindex from navigationparagraphs where text=@key1) as s on navigationparagraphs.name = s.name and navigationparagraphs.paragraphindex=s.paragraphindex-1" },
              { DataOperation.ReadArticleTitle,
                  "select RTrim(title) from tags where id=@key1"},
              { DataOperation.ReadArticleID,
                  "select id from tags where title=@key1"},
              { DataOperation.ReadArticleParagraph,
                  "select text from glossary where id=@key1 and paragraphindex=@key2"},
-            { DataOperation.ReadArticle,
+             { DataOperation.ReadArticle,
                 "select text from glossary where id=@key1 order by paragraphindex" },
              { DataOperation.UpdateArticleParagraph,
                  "update glossary set text=@key3 where id=@key1 and paragraphindex=@key2"},
@@ -65,6 +69,8 @@ namespace Myriad.Data
                  "select RTrim(text) from comments where id=@key1" },
              { DataOperation.ReadCommentParagraph,
                  "select RTrim(text) from comments where id=@key1 and paragraphindex=@key2"},
+            { DataOperation.ReadCommentTitle,
+                "select RTrim(text) from comments where id=@key1 and paragraphindex=0" },
              { DataOperation.UpdateCommentParagraph,
                  "update comments set text=@key3 where id=@key1 and paragraphindex=@key2"},
              { DataOperation.ReadCommentLinks,
@@ -91,7 +97,7 @@ namespace Myriad.Data
                 "select id from synonyms where text=@key1" },
             {DataOperation.ReadSynonyms,
                 "select RTrim(text) from synonyms where id=@key1 and text!=@key2 order by synIndex" }
-         }; 
+        };
 
         public static DataCommand GetCommand(DataOperation operation)
         {

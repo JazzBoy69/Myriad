@@ -121,6 +121,9 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.Class);
             await writer.Append(HTMLClasses.visible);
             await writer.Append(HTMLTags.CloseQuoteEndTag);
+            var reader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadCommentTitle),
+                -1);
 
             for (int index = Ordinals.first; index < ids.Count; index++)
             {
@@ -133,12 +136,14 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.OnClick);
                 await writer.Append(JavaScriptFunctions.HandleTOCClick);
                 await writer.Append(HTMLTags.EndTag);
-                var paragraphs = TextSectionFormatter.ReadParagraphs(ids[index]);
-                await writer.Append(paragraphs[Ordinals.first].Replace("==", ""));
+                reader.SetParameter(ids[index]);
+                string heading = await reader.GetDatum<string>();
+                await writer.Append(heading.Replace("==", ""));
                 await writer.Append(HTMLTags.EndAnchor);
                 await writer.Append(HTMLTags.EndListItem);
             }
             await writer.Append(HTMLTags.EndList);
+            reader.Close();
         }
 
         public override async Task LoadTOCInfo(HttpContext context)
