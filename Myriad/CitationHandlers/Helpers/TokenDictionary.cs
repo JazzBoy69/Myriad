@@ -71,6 +71,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1574, SetFirstWordAndAddResults },     //Mt 24:14.8 => :xx.8
             { 0x1592, SetFirstVerse },                 //Mr 6:1, 4-6; => :xx, 4- 
             { 0x1593, SetFirstVerse },                 //Joh 8:26, 28, 38; => :xx, 28,
+            { 0x1594, SetFirstVerseAndAddResults },    //Jas 1:13, 17 => :xx, 17
             { 0x1832, SetSecondVerseAndAddResults },   //2Jo 10, 12-14 => _xx, 12-
             { 0x1833, SetSecondVerseAndAddResults },   //2Jo 10, 12, 14 => _xx, 12,
             { 0x1834, SetSecondChapterAndAddResults }, //Ge 6, 7; => _xx, 7;

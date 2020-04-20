@@ -93,7 +93,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithClass+
                 HTMLClasses.scriptureQuote+
                 HTMLTags.CloseQuoteEndTag);
-            await formatter.AppendKeywords(keywords, sourceCitation.CitationRange, navigating, readingView);
+            await formatter.AppendKeywords(keywords, citation.CitationRange, sourceCitation.CitationRange, navigating, readingView);
             await writer.Append(HTMLTags.EndDiv+
                 HTMLTags.EndSection);
         }
@@ -111,7 +111,9 @@ namespace Myriad.Formatter
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            return reader.GetClassData<Keyword>();
+            var result = reader.GetClassData<Keyword>();
+            reader.Close();
+            return result;
         }
 
 
@@ -245,7 +247,7 @@ namespace Myriad.Formatter
                 await writer.Append(HTMLTags.StartDivWithClass+
                     HTMLClasses.scriptureQuote+
                     HTMLTags.CloseQuoteEndTag);
-                await formatter.AppendKeywords(keywords, sourceCitation.CitationRange, navigating, readingView);
+                await formatter.AppendKeywords(keywords, range.CitationRange, sourceCitation.CitationRange, navigating, readingView);
                 await writer.Append(HTMLTags.EndDiv+
                     HTMLTags.EndSection+
                     HTMLTags.EndListItem);

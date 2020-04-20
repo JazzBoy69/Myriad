@@ -9,18 +9,22 @@ function SetupPartialPageLoad() {
 }
 
 function HandleLink(event) {
-    event.preventDefault(); 
-    LoadPage(event.target.href);
+    event.preventDefault();
+    LoadPage(event.target.closest('a').href);
 }
 
 function LoadPage(path) {
     if (performance.navigation.type === 1) {
-        window.location = path.replace("&partial=true", "");
+        LoadCompletePage(path);
         HandleAdditionalSearchTasks();
         return;
     }
     if (path.indexOf('partial') === -1) path = AddQueryToPath(path, 'partial=true');
     LoadMainPane(path);
+}
+
+function LoadCompletePage(path) {
+    window.location = path.replace("&partial=true", "");
 }
 
 function HandleTOCClick(event) {
@@ -76,9 +80,9 @@ function LoadMainPaneHistory(path) {
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
-            ScrollToTarget();
             SetTitle();
             HandleAdditionalSearchTasks();
+            WhenReady(mainPane, ScrollToTarget);
         });
 }
 
@@ -94,7 +98,6 @@ function LoadMainPane(path) {
         function (data) {
             var mainPane = document.getElementById('mainPane');
             mainPane.innerHTML = data;
-            ScrollToTarget();
             var path = CurrentPath();
             if (path.indexOf('/Search')>-1) {
                 SetSearchFieldText();
@@ -102,6 +105,7 @@ function LoadMainPane(path) {
             history.pushState(null, null, path);
             SetTitle();
             HandleAdditionalSearchTasks();
+            WhenReady(mainPane, ScrollToTarget);
         });
 }
 
@@ -174,6 +178,17 @@ function ScrollToTarget() {
     var targetOffset = target.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
     window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
+}
+
+function WhenReady(element, functionToCall) {
+    if (
+        element.readyState === "complete" ||
+        (element.readyState !== "loading")
+    ) {
+        functionToCall();
+    } else {
+        element.addEventListener("DOMContentLoaded", functionToCall);
+    }
 }
 
 function ScrollToTop() {
@@ -634,6 +649,7 @@ function SetThisVerseAsTarget() {
 
 function GoUp() {
     var path = CurrentPath();
+    path = path.replace('&navigating=true', '');
     path = AddQueryToPath(path, 'up=true&navigating=true');
     LoadPage(path);
 }

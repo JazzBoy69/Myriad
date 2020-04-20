@@ -21,7 +21,6 @@ namespace Myriad.Pages
         TextSectionFormatter textSection;
         List<string> headings;
 
-        //todo implement chapter page
         internal ChapterPage()
         {
         }

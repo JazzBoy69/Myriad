@@ -81,6 +81,7 @@ namespace Myriad.Pages
         }
         public override Task SetupParentPage()
         {
+            targetCitation = citation;
             citation.CitationType = CitationTypes.Chapter;
             return Task.CompletedTask;
         }

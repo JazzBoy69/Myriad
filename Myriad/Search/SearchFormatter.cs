@@ -420,7 +420,7 @@ namespace Myriad.Search
                 ellipsis = false;
                 if (links.ContainsKey(idx))
                 {
-                    await writer.Append("<a HREF=" + ArticlePage.pageURL + "id=");
+                    await writer.Append("<a HREF=" + ArticlePage.pageURL + "?id=");
                     await writer.Append(links[idx].Item1);
                     await writer.Append("&tgstart=");
                     await writer.Append(startID);
@@ -439,7 +439,6 @@ namespace Myriad.Search
         {
             await writer.Append(HTMLTags.Ampersand +
                 HTMLClasses.partial +
-                HTMLTags.CloseQuote +
                 HTMLTags.OnClick +
             JavaScriptFunctions.HandleLink);
         }

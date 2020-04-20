@@ -32,7 +32,6 @@ namespace Myriad.Pages
             var writer = Writer.New(response);
             await WriteHeader(writer);
             await RenderBody(writer);
-            await AddPageHistory(writer);
             await writer.Append(LayoutHTML.close);
             await writer.Append(LayoutHTML.tocdiv);
             await writer.Append(LayoutHTML.modalOverlay);

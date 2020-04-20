@@ -50,6 +50,7 @@ namespace Myriad.Library
         internal const string pageUrl = "pageUrlData";
         internal const string headerid = "header";
         internal const string searchqueryinfo = "searchqueryinfo";
+        internal const string target = "target";
     }
 
 }
