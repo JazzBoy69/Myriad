@@ -44,6 +44,7 @@ namespace Myriad.Pages
             {
                 await writer.Append(HTMLTags.StartMainHeader);
                 await WriteTitle(writer);
+                //navigating = !targetCitation.CitationRange.Valid;
                 await writer.Append(HTMLTags.EndMainHeader);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {

@@ -82,7 +82,7 @@ function LoadMainPaneHistory(path) {
             mainPane.innerHTML = data;
             SetTitle();
             HandleAdditionalSearchTasks();
-            WhenReady(mainPane, ScrollToTarget);
+            ScrollWhenReady();
         });
 }
 
@@ -105,7 +105,7 @@ function LoadMainPane(path) {
             history.pushState(null, null, path);
             SetTitle();
             HandleAdditionalSearchTasks();
-            WhenReady(mainPane, ScrollToTarget);
+            ScrollWhenReady();
         });
 }
 
@@ -180,14 +180,14 @@ function ScrollToTarget() {
     window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
 }
 
-function WhenReady() {
+function ScrollWhenReady() {
     var images = mainPane.getElementsByTagName('img');
     var ready = images.length === 0;
     if (!ready) {
         ready = true;
         for (var i = 0; i < images.length; i++) {
             if (!images[i].complete) {
-                images[i].onload = WhenReady;
+                images[i].onload = ScrollWhenReady;
                 return;
             }
         }

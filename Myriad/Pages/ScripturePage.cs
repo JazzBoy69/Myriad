@@ -84,10 +84,9 @@ namespace Myriad.Pages
                 info += HTMLTags.Ampersand + queryKeyTGStart + Symbol.equal + targetCitation.CitationRange.StartID+
                     HTMLTags.Ampersand + queryKeyTGEnd + Symbol.equal + targetCitation.CitationRange.EndID;
             }
-            return info;
-           /* return (navigating) ?
+            return (navigating) ?
                 info + HTMLTags.Ampersand + queryKeyNavigating + "=true" :
-                info; */
+                info; 
         }
     }
 }

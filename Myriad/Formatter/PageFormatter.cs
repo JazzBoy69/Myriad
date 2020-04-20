@@ -318,6 +318,10 @@ namespace Myriad.Parser
                 await writer.Append("&word=");
                 await writer.Append(citation.CitationRange.Word);
             }
+            if (citation.CitationType == CitationTypes.Chapter)
+            {
+                await writer.Append("&navigating=true");
+            }
         }
         internal async Task AppendFigure(string par, Formats formats)
         {
