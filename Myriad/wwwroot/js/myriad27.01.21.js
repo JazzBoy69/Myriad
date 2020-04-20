@@ -180,15 +180,19 @@ function ScrollToTarget() {
     window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
 }
 
-function WhenReady(element, functionToCall) {
-    if (
-        element.readyState === "complete" ||
-        (element.readyState !== "loading")
-    ) {
-        functionToCall();
-    } else {
-        element.addEventListener("DOMContentLoaded", functionToCall);
+function WhenReady() {
+    var images = mainPane.getElementsByTagName('img');
+    var ready = images.length === 0;
+    if (!ready) {
+        ready = true;
+        for (var i = 0; i < images.length; i++) {
+            if (!images[i].complete) {
+                images[i].onload = WhenReady;
+                return;
+            }
+        }
     }
+    ScrollToTarget();
 }
 
 function ScrollToTop() {
