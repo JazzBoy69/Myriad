@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Feliciana.ResponseWriter;
 using Feliciana.Library;
@@ -19,7 +20,10 @@ namespace Myriad.Pages
         HTMLWriter writer;
         List<int> commentIDs;
         TextSectionFormatter textSection;
+        PageParser parser;
         List<string> headings;
+        int articleID;
+        List<string> articleParagraphs;
 
         internal ChapterPage()
         {
@@ -38,32 +42,57 @@ namespace Myriad.Pages
         public async override Task RenderBody(HTMLWriter writer)
         {
             this.writer = writer;
-            Initialize();
-            bool readingView = commentIDs.Count > 1;
-            if (readingView)
+            await Initialize();
+            await writer.Append(HTMLTags.StartMainHeader);
+            await WriteTitle(writer);
+            await writer.Append(HTMLTags.EndMainHeader);
+            await WriteChapterComment();
+            for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await writer.Append(HTMLTags.StartMainHeader);
-                await WriteTitle(writer);
-                //navigating = !targetCitation.CitationRange.Valid;
-                await writer.Append(HTMLTags.EndMainHeader);
-                for (var i = Ordinals.first; i < commentIDs.Count; i++)
-                {
-                    await textSection.AddTextSection(commentIDs, i, citation, navigating, readingView);
-                }
-            }
-            else
-            {
-                await textSection.AddTextSection(commentIDs, Ordinals.first, citation, navigating, readingView);
+                await textSection.AddTextSection(commentIDs, i, citation, navigating, true);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
         }
 
-        private void Initialize()
+        private async Task Initialize()
         {
             Citation chapterCitation = GetChapterCitation();
             textSection = new TextSectionFormatter(writer);
+            parser = new PageParser(writer);
             commentIDs = GetCommentIDs(chapterCitation);
+            await GetArticleParagraphs();
+        }
+
+        private async Task GetArticleParagraphs()
+        {
+            string label = ChapterLabel();
+            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadArticleID),
+                label);
+            articleID = await reader.GetDatum<int>();
+            reader.Close();
+            if (articleID == Number.nothing)
+            {
+                articleParagraphs = new List<string>();
+                return;
+            }
+            var paragraphReader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadArticle),
+                articleID);
+            articleParagraphs = paragraphReader.GetData<string>();
+            paragraphReader.Close();
+        }
+
+        internal string ChapterLabel()
+        {
+            StringBuilder result = new StringBuilder(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
+            result.Append(' ');
+            if (TextReference.IsShortBook(citation.CitationRange.Book))
+            {
+                result.Append(" (Bible book)");
+                return result.ToString();
+            }
+            result.Append(citation.CitationRange.FirstChapter);
+            return result.ToString();
         }
 
         private Citation GetChapterCitation()
@@ -80,6 +109,27 @@ namespace Myriad.Pages
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             return reader.GetData<int>();
         }
+
+        private async Task WriteChapterComment()
+        {
+            if (articleParagraphs.Count == Number.nothing) return;
+            parser.SetParagraphInfo(ParagraphType.Article, articleID);
+            await writer.Append(
+                HTMLTags.StartDivWithID +
+                HTMLClasses.chaptercomments +
+                HTMLTags.CloseQuote +
+                HTMLTags.Class +
+                HTMLClasses.textquote +
+                HTMLTags.CloseQuoteEndTag);
+            parser.SetStartHTML(HTMLTags.StartParagraph);
+            parser.SetEndHTML(HTMLTags.EndParagraph);
+            for (int i = Ordinals.first; i < articleParagraphs.Count; i++)
+            {
+                await parser.ParseParagraph(articleParagraphs[i], i);
+            }
+            await writer.Append(HTMLTags.EndDiv);
+        }
+
         public override string GetURL()
         {
             return pageURL;

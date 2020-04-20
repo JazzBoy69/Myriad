@@ -154,7 +154,8 @@ namespace Myriad
                 query = new QueryCollection(new Dictionary<string, StringValues>()
                     {
                         { "start", citation.CitationRange.StartID.ToString() },
-                        {"end", citation.CitationRange.EndID.ToString() }
+                        {"end", citation.CitationRange.EndID.ToString() },
+                        {"navigating", "true" }
                     });
             }
 

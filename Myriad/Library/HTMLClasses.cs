@@ -51,6 +51,8 @@ namespace Myriad.Library
         internal const string headerid = "header";
         internal const string searchqueryinfo = "searchqueryinfo";
         internal const string target = "target";
+        internal const string chaptercomments = "chaptercomments";
+        internal const string textquote = "textquote";
     }
 
 }

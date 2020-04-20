@@ -6,7 +6,7 @@ namespace Myriad.Parser
 {
     public class PageParser : MarkupParser
     {
-        public PageParser(HTMLWriter builder) : base(builder)
+        public PageParser(HTMLWriter writer) : base(writer)
         {
         }
 
