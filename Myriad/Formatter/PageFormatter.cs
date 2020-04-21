@@ -84,6 +84,30 @@ namespace Myriad.Parser
                 HTMLTags.CloseQuoteEndTag);
         }
 
+        internal static async Task WriteTagAnchor(HTMLWriter writer, string label, string tag, CitationRange targetRange)
+        {
+            await writer.Append(HTMLTags.StartAnchor +
+                HTMLTags.HREF +
+                ArticlePage.pageURL +
+                HTMLTags.StartQuery +
+                ArticlePage.queryKeyTitle +
+                Symbol.equal);
+            await writer.Append(tag);
+            if ((targetRange != null) && targetRange.Valid)
+            {
+                await writer.Append(HTMLTags.Ampersand +
+                    ScripturePage.queryKeyTGStart +
+                    Symbol.equal);
+                await writer.Append(targetRange.StartID.ID);
+                await writer.Append(HTMLTags.Ampersand +
+                    ScripturePage.queryKeyTGEnd +
+                    Symbol.equal);
+                await writer.Append(targetRange.EndID.ID);
+            }
+            await writer.Append(HTMLTags.EndTag);
+            await writer.Append(label);
+            await writer.Append(HTMLTags.EndAnchor);
+        }
 
         internal async Task<bool> ToggleHeading(Formats formats)
         {

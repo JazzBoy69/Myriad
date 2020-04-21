@@ -17,15 +17,26 @@ ScrollToTarget();
 };
     </script>";
 
+        public const string Verse = @"
+<script>
+   window.onload = function () {
+    AddShortcut();
+    SetupIndex();
+SetupPartialPageLoad();
+HandleHiddenDetails();
+ScrollToTarget();
+};
+    </script>";
 
-            /*        
-            SetThisVerseAsTarget();
-            SetupPagination(); 
-            HandleReadingView();
-            ScrollToTarget();
-        */
 
-            public const string Search = @"
+        /*        
+        SetThisVerseAsTarget();
+        SetupPagination(); 
+        HandleReadingView();
+        ScrollToTarget();
+    */
+
+        public const string Search = @"
 <script>
    window.onload = function () {
     AddShortcut();

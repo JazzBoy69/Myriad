@@ -19,6 +19,7 @@ namespace Myriad.Data
         ReadKeywords, ReadWordIndex, ReadKeywordSentence,
         ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases,
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
+        ReadSubtituteWords,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -98,7 +99,9 @@ namespace Myriad.Data
             {DataOperation.ReadDefinitionIDs,
                 "select id from synonyms where text=@key1" },
             {DataOperation.ReadSynonyms,
-                "select RTrim(text) from synonyms where id=@key1 and text!=@key2 order by synIndex" }
+                "select RTrim(text) from synonyms where id=@key1 and text!=@key2 order by synIndex" },
+            {DataOperation.ReadSubtituteWords,
+                "select RTrim(text), last from searchwords where substitute=1 and start=@key1" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

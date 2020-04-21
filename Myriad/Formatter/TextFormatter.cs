@@ -84,7 +84,7 @@ namespace Myriad.Parser
             {
                 await writer.Append(HTMLTags.StartMark);
             }
-            await AppendTextOfKeyword(keyword);
+            await AppendTextOfKeyword(writer, keyword);
             if (!navigating && (keyword.ID == targetrange.EndID.ID))
             {
                 await writer.Append(HTMLTags.EndMark);
@@ -120,11 +120,11 @@ namespace Myriad.Parser
             {
                 await writer.Append(Symbol.ellipsis);
             }
-            await AppendTextOfKeyword(keywords[Ordinals.first]);
+            await AppendTextOfKeyword(writer, keywords[Ordinals.first]);
             return poetic;
         }
 
-        private async Task AppendTextOfKeyword(Keyword keyword)
+        public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
         {
             await writer.Append(keyword.LeadingSymbols.ToString());
             if (keyword.IsCapitalized)
@@ -134,7 +134,7 @@ namespace Myriad.Parser
             }
             else
             {
-                await writer.Append(keyword.Text.ToString());
+                await writer.Append(keyword.Text.ToString().Replace('`', '’'));
             }
             await writer.Append(keyword.TrailingSymbols.ToString());
         }
