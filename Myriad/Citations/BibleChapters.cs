@@ -10,6 +10,11 @@ namespace Myriad.Library
         {
             return ((book == 30) || (book == 56) || ((book > 61) && (book < 65)));
         }
+        public static int LastChapterInBook(int book)
+        {
+            if ((book == Result.notfound) || (book >= Chapters.Count)) return Result.error;
+            return (byte)(Chapters[book].Length - 1);
+        }
         public static int IndexOfBook(string p)
         {
             if (NamesTitleCaseIndex.TryGetValue(p, out int result))

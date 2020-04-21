@@ -41,8 +41,16 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
+            if (citation.CitationType == CitationTypes.Text)
+            {
+                TextPage textPage = new TextPage();
+                textPage.SetCitation(citation);
+                textPage.SetResponse(response);
+                await textPage.RenderBody(writer);
+                return;
+            }
             await ParseRubyText(writer);
-            //todo  await ParsePhraseComments(); startsection
+            await ParsePhraseComments(writer);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
         }
@@ -136,17 +144,55 @@ namespace Myriad.Pages
 
         private async Task ParsePhraseComments(HTMLWriter writer)
         {
-            throw new NotImplementedException();
+
         }
 
         public override Task SetupNextPage()
         {
-            throw new NotImplementedException();
+            int v = citation.CitationRange.FirstVerse + 1;
+            int c = citation.CitationRange.FirstChapter;
+            int b = citation.CitationRange.Book;
+            if (v > Bible.Chapters[b][c])
+            {
+                c++;
+                v = 1;
+            }
+            if (c > Bible.Chapters[b].Length-1)
+            {
+                b++;
+                if (b > 65)
+                {
+                    b = 65;
+                    c = 22;
+                    v = Bible.Chapters[b][c];
+                }
+                else
+                    c = 1;
+            }
+            citation = new Citation(new KeyID(b, c, v), new KeyID(b, c, v, KeyID.MaxWordIndex));
+            return Task.CompletedTask;
         }
 
         public override Task SetupPrecedingPage()
         {
-            throw new NotImplementedException();
+            int v = citation.CitationRange.FirstVerse - 1;
+            int c = citation.CitationRange.FirstChapter;
+            int b = citation.CitationRange.Book;
+            if (v < 1) c--;
+            if (c < 1)
+            {
+                b--;
+                if (b < 0)
+                {
+                    b = 0;
+                    c = 1;
+                    v = 1;
+                }
+            }
+            if (c < 1) c = Bible.LastChapterInBook(b);
+            if (v < 1) v = Bible.Chapters[b][c];
+            citation = new Citation(new KeyID(b, c, v), new KeyID(b, c, v, KeyID.MaxWordIndex));
+            return Task.CompletedTask;
         }
 
         public override Task AddTOC(HTMLWriter writer)
