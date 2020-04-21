@@ -74,10 +74,29 @@ rt {
 	animation-duration: 0.2s;
 }
 
+.modal-content {
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.3rem;
+    outline: 0;
+}
 #modal-image {
 	margin: auto;
 	margin-top:1.5em;
 	min-width: 75%;
+    max-width: 100%;
 }
 @keyframes zoom {
 	from {

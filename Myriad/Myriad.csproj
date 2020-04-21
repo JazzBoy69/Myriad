@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\css\myriad.03.11.css">
+    <Content Update="wwwroot\css\myriad.04.20.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

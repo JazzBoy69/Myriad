@@ -25,6 +25,8 @@ namespace Myriad.Pages
         int articleID;
         List<string> articleParagraphs;
 
+
+        //todo add chapter comment, edit whole comment
         internal ChapterPage()
         {
         }
