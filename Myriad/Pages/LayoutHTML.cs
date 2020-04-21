@@ -154,12 +154,3 @@ namespace Myriad.Pages
         public const string endofBody = "</body></html>";
     }
 }
-
-
-/*
- *     <script src='js/jquery-2.1.3.min.js' defer></script>
- *     
-    <script src='js/bootstrap.js' defer></script>
-    <script src='js/bootbox.min.js' defer></script>
-        <script src='js/jquery.hammer.js' defer></script>
-*/
