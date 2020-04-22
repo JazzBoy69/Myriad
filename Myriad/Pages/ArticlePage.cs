@@ -204,5 +204,14 @@ namespace Myriad.Pages
         {
             return HTMLTags.StartQuery + queryKeyID + '=' + pageInfo.ID;
         }
+
+        internal static List<string> GetSynonyms(int articleID)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSynonymsFromID),
+                articleID);
+            List<string> result = reader.GetData<string>();
+            reader.Close();
+            return result;
+        }
     }
 }

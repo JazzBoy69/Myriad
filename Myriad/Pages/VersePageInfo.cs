@@ -20,8 +20,8 @@ namespace Myriad.Pages
            new SortedDictionary<(int startID, int endID), List<(int articleID, int paragraphIndex, bool suppressed)>>();
         readonly Dictionary<int, List<(int articleID, int paragraphIndex)>> originalWordComments =
             new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
-        readonly Dictionary<int, Dictionary<string, (Range range, int articleID, List<int> paragraphIndices)>> phraseArticles =
-           new Dictionary<int, Dictionary<string, (Range range, int articleID, List<int> paragraphIndices)>>();
+        readonly Dictionary<int, Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>> phraseArticles =
+           new Dictionary<int, Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>>();
         readonly Dictionary<int, List<(int articleID, int paragraphIndex)>> originalWordCrossReferences =
             new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
         readonly Dictionary<int, CitationRange> ellipses = new Dictionary<int, CitationRange>();
@@ -35,6 +35,7 @@ namespace Myriad.Pages
         public List<VerseWord> Phrases => phrases;
         public IEnumerable<VerseWord> OriginalWords => originalWords;
         public Dictionary<int, CitationRange> Ellipses => ellipses;
+        public Dictionary<int, Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>> PhraseArticles => phraseArticles;
         public VersePageInfo()
         {
 
@@ -167,7 +168,7 @@ namespace Myriad.Pages
                     continue;
                 }
                 usedReferences.Add(reference.Key);
-                if (OriginalWordsInRange(reference.Range).Length == Number.nothing) continue;
+                if (OriginalWordsInRange(reference.StartID, reference.EndID).Length == Number.nothing) continue;
                 if ((reference.StartID < citationRange.StartID.ID) ||
                     (reference.EndID > citationRange.EndID.ID))
                 {
@@ -219,11 +220,11 @@ namespace Myriad.Pages
                 { rangeAndParagraph.Key });
         }
 
-        private string OriginalWordsInRange(CitationRange phraseRange)
+        public string OriginalWordsInRange(int start, int end)
         {
             IEnumerable<string> originalWordsInPhrase = from w in originalWords
-                                                        where w.Start >= phraseRange.StartID.ID &&
-                                                        w.End <= phraseRange.EndID.ID
+                                                        where w.Start >= start &&
+                                                        w.End <= end
                                                         select w.Text;
             int count = originalWordsInPhrase.Count();
             if (count == 0) return "";
@@ -374,18 +375,18 @@ namespace Myriad.Pages
                     continue;
                 }
                 found = true;
-                await AddComment((new Range(item.start, item.end), item.id), mid);
+                await AddComment(((item.start, item.end), item.id), mid);
                 break;
             }
             if ((!found) && (bottom < phrases.Count))
             {
-                await AddComment((new Range(item.start, item.end), item.id), bottom);
+                await AddComment(((item.start, item.end), item.id), bottom);
                 found = true;
             }
         }
 
 
-        private async Task AddComment((Range range, int articleID) commentInfo, int index)
+        private async Task AddComment(((int start, int end) range, int articleID) commentInfo, int index)
         {
             //Add related article
             List<(int articleID, int paragraphIndex)> result = new List<(int articleID, int paragraphIndex)>();
@@ -412,7 +413,7 @@ namespace Myriad.Pages
             }
             else
             {
-                phraseArticles.Add(index, new Dictionary<string, (Range range, int articleID, List<int> paragraphIndices)>());
+                phraseArticles.Add(index, new Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>());
                 phraseArticles[index].Add(await ArticleTitle(commentInfo.articleID),
                     (commentInfo.range, commentInfo.articleID, newParagraphs));
             }

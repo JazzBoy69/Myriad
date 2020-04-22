@@ -110,5 +110,19 @@ namespace Myriad.Data
             result = result.Replace("?", "");
             return result;
         }
+
+        internal static string RemoveDiacritics(string word)
+        {
+            string result = word.Replace("·", "");
+            result = result.Replace("∙", " ");
+            result = result.Replace("΄", "");
+            result = result.Replace("΄", "");
+            result = result.Replace("ʹ", "");
+            result = result.Replace("ʼ", "");
+            result = result.Replace("’", "");
+            result = result.Replace("′", "");
+            result = result.Replace("?", "");
+            return result;
+        }
     }
 }

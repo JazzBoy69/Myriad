@@ -109,6 +109,20 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndAnchor);
         }
 
+        internal static async Task WriteTagAnchor(HTMLWriter writer, string label, int articleID)
+        {
+            await writer.Append(HTMLTags.StartAnchor +
+                HTMLTags.HREF +
+                ArticlePage.pageURL +
+                HTMLTags.StartQuery +
+                ArticlePage.queryKeyID +
+                Symbol.equal);
+            await writer.Append(articleID);
+            await writer.Append(HTMLTags.EndTag);
+            await writer.Append(label);
+            await writer.Append(HTMLTags.EndAnchor);
+        }
+
         internal async Task<bool> ToggleHeading(Formats formats)
         {
             formats.editable = false;

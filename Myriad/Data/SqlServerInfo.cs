@@ -20,7 +20,7 @@ namespace Myriad.Data
         ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases,
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
         ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
-        ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange,
+        ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -115,7 +115,9 @@ namespace Myriad.Data
             {DataOperation.ReadLinkedParagraphs,
                 "select start, last, id, 0 from commentlinks where start>= @key1 and start<= @key2" },
             {DataOperation.DefinitionSearchesInRange,
-                "select start, last from definitionsearch where start>=@key1 and start<=@key2 and id=@key3" }
+                "select start, last from definitionsearch where start>=@key1 and start<=@key2 and id=@key3" },
+            {DataOperation.ReadSearchPhrase,
+                    "select RTrim(text) from searchwords where start=@key1 and last=@key1 and (weight=500 or weight=10)" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

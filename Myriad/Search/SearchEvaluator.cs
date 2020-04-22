@@ -352,7 +352,7 @@ namespace Myriad.Search
             }
         }
 
-        private static List<string> GetSynonyms(List<int> definitionIDs, string root)
+        public static List<string> GetSynonyms(List<int> definitionIDs, string root)
         {
             var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadSynonyms),
                 -1, "");
