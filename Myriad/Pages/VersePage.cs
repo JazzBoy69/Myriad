@@ -362,12 +362,14 @@ namespace Myriad.Pages
         private async Task<(bool needFullLabel, int usedIndex)>
             WriteExactMatchPhraseArticle(HTMLWriter writer, VersePageInfo info, int index, bool needFullLabel)
         {
+            (int start, int end) range = info.PhraseArticles[index].First().Value.range;
+            if ((range.end - range.start) > 8) return (needFullLabel,Result.notfound);
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
                 -1, -1);
             int resultIndex = Result.notfound;
             if (info.PhraseArticles.ContainsKey(index))
             {
-                string offsetLabel = RangeText(info.PhraseArticles[index].First().Value.range).Trim();
+                string offsetLabel = RangeText(range).Trim();
                 List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
                 string offsetRoot = ((offsetRoots.Count > Number.nothing) && (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
                     offsetRoots[Ordinals.first] :
@@ -515,7 +517,7 @@ namespace Myriad.Pages
                 if (substitute)
                 {
                     await writer.Append(HTMLTags.EndBold+" (");
-                    await PageFormatter.WriteTagAnchor(writer, label, articleID);
+                    await PageFormatter.WriteTagAnchor(writer, articleTitle, articleID);
                     await writer.Append("): ");
                 }
                 else
@@ -536,7 +538,7 @@ namespace Myriad.Pages
                     else
                     {
                         await writer.Append(HTMLTags.EndBold+" (");
-                        await PageFormatter.WriteTagAnchor(writer, 
+                        await PageFormatter.WriteTagAnchor(writer,
                             articleTitle.Replace('(', '[').Replace(')', ']'),
                             articleID);
                         await writer.Append("; "+HTMLTags.StartItalic);
@@ -787,16 +789,23 @@ namespace Myriad.Pages
         internal string TextWithoutSymbols(Keyword word)
         {
             StringBuilder result = new StringBuilder();
-            result.Append(Symbols.Capitalize(word.TextString).Replace('`', '’'));
+            result.Append(Capitalize(word).Replace('`', '’'));
             result.Append(' ');
             result.Replace("<br>", "");
             return result.ToString();
+        }
+
+        private string Capitalize(Keyword word)
+        {
+            return (word.IsCapitalized) ?
+                Symbols.Capitalize(word.TextString) :
+                word.TextString;
         }
         internal string FormattedTextWithBrackets(Keyword word)
         {
             StringBuilder result = new StringBuilder();
             if (word.LeadingSymbols.IndexOf('[') != Result.notfound) result.Append('[');
-            result.Append(Symbols.Capitalize(word.TextString).Replace('`', '’'));
+            result.Append(Capitalize(word).Replace('`', '’'));
             if (word.TrailingSymbols.IndexOf(']') != Result.notfound) result.Append(']');
             result.Append(' ');
             result.Replace("<br>", "");

@@ -44,7 +44,7 @@ namespace Myriad.Data
             get { return (articleid, paragraphindex); }
         }
 
-        public CitationRange Range { get { return range; } }
+        public (int start, int end) Range { get { return (startid, endid); } }
 
         internal void SetStartID(int startID)
         {

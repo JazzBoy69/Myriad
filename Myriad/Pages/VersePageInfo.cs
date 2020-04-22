@@ -14,7 +14,7 @@ namespace Myriad.Pages
     public class VersePageInfo
     {
         public const ushort originalWordWeight = 200;
-        List<VerseWord> phrases;
+        List<VerseWord> phrases = new List<VerseWord>();
         IEnumerable<VerseWord> originalWords;
         readonly SortedDictionary<(int startID, int endID), List<(int articleID, int paragraphIndex, bool suppressed)>> additionalCrossReferences =
            new SortedDictionary<(int startID, int endID), List<(int articleID, int paragraphIndex, bool suppressed)>>();
@@ -445,10 +445,10 @@ namespace Myriad.Pages
             }
         }
 
-        private async Task<bool> DefinitionSearchExistsInRange(CitationRange range, int articleID)
+        private async Task<bool> DefinitionSearchExistsInRange((int start, int end) range, int articleID)
         {
             var reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(DataOperation.DefinitionSearchesInRange),
-                range.StartID.ID, range.EndID.ID, articleID);
+                range.start, range.end, articleID);
             List<(int start, int end)> ranges = await reader.GetData<int, int>();
             return ranges.Count > Number.nothing;
         }

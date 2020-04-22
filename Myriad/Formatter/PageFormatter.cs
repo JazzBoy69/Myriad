@@ -119,7 +119,7 @@ namespace Myriad.Parser
                 Symbol.equal);
             await writer.Append(articleID);
             await writer.Append(HTMLTags.EndTag);
-            await writer.Append(label);
+            await writer.Append(label.Replace('_', ' '));
             await writer.Append(HTMLTags.EndAnchor);
         }
 
