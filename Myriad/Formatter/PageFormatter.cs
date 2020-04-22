@@ -197,9 +197,10 @@ namespace Myriad.Parser
             formats.editable = false;
         }
 
-        internal async Task<bool> HandleDetails(bool detail, Formats formats)
+        internal async Task<bool> HandleDetails(Formats formats)
         {
             bool startSpan = false;
+            bool detail = formats.detail;
             if ((formats.hideDetails) && (!detail))
             {
                 await writer.Append(HTMLTags.StartSpan);

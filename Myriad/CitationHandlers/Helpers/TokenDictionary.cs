@@ -20,6 +20,7 @@ namespace Myriad.CitationHandlers.Helpers
 
         static readonly Dictionary<char, byte> tokenTable = new Dictionary<char, byte>()
         {
+            { '–', 2 },
             { '-', 2 },
             { ',', 3 },
             { ';', 4 },
@@ -46,6 +47,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1085, SetFirstChapter },               //Mt 24:14 =>  _24:
             { 0x1233, SetFirstVerse },                 //Mt 2:4-6, 14, 15 => -xx, 14,
             { 0x1234, SetFirstVerseAndAddResults },    //Mt 25:31-33, 40; => -xx, 40;
+            { 0x1254, SetSecondVerseAndAddResults },   //Joh 18:29–19:16  => xx-xx:16
             { 0x1324, SetSecondVerseAndAddResults },   //Mt 24:14, 16-18 =>  , xx-18;
             { 0x1332, SetFirstVerse },                 //Mt 2:4-6, 14, 15, 19-23; xx, xx, 19-
             { 0x1333, SetSecondVerseAndAddResults },   //Mt 2:4-6, 14, 15, 19-23; xx, xx, 15,
@@ -84,6 +86,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1892, SetFirstVerse },                 //3Jo 1, 5-8 => _xx, 5-
             { 0x1924, SetSecondVerseAndAddResults },    //Mt 3:1, 6, 13-17; => , xx-17;
             { 0x1932, AddBrokenCommaMarker },          //Mt 3:1, 6, 13-17; => xx, xx, 13-
+            { 0x1933, SetFirstVerse },                 //Mt 5:3, 10, 19, 20 => xx, 19,
             { 0x1934, SetSecondVerseAndAddResults },   //Joh 8:26, 28, 38; => , xx, 38;
             { 0x1994, SetFirstVerseAndAddResults }   //Joh 8:26, 28, 38; => , xx, 38;
         };

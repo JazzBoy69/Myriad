@@ -256,7 +256,7 @@ namespace Myriad.Parser
             await AppendTextUpToToken();
             if (longToken == Tokens.detail)
             {
-                formats.detail = await formatter.HandleDetails(formats.detail, formats);
+                formats.detail = await formatter.HandleDetails(formats);
                 SkipLongToken();
                 return;
             }

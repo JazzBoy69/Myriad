@@ -19,7 +19,7 @@ namespace Myriad.CitationHandlers
         Citation citation = new Citation();
         readonly CitedVerse verse = new CitedVerse();
         List<Citation> results;
-        ReadOnlyStringRange rangeToParse;
+        StringRange rangeToParse;
         StringRange labelRange;
         IParagraph paragraphToParse;
         bool first = true;
@@ -148,7 +148,7 @@ namespace Myriad.CitationHandlers
                 if ((token == ' ') || (token == ':') ||
                     (token == ',') || (token == '-') ||
                     (token == '.') || (token == ';') ||
-                    (token == '!'))
+                    (token == '!') || (token == '–'))
                 {
                     lastTokenAt = tokenAt;
                     tokenAt = citation.Label.End;
@@ -253,6 +253,8 @@ namespace Myriad.CitationHandlers
         {
             rangeToParse = givenRange;
             paragraphToParse = givenParagraph;
+            char lastChar = givenParagraph.CharAt(rangeToParse.End);
+            if (lastChar == '.') rangeToParse.PullEnd();
             results = new List<Citation>();
             citation = new Citation();
             citation.Label.MoveStartTo(rangeToParse.Start);

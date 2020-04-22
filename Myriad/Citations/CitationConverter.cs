@@ -111,13 +111,14 @@ namespace Myriad.Parser
                 if ((citation.CitationRange.FirstChapter == citation.CitationRange.LastChapter) &&
                     (citation.CitationRange.FirstVerse + 1 == citation.CitationRange.LastVerse))
                     await writer.Append(","+HTMLTags.NonbreakingSpace);
-                else
-                    await writer.Append("-");
                 if (!citation.CitationRange.OneChapter)
                 {
+                    await writer.Append("–");
                     await writer.Append(citation.CitationRange.LastChapter);
                     await writer.Append(":");
                 }
+                else
+                    await writer.Append("-");
                 await writer.Append(citation.CitationRange.LastVerse);
             }
         }
