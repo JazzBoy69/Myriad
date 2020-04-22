@@ -341,7 +341,8 @@ namespace Myriad.Pages
                 {
                     continue;
                 }
-                if (((article.StartID >= citationRange.StartID.ID) && (article.EndID <= citationRange.EndID.ID)) &&
+                if (((article.EndID-article.StartID)<10) && (article.StartID >= citationRange.StartID.ID) && 
+                    (article.EndID <= citationRange.EndID.ID) &&
                         ((article.StartID != citationRange.StartID.ID) || (article.EndID != citationRange.EndID.ID)))
                 { // Add an article reference to a single phrase in verse to definition searches
                     await ArrangeDefinitionSearch((article.StartID, article.EndID, article.ArticleID));
