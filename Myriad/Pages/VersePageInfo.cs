@@ -14,36 +14,32 @@ namespace Myriad.Pages
     public class VersePageInfo
     {
         public const ushort originalWordWeight = 200;
-        List<VerseWord> phrases = new List<VerseWord>();
-        IEnumerable<VerseWord> originalWords;
-        readonly SortedDictionary<(int startID, int endID), List<(int articleID, int paragraphIndex, bool suppressed)>> additionalCrossReferences =
-           new SortedDictionary<(int startID, int endID), List<(int articleID, int paragraphIndex, bool suppressed)>>();
-        readonly Dictionary<int, List<(int articleID, int paragraphIndex)>> originalWordComments =
-            new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
-        readonly Dictionary<int, Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>> phraseArticles =
-           new Dictionary<int, Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>>();
-        readonly Dictionary<int, List<(int articleID, int paragraphIndex)>> originalWordCrossReferences =
-            new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
-        readonly Dictionary<int, CitationRange> ellipses = new Dictionary<int, CitationRange>();
         List<VerseWord> words;
         List<RangeAndParagraph> relatedArticles;
         List<(int commentID, int paragraphIndex)> usedReferences = new List<(int articleID, int paragraphIndex)>();
         readonly List<(int articleID, int paragraphIndex)> usedArticles = new List<(int articleID, int paragraphIndex)>();
-        readonly Dictionary<string, int> additionalArticleIDs = new Dictionary<string, int>();
-        readonly SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>> additionalArticles =
-            new SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>>();
-        public List<VerseWord> Phrases => phrases;
-        public IEnumerable<VerseWord> OriginalWords => originalWords;
-        public Dictionary<int, CitationRange> Ellipses => ellipses;
-        public Dictionary<int, Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>> PhraseArticles => phraseArticles;
+
+        public List<VerseWord> Phrases { get; } = new List<VerseWord>();
+        public IEnumerable<VerseWord> OriginalWords { get; private set; }
+        public Dictionary<int, CitationRange> Ellipses { get; } = new Dictionary<int, CitationRange>();
+        public Dictionary<int, Dictionary<string, ((int start, int end) range, int articleID, 
+            List<int> paragraphIndices)>> PhraseArticles { get; } = 
+            new Dictionary<int, Dictionary<string, ((int start, int end) range, 
+                int articleID, List<int> paragraphIndices)>>();
+        public Dictionary<string, int> AdditionalArticleIDs { get; } = new Dictionary<string, int>();
+        public SortedDictionary<(int startID, int endID), 
+            List<(int articleID, int paragraphIndex, bool suppressed)>> 
+            AdditionalCrossReferences { get; } = 
+            new SortedDictionary<(int startID, int endID), 
+                List<(int articleID, int paragraphIndex, bool suppressed)>>();
         public VersePageInfo()
         {
 
         }
 
-        public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordCrossReferences => originalWordCrossReferences;
-        public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordComments => originalWordComments;
-
+        public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordCrossReferences { get; } = new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
+        public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordComments { get; } = new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
+        public SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>> AdditionalArticles { get; } = new SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>>();
         public async Task LoadInfo(CitationRange citationRange)
         {
             ReadSearchWords(citationRange);
@@ -79,11 +75,11 @@ namespace Myriad.Pages
                         // add to See Also
                         if (links.Count > 0)
                         {
-                            if (additionalCrossReferences.ContainsKey(links.First()))
-                                additionalCrossReferences[links.First()].Add((reference.ArticleID,
+                            if (AdditionalCrossReferences.ContainsKey(links.First()))
+                                AdditionalCrossReferences[links.First()].Add((reference.ArticleID,
                                     reference.ParagraphIndex, true));
                             else
-                                additionalCrossReferences.Add(links.First(),
+                                AdditionalCrossReferences.Add(links.First(),
                                     new List<(int articleID, int paragraphIndex, bool suppressed)>() {
                                             (reference.ArticleID, reference.ParagraphIndex, true)});
                         }
@@ -92,11 +88,11 @@ namespace Myriad.Pages
                     {
                         if (links.Count > 0)
                         {
-                            if (additionalCrossReferences.ContainsKey(links.First()))
-                                additionalCrossReferences[links.First()].Add((reference.ArticleID,
+                            if (AdditionalCrossReferences.ContainsKey(links.First()))
+                                AdditionalCrossReferences[links.First()].Add((reference.ArticleID,
                                     reference.ParagraphIndex, false));
                             else
-                                additionalCrossReferences.Add(links.First(),
+                                AdditionalCrossReferences.Add(links.First(),
                                     new List<(int articleID, int paragraphIndex, bool suppressed)>() {
                                             (reference.ArticleID, reference.ParagraphIndex, false)});
                         }
@@ -104,7 +100,7 @@ namespace Myriad.Pages
                     continue;
                 }
                 int bottom = Ordinals.first;
-                int top = phrases.Count - 1;
+                int top = Phrases.Count - 1;
                 if ((reference.StartID == citationRange.StartID.ID) &&
                     (reference.EndID == citationRange.EndID.ID))
                 {
@@ -116,27 +112,27 @@ namespace Myriad.Pages
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (phrases[mid].End < reference.StartID)
+                    if (Phrases[mid].End < reference.StartID)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
                     }
-                    if (phrases[mid].Start > reference.EndID)
+                    if (Phrases[mid].Start > reference.EndID)
                     {
                         if (top == mid) top--; else top = mid;
                         continue;
                     }
-                    if ((reference.StartID >= phrases[mid].Start) &&
-                        (reference.EndID <= phrases[mid].End))
+                    if ((reference.StartID >= Phrases[mid].Start) &&
+                        (reference.EndID <= Phrases[mid].End))
                     {
                         phraseIndex = mid;
                         AddOriginalWordCrossReference(reference, mid);
                     }
                     break;
                 }
-                if (((phraseIndex == -1) && (bottom < phrases.Count)) &&
-                    (((reference.StartID >= phrases[bottom].Start) &&
-                        (reference.EndID <= phrases[bottom].End))))
+                if (((phraseIndex == -1) && (bottom < Phrases.Count)) &&
+                    (((reference.StartID >= Phrases[bottom].Start) &&
+                        (reference.EndID <= Phrases[bottom].End))))
                 {
                     AddOriginalWordCrossReference(reference, bottom);
                     phraseIndex = bottom;
@@ -175,23 +171,23 @@ namespace Myriad.Pages
                     continue;
                 }
                 int bottom = Ordinals.first;
-                int top = phrases.Count - 1;
+                int top = Phrases.Count - 1;
                 int phraseIndex = -1;
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (phrases[mid].End < reference.StartID)
+                    if (Phrases[mid].End < reference.StartID)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
                     }
-                    if (phrases[mid].Start > reference.EndID)
+                    if (Phrases[mid].Start > reference.EndID)
                     {
                         if (top == mid) top--; else top = mid;
                         continue;
                     }
-                    if ((reference.StartID >= phrases[mid].Start) &&
-                        (reference.EndID <= phrases[mid].End))
+                    if ((reference.StartID >= Phrases[mid].Start) &&
+                        (reference.EndID <= Phrases[mid].End))
                     {
                         phraseIndex = mid;
                         AddOriginalWordComment(reference, mid);
@@ -199,9 +195,9 @@ namespace Myriad.Pages
                     }
                     break;
                 }
-                if (((phraseIndex == -1) && (bottom < phrases.Count)) &&
-                    (((reference.StartID >= phrases[bottom].Start) &&
-                        (reference.EndID <= phrases[bottom].End))))
+                if (((phraseIndex == -1) && (bottom < Phrases.Count)) &&
+                    (((reference.StartID >= Phrases[bottom].Start) &&
+                        (reference.EndID <= Phrases[bottom].End))))
                 {
                     AddOriginalWordComment(reference, bottom);
                     phraseIndex = bottom;
@@ -211,18 +207,18 @@ namespace Myriad.Pages
 
         private void AddOriginalWordComment(RangeAndParagraph rangeAndParagraph, int index)
         {
-            if (originalWordComments.ContainsKey(index))
+            if (OriginalWordComments.ContainsKey(index))
             {
-                originalWordComments[index].Add(rangeAndParagraph.Key);
+                OriginalWordComments[index].Add(rangeAndParagraph.Key);
                 return;
             }
-            originalWordComments.Add(index, new List<(int articleID, int paragraphIndex)>()
+            OriginalWordComments.Add(index, new List<(int articleID, int paragraphIndex)>()
                 { rangeAndParagraph.Key });
         }
 
         public string OriginalWordsInRange(int start, int end)
         {
-            IEnumerable<string> originalWordsInPhrase = from w in originalWords
+            IEnumerable<string> originalWordsInPhrase = from w in OriginalWords
                                                         where w.Start >= start &&
                                                         w.End <= end
                                                         select w.Text;
@@ -241,20 +237,20 @@ namespace Myriad.Pages
 
         private void AddOriginalWordCrossReference(RangeAndParagraph rangeAndParagraph, int index)
         {
-            if (originalWordCrossReferences.ContainsKey(index))
-                originalWordCrossReferences[index].Add(rangeAndParagraph.Key);
+            if (OriginalWordCrossReferences.ContainsKey(index))
+                OriginalWordCrossReferences[index].Add(rangeAndParagraph.Key);
             else
-                originalWordCrossReferences.Add(index, new List<(int articleID, int paragraphIndex)>() {
+                OriginalWordCrossReferences.Add(index, new List<(int articleID, int paragraphIndex)>() {
                     rangeAndParagraph.Key
                 });
         }
         private void AddToAdditionalCrossReferences(RangeAndParagraph reference, (int start, int end) range, bool show)
         {
-            if (additionalCrossReferences.ContainsKey(range))
-                additionalCrossReferences[range].Add(
+            if (AdditionalCrossReferences.ContainsKey(range))
+                AdditionalCrossReferences[range].Add(
                     (reference.ArticleID, reference.ParagraphIndex, show));
             else
-                additionalCrossReferences.Add(range,
+                AdditionalCrossReferences.Add(range,
                     new List<(int articleID, int paragraphIndex, bool suppressed)>() {
                                     (reference.ArticleID, reference.ParagraphIndex, false)});
         }
@@ -269,7 +265,7 @@ namespace Myriad.Pages
 
         private void FindPhrases(CitationRange citationRange)
         {
-            originalWords = from w in words
+            OriginalWords = from w in words
                             where w.Weight == originalWordWeight
                             select w;
             int start = citationRange.StartID.ID;
@@ -284,23 +280,23 @@ namespace Myriad.Pages
                     (word.Start > lastPhrase.Start) &&
                     (word.Weight == originalWordWeight))
                 {
-                    if (ellipses.ContainsKey(lastPhrase.Start))
+                    if (Ellipses.ContainsKey(lastPhrase.Start))
                     {
-                        ellipses[lastPhrase.Start].ExtendTo(word.End);
+                        Ellipses[lastPhrase.Start].ExtendTo(word.End);
                     }
                     else
-                        ellipses.Add(lastPhrase.Start, new CitationRange(word.Start, word.End));
-                    phrases.Add(word);
+                        Ellipses.Add(lastPhrase.Start, new CitationRange(word.Start, word.End));
+                    Phrases.Add(word);
                     continue;
                 }
                 if (word.Start < start)
                 {
                     continue;
                 }
-                phrases.Add(word);
+                Phrases.Add(word);
                 if (word.End - word.Start > 1)
                 {
-                    var owords = from w in originalWords
+                    var owords = from w in OriginalWords
                                  where w.Start == word.Start &&
                                  w.End == word.End
                                  select w;
@@ -354,23 +350,23 @@ namespace Myriad.Pages
         private async Task ArrangeDefinitionSearch((int start, int end, int id) item)
         {
             int bottom = Ordinals.first;
-            int top = phrases.Count - 1;
+            int top = Phrases.Count - 1;
             bool found = false;
             while (bottom <= top)
             {
                 int mid = (top - bottom) / 2 + bottom;
-                if (phrases[mid].End < item.start)
+                if (Phrases[mid].End < item.start)
                 {
                     if (bottom == mid) bottom++; else bottom = mid;
                     continue;
                 }
-                if (phrases[mid].Start > item.end)
+                if (Phrases[mid].Start > item.end)
                 {
                     if (top == mid) top--; else top = mid;
                     continue;
                 }
-                if ((ellipses.ContainsKey(phrases[mid].Start)) &&
-                    (ellipses[phrases[mid].Start].Contains(new CitationRange(item.start, item.end))))
+                if ((Ellipses.ContainsKey(Phrases[mid].Start)) &&
+                    (Ellipses[Phrases[mid].Start].Contains(new CitationRange(item.start, item.end))))
                 {
                     if (bottom == mid) bottom++; else bottom = mid;
                     continue;
@@ -379,7 +375,7 @@ namespace Myriad.Pages
                 await AddComment(((item.start, item.end), item.id), mid);
                 break;
             }
-            if ((!found) && (bottom < phrases.Count))
+            if ((!found) && (bottom < Phrases.Count))
             {
                 await AddComment(((item.start, item.end), item.id), bottom);
                 found = true;
@@ -403,19 +399,19 @@ namespace Myriad.Pages
                 usedArticles.Add((commentInfo.articleID, paragraphIndex));
             }
             if (newParagraphs.Count == 0) return;
-            if (phraseArticles.ContainsKey(index))
+            if (PhraseArticles.ContainsKey(index))
             {
                 string articleTitle = await ArticleTitle(commentInfo.articleID);
-                if (!phraseArticles[index].ContainsKey(articleTitle))
+                if (!PhraseArticles[index].ContainsKey(articleTitle))
                 {
-                    phraseArticles[index].Add(articleTitle,
+                    PhraseArticles[index].Add(articleTitle,
                         (commentInfo.range, commentInfo.articleID, newParagraphs));
                 }
             }
             else
             {
-                phraseArticles.Add(index, new Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>());
-                phraseArticles[index].Add(await ArticleTitle(commentInfo.articleID),
+                PhraseArticles.Add(index, new Dictionary<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)>());
+                PhraseArticles[index].Add(await ArticleTitle(commentInfo.articleID),
                     (commentInfo.range, commentInfo.articleID, newParagraphs));
             }
         }
@@ -457,14 +453,14 @@ namespace Myriad.Pages
         private async Task AddToAdditionalArticles(int index, bool show)
         {
             string title = await ArticleTitle(relatedArticles[index].ArticleID);
-            if (additionalArticleIDs.ContainsKey(title))
-                additionalArticles[title].Add((relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex,
+            if (AdditionalArticleIDs.ContainsKey(title))
+                AdditionalArticles[title].Add((relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex,
                     show));
             else
             {
-                additionalArticles.Add(title, new List<(int articleID, int paragraphIndex, bool suppressed)>() {
+                AdditionalArticles.Add(title, new List<(int articleID, int paragraphIndex, bool suppressed)>() {
                             (relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex, show)});
-                additionalArticleIDs.Add(title, relatedArticles[index].ArticleID);
+                AdditionalArticleIDs.Add(title, relatedArticles[index].ArticleID);
             }
         }
 
@@ -476,9 +472,9 @@ namespace Myriad.Pages
 
         public bool PhraseHasNoComments(int index)
         {
-            return (!originalWordComments.ContainsKey(index) && 
-                !phraseArticles.ContainsKey(index) && 
-                !originalWordCrossReferences.ContainsKey(index));
+            return (!OriginalWordComments.ContainsKey(index) && 
+                !PhraseArticles.ContainsKey(index) && 
+                !OriginalWordCrossReferences.ContainsKey(index));
         }
     }
 }

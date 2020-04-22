@@ -55,6 +55,7 @@ namespace Myriad.Library
         internal const string chaptercomments = "chaptercomments";
         internal const string textquote = "textquote";
         internal const string versetext = "versetext";
+        internal const string suppressed = "suppressed";
     }
 
 }

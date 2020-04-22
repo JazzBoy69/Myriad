@@ -58,6 +58,7 @@ namespace Myriad.Pages
             await ParseRubyText(writer);
             await ArrangePhraseComments();
             await WritePhraseComments(writer, info);
+            await WriteAdditionalComments(writer, info);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
         }
@@ -208,11 +209,11 @@ namespace Myriad.Pages
         {
             bool needFullLabel = true;
             int usedIndex = Result.notfound;
-            if (info.OriginalWordComments.Any())
+            if (info.OriginalWordComments.ContainsKey(index))
                 needFullLabel = await WriteOriginalWordComments(writer, info, index);
-            if (info.OriginalWordCrossReferences.Count > Number.nothing)
+            if (info.OriginalWordCrossReferences.ContainsKey(index))
                 needFullLabel = await WriteOriginalWordCrossreferences(writer, info, index, needFullLabel);
-            if (needFullLabel)
+            if (needFullLabel && info.PhraseArticles.ContainsKey(index))
                 (needFullLabel, usedIndex) =
                         await WriteExactMatchPhraseArticle(writer, info, index, needFullLabel);
             await WritePhraseArticles(writer, info, index, needFullLabel, usedIndex);
@@ -223,59 +224,56 @@ namespace Myriad.Pages
             PageParser parser = new PageParser(writer);
 
             bool needFullLabel = true;
-            if (info.OriginalWordComments.ContainsKey(index))
+            await WriteFullOriginalWordLabel(writer, info, index);
+            await writer.Append(": ");
+            for (int i = Ordinals.first; i<info.OriginalWordComments[index].Count; i++) 
             {
-                await WriteFullOriginalWordLabel(writer, info, index);
-                await writer.Append(": ");
-                foreach (var link in info.OriginalWordComments[index])
+                parser.SetParagraphInfo(ParagraphType.Comment, info.OriginalWordComments[index][i].articleID);
+                List<string> paragraphs = TextSectionFormatter.ReadParagraphs(
+                    info.OriginalWordComments[index][i].articleID);
+                parser.SetStartHTML("");
+                parser.SetEndHTML(HTMLTags.EndParagraph);
+                for (int paragraphIndex = Ordinals.first; paragraphIndex < paragraphs.Count; paragraphIndex++)
                 {
-                    parser.SetParagraphInfo(ParagraphType.Comment, link.articleID);
-                    List<string> paragraphs = TextSectionFormatter.ReadParagraphs(link.articleID);
-                    parser.SetStartHTML("");
-                    parser.SetEndHTML(HTMLTags.EndParagraph);
-                    for (int paragraphIndex = Ordinals.first; paragraphIndex < paragraphs.Count; paragraphIndex++)
-                    {
-                        if (paragraphIndex == Ordinals.second)
-                            parser.SetStartHTML(HTMLTags.StartParagraphWithClass +
-                                HTMLClasses.comment +
-                                HTMLTags.CloseQuoteEndTag);
-                        await parser.ParseParagraph(paragraphs[paragraphIndex], paragraphIndex);
-                    }
-                    needFullLabel = false;
+                    if (paragraphIndex == Ordinals.second)
+                        parser.SetStartHTML(HTMLTags.StartParagraphWithClass +
+                            HTMLClasses.comment +
+                            HTMLTags.CloseQuoteEndTag);
+                    await parser.ParseParagraph(paragraphs[paragraphIndex], paragraphIndex);
                 }
+                needFullLabel = false;
             }
             return needFullLabel;
         }
 
-        private async Task<bool> WriteOriginalWordCrossreferences(HTMLWriter writer,  VersePageInfo info, int index, bool needFullLabel)
+        private async Task<bool> WriteOriginalWordCrossreferences(HTMLWriter writer, VersePageInfo info, int index, bool needFullLabel)
         {
             PageParser parser = new PageParser(writer);
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
                 -1, -1);
-            if (info.OriginalWordCrossReferences.ContainsKey(index))
+            for (int i = Ordinals.first; i < info.OriginalWordCrossReferences[index].Count; i++) 
             {
-                foreach ((int articleID, int paragraphIndex) in info.OriginalWordCrossReferences[index])
+                int articleID = info.OriginalWordCrossReferences[index][i].articleID;
+                int paragraphIndex = info.OriginalWordCrossReferences[index][i].paragraphIndex;
+                if (needFullLabel)
                 {
-                    if (needFullLabel)
-                    {
-                        await WriteFullCrossReferenceLabel(writer, info, index, articleID);
-                        needFullLabel = false;
-                    }
-                    else
-                    {
-                        await writer.Append(HTMLTags.StartParagraphWithClass +
-                            HTMLClasses.comment +
-                            HTMLTags.CloseQuoteEndTag);
-                        await WriteVerseLabel(writer, articleID);
-                    }
-                    await writer.Append(": <span class=parcontent>");
-                    parser.SetParagraphInfo(ParagraphType.Comment, articleID);
-                    parser.SetStartHTML("");
-                    parser.SetEndHTML(HTMLTags.EndParagraph);
-                    reader.SetParameter(articleID, paragraphIndex);
-                    string paragraph = await reader.GetDatum<string>();
-                    await parser.ParseParagraph(paragraph, paragraphIndex);
+                    await WriteFullCrossReferenceLabel(writer, info, index, articleID);
+                    needFullLabel = false;
                 }
+                else
+                {
+                    await writer.Append(HTMLTags.StartParagraphWithClass +
+                        HTMLClasses.comment +
+                        HTMLTags.CloseQuoteEndTag);
+                    await WriteVerseLabel(writer, articleID);
+                }
+                await writer.Append(": <span class=parcontent>");
+                parser.SetParagraphInfo(ParagraphType.Comment, articleID);
+                parser.SetStartHTML("");
+                parser.SetEndHTML(HTMLTags.EndParagraph);
+                reader.SetParameter(articleID, paragraphIndex);
+                string paragraph = await reader.GetDatum<string>();
+                await parser.ParseParagraph(paragraph, paragraphIndex);
             }
             reader.Close();
             return needFullLabel;
@@ -363,37 +361,71 @@ namespace Myriad.Pages
             WriteExactMatchPhraseArticle(HTMLWriter writer, VersePageInfo info, int index, bool needFullLabel)
         {
             (int start, int end) range = info.PhraseArticles[index].First().Value.range;
-            if ((range.end - range.start) > 8) return (needFullLabel,Result.notfound);
+            if ((range.end - range.start) > 8) return (needFullLabel, Result.notfound);
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
                 -1, -1);
             int resultIndex = Result.notfound;
-            if (info.PhraseArticles.ContainsKey(index))
+            string offsetLabel = RangeText(range).Trim();
+            List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
+            string offsetRoot = ((offsetRoots.Count > Number.nothing) && (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
+                offsetRoots[Ordinals.first] :
+                offsetLabel;
+            //Check for exact match between label and article titles
+            PageParser parser = new PageParser(writer);
+            parser.SetStartHTML("");
+            parser.SetEndHTML(HTMLTags.EndParagraph);
+            for (int usedIndex=Ordinals.first; usedIndex< info.PhraseArticles[index].Count; usedIndex++)
             {
-                string offsetLabel = RangeText(range).Trim();
-                List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
-                string offsetRoot = ((offsetRoots.Count > Number.nothing) && (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
-                    offsetRoots[Ordinals.first] :
-                    offsetLabel;
-                //Check for exact match between label and article titles
-                int usedIndex = Ordinals.first;
-                PageParser parser = new PageParser(writer);
-                parser.SetStartHTML("");
-                parser.SetEndHTML(HTMLTags.EndParagraph);
-                foreach (KeyValuePair<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)> entry
-                    in info.PhraseArticles[index])
+                string title = info.PhraseArticles[index].Keys.ElementAt(usedIndex);
+                ((int start, int end) range,
+                int articleID, List<int> paragraphIndices) entry = info.PhraseArticles[index][title];
+                if ((title == offsetRoot ||
+                    (title == offsetLabel)))
                 {
-                    string title = await AllWords.Conform(entry.Key);
-                    if ((title == offsetRoot ||
-                        (title == offsetLabel)))
+                    await writer.Append(HTMLTags.StartParagraphWithClass +
+                        HTMLClasses.comment +
+                        HTMLTags.CloseQuoteEndTag);
+                    await WriteFullLabel(writer, info, index, entry.range, entry.articleID, title);
+                    bool first = true;
+
+                    parser.SetParagraphInfo(ParagraphType.Article, entry.articleID);
+                    foreach (int paragraphIndex in entry.paragraphIndices)
+                    {
+                        if (first) first = false;
+                        else
+                        {
+                            await writer.Append(HTMLTags.StartParagraphWithClass +
+                                HTMLClasses.comment +
+                                HTMLTags.CloseQuoteEndTag);
+                        }
+                        reader.SetParameter(entry.articleID, paragraphIndex);
+                        string paragraph = await reader.GetDatum<string>();
+                        await parser.ParseParagraph(paragraph, paragraphIndex);
+                    }
+                    needFullLabel = false;
+                    resultIndex = usedIndex;
+                    break;
+                }
+            }
+
+            if (resultIndex == Result.notfound)
+            {
+                for (int usedIndex = Ordinals.first; usedIndex < info.PhraseArticles[index].Count; usedIndex++)
+                {
+                    string title = info.PhraseArticles[index].Keys.ElementAt(usedIndex);
+                    ((int start, int end) range,
+                    int articleID, List<int> paragraphIndices) entry = info.PhraseArticles[index][title];
+                    List<string> synonyms = ArticlePage.GetSynonyms(entry.articleID);
+                    if (synonyms.Contains(offsetRoot) ||
+                        synonyms.Contains(await AllWords.Conform(offsetLabel)))
                     {
                         await writer.Append(HTMLTags.StartParagraphWithClass +
                             HTMLClasses.comment +
                             HTMLTags.CloseQuoteEndTag);
-                        await WriteFullLabel(writer, info, index, entry.Value.range, entry.Value.articleID, entry.Key);
+                        await WriteFullLabel(writer, info, index, entry.range, entry.articleID, title);
                         bool first = true;
-
-                        parser.SetParagraphInfo(ParagraphType.Article, entry.Value.articleID);
-                        foreach (int paragraphIndex in entry.Value.paragraphIndices)
+                        parser.SetParagraphInfo(ParagraphType.Article, entry.articleID);
+                        foreach (int paragraphIndex in entry.paragraphIndices)
                         {
                             if (first) first = false;
                             else
@@ -402,51 +434,13 @@ namespace Myriad.Pages
                                     HTMLClasses.comment +
                                     HTMLTags.CloseQuoteEndTag);
                             }
-                            reader.SetParameter(entry.Value.articleID, paragraphIndex);
+                            reader.SetParameter(entry.articleID, paragraphIndex);
                             string paragraph = await reader.GetDatum<string>();
                             await parser.ParseParagraph(paragraph, paragraphIndex);
                         }
                         needFullLabel = false;
                         resultIndex = usedIndex;
                         break;
-                    }
-                    usedIndex++;
-                }
-
-                if (resultIndex == Result.notfound)
-                {
-                    usedIndex = Ordinals.first;
-                    foreach (KeyValuePair<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)> entry
-                        in info.PhraseArticles[index])
-                    {
-                        List<string> synonyms = ArticlePage.GetSynonyms(entry.Value.articleID);
-                        if (synonyms.Contains(offsetRoot) ||
-                            synonyms.Contains(await AllWords.Conform(offsetLabel)))
-                        {
-                            await writer.Append(HTMLTags.StartParagraphWithClass +
-                                HTMLClasses.comment +
-                                HTMLTags.CloseQuoteEndTag);
-                            await WriteFullLabel(writer, info, index, entry.Value.range, entry.Value.articleID, entry.Key);
-                            bool first = true;
-                            parser.SetParagraphInfo(ParagraphType.Article, entry.Value.articleID);
-                            foreach (int paragraphIndex in entry.Value.paragraphIndices)
-                            {
-                                if (first) first = false;
-                                else
-                                {
-                                    await writer.Append(HTMLTags.StartParagraphWithClass +
-                                        HTMLClasses.comment +
-                                        HTMLTags.CloseQuoteEndTag);
-                                }
-                                reader.SetParameter(entry.Value.articleID, paragraphIndex);
-                                string paragraph = await reader.GetDatum<string>();
-                                await parser.ParseParagraph(paragraph, paragraphIndex);
-                            }
-                            needFullLabel = false;
-                            resultIndex = usedIndex;
-                            break;
-                        }
-                        usedIndex++;
                     }
                 }
             }
@@ -581,9 +575,11 @@ namespace Myriad.Pages
                 parser.SetEndHTML(HTMLTags.EndParagraph);
                 var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
                     -1, -1);
-                foreach (KeyValuePair<string, ((int start, int end) range, int articleID, List<int> paragraphIndices)> entry
-                    in info.PhraseArticles[index])
+                for (int i = Ordinals.first; i < info.PhraseArticles[index].Count; i++)
                 {
+                    string title = info.PhraseArticles[index].Keys.ElementAt(i);
+                    ((int start, int end) range,
+                    int articleID, List<int> paragraphIndices) entry = info.PhraseArticles[index][title];
                     if (currentIndex == usedIndex)
                     {
                         currentIndex++;
@@ -596,13 +592,13 @@ namespace Myriad.Pages
                             HTMLClasses.comment +
                             HTMLTags.CloseQuoteEndTag);
                         await WriteFullLabel(writer, info, index, 
-                            entry.Value.range, entry.Value.articleID, entry.Key);
+                            entry.range, entry.articleID, title);
                         needFullLabel = false;
                         needLabel = false;
                     }
                     bool first = true;
-                    parser.SetParagraphInfo(ParagraphType.Article, entry.Value.articleID);
-                    foreach (int paragraphIndex in entry.Value.paragraphIndices)
+                    parser.SetParagraphInfo(ParagraphType.Article, entry.articleID);
+                    foreach (int paragraphIndex in entry.paragraphIndices)
                     {
                         if (first) first = false;
                         else
@@ -616,11 +612,11 @@ namespace Myriad.Pages
                             await writer.Append(HTMLTags.StartParagraphWithClass +
                                 HTMLClasses.comment +
                                 HTMLTags.CloseQuoteEndTag);
-                            await PageFormatter.WriteTagAnchor(writer, entry.Key, entry.Value.articleID);
+                            await PageFormatter.WriteTagAnchor(writer, title, entry.articleID);
                             await writer.Append(": ");
                             needLabel = false;
                         }
-                        reader.SetParameter(entry.Value.articleID, paragraphIndex);
+                        reader.SetParameter(entry.articleID, paragraphIndex);
                         string paragraph = await reader.GetDatum<string>();
                         await parser.ParseParagraph(paragraph, paragraphIndex);
                     }
@@ -630,6 +626,108 @@ namespace Myriad.Pages
             }
         }
 
+        private async Task WriteAdditionalComments(HTMLWriter writer, VersePageInfo info)
+        {
+            int lastID = -1;
+            bool first = true;
+            PageParser parser = new PageParser(writer);
+            parser.SetStartHTML("");
+            parser.SetEndHTML(HTMLTags.EndParagraph);
+            var articleReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
+                -1, -1);
+            var commentReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
+                -1, -1);
+            for (int i = Ordinals.first; i<info.AdditionalArticles.Count; i++)
+            {
+                string title = info.AdditionalArticles.Keys.ElementAt(i);
+                List<(int articleID, int paragraphIndex, bool suppressed)> entry = info.AdditionalArticles[title];
+                if (first)
+                {
+                    await writer.Append(HTMLTags.StartHeader+
+                        "Additional References"+
+                        HTMLTags.EndHeader);
+                    first = false;
+                }
+                int id = info.AdditionalArticleIDs[title];
+                if (id != lastID)
+                {
+                    await AppendArticleTitleLabel(writer, id, title, entry[Ordinals.first].suppressed);
+                    lastID = id;
+                }
+                else
+                {
+                    await StartParagraph(writer, entry[Ordinals.first].suppressed);
+                }
+                for (int j = Ordinals.first; j<entry.Count; j++)
+                {
+                    parser.SetParagraphInfo(ParagraphType.Article, entry[j].articleID);
+                    if (j>Ordinals.first) 
+                    {
+                        await StartParagraph(writer, entry[j].suppressed);
+                    }
+                    articleReader.SetParameter(entry[j].articleID, entry[j].paragraphIndex);
+                    string paragraph = await articleReader.GetDatum<string>();
+                    await parser.ParseParagraph(paragraph, entry[j].paragraphIndex);
+                }
+            }
+            (int start, int end) lastRange = (-1, -1);
+            for (int i = Ordinals.first; i<info.AdditionalCrossReferences.Count; i++)
+            {
+                (int start, int end) range = info.AdditionalCrossReferences.Keys.ElementAt(i);
+                List<(int articleID, int paragraphIndex, bool suppressed)> entry = info.AdditionalCrossReferences[range];
+                if (first)
+                {
+                    await writer.Append(HTMLTags.StartHeader +
+                        "Additional References" +
+                        HTMLTags.EndHeader);
+                    first = false;
+                }
+                if (!range.Equals(lastRange))
+                {
+                    await StartParagraph(writer, entry[Ordinals.first].suppressed);
+                    Citation citation = new Citation(range.start, range.end);
+                    await CitationConverter.AppendLink(writer, citation);
+                    await writer.Append(": ");
+                    lastRange = range;
+                }
+                else
+                {
+                    await StartParagraph(writer, entry[Ordinals.first].suppressed);
+                }
+                bool firstParagraph = true;
+                for (int j=Ordinals.first; j<entry.Count; j++)
+                {
+                    (int articleID, int paragraphIndex, bool suppressed) = entry[j];
+                    if (firstParagraph) firstParagraph = false;
+                    else
+                    {
+                        await StartParagraph(writer, suppressed);
+                    }
+                    parser.SetParagraphInfo(ParagraphType.Comment, articleID);
+                    commentReader.SetParameter(articleID, paragraphIndex);
+                    string paragraph = await commentReader.GetDatum<string>();
+                    await parser.ParseParagraph(paragraph, paragraphIndex);
+                }
+            }
+            articleReader.Close();
+            commentReader.Close();
+        }
+        private async Task StartParagraph(HTMLWriter writer, bool suppressed)
+        {
+            await writer.Append(HTMLTags.StartParagraphWithClass +
+                HTMLClasses.comment);
+            if (suppressed)
+            {
+                await writer.Append(Symbol.space + HTMLClasses.suppressed);
+            }
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+        }
+        private async Task AppendArticleTitleLabel(HTMLWriter writer, int articleID, string title, bool suppressed)
+        {
+            await StartParagraph(writer, suppressed);
+            await PageFormatter.WriteTagAnchor(writer, title, articleID);
+            await writer.Append(": ");
+        }
         public override Task SetupNextPage()
         {
             int v = citation.CitationRange.FirstVerse + 1;

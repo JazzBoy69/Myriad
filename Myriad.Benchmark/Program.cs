@@ -23,7 +23,7 @@ namespace Myriad.Benchmark
             IndexPage indexPage = new IndexPage();
             var paragraphs = indexPage.GetPageParagraphs();
         }
-        [Benchmark]
+        //[Benchmark]
         async public Task RenderIndex()
         {
             IndexPage page = new IndexPage();
@@ -41,12 +41,20 @@ namespace Myriad.Benchmark
             await page.RenderPage();
         }
 
-        [Benchmark]
+        //[Benchmark]
         async public Task RenderText()
         {
             TextPage page = new TextPage();
             page.SetResponse(DefaultResponse());
             page.SetCitation(new Citation(319422720, 319422739));
+            await page.RenderPage();
+        }
+        [Benchmark]
+        async public Task RenderVerse()
+        {
+            VersePage page = new VersePage();
+            page.SetResponse(DefaultResponse());
+            page.SetCitation(new Citation(654639872, 654640127));
             await page.RenderPage();
         }
         //[Benchmark]
