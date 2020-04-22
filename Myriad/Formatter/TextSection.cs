@@ -97,7 +97,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndDiv+
                 HTMLTags.EndSection);
         }
-        public async Task<List<(int start, int end)>> ReadLinks(int commentID)
+        public static async Task<List<(int start, int end)>> ReadLinks(int commentID)
         {
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentLinks),

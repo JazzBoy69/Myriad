@@ -19,7 +19,8 @@ namespace Myriad.Data
         ReadKeywords, ReadWordIndex, ReadKeywordSentence,
         ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases,
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
-        ReadSubtituteWords,
+        ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
+        ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -101,7 +102,20 @@ namespace Myriad.Data
             {DataOperation.ReadSynonyms,
                 "select RTrim(text) from synonyms where id=@key1 and text!=@key2 order by synIndex" },
             {DataOperation.ReadSubtituteWords,
-                "select RTrim(text), last from searchwords where substitute=1 and start=@key1" }
+                "select RTrim(text), last from searchwords where substitute=1 and start=@key1" },
+            {DataOperation.ReadRelatedArticles,
+                "select start, last, articleid, paragraphindex from RelatedArticles where last>=@key1 and start<=@key2 order by articleid, paragraphindex, last-start" },
+            {DataOperation.ReadDefinitionSearchesInVerse,
+                "select start, last, definitionsearch.id, synonyms.synIndex from definitionsearch join synonyms on synonyms.id=definitionsearch.id where start>=@key1 and start<=@key2 order by start, (last-start) desc, weight desc, synonyms.synIndex" },
+            {DataOperation.ReadVerseCrossReferences,
+                "select start, last, commentid, paragraphindex from crossreferences where start<=@key2 and last>=@key1 order by commentid, paragraphindex, last-start" },
+            {DataOperation.ReadVerseWords,
+                "select start, last, RTrim(text), weight, substitute from searchwords where start >= @key1" +
+                " and start<= @key2 order by start asc, last-start desc, weight desc" },
+            {DataOperation.ReadLinkedParagraphs,
+                "select start, last, id, 0 from commentlinks where start>= @key1 and start<= @key2" },
+            {DataOperation.DefinitionSearchesInRange,
+                "select start, last from definitionsearch where start>=@key1 and start<=@key2 and id=@key3" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

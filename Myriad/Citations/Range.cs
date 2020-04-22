@@ -19,7 +19,7 @@ namespace Myriad.Library
         }
 
 
-
+        public (int start, int end) Range => (start.ID, end.ID);
         public CitationRange(int? startID, int? endID)
         {
             this.start = new KeyID(startID);
