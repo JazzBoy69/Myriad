@@ -493,7 +493,7 @@ namespace Myriad.Pages
                         }
                         await writer.Append(HTMLTags.StartBold);
                         await writer.Append(label.Substring(Ordinals.first, i));
-                        await PageFormatter.WriteTagAnchor(writer, offsetLabel, articleID);
+                        await WriteTagAnchor(writer, offsetLabel, articleID);
                         if (j < label.Length - 1) await writer.Append(label.Substring(j));
                     }
                 }
@@ -508,7 +508,7 @@ namespace Myriad.Pages
                 if (!part)
             {
                 await writer.Append(HTMLTags.StartBold);
-                await PageFormatter.WriteTagAnchor(writer, label, articleID);
+                await WriteTagAnchor(writer, label, articleID);
             }
             label = info.OriginalWordsInRange(phraseRange.start, phraseRange.end);
             if (string.IsNullOrEmpty(label))
@@ -516,7 +516,7 @@ namespace Myriad.Pages
                 if (substitute)
                 {
                     await writer.Append(HTMLTags.EndBold+" (");
-                    await PageFormatter.WriteTagAnchor(writer, articleTitle, articleID);
+                    await WriteTagAnchor(writer, articleTitle, articleID);
                     await writer.Append("): ");
                 }
                 else
@@ -531,13 +531,13 @@ namespace Myriad.Pages
                     {
                         await writer.Append(HTMLTags.EndBold +
                             " (" + HTMLTags.StartItalic);
-                        await PageFormatter.WriteTagAnchor(writer, label, articleID);
+                        await WriteTagAnchor(writer, label, articleID);
                         await writer.Append(HTMLTags.EndItalic+"): ");
                     }
                     else
                     {
                         await writer.Append(HTMLTags.EndBold+" (");
-                        await PageFormatter.WriteTagAnchor(writer,
+                        await WriteTagAnchor(writer,
                             articleTitle.Replace('(', '[').Replace(')', ']'),
                             articleID);
                         await writer.Append("; "+HTMLTags.StartItalic);
@@ -570,6 +570,10 @@ namespace Myriad.Pages
             return result.ToString();
         }
 
+        private async Task WriteTagAnchor(HTMLWriter writer, string label, int articleID)
+        {
+            await PageFormatter.WriteTagAnchor(writer, label, articleID, citation.CitationRange);
+        }
         private async Task WritePhraseArticles(HTMLWriter writer, VersePageInfo info, int index, bool needFullLabel, int usedIndex)
         {
             int currentIndex = Ordinals.first;
@@ -619,7 +623,7 @@ namespace Myriad.Pages
                             await writer.Append(HTMLTags.StartParagraphWithClass +
                                 HTMLClasses.comment +
                                 HTMLTags.CloseQuoteEndTag);
-                            await PageFormatter.WriteTagAnchor(writer, title, entry.articleID);
+                            await WriteTagAnchor(writer, title, entry.articleID);
                             await writer.Append(": ");
                             needLabel = false;
                         }
@@ -734,7 +738,7 @@ namespace Myriad.Pages
         private async Task AppendArticleTitleLabel(HTMLWriter writer, int articleID, string title, bool suppressed)
         {
             await StartParagraph(writer, suppressed);
-            await PageFormatter.WriteTagAnchor(writer, title, articleID);
+            await WriteTagAnchor(writer, title, articleID);
             await writer.Append(": ");
         }
         public override Task SetupNextPage()

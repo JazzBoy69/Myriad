@@ -34,6 +34,7 @@ namespace Myriad.Pages
         public const string queryKeyID = "ID";
         PageParser parser;
         List<string> headings;
+        Citation targetCitation;
 
         (string Title, int ID) pageInfo = ("", Result.error);
         public ArticlePage()
@@ -59,6 +60,10 @@ namespace Myriad.Pages
         {
             var paragraphs = GetPageParagraphs();
             parser = new PageParser(writer);
+            if ((targetCitation != null) && (targetCitation.CitationRange.Valid))
+            {
+                parser.SetTargetRange(targetCitation.CitationRange);
+            }
             await AddMainHeading(writer);
             await Parse(paragraphs);
             await AddPageTitleData(writer);
@@ -87,6 +92,11 @@ namespace Myriad.Pages
         }
         public override async Task LoadQueryInfo(IQueryCollection query)
         {
+            if (query.ContainsKey(ScripturePage.queryKeyTGStart))
+            {
+                targetCitation = new Citation(Numbers.Convert(query[ScripturePage.queryKeyTGStart].ToString()),
+                    Numbers.Convert(query[ScripturePage.queryKeyTGEnd].ToString()));
+            }
             if ((query.ContainsKey(queryKeyID)) && (query.ContainsKey(queryKeyTitle)))
             {
                 pageInfo = await GetInfoFromQuery(query);

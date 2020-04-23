@@ -127,6 +127,28 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndAnchor);
         }
 
+        internal static async Task WriteTagAnchor(HTMLWriter writer, string label, int articleID, CitationRange targetRange)
+        {
+            await writer.Append(HTMLTags.StartAnchor +
+                HTMLTags.HREF +
+                ArticlePage.pageURL +
+                HTMLTags.StartQuery +
+                ArticlePage.queryKeyID +
+                Symbol.equal);
+            await writer.Append(articleID);
+            await writer.Append(HTMLTags.Ampersand +
+                ScripturePage.queryKeyTGStart +
+                Symbol.equal);
+            await writer.Append(targetRange.StartID.ID);
+            await writer.Append(HTMLTags.Ampersand +
+                ScripturePage.queryKeyTGEnd +
+                Symbol.equal);
+            await writer.Append(targetRange.EndID.ID);
+            await writer.Append(HTMLTags.EndTag);
+            await writer.Append(label.Replace('_', ' '));
+            await writer.Append(HTMLTags.EndAnchor);
+        }
+
         internal async Task<bool> ToggleHeading(Formats formats)
         {
             formats.editable = false;
@@ -274,10 +296,10 @@ namespace Myriad.Parser
             if (targetRange != null)
             {
                 await writer.Append(HTMLTags.Ampersand +
-                ScripturePage.queryKeyTGStart);
+                ScripturePage.queryKeyTGStart+Symbol.equal);
                 await writer.Append(targetRange.StartID.ID);
                 await writer.Append(HTMLTags.Ampersand);
-                await writer.Append(ScripturePage.queryKeyTGEnd);
+                await writer.Append(ScripturePage.queryKeyTGEnd+Symbol.equal);
                 await writer.Append(targetRange.EndID.ID);
             }
         }

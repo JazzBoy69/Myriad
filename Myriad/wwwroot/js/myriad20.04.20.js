@@ -179,10 +179,10 @@ function ScrollToTarget() {
     var targets = document.getElementsByClassName('target');
     var target = (targets === null) || (targets.length === 0) ?
         document.getElementById('top') :
-        targets[0];
+        targets[0].closest('p');
     var targetOffset = target.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
-    window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
+    window.scrollTo({ top: (targetOffset - h), left: 0, behavior: 'smooth' });
 }
 
 function ScrollWhenReady() {

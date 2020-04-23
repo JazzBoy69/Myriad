@@ -77,6 +77,7 @@ namespace Myriad
                     return;
                 }
                 CommonPage page = await RequestedPage(context);
+                await page.LoadQueryInfo(context.Request.Query);
                 await page.RenderPage();
             });
 
@@ -113,6 +114,7 @@ namespace Myriad
                 await paginationPage.RenderBody(Writer.New(context.Response));
                 return;
             }
+            await partialPage.LoadQueryInfo(context.Request.Query);
             await partialPage.RenderBody(Writer.New(context.Response));
         }
 
