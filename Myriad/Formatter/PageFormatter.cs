@@ -108,6 +108,8 @@ namespace Myriad.Parser
                     Symbol.equal);
                 await writer.Append(targetRange.EndID.ID);
             }
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
             await writer.Append(HTMLTags.EndTag);
             await writer.Append(label);
             await writer.Append(HTMLTags.EndAnchor);
@@ -122,6 +124,8 @@ namespace Myriad.Parser
                 ArticlePage.queryKeyID +
                 Symbol.equal);
             await writer.Append(articleID);
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
             await writer.Append(HTMLTags.EndTag);
             await writer.Append(label.Replace('_', ' '));
             await writer.Append(HTMLTags.EndAnchor);
@@ -144,6 +148,8 @@ namespace Myriad.Parser
                 ScripturePage.queryKeyTGEnd +
                 Symbol.equal);
             await writer.Append(targetRange.EndID.ID);
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
             await writer.Append(HTMLTags.EndTag);
             await writer.Append(label.Replace('_', ' '));
             await writer.Append(HTMLTags.EndAnchor);

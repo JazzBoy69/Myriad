@@ -46,6 +46,20 @@ namespace Myriad
             app.Run(async context =>
             {
                 //todo write change log
+                if (context.Request.Path == ArticlePage.editURL)
+                {
+                    var articlePage = new ArticlePage();
+                    await articlePage.WritePlainText(Writer.New(context.Response),
+                        context.Request.Query);
+                    return;
+                }
+                if (context.Request.Path == TextPage.editURL)
+                {
+                    var textPage = new TextPage();
+                    await textPage.WritePlainText(Writer.New(context.Response),
+                        context.Request.Query);
+                    return;
+                }
                 if (context.Request.Path == "/SynonymSearch")
                 {
                     var searchPage = new SearchPage();

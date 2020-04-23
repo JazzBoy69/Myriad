@@ -56,6 +56,7 @@ namespace Myriad.Library
         internal const string textquote = "textquote";
         internal const string versetext = "versetext";
         internal const string suppressed = "suppressed";
+        internal const string editdata = "editdata";
     }
 
 }

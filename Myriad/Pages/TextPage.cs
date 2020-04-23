@@ -16,9 +16,11 @@ namespace Myriad.Pages
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
+        public const string editURL = "/EditComment";
         HTMLWriter writer;
         List<int> commentIDs;
         TextSectionFormatter textSection;
+        public const string queryKeyID = "ID";
 
         public override string GetURL()
         {
@@ -69,16 +71,37 @@ namespace Myriad.Pages
             else
             {
                 await textSection.AddTextSection(commentIDs, Ordinals.first, citation, navigating, readingView);
+                await AddEditPageData(writer);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
         }
 
-        async internal void RenderMainPane(int startID, int endID)
+        internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
         {
-            citation = new Citation(startID, endID);
-            await RenderBody(Writer.New(response));
+            string idString = query[queryKeyID];
+            int id = Numbers.Convert(idString);
+            var paragraphs = TextSectionFormatter.ReadParagraphs(id);
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            {
+                await writer.Append(paragraphs[i]);
+                await writer.Append(Symbol.lineFeed);
+            }
         }
+
+        private async Task AddEditPageData(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.editdata + HTMLTags.CloseQuote +
+                HTMLTags.Class +
+                HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag +
+                editURL + HTMLTags.StartQuery +
+                queryKeyID + Symbol.equal);
+            await writer.Append(commentIDs[Ordinals.first]);
+            await writer.Append(HTMLTags.EndDiv);
+        }
+
         public override Task SetupParentPage()
         {
             targetCitation = citation;

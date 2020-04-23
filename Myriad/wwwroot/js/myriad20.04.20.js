@@ -738,3 +738,13 @@ function HandleShortcut(e) {
     document.getElementById('searchField').focus();
     return false;
 }
+
+function Edit() {
+    var editdata = document.getElementById('editdata');
+    if (editdata === null) return;
+    var path = editdata.innerText; 
+    postAjax(path, {},
+        function (data) {
+            ShowEditWindow(data);
+        });
+}

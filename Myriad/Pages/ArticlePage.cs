@@ -30,6 +30,7 @@ namespace Myriad.Pages
     public class ArticlePage : CommonPage
     {
         public const string pageURL = "/Article";
+        public const string editURL = "/EditArticle";
         public const string queryKeyTitle = "Title";
         public const string queryKeyID = "ID";
         PageParser parser;
@@ -68,8 +69,33 @@ namespace Myriad.Pages
             await Parse(paragraphs);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+            await AddEditPageData(writer);
         }
 
+        internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
+        {
+            string idString = query[queryKeyID];
+            int id = Numbers.Convert(idString);
+            var paragraphs = GetPageParagraphs(id);
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            {
+                await writer.Append(paragraphs[i]);
+                await writer.Append(Symbol.lineFeed);
+            }
+        }
+
+        private async Task AddEditPageData(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.editdata + HTMLTags.CloseQuote+
+                HTMLTags.Class+
+                HTMLClasses.hidden+
+                HTMLTags.CloseQuoteEndTag+
+                editURL+HTMLTags.StartQuery+
+                queryKeyID+Symbol.equal);
+            await writer.Append(pageInfo.ID);
+            await writer.Append(HTMLTags.EndDiv);
+        }
         private async Task AddMainHeading(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartMainHeader);
