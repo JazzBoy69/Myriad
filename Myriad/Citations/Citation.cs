@@ -47,6 +47,11 @@ namespace Myriad.Library
             }
         }
 
+        public override int GetHashCode()
+        {
+            return CitationRange.GetHashCode();
+        }
+
         internal Citation Copy()
         {
             Citation newCitation = new Citation

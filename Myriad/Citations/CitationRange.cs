@@ -18,7 +18,10 @@ namespace Myriad.Library
             return new CitationRange(-1);
         }
 
-
+        public override int GetHashCode()
+        {
+            return start.GetHashCode()+end.GetHashCode();
+        }
         public (int start, int end) Range => (start.ID, end.ID);
         public CitationRange(int? startID, int? endID)
         {

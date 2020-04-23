@@ -24,7 +24,10 @@ namespace Myriad.Library
         {
             this.id = id ?? Result.error;
         }
-
+        public override int GetHashCode()
+        {
+            return id.GetHashCode();
+        }
         public KeyID(string id)
         {
             this.id = Numbers.Convert(id);
