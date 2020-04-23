@@ -14,6 +14,7 @@ namespace Myriad.Parser
         {
             citationLevel = 0;
             formats.Reset();
+            formats.hideDetails = hideDetails;
             if (currentParagraph.Length > 1)
             {
                 foundEndToken = await HandleStartToken();

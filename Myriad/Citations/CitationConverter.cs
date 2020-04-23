@@ -125,7 +125,7 @@ namespace Myriad.Parser
 
         public static async Task AppendLink(HTMLWriter writer, Citation citation)
         {
-            await PageFormatter.StartCitationAnchor(writer, citation);
+            await PageFormatter.StartCitationLink(writer, citation);
             await Append(writer, citation, false);
             await writer.Append(HTMLTags.EndAnchor);
         }

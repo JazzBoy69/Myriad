@@ -22,6 +22,7 @@ namespace Myriad.Parser
         protected bool foundEndToken;
         protected int lastDash;
         internal readonly Formats formats = new Formats();
+        protected bool hideDetails = false;
         protected readonly PageFormatter formatter;
         readonly CitationHandler citationHandler;
         readonly StringRange labelRange = new StringRange();
@@ -43,6 +44,14 @@ namespace Myriad.Parser
             citationHandler = new CitationHandler();
             paragraphInfo.type = ParagraphType.Undefined;
         }
+        public void SetTargetRange(CitationRange targetRange)
+        {
+            formatter.SetTargetRange(targetRange);
+        }
+        public void HideDetails()
+        {
+            hideDetails = true;
+        }
 
         public void SetParagraphInfo(ParagraphType type, int ID)
         {
@@ -53,6 +62,7 @@ namespace Myriad.Parser
         {
             citationLevel = 0;
             formats.Reset();
+            formats.hideDetails = hideDetails;
             await AddHTMLBeforeParagraph();
             if (currentParagraph.Length > 1)
             {
@@ -73,7 +83,8 @@ namespace Myriad.Parser
             paragraphInfo.index = index;
             ResetCrossReferences();
             lastDash = paragraph.LastIndexOf('—');
-
+            formats.Reset();
+            formats.hideDetails = hideDetails;
             currentParagraph = new Paragraph()
             {
                 Text = ((lastDash != Result.notfound) && (lastDash < paragraph.Length - 1)) ?

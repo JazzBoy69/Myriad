@@ -222,7 +222,8 @@ namespace Myriad.Pages
         private async Task<bool> WriteOriginalWordComments(HTMLWriter writer, VersePageInfo info, int index)
         {
             PageParser parser = new PageParser(writer);
-
+            parser.HideDetails();
+            parser.SetTargetRange(citation.CitationRange);
             bool needFullLabel = true;
             await WriteFullOriginalWordLabel(writer, info, index);
             await writer.Append(": ");
@@ -249,6 +250,8 @@ namespace Myriad.Pages
         private async Task<bool> WriteOriginalWordCrossreferences(HTMLWriter writer, VersePageInfo info, int index, bool needFullLabel)
         {
             PageParser parser = new PageParser(writer);
+            parser.SetTargetRange(citation.CitationRange);
+            parser.HideDetails();
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
                 -1, -1);
             for (int i = Ordinals.first; i < info.OriginalWordCrossReferences[index].Count; i++) 
@@ -372,6 +375,8 @@ namespace Myriad.Pages
                 offsetLabel;
             //Check for exact match between label and article titles
             PageParser parser = new PageParser(writer);
+            parser.SetTargetRange(citation.CitationRange);
+            parser.HideDetails();
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);
             for (int usedIndex=Ordinals.first; usedIndex< info.PhraseArticles[index].Count; usedIndex++)
@@ -571,6 +576,8 @@ namespace Myriad.Pages
             if (info.PhraseArticles.ContainsKey(index))
             {
                 PageParser parser = new PageParser(writer);
+                parser.HideDetails();
+                parser.SetTargetRange(citation.CitationRange);
                 parser.SetStartHTML("");
                 parser.SetEndHTML(HTMLTags.EndParagraph);
                 var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
@@ -631,6 +638,8 @@ namespace Myriad.Pages
             int lastID = -1;
             bool first = true;
             PageParser parser = new PageParser(writer);
+            parser.HideDetails();
+            parser.SetTargetRange(citation.CitationRange);
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);
             var articleReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),

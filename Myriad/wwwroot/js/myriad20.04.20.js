@@ -69,6 +69,7 @@ function LoadHistoryPage(path) {
     if (performance.navigation.type === 1) {
         window.location = path;
         HandleAdditionalSearchTasks();
+        HandleHiddenDetails();
         return;
     }
     var target = AddQueryToPath(path, 'partial=true');
@@ -82,6 +83,7 @@ function LoadMainPaneHistory(path) {
             mainPane.innerHTML = data;
             SetTitle();
             HandleAdditionalSearchTasks();
+            HandleHiddenDetails();
             ScrollWhenReady();
         });
 }
@@ -105,6 +107,7 @@ function LoadMainPane(path) {
             history.pushState(null, null, path);
             SetTitle();
             HandleAdditionalSearchTasks();
+            HandleHiddenDetails();
             ScrollWhenReady();
         });
 }
@@ -522,6 +525,14 @@ function getSiblings(n) {
 
 function HandleHiddenDetails()
 {
+    var marks = document.getElementsByClassName('target');
+    for (var i = 0; i < marks.length; i++) {
+        var grandparent = marks[i].parentNode.parentNode;
+        if (grandparent.classList.contains('hiddendetail')) {
+            grandparent.classList.add("showdetail");
+            grandparent.classList.remove('hiddendetail');
+        }
+    }
     var details = document.getElementsByClassName('hiddendetail');
     for (var i = 0; i < details.length; i++) {
         details[i].onclick = function (e) {
@@ -532,6 +543,7 @@ function HandleHiddenDetails()
             RemoveClassFromGroup(hiddenSiblings, "hiddendetail");
         }
     }
+    SetupSuppressedParagraphs();
 }
 
 
@@ -614,12 +626,23 @@ function CloseModalPicture(event) {
 function SetupSuppressedParagraphs() {
     var suppressedParagraphs = document.getElementsByClassName('suppressed');
     var ellipsis = document.getElementById('ellipsis');
+    var hideEllipsis = true;
     for (var i = 0; i < suppressedParagraphs.length; i++) {
         suppressedParagraphs[i].onclick = function (event) {
-            event.target.removeClass('suppressed');
+            var paragraph = event.target.closest('.suppressed');
+            paragraph.classList.remove('suppressed');
         };
-        if (paragraph.length < 1) return;
-        ellipsis.removeClass('hidden');
+        if (suppressedParagraphs[i].length < 1) return;
+        hideEllipsis = false;
+    }
+    if (hideEllipsis) {
+        if (!ellipsis.classList.contains('hidden')) {
+            ellipsis.classList.add('hidden');
+        }
+        return;
+    }
+    if (ellipsis.classList.contains('hidden')) {
+        ellipsis.classList.remove('hidden');
     }
     ellipsis.onclick = function (event) {
         var extraInfo = document.getElementsByClassName('extrainfo');

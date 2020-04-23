@@ -12,8 +12,7 @@ namespace Myriad.Parser
 {
     public class PageFormatter
     {
-        readonly CitationRange extendedTarget;
-
+        CitationRange targetRange;
         readonly HTMLWriter writer;
 
         public string Result { get { return writer.Response(); } }
@@ -75,6 +74,11 @@ namespace Myriad.Parser
                 HTMLClasses.clear+
                 HTMLTags.CloseQuoteEndTag
                 +HTMLTags.EndDiv);
+        }
+
+        internal void SetTargetRange(CitationRange targetRange)
+        {
+            this.targetRange = targetRange;
         }
 
         internal async Task StartComments()
@@ -201,11 +205,6 @@ namespace Myriad.Parser
         {
             bool startSpan = false;
             bool detail = formats.detail;
-            if ((formats.hideDetails) && (!detail))
-            {
-                await writer.Append(HTMLTags.StartSpan);
-                startSpan = true;
-            }
             if (formats.hideDetails)
             {
                 if (detail)
@@ -217,10 +216,6 @@ namespace Myriad.Parser
                 else
                 {
                     detail = true;
-                    if (startSpan)
-                    {
-                        await writer.Append(HTMLTags.EndSpan);
-                    }
                     await writer.Append(HTMLTags.StartSpanWithClass +
                         HTMLClasses.hiddendetail +
                         HTMLTags.CloseQuoteEndTag +
@@ -243,7 +238,7 @@ namespace Myriad.Parser
             await writer.Append(paragraph.
                 StringAt(tagRange).Replace(' ', '+').
                 Replace('[', '(').Replace(']', ')'));
-            await AppendExtendedTarget();
+            await AppendTargetRange();
             await AppendPartialPageLoad(writer);
             await AppendHandleLink(writer);
             await writer.Append(HTMLTags.EndTag);
@@ -274,16 +269,16 @@ namespace Myriad.Parser
                 StringAt(range.Start, range.End).Replace('_', ' '));
         }
 
-        internal async Task AppendExtendedTarget()
+        internal async Task AppendTargetRange()
         {
-            if (extendedTarget != null)
+            if (targetRange != null)
             {
                 await writer.Append(HTMLTags.Ampersand +
                 ScripturePage.queryKeyTGStart);
-                await writer.Append(extendedTarget.StartID.ID);
+                await writer.Append(targetRange.StartID.ID);
                 await writer.Append(HTMLTags.Ampersand);
                 await writer.Append(ScripturePage.queryKeyTGEnd);
-                await writer.Append(extendedTarget.EndID.ID);
+                await writer.Append(targetRange.EndID.ID);
             }
         }
 
@@ -334,10 +329,32 @@ namespace Myriad.Parser
                     SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
         }
 
-        public static async Task StartCitationAnchor(HTMLWriter writer, Citation citation)
+        private async Task StartCitationAnchor(HTMLWriter writer, Citation citation)
         {
-            await writer.Append(HTMLTags.StartAnchor +
-                HTMLTags.HREF);
+            await writer.Append(HTMLTags.StartAnchor);
+            if ((targetRange != null) &&
+                (targetRange.Contains(citation.CitationRange) ||
+                citation.CitationRange.Contains(targetRange)))
+            {
+                await writer.Append(HTMLTags.Class +
+                    HTMLClasses.target +
+                    HTMLTags.CloseQuote +
+                    Symbol.space);
+            }
+            await writer.Append(HTMLTags.HREF);
+            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(HTMLTags.StartQuery);
+            await AppendQuery(writer, citation);
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
+            await writer.Append(HTMLTags.EndTag);
+        }
+
+
+        public static async Task StartCitationLink(HTMLWriter writer, Citation citation)
+        {
+            await writer.Append(HTMLTags.StartAnchor);
+            await writer.Append(HTMLTags.HREF);
             await writer.Append(PageReferrer.URLs[citation.CitationType]);
             await writer.Append(HTMLTags.StartQuery);
             await AppendQuery(writer, citation);

@@ -167,7 +167,7 @@ namespace Myriad.Parser
 
 
             await writer.Append(HTMLTags.StartBold);
-            await PageFormatter.StartCitationAnchor(writer, citation);
+            await PageFormatter.StartCitationLink(writer, citation);
             if (keyword.Verse == 1)
             {
                 await writer.Append(keyword.Chapter);
