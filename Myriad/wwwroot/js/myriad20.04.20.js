@@ -174,6 +174,8 @@ function LoadSynonymSearchResults() {
 }
 
 function ScrollToTarget() {
+    var path = CurrentPath();
+    if (path.indexOf('/Verse')>-1) return;
     var targets = document.getElementsByClassName('target');
     var target = (targets === null) || (targets.length === 0) ?
         document.getElementById('top') :
