@@ -1,4 +1,5 @@
-﻿using Feliciana.Library;
+﻿using System;
+using Feliciana.Library;
 
 namespace Myriad.Library
 {
@@ -50,6 +51,20 @@ namespace Myriad.Library
         public override int GetHashCode()
         {
             return CitationRange.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || (obj.GetType() != this.GetType())) return false;
+            Citation other = (Citation)obj;
+            return CitationRange.StartID.ID == other.CitationRange.StartID.ID &&
+                CitationRange.LastVerse == other.CitationRange.LastVerse;
+        }
+        public bool Equals(Citation other)
+        {
+            if (other == null) return false;
+            return CitationRange.StartID.ID == other.CitationRange.StartID.ID &&
+                CitationRange.LastVerse == other.CitationRange.LastVerse;
         }
 
         internal Citation Copy()

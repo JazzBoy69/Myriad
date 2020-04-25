@@ -366,6 +366,7 @@ namespace Myriad.Parser
                 MoveIndexToEndOfWord();
                 mainRange.PullEnd();
                 inlineLabelRange.MoveEndTo(mainRange.End);
+                tags.Add(currentParagraph.StringAt(inlineLabelRange));
                 await formatter.AppendTag(currentParagraph, inlineLabelRange, inlineLabelRange);
                 mainRange.GoToNextStartPosition();
                 return;

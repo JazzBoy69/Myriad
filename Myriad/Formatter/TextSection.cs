@@ -17,17 +17,17 @@ namespace Myriad.Formatter
         List<string> paragraphs;
         readonly HTMLWriter writer;
         TextFormatter formatter;
-        readonly PageParser parser;
         readonly FigureFormatter figureFormatter;
         bool activeSet;
         Citation sourceCitation;
         bool readingView;
         int headerCount = Ordinals.first;
 
+        internal PageParser Parser { get; }
         public TextSectionFormatter(HTMLWriter writer)
         {
             this.writer = writer;
-            parser = new PageParser(writer);
+            Parser = new PageParser(writer);
             figureFormatter = new FigureFormatter(writer);
         }
 
@@ -38,7 +38,7 @@ namespace Myriad.Formatter
             this.sourceCitation = sourceCitation;
             List<(int start, int end)> idRanges = await ReadLinks(commentIDs[index]);
 
-            parser.SetParagraphInfo(ParagraphType.Comment, commentIDs[index]);
+            Parser.SetParagraphInfo(ParagraphType.Comment, commentIDs[index]);
             paragraphs = ReadParagraphs(commentIDs[index]);
             if (idRanges.Count > 1)
             {
@@ -59,6 +59,40 @@ namespace Myriad.Formatter
                 await AddScriptureText(idRanges[Ordinals.first], navigating);
             }
             await AddComment();
+        }
+
+        public async Task StartTextSection(int commentID, Citation sourceCitation, bool navigating, bool readingView)
+        {
+            activeSet = false;
+            this.readingView = readingView;
+            this.sourceCitation = sourceCitation;
+            List<(int start, int end)> idRanges = await ReadLinks(commentID);
+
+            Parser.SetParagraphInfo(ParagraphType.Comment, commentID);
+            if (idRanges.Count > 1)
+            {
+                await AppendTextHeader();
+                await writer.Append(HTMLTags.EndHeader);
+                await AppendFigures();
+                await AddTextTabs(idRanges, Ordinals.first);
+                await writer.Append(HTMLTags.EndDiv);
+                await AddScriptureTextToTabs(idRanges, Ordinals.first, navigating);
+            }
+            else
+            {
+                await AppendTextHeader();
+                await AppendCitationReference(idRanges[Ordinals.first]);
+                await writer.Append(HTMLTags.EndHeader);
+                await AppendFigures();
+                await writer.Append(HTMLTags.EndDiv);
+                await AddScriptureText(idRanges[Ordinals.first], navigating);
+            }
+            await StartCommentSection();
+        }
+
+        internal void SetHeading(string paragraph)
+        {
+            paragraphs = new List<string>() { paragraph };
         }
 
         private async Task AppendFigures()
@@ -256,6 +290,26 @@ namespace Myriad.Formatter
         }
         private async Task AddComment()
         {
+            await StartCommentSection();
+            for (int i = Ordinals.second; i < paragraphs.Count; i++)
+            {
+                await Parser.ParseParagraph(paragraphs[i], i);
+            }
+            await EndCommentSection();
+        }
+
+        public async Task ParseParagraph(string paragraph, int index)
+        {
+            await Parser.ParseParagraph(paragraph, index);
+        }
+
+        public async Task EndCommentSection()
+        {
+            await writer.Append(HTMLTags.EndSection + HTMLTags.EndSection);
+        }
+
+        public async Task StartCommentSection()
+        {
             await AddCommentHeading();
             await writer.Append(HTMLTags.StartSectionWithClass +
                 HTMLClasses.scriptureComment);
@@ -264,14 +318,9 @@ namespace Myriad.Formatter
                 await writer.Append(Symbol.space + HTMLClasses.hidden);
             }
             await writer.Append(HTMLTags.CloseQuoteEndTag);
-            parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
+            Parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
                 HTMLTags.CloseQuoteEndTag);
-            parser.SetEndHTML(HTMLTags.EndParagraph);
-            for (int i = Ordinals.second; i < paragraphs.Count; i++)
-            {
-                await parser.ParseParagraph(paragraphs[i], i);
-            }
-            await writer.Append(HTMLTags.EndSection + HTMLTags.EndSection);
+            Parser.SetEndHTML(HTMLTags.EndParagraph);
         }
 
         private async Task AddCommentHeading()

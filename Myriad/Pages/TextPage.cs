@@ -10,6 +10,8 @@ using Myriad.Library;
 using Myriad.Data;
 using Myriad.Parser;
 using Myriad.Formatter;
+using Microsoft.Extensions.Primitives;
+using System.Linq;
 
 namespace Myriad.Pages
 {
@@ -77,6 +79,48 @@ namespace Myriad.Pages
             await AddPageHistory(writer);
         }
 
+        internal async Task UpdateComment(HTMLWriter writer, IQueryCollection query, string text)
+        {
+            string idString = query[queryKeyID];
+            int id = Numbers.Convert(idString);
+            if (!int.TryParse(query[queryKeyStart], out int start)) start = Result.notfound;
+            if (!int.TryParse(query[queryKeyEnd], out int end)) end = Result.notfound;
+            citation = new Citation(start, end);
+            citation.CitationType = CitationTypes.Text;
+            var paragraphs = TextSectionFormatter.ReadParagraphs(id);
+            var newParagraphs = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var textFormatter = new TextSectionFormatter(writer);
+            textFormatter.SetHeading(newParagraphs[Ordinals.first]);
+            await textFormatter.StartTextSection(id, citation, true, false);
+            for (int i = Ordinals.second; i < newParagraphs.Count; i++)
+            {
+                ArticleParagraph commentParagraph = new ArticleParagraph(id, i, newParagraphs[i]);
+                if ((i<paragraphs.Count) && (newParagraphs[i] != paragraphs[i]))
+                {
+                    await EditParagraph.UpdateCommentParagraph(textFormatter.Parser, commentParagraph);
+                    continue;
+                }
+                if (i >= paragraphs.Count)
+                {
+                    await EditParagraph.AddCommentParagraph(textFormatter.Parser, commentParagraph);
+                    continue;
+                }
+                await textFormatter.ParseParagraph(newParagraphs[i], i);
+            }
+            if (newParagraphs.Count < paragraphs.Count)
+            {
+                await DataWriterProvider.Write<int, int>(
+                    SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraphsFromEnd),
+                    id, newParagraphs.Count);
+            }
+
+            await textFormatter.EndCommentSection();
+            commentIDs = new List<int>() { id };
+            await AddEditPageData(writer);
+            await AddPageTitleData(writer);
+            await AddPageHistory(writer);
+        }
+
         internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
         {
             string idString = query[queryKeyID];
@@ -99,6 +143,14 @@ namespace Myriad.Pages
                 editURL + HTMLTags.StartQuery +
                 queryKeyID + Symbol.equal);
             await writer.Append(commentIDs[Ordinals.first]);
+            await writer.Append(HTMLTags.Ampersand +
+                queryKeyStart +
+                Symbol.equal);
+            await writer.Append(citation.CitationRange.StartID.ID);
+            await writer.Append(HTMLTags.Ampersand +
+                queryKeyEnd +
+                Symbol.equal);
+            await writer.Append(citation.CitationRange.EndID.ID);
             await writer.Append(HTMLTags.EndDiv);
         }
 

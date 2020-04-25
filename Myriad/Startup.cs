@@ -59,11 +59,14 @@ namespace Myriad
                 }
                 if (context.Request.Path == TextPage.editURL)
                 {
+                    var textPage = new TextPage();
                     if (context.Request.Query.ContainsKey("accept"))
                     {
+                        context.Request.Form.TryGetValue("text", out var text);
+                        await textPage.UpdateComment(Writer.New(context.Response),
+                            context.Request.Query, text.ToString());
                         return;
                     }
-                    var textPage = new TextPage();
                     await textPage.WritePlainText(Writer.New(context.Response),
                         context.Request.Query);
                     return;

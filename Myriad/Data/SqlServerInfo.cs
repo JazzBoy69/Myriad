@@ -21,10 +21,13 @@ namespace Myriad.Data
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
         ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
+        ReadCrossReferences, ReadRelatedArticleLinks,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
-        CreateCommentParagraph = 280, UpdateCommentParagraph = 281, DeleteCommentParagraph = 282
+        CreateCommentParagraph = 280, UpdateCommentParagraph = 281, DeleteCommentParagraphsFromEnd = 282,
+        CreateCrossReferences = 290, DeleteCrossReferences= 291,
+        CreateRelatedArticleLinks = 300, DeleteRelatedArticleLinks = 301
 
     }
     public class SqlServerInfo
@@ -117,7 +120,21 @@ namespace Myriad.Data
             {DataOperation.DefinitionSearchesInRange,
                 "select start, last from definitionsearch where start>=@key1 and start<=@key2 and id=@key3" },
             {DataOperation.ReadSearchPhrase,
-                    "select RTrim(text) from searchwords where start=@key1 and last=@key1 and (weight=500 or weight=10)" }
+                    "select RTrim(text) from searchwords where start=@key1 and last=@key1 and (weight=500 or weight=10)" },
+            {DataOperation.ReadCrossReferences,
+                "select start, last from crossreferences where commentid=@key1 and paragraphindex=@key2" },
+            {DataOperation.CreateCrossReferences,
+                "insert into crossreferences (commentid, paragraphindex, start, last) values (@key1, @key2, @key3, @key4)"},
+            {DataOperation.DeleteCrossReferences,
+                "delete from crossreferences where commentid=@key1 and paragraphindex=@key2 and start=@key3 and last=@key4" },
+            {DataOperation.DeleteCommentParagraphsFromEnd,
+                "delete from comments where id=@key1 and paragraphindex>=@key2"},
+            {DataOperation.CreateRelatedArticleLinks,
+                "insert into RelatedArticles (articleid, paragraphindex, start, last) values (@key1, @key2, @key3, @key4)" },
+            {DataOperation.DeleteRelatedArticleLinks,
+                "delete from RelatedArticles where articleid=@key1 and paragraphindex=@key2 and start=@key3 and last=@key4" },
+            {DataOperation.ReadRelatedArticleLinks,
+                "select start, last from RelatedArticles where articleid=@key1 and paragraphindex=@key2" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

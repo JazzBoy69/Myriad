@@ -5,6 +5,8 @@ using Feliciana.HTML;
 using Feliciana.ResponseWriter;
 using Myriad.Library;
 using Myriad.CitationHandlers;
+using Myriad.Data;
+using System;
 
 namespace Myriad.Parser
 {
@@ -121,6 +123,17 @@ namespace Myriad.Parser
                     await writer.Append("-");
                 await writer.Append(citation.CitationRange.LastVerse);
             }
+        }
+
+        internal static List<CrossReference> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
+        {
+            List<CrossReference> result = new List<CrossReference>();
+            for (int index = Ordinals.first; index < citations.Count; index++)
+            {
+                result.Add(new CrossReference(ID, paragraphIndex, citations[index].CitationRange.StartID.ID,
+                    citations[index].CitationRange.EndID.ID));
+            }
+            return result;
         }
 
         public static async Task AppendLink(HTMLWriter writer, Citation citation)

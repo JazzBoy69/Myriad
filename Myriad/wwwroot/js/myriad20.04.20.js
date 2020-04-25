@@ -749,8 +749,9 @@ function Edit() {
 }
 
 function AcceptEdit() {
-    var editForm = document.getElementById('editdata');
+    var editdata = document.getElementById('editdata');
     var path = AddQueryToPath(editdata.innerText, "accept=true");
+    var editForm = document.getElementById('editForm');
     postAjax(path,
         {
             text: editForm.innerText
