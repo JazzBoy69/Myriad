@@ -130,7 +130,7 @@ namespace Myriad.Pages
                     }
                     break;
                 }
-                if (((phraseIndex == -1) && (bottom < Phrases.Count)) &&
+                if (((phraseIndex == -1) && (bottom>-1) && (bottom < Phrases.Count)) &&
                     (((reference.StartID >= Phrases[bottom].Start) &&
                         (reference.EndID <= Phrases[bottom].End))))
                 {

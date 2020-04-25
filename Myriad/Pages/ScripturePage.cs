@@ -5,7 +5,7 @@ using Feliciana.Library;
 using Feliciana.Data;
 using Feliciana.HTML;
 using Myriad.Library;
-using Myriad.Data;
+using Myriad.Parser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -53,21 +53,13 @@ namespace Myriad.Pages
             if (citation.CitationRange.WordIndexIsDeferred)
             {
                 citation.CitationRange.SetWordIndex(
-                    await ReadDeferredWord(query[queryKeyWord].ToString(), 
+                    await CitationConverter.ReadDeferredWord(query[queryKeyWord].ToString(), 
                     citation.CitationRange.StartID.ID,
                     citation.CitationRange.EndID.ID)
                     );
             }
         }
 
-        //todo find where to put this method
-        public static async Task<int> ReadDeferredWord(string indexWord, int start, int end)
-        {
-            var reader = new DataReaderProvider<string, int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadWordIndex),
-                indexWord, start, end);
-            return await reader.GetDatum<int>();
-        }
 
         protected abstract CitationTypes GetCitationType();
         public override bool IsValid()

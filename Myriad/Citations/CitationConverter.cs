@@ -7,6 +7,7 @@ using Myriad.Library;
 using Myriad.CitationHandlers;
 using Myriad.Data;
 using System;
+using Feliciana.Data;
 
 namespace Myriad.Parser
 {
@@ -125,17 +126,32 @@ namespace Myriad.Parser
             }
         }
 
-        internal static List<CrossReference> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
+        internal static async Task<List<CrossReference>> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
         {
             List<CrossReference> result = new List<CrossReference>();
             for (int index = Ordinals.first; index < citations.Count; index++)
             {
+                Citation citation = citations[index];
+                if (citation.CitationRange.WordIndexIsDeferred)
+                {
+                    citation.CitationRange.SetWordIndex(
+                        await ReadDeferredWord(citation.CitationRange.Word,
+                        citation.CitationRange.StartID.ID,
+                        citation.CitationRange.EndID.ID)
+                        );
+                }
                 result.Add(new CrossReference(ID, paragraphIndex, citations[index].CitationRange.StartID.ID,
                     citations[index].CitationRange.EndID.ID));
             }
             return result;
         }
-
+        public static async Task<int> ReadDeferredWord(string indexWord, int start, int end)
+        {
+            var reader = new DataReaderProvider<string, int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadWordIndex),
+                indexWord, start, end);
+            return await reader.GetDatum<int>();
+        }
         public static async Task AppendLink(HTMLWriter writer, Citation citation)
         {
             await PageFormatter.StartCitationLink(writer, citation);

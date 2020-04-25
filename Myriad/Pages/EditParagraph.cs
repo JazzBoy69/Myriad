@@ -84,11 +84,11 @@ namespace Myriad.Pages
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 CompareCitationLists(citations, oldCitations);
             List<CrossReference> linksToAdd =
-                CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
+                await CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
                 linksToAdd);
             List<CrossReference> linksToDelete =
-                CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
+                await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedArticleLinks),
                 linksToDelete);
             //todo update  tags
@@ -103,11 +103,11 @@ namespace Myriad.Pages
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) = 
                 CompareCitationLists(citations, oldCitations);
             List<CrossReference> linksToAdd = 
-                CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
+                await CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 linksToAdd);
             List<CrossReference> linksToDelete =
-                CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
+                await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
                 linksToDelete);
         }
@@ -120,7 +120,7 @@ namespace Myriad.Pages
             var citations = parser.Citations;
             var tags = parser.Tags;
             List<CrossReference> crossReferencesToAdd =
-                CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
+                await CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 crossReferencesToAdd);
         }
