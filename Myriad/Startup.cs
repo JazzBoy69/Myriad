@@ -48,6 +48,10 @@ namespace Myriad
                 //todo write change log
                 if (context.Request.Path == ArticlePage.editURL)
                 {
+                    if (context.Request.Query.ContainsKey("accept"))
+                    {
+                        return;
+                    }
                     var articlePage = new ArticlePage();
                     await articlePage.WritePlainText(Writer.New(context.Response),
                         context.Request.Query);
@@ -55,6 +59,10 @@ namespace Myriad
                 }
                 if (context.Request.Path == TextPage.editURL)
                 {
+                    if (context.Request.Query.ContainsKey("accept"))
+                    {
+                        return;
+                    }
                     var textPage = new TextPage();
                     await textPage.WritePlainText(Writer.New(context.Response),
                         context.Request.Query);
@@ -128,7 +136,6 @@ namespace Myriad
                 await paginationPage.RenderBody(Writer.New(context.Response));
                 return;
             }
-            await partialPage.LoadQueryInfo(context.Request.Query);
             await partialPage.RenderBody(Writer.New(context.Response));
         }
 

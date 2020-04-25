@@ -74,6 +74,7 @@ namespace Myriad.Pages
                 articleParagraph);
             MarkupParser parser = new MarkupParser(Writer.New(context.Response));
             await parser.ParseParagraph(text, paragraphIndex);
+            //todo update citations and tags
         }
     }
 }

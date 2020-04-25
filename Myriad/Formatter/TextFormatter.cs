@@ -159,7 +159,7 @@ namespace Myriad.Parser
             {
                 await writer.Append(HTMLTags.CloseQuoteEndTag);
             }
-            var citation = new Citation(keyword.ID, Math.Min(keyword.ID + KeyID.MaxWordIndex, range.EndID.ID));
+            var citation = new Citation(keyword.ID, keyword.ID + KeyID.MaxWordIndex);
             if (readingView)
                 citation.CitationType = CitationTypes.Text;
             else

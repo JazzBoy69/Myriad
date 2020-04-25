@@ -55,7 +55,7 @@ namespace Myriad.Pages
                 await textPage.RenderBody(writer);
                 return;
             }
-            await ParseRubyText(writer);
+            await WriteRubyText(writer);
             await ArrangePhraseComments();
             await WritePhraseComments(writer, info);
             await WriteAdditionalComments(writer, info);
@@ -63,7 +63,7 @@ namespace Myriad.Pages
             await AddPageHistory(writer);
         }
 
-        private async Task ParseRubyText(HTMLWriter writer)
+        private async Task WriteRubyText(HTMLWriter writer)
         {
             await StartRubySection(writer);
             keywords = ReadKeywords(citation);
@@ -101,7 +101,7 @@ namespace Myriad.Pages
             {
                 if (i > Ordinals.first)
                     await writer.Append(Symbol.space);
-                await writer.Append(wordsOnTop[i].Text);
+                await writer.Append(wordsOnTop[i].Text.Replace('_', ' '));
             }
         }
 
@@ -699,6 +699,7 @@ namespace Myriad.Pages
                 {
                     await StartParagraph(writer, entry[Ordinals.first].suppressed);
                     Citation citation = new Citation(range.start, range.end);
+                    citation.CitationType = CitationTypes.Text;
                     await CitationConverter.AppendLink(writer, citation);
                     await writer.Append(": ");
                     lastRange = range;

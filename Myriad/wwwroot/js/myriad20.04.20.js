@@ -79,8 +79,7 @@ function LoadHistoryPage(path) {
 function LoadMainPaneHistory(path) {
     postAjax(path, {},
         function (data) {
-            var mainPane = document.getElementById('mainPane');
-            mainPane.innerHTML = data;
+            UpdateMainPane(data);
             SetTitle();
             HandleAdditionalSearchTasks();
             HandleHiddenDetails();
@@ -98,8 +97,7 @@ function HandleAdditionalSearchTasks() {
 function LoadMainPane(path) {
     postAjax(path, {},
         function (data) {
-            var mainPane = document.getElementById('mainPane');
-            mainPane.innerHTML = data;
+            UpdateMainPane(data);
             var path = CurrentPath();
             if (path.indexOf('/Search')>-1) {
                 SetSearchFieldText();
@@ -746,5 +744,23 @@ function Edit() {
     postAjax(path, {},
         function (data) {
             ShowEditWindow(data);
+            menuAccept.onclick = AcceptEdit;
         });
+}
+
+function AcceptEdit() {
+    var editForm = document.getElementById('editdata');
+    var path = AddQueryToPath(editdata.innerText, "accept=true");
+    postAjax(path,
+        {
+            text: editForm.innerText
+        },
+        function (data) { UpdateMainPane(data); }
+    );
+    CloseEditForm();
+}
+
+function UpdateMainPane(data) {
+    var mainPane = document.getElementById('mainPane');
+    mainPane.innerHTML = data;
 }
