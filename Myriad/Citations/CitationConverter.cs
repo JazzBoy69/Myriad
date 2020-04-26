@@ -113,7 +113,11 @@ namespace Myriad.Parser
             {
                 if ((citation.CitationRange.FirstChapter == citation.CitationRange.LastChapter) &&
                     (citation.CitationRange.FirstVerse + 1 == citation.CitationRange.LastVerse))
-                    await writer.Append(","+HTMLTags.NonbreakingSpace);
+                {
+                    await writer.Append("," + HTMLTags.NonbreakingSpace);
+                    await writer.Append(citation.CitationRange.LastVerse);
+                    return;
+                }
                 if (!citation.CitationRange.OneChapter)
                 {
                     await writer.Append("–");
@@ -152,7 +156,7 @@ namespace Myriad.Parser
             return result;
         }
 
-        private static async Task<int> ReadLastWordIndex(int startID, int endID)
+        internal static async Task<int> ReadLastWordIndex(int startID, int endID)
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLastWordIndex),
                 startID, endID);

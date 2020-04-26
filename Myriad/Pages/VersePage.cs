@@ -55,6 +55,9 @@ namespace Myriad.Pages
                 await textPage.RenderBody(writer);
                 return;
             }
+
+            citation.CitationRange.SetFirstWordIndex(Ordinals.first);
+            citation.CitationRange.SetLastWordIndex(KeyID.MaxWordIndex);
             await WriteRubyText(writer);
             await ArrangePhraseComments();
             await WritePhraseComments(writer, info);
@@ -317,6 +320,9 @@ namespace Myriad.Pages
                 commentID);
             (int start, int end) range = await reader.GetDatum<int, int>();
             Citation crossreference = new Citation(range.start, range.end);
+            crossreference.CitationType = (crossreference.CitationRange.Length < 10) ?
+                 CitationTypes.Verse :
+                 CitationTypes.Text;
             await CitationConverter.AppendLink(writer, crossreference);
         }
 

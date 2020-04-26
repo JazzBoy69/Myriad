@@ -57,7 +57,10 @@ namespace Myriad.Library
             start.SetWordIndex(wordIndex);
             end.SetWordIndex(wordIndex);
         }
-
+        internal void SetFirstWordIndex(int wordIndex)
+        {
+            start.SetWordIndex(wordIndex);
+        }
         internal void SetLastWordIndex(int wordIndex)
         {
             end.SetWordIndex(wordIndex);
