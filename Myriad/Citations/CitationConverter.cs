@@ -140,11 +140,25 @@ namespace Myriad.Parser
                         citation.CitationRange.EndID.ID)
                         );
                 }
+                if (citation.CitationRange.EndID.WordIndex == KeyID.MaxWordIndex)
+                {
+                    citation.CitationRange.SetLastWordIndex(
+                        await ReadLastWordIndex(citation.CitationRange.StartID.ID,
+                        citation.CitationRange.EndID.ID));
+                }
                 result.Add(new CrossReference(ID, paragraphIndex, citations[index].CitationRange.StartID.ID,
                     citations[index].CitationRange.EndID.ID));
             }
             return result;
         }
+
+        private static async Task<int> ReadLastWordIndex(int startID, int endID)
+        {
+            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLastWordIndex),
+                startID, endID);
+            return await reader.GetDatum<int>();
+        }
+
         public static async Task<int> ReadDeferredWord(string indexWord, int start, int end)
         {
             var reader = new DataReaderProvider<string, int, int>(

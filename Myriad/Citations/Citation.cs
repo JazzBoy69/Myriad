@@ -58,13 +58,13 @@ namespace Myriad.Library
             if ((obj == null) || (obj.GetType() != this.GetType())) return false;
             Citation other = (Citation)obj;
             return CitationRange.StartID.ID == other.CitationRange.StartID.ID &&
-                CitationRange.LastVerse == other.CitationRange.LastVerse;
+                CitationRange.EndID.ID == other.CitationRange.EndID.ID;
         }
         public bool Equals(Citation other)
         {
             if (other == null) return false;
             return CitationRange.StartID.ID == other.CitationRange.StartID.ID &&
-                CitationRange.LastVerse == other.CitationRange.LastVerse;
+                CitationRange.EndID.ID == other.CitationRange.EndID.ID;
         }
 
         internal Citation Copy()

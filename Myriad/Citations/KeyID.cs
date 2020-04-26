@@ -47,7 +47,7 @@ namespace Myriad.Library
 
         internal void SetWordIndex(int wordIndex)
         {
-            id = Book*bookMulitiplier+Chapter*chapterMultiplier+Verse*verseMultiplier + wordIndex;
+            id = id-WordIndex+ wordIndex;
         }
 
         private void SetID(int book, int chapter, int verse, int index)

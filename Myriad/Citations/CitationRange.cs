@@ -55,6 +55,12 @@ namespace Myriad.Library
         internal void SetWordIndex(int wordIndex)
         {
             start.SetWordIndex(wordIndex);
+            end.SetWordIndex(wordIndex);
+        }
+
+        internal void SetLastWordIndex(int wordIndex)
+        {
+            end.SetWordIndex(wordIndex);
         }
 
         public CitationRange(string start, string end)

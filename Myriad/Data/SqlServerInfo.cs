@@ -21,7 +21,7 @@ namespace Myriad.Data
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
         ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
-        ReadCrossReferences, ReadRelatedArticleLinks,
+        ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -90,6 +90,8 @@ namespace Myriad.Data
             {DataOperation.ReadKeywordSentence,
                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, poetic, sentence*256+sentencewordindex from keywords"+
                 " where sentenceID=@key1 order by keyid" },
+            {DataOperation.ReadLastWordIndex,
+                "select Max(versewordindex) from keywords where keyid>=@key1 and keyid<=@key2" },
             { DataOperation.ReadFromAllWords,
                 "select text from allwords where text=@key1" },
             { DataOperation.ReadRoots,
