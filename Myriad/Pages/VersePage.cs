@@ -56,8 +56,8 @@ namespace Myriad.Pages
                 return;
             }
 
-            citation.CitationRange.SetFirstWordIndex(Ordinals.first);
-            citation.CitationRange.SetLastWordIndex(KeyID.MaxWordIndex);
+            citation.CitationRange.Set(citation.CitationRange.Book, citation.CitationRange.FirstChapter,
+                citation.CitationRange.FirstVerse);
             await WriteRubyText(writer);
             await ArrangePhraseComments();
             await WritePhraseComments(writer, info);
