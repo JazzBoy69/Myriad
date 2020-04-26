@@ -133,8 +133,9 @@ namespace Myriad.Search
 
         private static async Task WriteRelatedParagraph(HTMLWriter writer, MarkupParser parser, int id, int paragraphIndex)
         {
-            await writer.Append("<p class=\"definition\">");
             string paragraphText = await GetArticleParagraph(id, paragraphIndex);
+            if (paragraphText == null) return;
+            await writer.Append("<p class=\"definition\">");
             await parser.ParseParagraph(paragraphText, paragraphIndex);
             await writer.Append("</p>");
         }

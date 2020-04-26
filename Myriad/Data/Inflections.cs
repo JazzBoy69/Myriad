@@ -71,6 +71,10 @@ namespace Myriad.Data
                 word);
             var results = reader.GetData<string>();
             reader.Close();
+            for (int index = Ordinals.first; index < results.Count; index++)
+            {
+                results[index] = RemoveNameDiacritics(results[index]);
+            }
             return results;
         }
 
