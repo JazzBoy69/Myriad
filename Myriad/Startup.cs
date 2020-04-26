@@ -74,6 +74,20 @@ namespace Myriad
                         context.Request.Query);
                     return;
                 }
+                if (context.Request.Path == VersePage.editURL)
+                {
+                    var versePage = new VersePage();
+                    if (context.Request.Query.ContainsKey("accept"))
+                    {
+                        context.Request.Form.TryGetValue("text", out var text);
+                        await versePage.UpdateMatrix(Writer.New(context.Response),
+                            context.Request.Query, text.ToString());
+                        return;
+                    }
+                    await versePage.WritePlainText(Writer.New(context.Response),
+                        context.Request.Query);
+                    return;
+                }
                 if (context.Request.Path == "/SynonymSearch")
                 {
                     var searchPage = new SearchPage();

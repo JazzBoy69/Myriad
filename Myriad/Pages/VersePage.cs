@@ -20,6 +20,7 @@ namespace Myriad.Pages
     public class VersePage : ScripturePage
     {
         public const string pageURL = "/Verse";
+        public const string editURL = "/EditMatrix";
         VersePageInfo info = new VersePageInfo();
         List<Keyword> keywords;
 
@@ -64,6 +65,7 @@ namespace Myriad.Pages
             await WriteAdditionalComments(writer, info);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+            await AddEditPageData(writer);
         }
 
         private async Task WriteRubyText(HTMLWriter writer)
@@ -98,6 +100,15 @@ namespace Myriad.Pages
             await EndRubySection(writer);
         }
 
+        internal Task UpdateMatrix(HTMLWriter hTMLWriter, IQueryCollection query, string text)
+        {
+            //TODO Update Matrix
+            //after update see if added words are synonyms of related articles that do not yet have definition
+            //searches pointing to this verse
+            //remove old definition searches that point to words that were removed
+            throw new NotImplementedException();
+        }
+
         private async Task WriteSubstituteText(HTMLWriter writer, List<RubyInfo> wordsOnTop)
         {
             for (int i = Ordinals.first; i < wordsOnTop.Count; i++)
@@ -106,6 +117,41 @@ namespace Myriad.Pages
                     await writer.Append(Symbol.space);
                 await writer.Append(wordsOnTop[i].Text.Replace('_', ' '));
             }
+        }
+
+        internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
+        {
+            int start = Numbers.Convert(query[queryKeyStart]);
+            int end = Numbers.Convert(query[queryKeyEnd]);
+            end = start+await CitationConverter.ReadLastWordIndex(start, end);
+            for (int id = start; id<= end; id++)
+            {
+                if (id > start) await writer.Append(' ');
+                string words = GetMatrixWordsString(id);
+                if (words.Length > Number.nothing)
+                {
+                    await writer.Append('{');
+                    await writer.Append(words);
+                    await writer.Append("}");
+                }
+                else
+                    await writer.Append("{-}");
+            }
+        }
+
+        private string GetMatrixWordsString(int id)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadMatrixWords),
+                id);
+            var words = reader.GetClassData<MatrixWord>();
+            reader.Close();
+            StringBuilder result = new StringBuilder();
+            for (int index = Ordinals.first; index < words.Count; index++)
+            {
+                if (index > Ordinals.first) result.Append(' ');
+                result.Append(words[index].ToString());
+            }
+            return result.ToString();
         }
 
         private List<RubyInfo> GetSustituteText(int id)
@@ -928,6 +974,24 @@ namespace Myriad.Pages
             result.Append(' ');
             result.Replace("<br>", "");
             return result.ToString();
+        }
+
+        private async Task AddEditPageData(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.editdata + HTMLTags.CloseQuote +
+                HTMLTags.Class +
+                HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag +
+                editURL + HTMLTags.StartQuery+
+                queryKeyStart +
+                Symbol.equal);
+            await writer.Append(citation.CitationRange.StartID.ID);
+            await writer.Append(HTMLTags.Ampersand +
+                queryKeyEnd +
+                Symbol.equal);
+            await writer.Append(citation.CitationRange.EndID.ID);
+            await writer.Append(HTMLTags.EndDiv);
         }
     }
 }

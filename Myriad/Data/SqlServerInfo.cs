@@ -22,6 +22,7 @@ namespace Myriad.Data
         ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
         ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex, ReadExistingRelatedIDs,
+        ReadMatrixWords,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -145,7 +146,9 @@ namespace Myriad.Data
             {DataOperation.CreateRelatedTags,
                 "insert into RelatedTags (articleid, paragraphindex, relatedid) values (@key1, @key2, @key3)" },
             {DataOperation.DeleteRelatedTags,
-                "delete from RelatedTags where articleid=@key1 and paragraphindex=@key2 and relatedid=@key3" }
+                "delete from RelatedTags where articleid=@key1 and paragraphindex=@key2 and relatedid=@key3" },
+            {DataOperation.ReadMatrixWords,
+                "select start,last,substitute,weight,RTrim(text) from searchwords where start=@key1 order by weight desc" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)
