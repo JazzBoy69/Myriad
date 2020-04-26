@@ -48,11 +48,14 @@ namespace Myriad
                 //todo write change log
                 if (context.Request.Path == ArticlePage.editURL)
                 {
+                    var articlePage = new ArticlePage();
                     if (context.Request.Query.ContainsKey("accept"))
                     {
+                        context.Request.Form.TryGetValue("text", out var text);
+                        await articlePage.UpdateArticle(Writer.New(context.Response),
+                            context.Request.Query, text.ToString());
                         return;
                     }
-                    var articlePage = new ArticlePage();
                     await articlePage.WritePlainText(Writer.New(context.Response),
                         context.Request.Query);
                     return;

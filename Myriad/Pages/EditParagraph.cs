@@ -78,8 +78,7 @@ namespace Myriad.Pages
         }
         public static async Task UpdateArticleParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
-            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.UpdateArticleParagraph),
-                paragraph);
+            await UpdateArticleParagraphInDatabase(paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = parser.Citations;
             var oldCitations = await ReadRelatedArticleLinks(paragraph.ID, paragraph.ParagraphIndex);
@@ -101,7 +100,13 @@ namespace Myriad.Pages
                 tagsToAdd);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedTags),
                 tagsToDelete);
-            
+
+        }
+
+        private static async Task UpdateArticleParagraphInDatabase(ArticleParagraph paragraph)
+        {
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.UpdateArticleParagraph),
+                paragraph);
         }
 
         private static (List<RelatedTag> tagsToAdd, List<RelatedTag> tagsToDelete) CompareIDLists(List<int> newIDs, List<int> oldIDs, ArticleParagraph paragraph)
@@ -150,14 +155,13 @@ namespace Myriad.Pages
 
         public static async Task UpdateCommentParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
-            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.UpdateCommentParagraph),
-                paragraph);
+            await WriteParagraphToDatabase(paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = parser.Citations;
             var oldCitations = await ReadCrossReferences(paragraph.ID, paragraph.ParagraphIndex);
-            (List<Citation> citationsToAdd, List<Citation> citationsToDelete) = 
+            (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 CompareCitationLists(citations, oldCitations);
-            List<CrossReference> linksToAdd = 
+            List<CrossReference> linksToAdd =
                 await CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 linksToAdd);
@@ -165,6 +169,12 @@ namespace Myriad.Pages
                 await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
                 linksToDelete);
+        }
+
+        public static async Task WriteParagraphToDatabase(ArticleParagraph paragraph)
+        {
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.UpdateCommentParagraph),
+                            paragraph);
         }
 
         internal async static Task AddCommentParagraph(PageParser parser, ArticleParagraph paragraph)
@@ -178,6 +188,27 @@ namespace Myriad.Pages
                 await CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 crossReferencesToAdd);
+        }
+
+        internal async static Task AddArticleParagraph(PageParser parser, ArticleParagraph paragraph)
+        {
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateArticleParagraph),
+                paragraph);
+            await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
+            var citations = parser.Citations;
+            var tags = parser.Tags;
+            List<CrossReference> crossReferencesToAdd =
+                await CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
+                crossReferencesToAdd);
+            List<int> relatedIDs = await GetRelatedIDs(parser.Tags);
+            List<RelatedTag> tagsToAdd = new List<RelatedTag>();
+            for (int index = Ordinals.first; index < relatedIDs.Count; index++)
+            {
+                tagsToAdd.Add(new RelatedTag(paragraph.ID, paragraph.ParagraphIndex, relatedIDs[index]));
+            }
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
+                tagsToAdd);
         }
 
         private static async Task<List<Citation>> ReadCrossReferences(int ID, int paragraphIndex)

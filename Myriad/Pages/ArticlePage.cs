@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Feliciana.Library;
@@ -70,6 +71,47 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddEditPageData(writer);
+        }
+
+        internal async Task UpdateArticle(HTMLWriter writer, IQueryCollection query, string text)
+        {
+            string idString = query[queryKeyID];
+            int id = Numbers.Convert(idString);
+            var paragraphs = GetPageParagraphs(id);
+            var newParagraphs = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            parser = new PageParser(writer);
+            pageInfo.ID = id;
+            pageInfo.Title = await ReadTitle(id);
+            await AddMainHeading(writer);
+            parser.SetParagraphInfo(ParagraphType.Article, pageInfo.ID);
+            parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
+                HTMLTags.CloseQuoteEndTag);
+            parser.SetEndHTML(HTMLTags.EndParagraph);
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            {
+                ArticleParagraph articleParagraph = new ArticleParagraph(id, i, newParagraphs[i]);
+                if ((i < paragraphs.Count) && (newParagraphs[i] != paragraphs[i]))
+                {
+                    await EditParagraph.UpdateArticleParagraph(parser, articleParagraph);
+                    continue;
+                }
+                if (i >= paragraphs.Count)
+                {
+                    await EditParagraph.AddArticleParagraph(parser, articleParagraph);
+                    continue;
+                }
+                await parser.ParseParagraph(paragraphs[i], i);
+            }
+            await parser.EndComments();
+            if (newParagraphs.Count < paragraphs.Count)
+            {
+                await DataWriterProvider.Write<int, int>(
+                    SqlServerInfo.GetCommand(DataOperation.DeleteArticleParagraphsFromEnd),
+                    id, newParagraphs.Count);
+            }
+            await AddEditPageData(writer);
+            await AddPageTitleData(writer);
+            await AddPageHistory(writer);
         }
 
         internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)

@@ -91,6 +91,9 @@ namespace Myriad.Pages
             var newParagraphs = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries).ToList();
             var textFormatter = new TextSectionFormatter(writer);
             textFormatter.SetHeading(newParagraphs[Ordinals.first]);
+            ArticleParagraph heading = new ArticleParagraph(id, Ordinals.first, newParagraphs[Ordinals.first]);
+            if (newParagraphs[Ordinals.first] != paragraphs[Ordinals.first]) 
+                await EditParagraph.WriteParagraphToDatabase(heading);
             await textFormatter.StartTextSection(id, citation, true, false);
             for (int i = Ordinals.second; i < newParagraphs.Count; i++)
             {

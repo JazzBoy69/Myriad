@@ -25,6 +25,7 @@ namespace Myriad.Data
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
+        DeleteArticleParagraphsFromEnd = 273,
         CreateCommentParagraph = 280, UpdateCommentParagraph = 281, DeleteCommentParagraphsFromEnd = 282,
         CreateCrossReferences = 290, DeleteCrossReferences= 291,
         CreateRelatedArticleLinks = 300, DeleteRelatedArticleLinks = 301,
@@ -131,6 +132,8 @@ namespace Myriad.Data
                 "delete from crossreferences where commentid=@key1 and paragraphindex=@key2 and start=@key3 and last=@key4" },
             {DataOperation.DeleteCommentParagraphsFromEnd,
                 "delete from comments where id=@key1 and paragraphindex>=@key2"},
+            {DataOperation.DeleteArticleParagraphsFromEnd,
+                "delete from glossary where id=@key1 and paragraphindex>=@key2" },
             {DataOperation.CreateRelatedArticleLinks,
                 "insert into RelatedArticles (articleid, paragraphindex, start, last) values (@key1, @key2, @key3, @key4)" },
             {DataOperation.DeleteRelatedArticleLinks,
