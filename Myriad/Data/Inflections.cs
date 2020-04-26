@@ -9,7 +9,6 @@ namespace Myriad.Data
 {
     public class Inflections
     {
-        //todo refactor this class
         internal static List<string> RootsOf(string word)
         {
             if (word.Contains(' ')) return Phrases.RootsOf(word);

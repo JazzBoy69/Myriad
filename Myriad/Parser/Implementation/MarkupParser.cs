@@ -11,7 +11,6 @@ using Myriad.Parser.Helpers;
 
 namespace Myriad.Parser
 {
-    //todo move to parser library; use general application to test
     public class MarkupParser : IParser
     {
         protected string startHTML;

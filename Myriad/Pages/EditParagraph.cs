@@ -287,7 +287,6 @@ namespace Myriad.Pages
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.UpdateNavigationParagraph),
                 paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
-            //todo update citations and tags
         }
     }
 }

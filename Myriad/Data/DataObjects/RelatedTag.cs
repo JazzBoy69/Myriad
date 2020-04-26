@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Myriad.Data
 {
-    //todo clean up dataobject interface
     internal class RelatedTag : DataObject
     {
         internal int ArticleID { get; private set; }
