@@ -27,11 +27,6 @@ namespace Myriad.Data
             this.lastRuby = lastRuby;
         }
 
-        public void Create(DbCommand command)
-        {
-            throw new NotImplementedException();
-        }
-
         public object GetParameter(int index)
         {
             throw new NotImplementedException();

@@ -1,27 +1,25 @@
-﻿using System.Data.Common;
-using System.Threading.Tasks;
-using Feliciana.Data;
+﻿using Feliciana.Data;
 using Feliciana.Library;
+using System.Data.Common;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Myriad.Data
 {
-    public class CrossReference : DataObject
+    //todo clean up dataobject interface
+    internal class RelatedTag : DataObject
     {
-        public int ArticleID { get; private set; }
-        public int ParagraphIndex { get; private set; }
-        public int StartID { get; private set; }
-        public int EndID { get; private set; }
+        internal int ArticleID { get; private set; }
+        internal int ParagraphIndex { get; private set; }
+        internal int RelatedID { get; private set; }
+        public int ParameterCount => 3;
 
-        public int ParameterCount => 4;
-
-        public CrossReference(int articleID, int paragraphIndex, int startID, int endID)
+        internal RelatedTag(int articleID, int paragraphIndex, int relatedID)
         {
             ArticleID = articleID;
             ParagraphIndex = paragraphIndex;
-            StartID = startID;
-            EndID = endID;
+            RelatedID = relatedID;
         }
-
         public object GetParameter(int index)
         {
             switch (index)
@@ -31,9 +29,7 @@ namespace Myriad.Data
                 case Ordinals.second:
                     return this.ParagraphIndex;
                 case Ordinals.third:
-                    return StartID;
-                case Ordinals.fourth:
-                    return EndID;
+                    return RelatedID;
                 default:
                     break;
             }
@@ -44,16 +40,14 @@ namespace Myriad.Data
         {
             ArticleID = await reader.GetFieldValueAsync<int>(Ordinals.first);
             ParagraphIndex = await reader.GetFieldValueAsync<int>(Ordinals.second);
-            StartID = await reader.GetFieldValueAsync<int>(Ordinals.third);
-            EndID = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
+            RelatedID = await reader.GetFieldValueAsync<int>(Ordinals.third);
         }
 
         public void ReadSync(DbDataReader reader)
         {
             ArticleID = reader.GetFieldValue<int>(Ordinals.first);
             ParagraphIndex = reader.GetFieldValue<int>(Ordinals.second);
-            StartID = reader.GetFieldValue<int>(Ordinals.third);
-            EndID = reader.GetFieldValue<int>(Ordinals.fourth);
+            RelatedID = reader.GetFieldValue<int>(Ordinals.third);
         }
     }
 }

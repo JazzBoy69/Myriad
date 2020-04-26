@@ -160,7 +160,9 @@ namespace Myriad.Parser
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLastWordIndex),
                 startID, endID);
-            return await reader.GetDatum<int>();
+            int result = await reader.GetDatum<int>();
+            reader.Close();
+            return result;
         }
 
         public static async Task<int> ReadDeferredWord(string indexWord, int start, int end)
@@ -168,7 +170,9 @@ namespace Myriad.Parser
             var reader = new DataReaderProvider<string, int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadWordIndex),
                 indexWord, start, end);
-            return await reader.GetDatum<int>();
+            int result = await reader.GetDatum<int>();
+            reader.Close();
+            return result;
         }
         public static async Task AppendLink(HTMLWriter writer, Citation citation)
         {

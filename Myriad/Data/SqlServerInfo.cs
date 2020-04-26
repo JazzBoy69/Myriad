@@ -21,14 +21,14 @@ namespace Myriad.Data
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
         ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
-        ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex,
+        ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex, ReadExistingRelatedIDs,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
         CreateCommentParagraph = 280, UpdateCommentParagraph = 281, DeleteCommentParagraphsFromEnd = 282,
         CreateCrossReferences = 290, DeleteCrossReferences= 291,
-        CreateRelatedArticleLinks = 300, DeleteRelatedArticleLinks = 301
-
+        CreateRelatedArticleLinks = 300, DeleteRelatedArticleLinks = 301,
+        CreateRelatedTags = 310, DeleteRelatedTags=311
     }
     public class SqlServerInfo
     {
@@ -136,7 +136,13 @@ namespace Myriad.Data
             {DataOperation.DeleteRelatedArticleLinks,
                 "delete from RelatedArticles where articleid=@key1 and paragraphindex=@key2 and start=@key3 and last=@key4" },
             {DataOperation.ReadRelatedArticleLinks,
-                "select start, last from RelatedArticles where articleid=@key1 and paragraphindex=@key2" }
+                "select start, last from RelatedArticles where articleid=@key1 and paragraphindex=@key2" },
+            {DataOperation.ReadExistingRelatedIDs,
+                "select relatedid from RelatedTags where articleid=@key1 and paragraphindex=@key2" },
+            {DataOperation.CreateRelatedTags,
+                "insert into RelatedTags (articleid, paragraphindex, relatedid) values (@key1, @key2, @key3)" },
+            {DataOperation.DeleteRelatedTags,
+                "delete from RelatedTags where articleid=@key1 and paragraphindex=@key2 and relatedid=@key3" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

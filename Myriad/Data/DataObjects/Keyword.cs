@@ -29,10 +29,6 @@ namespace Myriad.Data
             paragraphWordIndex = await reader.GetFieldValueAsync<int>(Ordinals.seventh);
         }
 
-        public void Create(DbCommand command)
-        {
-            throw new NotImplementedException();
-        }
 
         public object GetParameter(int index)
         {

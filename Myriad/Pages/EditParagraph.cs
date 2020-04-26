@@ -9,6 +9,7 @@ using Feliciana.Data;
 using Myriad.Library;
 using Myriad.Parser;
 using Myriad.Data;
+using System.Runtime.CompilerServices;
 
 namespace Myriad.Pages
 {
@@ -46,6 +47,7 @@ namespace Myriad.Pages
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(operation), articleID, paragraphIndex);
             await response.WriteAsync(await reader.GetDatum<string>());
+            reader.Close();
         }
 
         internal static async Task SetText(HttpContext context)
@@ -81,6 +83,7 @@ namespace Myriad.Pages
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = parser.Citations;
             var oldCitations = await ReadRelatedArticleLinks(paragraph.ID, paragraph.ParagraphIndex);
+            //todo refactor convert to crossreferences in the compare step
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 CompareCitationLists(citations, oldCitations);
             List<CrossReference> linksToAdd =
@@ -91,8 +94,60 @@ namespace Myriad.Pages
                 await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedArticleLinks),
                 linksToDelete);
-            //todo update  tags
+            List<int> relatedIDs = await GetRelatedIDs(parser.Tags);
+            List<int> oldRelatedIDs = ReadExistingRelatedIDs(paragraph);
+            (List<RelatedTag> tagsToAdd, List<RelatedTag> tagsToDelete) = CompareIDLists(relatedIDs, oldRelatedIDs, paragraph);
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
+                tagsToAdd);
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedTags),
+                tagsToDelete);
+            
         }
+
+        private static (List<RelatedTag> tagsToAdd, List<RelatedTag> tagsToDelete) CompareIDLists(List<int> newIDs, List<int> oldIDs, ArticleParagraph paragraph)
+        {
+            List<RelatedTag> tagsToAdd = new List<RelatedTag>();
+            for (int index = Ordinals.first; index < newIDs.Count; index++)
+            {
+                if (!oldIDs.Contains(newIDs[index]))
+                {
+                    tagsToAdd.Add(new RelatedTag(paragraph.ID, paragraph.ParagraphIndex, newIDs[index]));
+                }
+            }
+            List<RelatedTag> tagsToDelete = new List<RelatedTag>();
+            for (int index = Ordinals.first; index < oldIDs.Count; index++)
+            {
+                if (!newIDs.Contains(oldIDs[index]))
+                {
+                    tagsToDelete.Add(new RelatedTag(paragraph.ID, paragraph.ParagraphIndex, oldIDs[index]));
+                }
+            }
+            return (tagsToAdd, tagsToDelete);
+        }
+
+        private static List<int> ReadExistingRelatedIDs(ArticleParagraph paragraph)
+        {
+            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadExistingRelatedIDs),
+                paragraph.ID, paragraph.ParagraphIndex);
+            var result = reader.GetData<int>();
+            reader.Close();
+            return result;
+        }
+
+        private static async Task<List<int>> GetRelatedIDs(List<string> tags)
+        {
+            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadArticleID),
+                "");
+            List<int> result = new List<int>();
+            for (int index = Ordinals.first; index < tags.Count; index++)
+            {
+                reader.SetParameter(tags[index]);
+                result.Add(await reader.GetDatum<int>());
+            }
+            reader.Close();
+            return result;
+        }
+
         public static async Task UpdateCommentParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.UpdateCommentParagraph),
