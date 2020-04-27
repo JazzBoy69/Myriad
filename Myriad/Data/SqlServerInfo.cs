@@ -17,12 +17,12 @@ namespace Myriad.Data
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadPrecedingCommentRange, ReadCommentTitle, ReadRelatedParagraphIndex,
         ReadKeywords, ReadWordIndex, ReadKeywordSentence,
-        ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases,
+        ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases, ReadPhrase,
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
         ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
         ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex, ReadExistingRelatedIDs,
-        ReadMatrixWords,
+        ReadMatrixWords, ReadSentenceIndex, ReadSearchWordID,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -30,7 +30,9 @@ namespace Myriad.Data
         CreateCommentParagraph = 280, UpdateCommentParagraph = 281, DeleteCommentParagraphsFromEnd = 282,
         CreateCrossReferences = 290, DeleteCrossReferences= 291,
         CreateRelatedArticleLinks = 300, DeleteRelatedArticleLinks = 301,
-        CreateRelatedTags = 310, DeleteRelatedTags=311
+        CreateRelatedTags = 310, DeleteRelatedTags=311,
+        CreatePhrase = 320,
+        CreateMatrixWord = 330, UpdateMatrixWord=331, DeleteMatrixWord=332
     }
     public class SqlServerInfo
     {
@@ -100,6 +102,8 @@ namespace Myriad.Data
                 "select Rtrim(root) from inflections where inflection=@key1" },
             { DataOperation.ReadPhrases,
                 "select RTrim(phrase) from phrases where first=@key1 or first=@key2" },
+            {DataOperation.ReadPhrase,
+                "select _id from phrases where phrase=@key1" },
             { DataOperation.ReadRelatedParagraphIndex,
                 "select paragraphindex from RelatedTags where articleID=@key1 and relatedid=@key2" },
             {DataOperation.ReadSynonymsFromID,
@@ -148,7 +152,19 @@ namespace Myriad.Data
             {DataOperation.DeleteRelatedTags,
                 "delete from RelatedTags where articleid=@key1 and paragraphindex=@key2 and relatedid=@key3" },
             {DataOperation.ReadMatrixWords,
-                "select start,last,substitute,weight,RTrim(text) from searchwords where start=@key1 order by weight desc" }
+                "select start,last,substitute,weight,RTrim(text) from searchwords where start=@key1 order by weight desc" },
+            {DataOperation.CreatePhrase,
+                "insert into phrases (first, phrase) values (@key1, @key2)" },
+            {DataOperation.ReadSentenceIndex,
+                "select sentenceID, sentencewordindex from keywords where keyid=@key1" },
+            {DataOperation.CreateMatrixWord,
+                "insert into searchwords (sentence, wordindex, text, weight, start, last, substitute) values (@key1, @key2, @key3, @key4, @key5, @key6, @key7)" },
+            {DataOperation.UpdateMatrixWord,
+                "update searchwords set weight=@key2, last=@key3, substitute=@key4 where _id=@key1" },
+            {DataOperation.ReadSearchWordID,
+                "select _id from searchwords where sentence=@key1 and wordindex=@key2 and text=@key3" },
+            {DataOperation.DeleteMatrixWord,
+                "delete from searchwords where sentence=@key1 and wordindex=@key2 and text=@key3" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

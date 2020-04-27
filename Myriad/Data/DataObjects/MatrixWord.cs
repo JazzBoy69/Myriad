@@ -19,11 +19,25 @@ namespace Myriad.Data
 
         int start;
         int end;
-        bool substitute;
-        int weight;
-        string text;
+
+        public int Start => start;
+        public int End => end;
+        public string Text { get; private set; }
+        public int Length { get; private set; }
+        public int Weight { get; private set; }
+        public bool Substitute { get; private set; }
 
         public int ParameterCount => 5;
+
+        public MatrixWord()
+        {
+        }
+        public MatrixWord(string inflectionString, int id)
+        {
+            start = id;
+            SetInfo(inflectionString);
+            end = start + Length - 1;
+        }
 
         public object GetParameter(int index)
         {
@@ -34,11 +48,11 @@ namespace Myriad.Data
                 case Ordinals.second:
                     return end;
                 case Ordinals.third:
-                    return substitute;
+                    return Substitute;
                 case Ordinals.fourth:
-                    return weight;
+                    return Weight;
                 case Ordinals.fifth:
-                    return text;
+                    return Text;
                 default:
                     break;
             }
@@ -49,18 +63,18 @@ namespace Myriad.Data
         {
             start = await reader.GetFieldValueAsync<int>(Ordinals.first);
             end = await reader.GetFieldValueAsync<int>(Ordinals.second);
-            substitute = await reader.GetFieldValueAsync<int>(Ordinals.third) > 0;
-            weight = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
-            text = await reader.GetFieldValueAsync<string>(Ordinals.fifth);
+            Substitute = await reader.GetFieldValueAsync<int>(Ordinals.third) > 0;
+            Weight = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
+            Text = await reader.GetFieldValueAsync<string>(Ordinals.fifth);
         }
 
         public void ReadSync(DbDataReader reader)
         {
             start = reader.GetFieldValue<int>(Ordinals.first);
             end = reader.GetFieldValue<int>(Ordinals.second);
-            substitute = reader.GetFieldValue<int>(Ordinals.third) > 0;
-            weight = reader.GetFieldValue<int>(Ordinals.fourth);
-            text = reader.GetFieldValue<string>(Ordinals.fifth);
+            Substitute = reader.GetFieldValue<int>(Ordinals.third) > 0;
+            Weight = reader.GetFieldValue<int>(Ordinals.fourth);
+            Text = reader.GetFieldValue<string>(Ordinals.fifth);
         }
 
         public override string ToString()
@@ -69,20 +83,91 @@ namespace Myriad.Data
             if (end-start > 0)
             {
                 result.Append(end-start+1);
-                if ((!substitute) && (weight == keywordWeight)) result.Append("+");
+                if ((!Substitute) && (Weight == keywordWeight)) result.Append("+");
             }
-            if (substitute) result.Append("[");
-            if (weight == commonWordWeight) result.Append("!");
-            if (weight == tagWeight) result.Append("#");
-            if (weight == specialWordWeight) result.Append("*");
-            if (weight == inflectionWeight) result.Append("~");
-            if (weight == originalWordWeight) result.Append("/");
-            if (weight == textLinkWeight) result.Append("/>");
-            if (weight == notTag) result.Append("!#");
-            if (weight == 0) result.Append("-");
-            result.Append(text);
-            if (substitute) result.Append("]");
+            if (Substitute) result.Append("[");
+            if (Weight == commonWordWeight) result.Append("!");
+            if (Weight == tagWeight) result.Append("#");
+            if (Weight == specialWordWeight) result.Append("*");
+            if (Weight == inflectionWeight) result.Append("~");
+            if (Weight == originalWordWeight) result.Append("/");
+            if (Weight == textLinkWeight) result.Append("/>");
+            if (Weight == notTag) result.Append("!#");
+            if (Weight == 0) result.Append("-");
+            result.Append(Text);
+            if (Substitute) result.Append("]");
             return result.ToString();
         }
+
+        private void SetInfo(string inflection)
+        {
+            if (((inflection[0] > '1') && (inflection[0] <= '9')) && (inflection.Length > 1) && ((inflection[Ordinals.second] == '!') || (inflection[Ordinals.second] == '#') ||
+                    (inflection[Ordinals.second] == '[') || (inflection[Ordinals.second] == '~') ||
+                    (inflection[Ordinals.second] == '+') || (inflection[Ordinals.second] == '-') || (inflection[Ordinals.second] == '/') || (inflection[Ordinals.second] == '*')))
+            {
+                Length = inflection[0] - '0';
+                inflection = inflection.Substring(1);
+            }
+            else Length = 1;
+            if ((inflection[Ordinals.first] == '[') && (inflection[Ordinals.last] == ']'))
+            {
+                Substitute = true;
+                inflection = inflection[Ordinals.second..Ordinals.nexttolast];
+            }
+            if (((inflection[0] >= 'A') && (inflection[0] <= 'Z')) || ((inflection[0] >= 'a') && (inflection[0] <= 'z')))
+            {
+                Weight = keywordWeight;
+            }
+            else
+            {
+                if ((inflection.Length > 1) && (inflection.Substring(Ordinals.first, 2) == "/>"))
+                {
+                    Weight = textLinkWeight;
+                    inflection = inflection[Ordinals.third..Ordinals.last];
+                }
+                if ((inflection.Length > 1) && (inflection.Substring(Ordinals.first, 2) == "!#"))
+                {
+                    Weight = notTag;
+                    inflection = inflection[Ordinals.third..Ordinals.last];
+                }
+                if (inflection[0] == '+')
+                {
+                    Weight = keywordWeight;
+                    inflection = inflection.Substring(1);
+                }
+                if (inflection[0] == '!')
+                {
+                    Weight = commonWordWeight;
+                    inflection = inflection.Substring(1);
+                }
+                if (inflection[0] == '*')
+                {
+                    Weight = specialWordWeight;
+                    inflection = inflection.Substring(1);
+                }
+                if (inflection[0] == '#')
+                {
+                    Weight = tagWeight;
+                    inflection = inflection.Substring(1);
+                }
+                if (inflection[0] == '~')
+                {
+                    Weight = inflectionWeight;
+                    inflection = inflection.Substring(1);
+                }
+                if (inflection[0] == '-')
+                {
+                    Weight = 0;
+                    inflection = inflection.Substring(1);
+                }
+                if (inflection[0] == '/')
+                {
+                    Weight = originalWordWeight;
+                    inflection = inflection.Substring(1);
+                }
+            }
+            Text = inflection.Replace('\'', '’').Replace('`', '’');
+        }
+
     }
 }

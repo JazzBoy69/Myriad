@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Feliciana.Library;
 using Feliciana.Data;
+using Myriad.Data;
 
 namespace Myriad.Search
 {
@@ -29,7 +30,10 @@ namespace Myriad.Search
         public int EndID => end;
         public string Text => text;
         public int ArticleID => articleID;
-
+        public int Length { get { return length; } }
+        public bool Substitute { get { return substitute == 1; } }
+        public (int, int) Key { get { return (sentenceID, wordIndex); } }
+        public int ParameterCount => 7;
         public SearchResult()
         {
         }
@@ -44,22 +48,24 @@ namespace Myriad.Search
         {
             this.sentenceID = sentenceID;
             this.wordIndex = wordIndex;
+            this.text = text;
             this.queryIndex = queryIndex;
             this.weight = weight;
             this.start = start;
             this.end = end;
             length = end - start + 1;
             this.substitute = substitute;
-            this.text = text;
         }
-
-        public int Length { get { return length; } }
-
-        public bool Substitute { get { return substitute == 1; } }
-
-        public (int, int) Key { get { return (sentenceID, wordIndex); } }
-
-        public int ParameterCount => throw new NotImplementedException();
+        internal SearchResult(MatrixWord word, int sentenceID, int sentenceWordIndex)
+        {
+            this.sentenceID = sentenceID;
+            wordIndex = sentenceWordIndex;
+            text = word.Text;
+            weight = word.Weight;
+            start = word.Start;
+            end = word.End;
+            substitute = (word.Substitute) ? 1 : 0;
+        }
 
 
         internal void SetArticleID(int articleID)
@@ -84,14 +90,28 @@ namespace Myriad.Search
 
 
 
-        public void Create(DbCommand command)
-        {
-            throw new NotImplementedException();
-        }
-
         public object GetParameter(int index)
         {
-            throw new NotImplementedException();
+            switch (index)
+            {
+                case Ordinals.first:
+                    return sentenceID;
+                case Ordinals.second:
+                    return wordIndex;
+                case Ordinals.third:
+                    return Text;
+                case Ordinals.fourth:
+                    return weight;
+                case Ordinals.fifth:
+                    return start;
+                case Ordinals.sixth:
+                    return end;
+                case Ordinals.seventh:
+                    return substitute;
+                default:
+                    break;
+            }
+            return null;
         }
 
         public void ReadSync(DbDataReader reader)

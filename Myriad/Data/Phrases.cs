@@ -103,7 +103,20 @@ namespace Myriad.Data
             var reader = new DataReaderProvider<string, 
                 string>(SqlServerInfo.GetCommand(DataOperation.ReadPhrases),
                 word, root);
-            return reader.GetData<string>();
+            var phrases = reader.GetData<string>();
+            reader.Close();
+            return phrases;
+        }
+
+        internal static async Task Add(string firstWord, string phrase)
+        {
+            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadPhrase),
+                phrase);
+            int id = await reader.GetDatum<int>();
+            reader.Close();
+            if (id > Number.nothing) return;
+            await DataWriterProvider.Write<string, string>(SqlServerInfo.GetCommand(DataOperation.CreatePhrase),
+                firstWord, phrase);
         }
     }
 }

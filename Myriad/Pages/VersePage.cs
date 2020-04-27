@@ -14,6 +14,7 @@ using Feliciana.HTML;
 using Feliciana.Library;
 using Myriad.Formatter;
 using Microsoft.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Myriad.Pages
 {
@@ -100,13 +101,128 @@ namespace Myriad.Pages
             await EndRubySection(writer);
         }
 
-        internal Task UpdateMatrix(HTMLWriter hTMLWriter, IQueryCollection query, string text)
+        internal async Task UpdateMatrix(HTMLWriter writer, IQueryCollection query, string text)
         {
-            //TODO Update Matrix
+            string matrix = text.Replace('\'', '’');
+            string[] words = matrix.Split(new string[] { "} {" }, StringSplitOptions.RemoveEmptyEntries);
+            int start = Numbers.Convert(query[queryKeyStart]);
+            int end = Numbers.Convert(query[queryKeyEnd]);
+            int length = await CitationConverter.ReadLastWordIndex(start, end);
+            if (words.Length != length) return;
+            end = start + length - 1;
+            if (words[Ordinals.first][Ordinals.first] == '{') 
+                words[Ordinals.first] = words[Ordinals.first][Ordinals.second..];
+            if (words[Ordinals.last][Ordinals.last] == '}') 
+                words[Ordinals.last] = words[Ordinals.last][Ordinals.first..Ordinals.nexttolast];
+            for (int id = start; id <= end; id++)
+            {
+                int index = id - start;
+                List<MatrixWord> newInflections = await DecodeMatrixString(words[index], id);
+                newInflections = newInflections.OrderBy(i => i.Text).ToList();
+                await UpdateInflections(newInflections, id);
+            }
             //after update see if added words are synonyms of related articles that do not yet have definition
             //searches pointing to this verse
             //remove old definition searches that point to words that were removed
-            throw new NotImplementedException();
+        }
+
+        private static async Task UpdateInflections(List<MatrixWord> newInflections, int id)
+        {
+            (int sentenceID, int sentenceWordIndex) = await ReadSentenceIndex(id);
+            List<MatrixWord> oldInflections = ReadMatrixWords(id).OrderBy(i => i.Text).ToList();
+            int existingIndex = Ordinals.first;
+            int index = Ordinals.first;
+            while (index < newInflections.Count)
+            {
+                if (existingIndex >= oldInflections.Count)
+                {
+                    await AddMatrixWord(newInflections[index], sentenceID, sentenceWordIndex);
+                    index++;
+                    continue;
+                }
+                if (newInflections[index].Text == oldInflections[existingIndex].Text)
+                {
+                    if ((newInflections[index].Weight != oldInflections[existingIndex].Weight) ||
+                        (newInflections[index].Length != oldInflections[existingIndex].Length) ||
+                        (newInflections[index].Substitute != oldInflections[existingIndex].Substitute))
+                    {
+                        await UpdateMatrixWord(oldInflections[existingIndex].Text, newInflections[index], 
+                            sentenceID, sentenceWordIndex);
+                    }
+                    existingIndex++;
+                    index++;
+                    continue;
+                }
+                if (String.Compare(oldInflections[existingIndex].Text, newInflections[index].Text)>0)
+                {
+                    await AddMatrixWord(newInflections[index], sentenceID, sentenceWordIndex);
+                    index++;
+                    continue;
+                }
+                await DeleteMatrixWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
+                existingIndex++;
+            }
+            while (existingIndex < oldInflections.Count)
+            {
+                await DeleteMatrixWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
+                existingIndex++;
+            }
+        }
+
+        private static async Task DeleteMatrixWord(string text, int sentenceID, int wordIndex)
+        {
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteMatrixWord),
+                sentenceID, wordIndex, text);
+        }
+
+        private static async Task UpdateMatrixWord(string originalWord, MatrixWord newMatrixWord, int sentenceID, int wordIndex)
+        {
+            var reader = new DataReaderProvider<int, int, string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadSearchWordID),
+                sentenceID, wordIndex, originalWord);
+            int id = await reader.GetDatum<int>();
+            reader.Close();
+            await DataWriterProvider.Write<int, int, int, int>(
+                SqlServerInfo.GetCommand(DataOperation.UpdateMatrixWord),
+                id, newMatrixWord.Weight, newMatrixWord.End, (newMatrixWord.Substitute) ? 1 : 0);
+        }
+
+        private static async Task AddMatrixWord(MatrixWord matrixWord, int sentenceID, int wordIndex)
+        {
+            SearchResult searchword = new SearchResult(matrixWord, sentenceID, wordIndex);
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
+                searchword);
+        }
+
+        private static async Task<(int sentenceID, int sentenceWordIndex)> ReadSentenceIndex(int id)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSentenceIndex),
+                id);
+            (int sentenceID, int wordIndex) = await reader.GetDatum<int, int>();
+            reader.Close();
+            return (sentenceID, wordIndex);
+        }
+
+        private async Task<List<MatrixWord>> DecodeMatrixString(string matrixString, int id)
+        {
+            string[] inflections = matrixString.Split(Symbols.spaceArray);
+            var wordList = new List<string>();
+            var inflectionList = new List<MatrixWord>();
+            for (int index = Ordinals.first; index < inflections.Length; index++)
+            {
+                if (string.IsNullOrEmpty(inflections[index]) || (inflections[index] == "-")) continue;
+                var inflection = new MatrixWord(inflections[index], id);
+                if (wordList.Contains(inflection.Text)) continue;
+                int p = inflection.Text.IndexOf('_');
+                if (p > Result.notfound)
+                {
+                    string firstWord = inflection.Text[p..];
+                    await Phrases.Add(firstWord, inflection.Text.Replace('_', ' '));
+                }
+                inflectionList.Add(inflection);
+                wordList.Add(inflection.Text);
+            }
+            return inflectionList;
         }
 
         private async Task WriteSubstituteText(HTMLWriter writer, List<RubyInfo> wordsOnTop)
@@ -141,10 +257,7 @@ namespace Myriad.Pages
 
         private string GetMatrixWordsString(int id)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadMatrixWords),
-                id);
-            var words = reader.GetClassData<MatrixWord>();
-            reader.Close();
+            List<MatrixWord> words = ReadMatrixWords(id);
             StringBuilder result = new StringBuilder();
             for (int index = Ordinals.first; index < words.Count; index++)
             {
@@ -152,6 +265,15 @@ namespace Myriad.Pages
                 result.Append(words[index].ToString());
             }
             return result.ToString();
+        }
+
+        private static List<MatrixWord> ReadMatrixWords(int id)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadMatrixWords),
+                id);
+            var words = reader.GetClassData<MatrixWord>();
+            reader.Close();
+            return words;
         }
 
         private List<RubyInfo> GetSustituteText(int id)
