@@ -23,6 +23,18 @@ namespace Myriad.Data
             Substitute = matrixWord.Substitute;
         }
 
+        internal DefinitionSearch(SearchWord searchWord, int articleID)
+        {
+            ID = articleID;
+            SentenceID = searchWord.SentenceID;
+            WordIndex = searchWord.WordIndex;
+            Start = searchWord.Start;
+            End = searchWord.End;
+            Text = searchWord.Text;
+            Weight = searchWord.Weight;
+            Substitute = searchWord.Substitute>0;
+        }
+
         public int ID { get; private set; }
         public int Start { get; private set; }
         public int End { get; private set; }

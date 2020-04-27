@@ -10,6 +10,7 @@ using Myriad.Library;
 using Myriad.Parser;
 using Myriad.Data;
 using System.Runtime.CompilerServices;
+using Myriad.Search;
 
 namespace Myriad.Pages
 {
@@ -82,25 +83,93 @@ namespace Myriad.Pages
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = parser.Citations;
             var oldCitations = await ReadRelatedArticleLinks(paragraph.ID, paragraph.ParagraphIndex);
-            //todo refactor convert to crossreferences in the compare step
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 CompareCitationLists(citations, oldCitations);
-            List<CrossReference> linksToAdd =
-                await CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
-                linksToAdd);
-            List<CrossReference> linksToDelete =
-                await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedArticleLinks),
-                linksToDelete);
-            List<int> relatedIDs = await GetRelatedIDs(parser.Tags);
+            await AddRelatedArticles(paragraph, citationsToAdd);
+            await AddDefinitionSearches(paragraph, citationsToAdd);
+            await DeleteRelatedArticles(paragraph, citationsToDelete);
+            await DeleteDefinitionSearches(paragraph, citationsToDelete);
+            await UpdateRelatedTags(parser.Tags, paragraph);
+        }
+
+        private static async Task DeleteDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToDelete)
+        {
+            var reader = new DataReaderProvider<int, int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchIDs),
+                -1, -1, -1);
+            for (int index = Ordinals.first; index < citationsToDelete.Count; index++)
+            {
+                reader.SetParameter(paragraph.ID, citationsToDelete[index].CitationRange.StartID.ID,
+                    citationsToDelete[index].CitationRange.EndID.ID);
+                List<int> ids = reader.GetData<int>();
+                if (ids.Count > Number.nothing)
+                {
+                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteDefinitionSearch), ids);
+                }
+            }
+        }
+
+        private static async Task AddDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToAdd)
+        {
+            List<string> synonyms = ArticlePage.GetSynonyms(paragraph.ID);
+            for (int index = Ordinals.first; index < citationsToAdd.Count; index++)
+            {
+                List<SearchWord> searchWords = ReadSearchWords(synonyms, citationsToAdd[index].CitationRange);
+                await WriteDefinitionSearches(paragraph.ID, searchWords);
+            }
+        }
+
+        private static async Task WriteDefinitionSearches(int id, List<SearchWord> searchWords)
+        {
+            if (searchWords.Count == Number.nothing) return;
+            List<DefinitionSearch> definitionSearches = new List<DefinitionSearch>();
+            for (int index = Ordinals.first; index < searchWords.Count; index++)
+            {
+                definitionSearches.Add(new DefinitionSearch(searchWords[index], id));
+            }
+            await DataWriterProvider.WriteData(
+                SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch), definitionSearches);
+        }
+
+        private static List<SearchWord> ReadSearchWords(List<string> synonyms, CitationRange citationRange)
+        {
+            var reader = new DataReaderProvider<string, int, int>(SqlServerInfo.GetCommand(DataOperation.ReadSearchWords),
+                "", citationRange.StartID.ID, citationRange.EndID.ID);
+            var searchWords = new List<SearchWord>();
+            for (int index = Ordinals.first; index < synonyms.Count; index++)
+            {
+                reader.SetParameter(synonyms[index]);
+                searchWords.AddRange(reader.GetClassData<SearchWord>());
+            }
+            reader.Close();
+            return searchWords;
+        }
+
+        private static async Task UpdateRelatedTags(List<string> tags, ArticleParagraph paragraph)
+        {
+            List<int> relatedIDs = await GetRelatedIDs(tags);
             List<int> oldRelatedIDs = ReadExistingRelatedIDs(paragraph);
             (List<RelatedTag> tagsToAdd, List<RelatedTag> tagsToDelete) = CompareIDLists(relatedIDs, oldRelatedIDs, paragraph);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
                 tagsToAdd);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedTags),
                 tagsToDelete);
+        }
 
+        private static async Task DeleteRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToDelete)
+        {
+            List<CrossReference> linksToDelete =
+                            await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedArticleLinks),
+                linksToDelete);
+        }
+
+        private static async Task AddRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToAdd)
+        {
+            List<CrossReference> linksToAdd =
+                            await CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
+                linksToAdd);
         }
 
         private static async Task UpdateArticleParagraphInDatabase(ArticleParagraph paragraph)
@@ -201,6 +270,7 @@ namespace Myriad.Pages
                 await CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
                 crossReferencesToAdd);
+            await AddDefinitionSearches(paragraph, citations);
             List<int> relatedIDs = await GetRelatedIDs(parser.Tags);
             List<RelatedTag> tagsToAdd = new List<RelatedTag>();
             for (int index = Ordinals.first; index < relatedIDs.Count; index++)

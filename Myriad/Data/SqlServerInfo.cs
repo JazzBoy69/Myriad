@@ -23,7 +23,7 @@ namespace Myriad.Data
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
         ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex, ReadExistingRelatedIDs,
         ReadMatrixWords, ReadSentenceIndex, ReadSearchWordID, ReadDefinitionSearches,
-        ReadDefinitionSearchID,
+        ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -171,10 +171,14 @@ namespace Myriad.Data
                 "select start, end, articleid from definitionsearch where start=@key1" },
             {DataOperation.ReadDefinitionSearchID,
                 "select _id from definitionsearch where start=@key1 and text=@key2" },
+            {DataOperation.ReadDefinitionSearchIDs,
+                "select _id from definitionsearch where id=@key1 and start>=@key2 and last<=@key3" },
             {DataOperation.DeleteDefinitionSearch,
                 "delete from definitionsearch where _id=@key1" },
             {DataOperation.CreateDefinitionSearch,
-                "insert into definitionsearch (id, sentence, wordindex, text, weight, start, last, substitute) values (@key1, @key2, @key3, @key4, @key5, @key6, @key7, @key8)" }
+                "insert into definitionsearch (id, sentence, wordindex, text, weight, start, last, substitute) values (@key1, @key2, @key3, @key4, @key5, @key6, @key7, @key8)" },
+            {DataOperation.ReadSearchWords,
+                "select @key1, sentence, wordindex, weight, start, last, substitute from searchwords where text=@key1 and start>=@key2 and end<=@key3" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)
