@@ -308,22 +308,34 @@ namespace Myriad.Pages
         }
         private async Task ArrangeDefinitionSearches(CitationRange citationRange)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchesInVerse),
-                citationRange.StartID.ID, citationRange.EndID.ID);
-            List<(int, int, int)> definitionsearches = await reader.GetData<int, int, int>();
-            reader.Close();
+            var definitionSearches = await ReadDefinitionSearchesInVerse(citationRange.StartID.ID, citationRange.EndID.ID);
             var used = new List<(int start, int end, int id)>();
-            for (int index = Ordinals.first; index < definitionsearches.Count; index++) 
+            for (int index = Ordinals.first; index < definitionSearches.Count; index++) 
             {
-                if (!used.Contains(definitionsearches[index]))
+                if (!used.Contains(definitionSearches[index]))
                 {
-                    used.Add(definitionsearches[index]);
-                    //definitionSearches.Add((new Range(item.start, item.end), item.id));
+                    used.Add(definitionSearches[index]);
                 }
-                await ArrangeDefinitionSearch(definitionsearches[index]);
+                await ArrangeDefinitionSearch(definitionSearches[index]);
             }
         }
+        private static async Task<List<(int start, int end, int id)>> ReadDefinitionSearchesInVerse(int start, int end)
+        {
+            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchesInVerse),
+                start, end);
+            List<(int start, int end, int id)> definitionsearches = await reader.GetData<int, int, int>();
+            reader.Close();
+            return definitionsearches;
+        }
 
+        internal static async Task<List<(int start, int end, int id)>> ReadDefinitionSearches(int start)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearches),
+                start);
+            List<(int start, int end, int id)> definitionsearches = await reader.GetData<int, int, int>();
+            reader.Close();
+            return definitionsearches;
+        }
 
         private async Task ArrangeRelatedArticles(CitationRange citationRange)
         {

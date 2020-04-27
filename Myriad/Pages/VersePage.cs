@@ -136,6 +136,7 @@ namespace Myriad.Pages
             {
                 if (existingIndex >= oldInflections.Count)
                 {
+                    await AddDefinitionSearch(newInflections[index], sentenceID, sentenceWordIndex);
                     await AddMatrixWord(newInflections[index], sentenceID, sentenceWordIndex);
                     index++;
                     continue;
@@ -155,18 +156,55 @@ namespace Myriad.Pages
                 }
                 if (String.Compare(oldInflections[existingIndex].Text, newInflections[index].Text)>0)
                 {
+                    await AddDefinitionSearch(newInflections[index], sentenceID, sentenceWordIndex);
                     await AddMatrixWord(newInflections[index], sentenceID, sentenceWordIndex);
                     index++;
                     continue;
                 }
+                await DeleteDefinitionSearches(oldInflections[existingIndex]);
                 await DeleteMatrixWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
                 existingIndex++;
             }
             while (existingIndex < oldInflections.Count)
             {
+                await DeleteDefinitionSearches(oldInflections[existingIndex]);
                 await DeleteMatrixWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
                 existingIndex++;
             }
+        }
+
+        private static async Task AddDefinitionSearch(MatrixWord matrixWord, int sentenceID, int wordIndex)
+        {
+            var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchID),
+                matrixWord.Start, matrixWord.Text);
+            int id = await reader.GetDatum<int>();
+            reader.Close();
+            if (id > Number.nothing) return;
+            var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadRelatedArticles),
+                matrixWord.Start, matrixWord.End);
+            var relatedArticles = relatedReader.GetClassData<RangeAndParagraph>();
+
+            for (int index = Ordinals.first; index < relatedArticles.Count; index++)
+            {
+                List<string> synonyms = ArticlePage.GetSynonyms(relatedArticles[index].ArticleID);
+                if (synonyms.Contains(matrixWord.Text))
+                {
+                    DefinitionSearch searchword = new DefinitionSearch(matrixWord, 
+                        relatedArticles[index].ArticleID, sentenceID, wordIndex);
+                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch),
+                        searchword);
+                }
+            }
+        }
+
+        private static async Task DeleteDefinitionSearches(MatrixWord matrixWord)
+        {
+            var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchID),
+                matrixWord.Start, matrixWord.Text);
+            int id = await reader.GetDatum<int>();
+            reader.Close();
+            if (id == Number.nothing) return;
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteDefinitionSearch), id);
         }
 
         private static async Task DeleteMatrixWord(string text, int sentenceID, int wordIndex)

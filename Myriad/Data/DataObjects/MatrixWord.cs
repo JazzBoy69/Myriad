@@ -17,11 +17,8 @@ namespace Myriad.Data
         public const ushort originalWordWeight = 200;
         public const int notTag = -100;
 
-        int start;
-        int end;
-
-        public int Start => start;
-        public int End => end;
+        public int Start { get; private set; }
+        public int End { get; private set; }
         public string Text { get; private set; }
         public int Length { get; private set; }
         public int Weight { get; private set; }
@@ -34,19 +31,19 @@ namespace Myriad.Data
         }
         public MatrixWord(string inflectionString, int id)
         {
-            start = id;
+            Start = id;
             SetInfo(inflectionString);
-            end = start + Length - 1;
+            End = Start + Length - 1;
         }
 
-        public object GetParameter(int index)
+        public object GetParameter(int index) 
         {
             switch (index)
             {
                 case Ordinals.first:
-                    return start;
+                    return Start;
                 case Ordinals.second:
-                    return end;
+                    return End;
                 case Ordinals.third:
                     return Substitute;
                 case Ordinals.fourth:
@@ -61,8 +58,8 @@ namespace Myriad.Data
 
         public async Task Read(DbDataReader reader)
         {
-            start = await reader.GetFieldValueAsync<int>(Ordinals.first);
-            end = await reader.GetFieldValueAsync<int>(Ordinals.second);
+            Start = await reader.GetFieldValueAsync<int>(Ordinals.first);
+            End = await reader.GetFieldValueAsync<int>(Ordinals.second);
             Substitute = await reader.GetFieldValueAsync<int>(Ordinals.third) > 0;
             Weight = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
             Text = await reader.GetFieldValueAsync<string>(Ordinals.fifth);
@@ -70,8 +67,8 @@ namespace Myriad.Data
 
         public void ReadSync(DbDataReader reader)
         {
-            start = reader.GetFieldValue<int>(Ordinals.first);
-            end = reader.GetFieldValue<int>(Ordinals.second);
+            Start = reader.GetFieldValue<int>(Ordinals.first);
+            End = reader.GetFieldValue<int>(Ordinals.second);
             Substitute = reader.GetFieldValue<int>(Ordinals.third) > 0;
             Weight = reader.GetFieldValue<int>(Ordinals.fourth);
             Text = reader.GetFieldValue<string>(Ordinals.fifth);
@@ -80,9 +77,9 @@ namespace Myriad.Data
         public override string ToString()
         {
             StringBuilder result = new StringBuilder();
-            if (end-start > 0)
+            if (End-Start > 0)
             {
-                result.Append(end-start+1);
+                result.Append(End-Start+1);
                 if ((!Substitute) && (Weight == keywordWeight)) result.Append("+");
             }
             if (Substitute) result.Append("[");
