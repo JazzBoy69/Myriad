@@ -49,6 +49,7 @@ namespace Myriad.Pages
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(operation), articleID, paragraphIndex);
             await response.WriteAsync(await reader.GetDatum<string>());
             reader.Close();
+            await CheckDefinitionSearchesForParagraphIndices(articleID);
         }
 
         internal static async Task SetText(HttpContext context)
@@ -92,14 +93,89 @@ namespace Myriad.Pages
             await UpdateRelatedTags(parser.Tags, paragraph);
         }
 
+        internal static async Task CheckDefinitionSearchesForParagraphIndices(int articleID)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchesInArticle),
+                articleID);
+            List<(int start, int end, int paragraphIndex)> searches = await reader.GetData<int, int, int>();
+            if ((searches.Count == Number.nothing) || (searches[Ordinals.first].paragraphIndex > -1)) return;
+            var searchTable = CreateSearchTable(searches);
+            MarkupParser parser = new MarkupParser(Writer.New());
+            List<string> paragraphs = ArticlePage.GetPageParagraphs(articleID);
+            await AddParagraphIndicesToSearchTable(searchTable, parser, paragraphs);
+            await UpdateDefinitionSearches(articleID, searchTable);
+        }
+
+        private static async Task UpdateDefinitionSearches(int articleID, Dictionary<(int, int), List<int>> searchTable)
+        {
+            for (int index = Ordinals.first; index < searchTable.Count; index++)
+            {
+                for (int linkIndex = Ordinals.first; linkIndex < searchTable.ElementAt(index).Value.Count; linkIndex++)
+                {
+                    if (searchTable.ElementAt(index).Value[linkIndex] != -1)
+                    {
+                        await AddParagraphIndexToDefinitionSearch(articleID,
+                            searchTable.ElementAt(index).Value[linkIndex],
+                            searchTable.ElementAt(index).Key);
+                    }
+                }
+            }
+        }
+
+        private static async Task AddParagraphIndicesToSearchTable(Dictionary<(int, int), List<int>> searchTable, MarkupParser parser, List<string> paragraphs)
+        {
+            for (int index = Ordinals.second; index < paragraphs.Count; index++)
+            {
+                await parser.ParseParagraph(paragraphs[index], index);
+                var citations = parser.Citations;
+                for (int citationIndex = Ordinals.first; citationIndex < citations.Count; citationIndex++)
+                {
+                    (int, int) citationKey = (citations[citationIndex].CitationRange.StartID.ID,
+                        citations[citationIndex].CitationRange.EndID.ID);
+                    if (searchTable.ContainsKey(citationKey))
+                    {
+                        int linkIndex = Ordinals.first;
+                        while ((linkIndex < searchTable[citationKey].Count) &&
+                            (searchTable[citationKey][linkIndex] == -1))
+                            linkIndex++;
+                        if (linkIndex < searchTable[citationKey].Count)
+                        {
+                            searchTable[citationKey][linkIndex] = index;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static Dictionary<(int, int), List<int>> CreateSearchTable(List<(int start, int end, int paragraphIndex)> searches)
+        {
+            var searchTable = new Dictionary<(int, int), List<int>>();
+            for (int index = Ordinals.first; index < searches.Count; index++)
+            {
+                (int, int) key = (searches[index].start, searches[index].end);
+                if (searchTable.ContainsKey(key))
+                    searchTable[key].Add(searches[index].paragraphIndex);
+                else
+                    searchTable.Add(key, new List<int>() { searches[index].paragraphIndex });
+            }
+            return searchTable;
+        }
+
+        private static async Task AddParagraphIndexToDefinitionSearch(int articleID, int paragraphIndex, 
+            (int start, int end) range)
+        {
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.AddParagraphIndexToDefinitionSearch),
+                articleID, paragraphIndex, range.start, range.end);
+        }
+
         private static async Task DeleteDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToDelete)
         {
-            var reader = new DataReaderProvider<int, int, int>(
+            var reader = new DataReaderProvider<int, int, int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchIDs),
-                -1, -1, -1);
+                -1, -1, -1, -1);
             for (int index = Ordinals.first; index < citationsToDelete.Count; index++)
             {
-                reader.SetParameter(paragraph.ID, citationsToDelete[index].CitationRange.StartID.ID,
+                reader.SetParameter(paragraph.ID, paragraph.ParagraphIndex, citationsToDelete[index].CitationRange.StartID.ID,
                     citationsToDelete[index].CitationRange.EndID.ID);
                 List<int> ids = reader.GetData<int>();
                 if (ids.Count > Number.nothing)
@@ -115,17 +191,17 @@ namespace Myriad.Pages
             for (int index = Ordinals.first; index < citationsToAdd.Count; index++)
             {
                 List<SearchWord> searchWords = ReadSearchWords(synonyms, citationsToAdd[index].CitationRange);
-                await WriteDefinitionSearches(paragraph.ID, searchWords);
+                await WriteDefinitionSearches(paragraph, searchWords);
             }
         }
 
-        private static async Task WriteDefinitionSearches(int id, List<SearchWord> searchWords)
+        private static async Task WriteDefinitionSearches(ArticleParagraph paragraph, List<SearchWord> searchWords)
         {
             if (searchWords.Count == Number.nothing) return;
             List<DefinitionSearch> definitionSearches = new List<DefinitionSearch>();
             for (int index = Ordinals.first; index < searchWords.Count; index++)
             {
-                definitionSearches.Add(new DefinitionSearch(searchWords[index], id));
+                definitionSearches.Add(new DefinitionSearch(searchWords[index], paragraph.ID, paragraph.ParagraphIndex));
             }
             await DataWriterProvider.WriteData(
                 SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch), definitionSearches);

@@ -23,7 +23,7 @@ namespace Myriad.Data
             Substitute = matrixWord.Substitute;
         }
 
-        internal DefinitionSearch(SearchWord searchWord, int articleID)
+        internal DefinitionSearch(SearchWord searchWord, int articleID, int paragraphIndex)
         {
             ID = articleID;
             SentenceID = searchWord.SentenceID;
@@ -36,6 +36,7 @@ namespace Myriad.Data
         }
 
         public int ID { get; private set; }
+        public int ParagraphIndex { get; private set; }
         public int Start { get; private set; }
         public int End { get; private set; }
         public string Text { get; private set; }
@@ -45,7 +46,7 @@ namespace Myriad.Data
         public int SentenceID { get; private set; }
         public int WordIndex { get; private set; }
 
-        public int ParameterCount => 8;
+        public int ParameterCount => 9;
 
         public object GetParameter(int index)
         {
@@ -54,18 +55,20 @@ namespace Myriad.Data
                 case Ordinals.first:
                     return SentenceID;
                 case Ordinals.second:
-                    return WordIndex;
+                    return ParagraphIndex;
                 case Ordinals.third:
-                    return Text;
+                    return WordIndex;
                 case Ordinals.fourth:
-                    return Weight;
+                    return Text;
                 case Ordinals.fifth:
-                    return Start;
+                    return Weight;
                 case Ordinals.sixth:
-                    return End;
+                    return Start;
                 case Ordinals.seventh:
-                    return Substitute ? 1 : 0;
+                    return End;
                 case Ordinals.eighth:
+                    return Substitute ? 1 : 0;
+                case Ordinals.ninth:
                     return ID;
                 default:
                     break;

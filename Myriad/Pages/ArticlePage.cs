@@ -124,6 +124,7 @@ namespace Myriad.Pages
                 await writer.Append(paragraphs[i]);
                 await writer.Append(Symbol.lineFeed);
             }
+            await EditParagraph.CheckDefinitionSearchesForParagraphIndices(id);
         }
 
         private async Task AddEditPageData(HTMLWriter writer)

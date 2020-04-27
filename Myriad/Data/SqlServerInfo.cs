@@ -23,7 +23,7 @@ namespace Myriad.Data
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
         ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex, ReadExistingRelatedIDs,
         ReadMatrixWords, ReadSentenceIndex, ReadSearchWordID, ReadDefinitionSearches,
-        ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords,
+        ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords, ReadDefinitionSearchesInArticle,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -34,7 +34,7 @@ namespace Myriad.Data
         CreateRelatedTags = 310, DeleteRelatedTags=311,
         CreatePhrase = 320,
         CreateMatrixWord = 330, UpdateMatrixWord=331, DeleteMatrixWord=332,
-        CreateDefinitionSearch=340, DeleteDefinitionSearch = 342
+        CreateDefinitionSearch=340, DeleteDefinitionSearch = 342, AddParagraphIndexToDefinitionSearch = 343
     }
     public class SqlServerInfo
     {
@@ -169,6 +169,8 @@ namespace Myriad.Data
                 "delete from searchwords where sentence=@key1 and wordindex=@key2 and text=@key3" },
             {DataOperation.ReadDefinitionSearches,
                 "select start, end, articleid from definitionsearch where start=@key1" },
+            {DataOperation.ReadDefinitionSearchesInArticle,
+                "select start, end, paragraphIndex from definitionsearch where id=@key1" },
             {DataOperation.ReadDefinitionSearchID,
                 "select _id from definitionsearch where start=@key1 and text=@key2" },
             {DataOperation.ReadDefinitionSearchIDs,
@@ -176,9 +178,11 @@ namespace Myriad.Data
             {DataOperation.DeleteDefinitionSearch,
                 "delete from definitionsearch where _id=@key1" },
             {DataOperation.CreateDefinitionSearch,
-                "insert into definitionsearch (id, sentence, wordindex, text, weight, start, last, substitute) values (@key1, @key2, @key3, @key4, @key5, @key6, @key7, @key8)" },
+                "insert into definitionsearch (id, paragraphindex, sentence, wordindex, text, weight, start, last, substitute) values (@key1, @key2, @key3, @key4, @key5, @key6, @key7, @key8, @key9)" },
             {DataOperation.ReadSearchWords,
-                "select @key1, sentence, wordindex, weight, start, last, substitute from searchwords where text=@key1 and start>=@key2 and end<=@key3" }
+                "select @key1, sentence, wordindex, weight, start, last, substitute from searchwords where text=@key1 and start>=@key2 and end<=@key3" },
+            {DataOperation.AddParagraphIndexToDefinitionSearch,
+                "update definitionsearch set paragraphindex=@key2 where id=@key1 and start=@key3 and last=@key4" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)
