@@ -99,52 +99,46 @@ namespace Myriad.Pages
                 articleID);
             List<(int start, int end, int paragraphIndex)> searches = await reader.GetData<int, int, int>();
             if ((searches.Count == Number.nothing) || (searches[Ordinals.first].paragraphIndex > -1)) return;
-            var searchTable = CreateSearchTable(searches);
             MarkupParser parser = new MarkupParser(Writer.New());
             List<string> paragraphs = ArticlePage.GetPageParagraphs(articleID);
-            await AddParagraphIndicesToSearchTable(searchTable, parser, paragraphs);
-            await UpdateDefinitionSearches(articleID, searchTable);
+            searches = await AddParagraphIndicesToSearches(searches, parser, paragraphs);
+            await UpdateDefinitionSearches(articleID, searches);
         }
 
-        private static async Task UpdateDefinitionSearches(int articleID, Dictionary<(int, int), List<int>> searchTable)
+        private static async Task UpdateDefinitionSearches(int articleID, 
+            List<(int start, int end, int paragraphIndex)> searches)
         {
-            for (int index = Ordinals.first; index < searchTable.Count; index++)
+            for (int index = Ordinals.first; index < searches.Count; index++)
             {
-                for (int linkIndex = Ordinals.first; linkIndex < searchTable.ElementAt(index).Value.Count; linkIndex++)
-                {
-                    if (searchTable.ElementAt(index).Value[linkIndex] != -1)
+                    if (searches[index].paragraphIndex != -1)
                     {
                         await AddParagraphIndexToDefinitionSearch(articleID,
-                            searchTable.ElementAt(index).Value[linkIndex],
-                            searchTable.ElementAt(index).Key);
+                            searches[index].paragraphIndex,
+                            (searches[index].start, searches[index].end));
                     }
-                }
             }
         }
 
-        private static async Task AddParagraphIndicesToSearchTable(Dictionary<(int, int), List<int>> searchTable, MarkupParser parser, List<string> paragraphs)
+        private static async Task<List<(int start, int end, int paragraphIndex)>> AddParagraphIndicesToSearches(
+            List<(int start, int end, int paragraphIndex)> searches, MarkupParser parser, List<string> paragraphs)
         {
             for (int index = Ordinals.second; index < paragraphs.Count; index++)
             {
                 await parser.ParseParagraph(paragraphs[index], index);
                 var citations = parser.Citations;
-                for (int citationIndex = Ordinals.first; citationIndex < citations.Count; citationIndex++)
+                for (int searchIndex = Ordinals.first; searchIndex < searches.Count; searchIndex++)
                 {
-                    (int, int) citationKey = (citations[citationIndex].CitationRange.StartID.ID,
-                        citations[citationIndex].CitationRange.EndID.ID);
-                    if (searchTable.ContainsKey(citationKey))
+                    if (searches[searchIndex].paragraphIndex > -1) continue;
+                    for (int citationIndex = Ordinals.first; citationIndex < citations.Count; citationIndex++)
                     {
-                        int linkIndex = Ordinals.first;
-                        while ((linkIndex < searchTable[citationKey].Count) &&
-                            (searchTable[citationKey][linkIndex] == -1))
-                            linkIndex++;
-                        if (linkIndex < searchTable[citationKey].Count)
+                        if (citations[citationIndex].CitationRange.Contains(searches[searchIndex].start))
                         {
-                            searchTable[citationKey][linkIndex] = index;
+                            searches[searchIndex] = (searches[searchIndex].start, searches[searchIndex].end, index);
                         }
                     }
                 }
             }
+            return searches;
         }
 
         private static Dictionary<(int, int), List<int>> CreateSearchTable(List<(int start, int end, int paragraphIndex)> searches)
