@@ -21,7 +21,7 @@ namespace Myriad.Pages
     public class VersePage : ScripturePage
     {
         public const string pageURL = "/Verse";
-        public const string editURL = "/EditMatrix";
+        public const string editURL = "/Verse/Edit";
         VersePageInfo info = new VersePageInfo();
         List<Keyword> keywords;
 
@@ -1156,6 +1156,19 @@ namespace Myriad.Pages
                 Symbol.equal);
             await writer.Append(citation.CitationRange.EndID.ID);
             await writer.Append(HTMLTags.EndDiv);
+        }
+
+        public override async Task HandleEditRequest(HttpContext context)
+        {
+            await WritePlainText(Writer.New(context.Response),
+                context.Request.Query);
+        }
+
+        public override async Task HandleAcceptedEdit(HttpContext context)
+        {
+            context.Request.Form.TryGetValue("text", out var text);
+            await UpdateMatrix(Writer.New(context.Response),
+                context.Request.Query, text.ToString());
         }
     }
 }

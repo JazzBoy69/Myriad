@@ -17,6 +17,7 @@ function LoadPage(path) {
     if (performance.navigation.type === 1) {
         LoadCompletePage(path);
         HandleAdditionalSearchTasks();
+        SetIcons();
         return;
     }
     if (path.indexOf('partial') === -1) path = AddQueryToPath(path, 'partial=true');
@@ -106,8 +107,25 @@ function LoadMainPane(path) {
             SetTitle();
             HandleAdditionalSearchTasks();
             HandleHiddenDetails();
+            SetIcons();
             ScrollWhenReady();
         });
+}
+
+function SetIcons() {
+    SetEditButton();
+}
+
+function SetEditButton() {
+    var editdata = document.getElementById('editdata');
+    var editButton = document.getElementById('editButton');
+    if (editdata === null) {
+        if (!editButton.classList.contains('hidden'))
+            editButton.classList.add('hidden');
+        return;
+    }
+    if (editButton.classList.contains('hidden'))
+        editButton.classList.remove('hidden');
 }
 
 function AddQueryToPath(path, query) {

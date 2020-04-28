@@ -31,7 +31,7 @@ namespace Myriad.Pages
     public class ArticlePage : CommonPage
     {
         public const string pageURL = "/Article";
-        public const string editURL = "/EditArticle";
+        public const string editURL = "/Article/Edit";
         public const string queryKeyTitle = "Title";
         public const string queryKeyID = "ID";
         PageParser parser;
@@ -42,6 +42,7 @@ namespace Myriad.Pages
         public ArticlePage()
         {
         }
+
 
         public override string GetURL()
         {
@@ -291,6 +292,19 @@ namespace Myriad.Pages
             List<string> result = reader.GetData<string>();
             reader.Close();
             return result;
+        }
+
+        public override async Task HandleEditRequest(HttpContext context)
+        {
+            await WritePlainText(Writer.New(context.Response),
+                        context.Request.Query);
+        }
+
+        public override async Task HandleAcceptedEdit(HttpContext context)
+        {
+            context.Request.Form.TryGetValue("text", out var text);
+            await UpdateArticle(Writer.New(context.Response),
+                context.Request.Query, text.ToString());
         }
     }
 }

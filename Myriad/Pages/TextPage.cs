@@ -18,7 +18,7 @@ namespace Myriad.Pages
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
-        public const string editURL = "/EditComment";
+        public const string editURL = "/Text/Edit";
         HTMLWriter writer;
         List<int> commentIDs;
         TextSectionFormatter textSection;
@@ -235,6 +235,19 @@ namespace Myriad.Pages
         public override async Task LoadTOCInfo(HttpContext context)
         {
             await LoadQueryInfo(context.Request.Query);
+        }
+
+        public override async Task HandleEditRequest(HttpContext context)
+        {
+            await WritePlainText(Writer.New(context.Response),
+                context.Request.Query);
+        }
+
+        public override async Task HandleAcceptedEdit(HttpContext context)
+        {
+            context.Request.Form.TryGetValue("text", out var text);
+            await UpdateComment(Writer.New(context.Response),
+                context.Request.Query, text.ToString());
         }
     }
 }

@@ -211,5 +211,15 @@ namespace Myriad.Pages
         {
             throw new NotImplementedException();
         }
+
+        public override Task HandleEditRequest(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task HandleAcceptedEdit(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

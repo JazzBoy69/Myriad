@@ -45,47 +45,11 @@ namespace Myriad
             });
             app.Run(async context =>
             {
+                string path = context.Request.Path;
                 //todo write change log
-                if (context.Request.Path == ArticlePage.editURL)
+                if (path.Contains("/Edit"))
                 {
-                    var articlePage = new ArticlePage();
-                    if (context.Request.Query.ContainsKey("accept"))
-                    {
-                        context.Request.Form.TryGetValue("text", out var text);
-                        await articlePage.UpdateArticle(Writer.New(context.Response),
-                            context.Request.Query, text.ToString());
-                        return;
-                    }
-                    await articlePage.WritePlainText(Writer.New(context.Response),
-                        context.Request.Query);
-                    return;
-                }
-                if (context.Request.Path == TextPage.editURL)
-                {
-                    var textPage = new TextPage();
-                    if (context.Request.Query.ContainsKey("accept"))
-                    {
-                        context.Request.Form.TryGetValue("text", out var text);
-                        await textPage.UpdateComment(Writer.New(context.Response),
-                            context.Request.Query, text.ToString());
-                        return;
-                    }
-                    await textPage.WritePlainText(Writer.New(context.Response),
-                        context.Request.Query);
-                    return;
-                }
-                if (context.Request.Path == VersePage.editURL)
-                {
-                    var versePage = new VersePage();
-                    if (context.Request.Query.ContainsKey("accept"))
-                    {
-                        context.Request.Form.TryGetValue("text", out var text);
-                        await versePage.UpdateMatrix(Writer.New(context.Response),
-                            context.Request.Query, text.ToString());
-                        return;
-                    }
-                    await versePage.WritePlainText(Writer.New(context.Response),
-                        context.Request.Query);
+                    await HandleEditRequest(context, path.Replace("/Edit", ""));
                     return;
                 }
                 if (context.Request.Path == "/SynonymSearch")
@@ -107,7 +71,6 @@ namespace Myriad
                     await HandlePartialRequest(context);
                     return;
                 }
-                string path = context.Request.Path;
                 if (path == EditParagraph.getDataURL)
                 {
                     await EditParagraph.GetPlainText(context);
@@ -124,6 +87,18 @@ namespace Myriad
             });
 
         }
+
+        private async Task HandleEditRequest(HttpContext context, string path)
+        {
+            CommonPage page = CreatePageFromPath(path);
+            if (context.Request.Query.ContainsKey("accept"))
+            {
+                await page.HandleAcceptedEdit(context);
+                return;
+            }
+            await page.HandleEditRequest(context);
+        }
+
 
         public async Task HandleTOCRequest(HttpContext context)
         {
@@ -202,6 +177,15 @@ namespace Myriad
                     });
             }
 
+            CommonPage page = CreatePageFromPath(path);
+            await page.LoadQueryInfo(query);
+            if (!page.IsValid()) page = new IndexPage();
+            page.SetResponse(context.Response);
+            return page;
+        }
+
+        private static CommonPage CreatePageFromPath(string path)
+        {
             CommonPage page;
             switch (path)
             {
@@ -229,9 +213,7 @@ namespace Myriad
                     page = new IndexPage();
                     break;
             }
-            await page.LoadQueryInfo(query);
-            if (!page.IsValid()) page = new IndexPage();
-            page.SetResponse(context.Response);
+
             return page;
         }
     }

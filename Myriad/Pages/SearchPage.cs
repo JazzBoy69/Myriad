@@ -214,5 +214,15 @@ namespace Myriad.Pages
                 HTMLTags.StartQuery + queryKeyQ + Symbol.equal + pageInfo.SearchQuery.Replace(' ', '+') +
                 HTMLTags.Ampersand + queryKeyIDs + Symbol.equal + pageInfo.IDs;
         }
+
+        public override Task HandleEditRequest(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task HandleAcceptedEdit(HttpContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

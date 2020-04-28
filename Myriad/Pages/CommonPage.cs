@@ -16,7 +16,8 @@ namespace Myriad.Pages
         public CommonPage()
         {
         }
-
+        public abstract Task HandleEditRequest(HttpContext context);
+        public abstract Task HandleAcceptedEdit(HttpContext context);
         public void SetResponse(HttpResponse response)
         {
             this.response = response;
