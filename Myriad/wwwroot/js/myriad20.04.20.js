@@ -248,13 +248,13 @@ function GetLinksInID(id)
 }
 
 function AddClassToGroup(g, c) {
-    for (var i = 0; i < g.length; i++) {
+    for (var i = g.length-1; i >= 0; i--) {
         g[i].classList.add(c);
     }
 }
 
 function RemoveClassFromGroup(g, c) {
-    for (var i = 0; i < g.length; i++) {
+    for (var i = g.length-1; i >= 0; i--) {
         g[i].classList.remove(c);
     }
 }
@@ -644,14 +644,19 @@ function SetupSuppressedParagraphs() {
     if (ellipsis.classList.contains('hidden')) {
         ellipsis.classList.remove('hidden');
     }
-    ellipsis.onclick = function (event) {
-        var extraInfo = document.getElementsByClassName('extrainfo');
-        var suppressed = document.getElementsByClassName('suppressed');
-        RemoveClassFromGroup(suppressed, 'suppressed');
-        AddClassToGroup(suppressed, 'extrainfo');
-        RemoveClassFromGroup(extraInfo, 'extrainfo');
-        AddClassToGroup(extraInfo, 'suppressed');
-     };
+    ellipsis.onclick = ShowHiddenParagraphs;
+}
+
+function ShowHiddenParagraphs(event) {
+    var extraInfo = document.getElementsByClassName('extrainfo');
+    var suppressed = document.getElementsByClassName('suppressed');
+    AddClassToGroup(suppressed, 'transition');
+    RemoveClassFromGroup(suppressed, 'suppressed');
+    AddClassToGroup(extraInfo, 'suppressed');
+    RemoveClassFromGroup(extraInfo, 'extrainfo');
+    var transition = document.getElementsByClassName('transition');
+    AddClassToGroup(transition, 'extrainfo');
+    RemoveClassFromGroup(transition, 'transition');
 }
 
 function SetupEditParagraph() {
