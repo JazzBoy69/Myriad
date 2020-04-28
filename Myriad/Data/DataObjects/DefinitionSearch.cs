@@ -11,9 +11,10 @@ namespace Myriad.Data
     public class DefinitionSearch : DataObject
     {
 
-        internal DefinitionSearch(MatrixWord matrixWord, int articleID, int sentenceID, int wordIndex)
+        internal DefinitionSearch(MatrixWord matrixWord, int articleID, int paragraphIndex, int sentenceID, int wordIndex)
         {
             ID = articleID;
+            ParagraphIndex = paragraphIndex;
             SentenceID = sentenceID;
             WordIndex = wordIndex;
             Start = matrixWord.Start;
@@ -48,28 +49,28 @@ namespace Myriad.Data
 
         public int ParameterCount => 9;
 
-        public object GetParameter(int index)
+        public object GetParameter(int index) //id, paragraphindex, sentence, wordindex, text, weight, start, last, substitute
         {
             switch (index)
             {
                 case Ordinals.first:
-                    return SentenceID;
+                    return ID;
                 case Ordinals.second:
                     return ParagraphIndex;
                 case Ordinals.third:
-                    return WordIndex;
+                    return SentenceID;
                 case Ordinals.fourth:
-                    return Text;
+                    return WordIndex;
                 case Ordinals.fifth:
-                    return Weight;
+                    return Text;
                 case Ordinals.sixth:
-                    return Start;
+                    return Weight;
                 case Ordinals.seventh:
-                    return End;
+                    return Start;
                 case Ordinals.eighth:
-                    return Substitute ? 1 : 0;
+                    return End;
                 case Ordinals.ninth:
-                    return ID;
+                    return Substitute ? 1 : 0;
                 default:
                     break;
             }

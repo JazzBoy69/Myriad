@@ -17,10 +17,22 @@ namespace Myriad.Data
         public const ushort originalWordWeight = 200;
         public const int notTag = -100;
 
+
+        int length = -1;
+
         public int Start { get; private set; }
         public int End { get; private set; }
+
+        public int Length
+        {
+            get
+            {
+                if (length != -1) return length;
+                return End - Start + 1;
+            }
+        }
         public string Text { get; private set; }
-        public int Length { get; private set; }
+
         public int Weight { get; private set; }
         public bool Substitute { get; private set; }
 
@@ -33,7 +45,7 @@ namespace Myriad.Data
         {
             Start = id;
             SetInfo(inflectionString);
-            End = Start + Length - 1;
+            End = Start + length - 1;
         }
 
         public object GetParameter(int index) 
@@ -102,14 +114,14 @@ namespace Myriad.Data
                     (inflection[Ordinals.second] == '[') || (inflection[Ordinals.second] == '~') ||
                     (inflection[Ordinals.second] == '+') || (inflection[Ordinals.second] == '-') || (inflection[Ordinals.second] == '/') || (inflection[Ordinals.second] == '*')))
             {
-                Length = inflection[0] - '0';
+                length = inflection[0] - '0';
                 inflection = inflection.Substring(1);
             }
-            else Length = 1;
+            else length = 1;
             if ((inflection[Ordinals.first] == '[') && (inflection[Ordinals.last] == ']'))
             {
                 Substitute = true;
-                inflection = inflection[Ordinals.second..Ordinals.nexttolast];
+                inflection = inflection.Substring(Ordinals.second, inflection.Length - 2);
             }
             if (((inflection[0] >= 'A') && (inflection[0] <= 'Z')) || ((inflection[0] >= 'a') && (inflection[0] <= 'z')))
             {

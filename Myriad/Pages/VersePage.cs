@@ -107,9 +107,15 @@ namespace Myriad.Pages
             string[] words = matrix.Split(new string[] { "} {" }, StringSplitOptions.RemoveEmptyEntries);
             int start = Numbers.Convert(query[queryKeyStart]);
             int end = Numbers.Convert(query[queryKeyEnd]);
-            int length = await CitationConverter.ReadLastWordIndex(start, end);
-            if (words.Length != length) return;
+            int length = await CitationConverter.ReadLastWordIndex(start, end) + 1;
             end = start + length - 1;
+            citation = new Citation(start, end);
+            citation.CitationType = CitationTypes.Verse;
+            if (words.Length != length)
+            {
+                await RenderBody(writer);
+                return;
+            }
             if (words[Ordinals.first][Ordinals.first] == '{') 
                 words[Ordinals.first] = words[Ordinals.first][Ordinals.second..];
             if (words[Ordinals.last][Ordinals.last] == '}') 
@@ -121,9 +127,7 @@ namespace Myriad.Pages
                 newInflections = newInflections.OrderBy(i => i.Text).ToList();
                 await UpdateInflections(newInflections, id);
             }
-            //after update see if added words are synonyms of related articles that do not yet have definition
-            //searches pointing to this verse
-            //remove old definition searches that point to words that were removed
+            await RenderBody(writer);
         }
 
         private static async Task UpdateInflections(List<MatrixWord> newInflections, int id)
@@ -190,8 +194,8 @@ namespace Myriad.Pages
                 if (synonyms.Contains(matrixWord.Text))
                 {
                     DefinitionSearch searchword = new DefinitionSearch(matrixWord, 
-                        relatedArticles[index].ArticleID, sentenceID, wordIndex);
-                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch),
+                        relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex, sentenceID, wordIndex);
+                    await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch),
                         searchword);
                 }
             }
@@ -228,7 +232,7 @@ namespace Myriad.Pages
         private static async Task AddMatrixWord(MatrixWord matrixWord, int sentenceID, int wordIndex)
         {
             SearchResult searchword = new SearchResult(matrixWord, sentenceID, wordIndex);
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
+            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
                 searchword);
         }
 
