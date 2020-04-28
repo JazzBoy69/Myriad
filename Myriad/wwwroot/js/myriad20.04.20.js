@@ -173,7 +173,10 @@ function LoadSynonymSearchResults() {
 
 function ScrollToTarget() {
     var path = CurrentPath();
-    if (path.indexOf('/Verse')>-1) return;
+    if (path.indexOf('/Verse') > -1) {
+        ScrollToTop();
+        return;
+    }
     var targets = document.getElementsByClassName('target');
     var target = (targets === null) || (targets.length === 0) ?
         document.getElementById('top') :
@@ -184,6 +187,11 @@ function ScrollToTarget() {
 }
 
 function ScrollWhenReady() {
+    var path = CurrentPath();
+    if (path.indexOf('/Verse') > -1) {
+        ScrollToTop();
+        return;
+    }
     var images = mainPane.getElementsByTagName('img');
     var ready = images.length === 0;
     if (!ready) {

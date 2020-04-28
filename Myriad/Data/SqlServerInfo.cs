@@ -180,7 +180,7 @@ namespace Myriad.Data
             {DataOperation.CreateDefinitionSearch,
                 "insert into definitionsearch (id, paragraphindex, sentence, wordindex, text, weight, start, last, substitute) values (@key1, @key2, @key3, @key4, @key5, @key6, @key7, @key8, @key9)" },
             {DataOperation.ReadSearchWords,
-                "select @key1, sentence, wordindex, weight, start, last, substitute from searchwords where text=@key1 and start>=@key2 and end<=@key3" },
+                "select RTrim(text), sentence, wordindex, weight, start, last, substitute from searchwords where text=@key1 and start>=@key2 and last<=@key3" },
             {DataOperation.AddParagraphIndexToDefinitionSearch,
                 "update definitionsearch set paragraphindex=@key2 where id=@key1 and start=@key3 and last=@key4" }
         };

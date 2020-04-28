@@ -195,7 +195,7 @@ namespace Myriad.Pages
                 {
                     DefinitionSearch searchword = new DefinitionSearch(matrixWord, 
                         relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex, sentenceID, wordIndex);
-                    await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch),
+                    await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch),
                         searchword);
                 }
             }
@@ -232,7 +232,7 @@ namespace Myriad.Pages
         private static async Task AddMatrixWord(MatrixWord matrixWord, int sentenceID, int wordIndex)
         {
             SearchResult searchword = new SearchResult(matrixWord, sentenceID, wordIndex);
-            await DataWriterProvider.WriteData(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
+            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
                 searchword);
         }
 
