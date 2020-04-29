@@ -31,7 +31,7 @@ namespace Myriad.Pages
     public class ArticlePage : CommonPage
     {
         public const string pageURL = "/Article";
-        public const string editURL = "/Article/Edit";
+        public const string editURL = "/Edit/Article";
         public const string queryKeyTitle = "Title";
         public const string queryKeyID = "ID";
         PageParser parser;

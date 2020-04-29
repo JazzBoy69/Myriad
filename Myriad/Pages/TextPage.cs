@@ -18,7 +18,7 @@ namespace Myriad.Pages
     public class TextPage : ScripturePage
     {
         public const string pageURL = "/Text";
-        public const string editURL = "/Text/Edit";
+        public const string editURL = "/Edit/Text";
         HTMLWriter writer;
         List<int> commentIDs;
         TextSectionFormatter textSection;

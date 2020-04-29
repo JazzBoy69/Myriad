@@ -27,7 +27,8 @@ a.error{color:red;}
     font-family: monospace;
     font-size: 1.25rem;
     line-height: 1.5rem;
-    height: 75vh;
+    height: calc(100vh - 15rem);
+    margin-top:.5rem;
     overflow-y: auto;
     border-style: solid;
     border-width: 1px;
@@ -163,7 +164,7 @@ article{padding-top:5em;padding-bottom:3em;min-height:40rem;}
 div+section.scripture{margin-top:1.5rem;}
 div.crossrefs details summary+p{margin-top:.4em;}
 section{display:block;align-items:stretch;}
-#editForm {padding-top:4rem;}
+#editForm {padding-top:4rem;padding-bottom:4rem;}
 
 
 /*HORIZONTAL SPACING */
