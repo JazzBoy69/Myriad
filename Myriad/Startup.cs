@@ -61,6 +61,16 @@ namespace Myriad
                     await searchPage.WriteSynonymResults(Writer.New(context.Response));
                     return;
                 }
+                if (context.Request.Query.ContainsKey("originalword"))
+                {
+                    var versePage = new VersePage();
+                    await versePage.LoadQueryInfo(context.Request.Query);
+                    if (context.Request.Query.ContainsKey("accept"))
+                    {
+                    }
+                    await versePage.WriteOriginalWordComments(Writer.New(context.Response));
+                    return;
+                }
                 if (context.Request.Query.ContainsKey("toc"))
                 {
                     await HandleTOCRequest(context);

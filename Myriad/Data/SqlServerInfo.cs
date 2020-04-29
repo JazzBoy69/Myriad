@@ -24,6 +24,7 @@ namespace Myriad.Data
         ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex, ReadExistingRelatedIDs,
         ReadMatrixWords, ReadSentenceIndex, ReadSearchWordID, ReadDefinitionSearches,
         ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords, ReadDefinitionSearchesInArticle,
+        ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -182,7 +183,13 @@ namespace Myriad.Data
             {DataOperation.ReadSearchWords,
                 "select RTrim(text), sentence, wordindex, weight, start, last, substitute from searchwords where text=@key1 and start>=@key2 and last<=@key3" },
             {DataOperation.AddParagraphIndexToDefinitionSearch,
-                "update definitionsearch set paragraphindex=@key2 where id=@key1 and start=@key3 and last=@key4" }
+                "update definitionsearch set paragraphindex=@key2 where id=@key1 and start=@key3 and last=@key4" },
+            {DataOperation.ReadOriginalWords,
+                "select RTrim(text), start, last from searchwords where start>=@key1 and last<=@key2 and weight=200" },
+            {DataOperation.ReadOriginalWordCommentLink,
+                "select id from commentlinks where start=@key1 and end=@key2" },
+            {DataOperation.ReadOriginalWordKeywords,
+                "select RTrim(text), iscapitalized from keywords where start>=@key1 and last<=@key2" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

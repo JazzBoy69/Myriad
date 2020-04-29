@@ -514,6 +514,15 @@ function EditParagraph(editlink) {
     );
 }
 
+function EditOriginalWords() {
+    var path = AddQueryToPath(CurrentPath(), 'originalword=true');
+    var menuAccept = document.getElementById('menuAccept');
+    menuAccept.onclick = AcceptEditOriginalWord;
+    postAjax(path,{},
+        function (data) { ShowEditWindow(data); }
+    );
+}
+
 function ShowEditWindow(data) {
     var editForm = document.getElementById('editForm');
     var mainPane = document.getElementById('mainPane');

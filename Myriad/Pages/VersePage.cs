@@ -102,6 +102,42 @@ namespace Myriad.Pages
             await EndRubySection(writer);
         }
 
+        internal async Task WriteOriginalWordComments(HTMLWriter writer)
+        {
+            var originalWordReader = new DataReaderProvider<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadOriginalWords),
+                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+            List<(string text, int start, int end)> originalWords = 
+                await originalWordReader.GetData<string, int, int>();
+            originalWordReader.Close();
+            var keywordReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordKeywords),
+                -1, -1);
+            var commentReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
+                -1, -1);
+            for (int index = Ordinals.first; index < originalWords.Count; index++)
+            {
+                keywordReader.SetParameter(originalWords[index].start, originalWords[index].end);
+                List<(string text, int capitalized)> keywords = await keywordReader.GetData<string, int>();
+                await writer.Append("**");
+                for (int keywordIndex = Ordinals.first; keywordIndex < keywords.Count; keywordIndex++)
+                {
+                    if (keywordIndex > Ordinals.first) await writer.Append(" ");
+                    await writer.Append((keywords[keywordIndex].capitalized == 1) ?
+                        Symbols.Capitalize(keywords[keywordIndex].text) :
+                        keywords[keywordIndex].text);
+                }
+                await writer.Append("**(//");
+                await writer.Append(originalWords[index].text);
+                await writer.Append("//): ");
+                commentReader.SetParameter(originalWords[index].start, originalWords[index].end);
+                string comment = await commentReader.GetDatum<string>();
+                if (comment != null) await writer.Append(comment);
+                await writer.Append(Symbol.lineFeed);
+            }
+            keywordReader.Close();
+            commentReader.Close();
+        }
+
         internal async Task UpdateMatrix(HTMLWriter writer, IQueryCollection query, string text)
         {
             string matrix = text.Replace('\'', '’');
