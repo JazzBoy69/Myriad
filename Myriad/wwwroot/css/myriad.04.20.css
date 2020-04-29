@@ -267,6 +267,7 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 .menu li ul{display:none;width:12em;border-top:0px;overflow:auto;overflow-x:hidden;position:absolute;margin:0;padding:0;}
 .menu li:hover li{float:none;}
 #menuPrevious {display:block; opacity: 0; position:  absolute;top: 0;left: 0;width: 5rem;height:100vh;}
+#menuPrevious.hidden {display:none;}
 #menuPrevious:hover {background-color: black;opacity: .1;z-index:1010;}
 #menuPrevious img{position: absolute; top:50%;}
 #menuNext {float: right; display:block; opacity: 0; position:  absolute;top: 0; right:0;width: 5rem;height:100vh;}

@@ -56,6 +56,7 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddTOCButton(writer);
+            await AddPagination(writer);
         }
 
         private async Task Initialize()

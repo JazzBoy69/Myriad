@@ -114,6 +114,7 @@ function LoadMainPane(path) {
 
 function SetIcons() {
     SetTOCButton();
+    SetPaginationButtons();
     SetEditButton();
     SetOriginalWordButton();
 }
@@ -129,6 +130,34 @@ function SetTOCButton() {
     }
     if (tocButton.classList.contains('hidden')) {
         tocButton.classList.remove('hidden');
+    }
+}
+
+function SetPaginationButtons() {
+    var paginate = document.getElementById('paginate');
+    var upButton = document.getElementById('menuUp');
+    var nextButton = document.getElementById('menuNext');
+    var previousButton = document.getElementById('menuPrevious');
+    if (paginate === null) {
+        if (!upButton.classList.contains('hidden')) {
+            upButton.classList.add('hidden');
+        }
+        if (!nextButton.classList.contains('hidden')) {
+            nextButton.classList.add('hidden');
+        }
+        if (!previousButton.classList.contains('hidden')) {
+            previousButton.classList.add('hidden');
+        }
+        return;
+    }
+    if (upButton.classList.contains('hidden')) {
+        upButton.classList.remove('hidden');
+    }
+    if (nextButton.classList.contains('hidden')) {
+        nextButton.classList.remove('hidden');
+    }
+    if (previousButton.classList.contains('hidden')) {
+        previousButton.classList.remove('hidden');
     }
 }
 

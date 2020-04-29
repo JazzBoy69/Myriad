@@ -59,6 +59,7 @@ namespace Myriad.Library
         internal const string editdata = "editdata";
         internal const string originalword = "originalword";
         internal const string hastoc = "hastoc";
+        internal const string paginate = "paginate";
     }
 
 }

@@ -64,6 +64,7 @@ ScrollToTop();
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddTOCButton(writer);
+            if (name != defaultName) await AddPagination(writer);
         }
 
         private async Task Parse()

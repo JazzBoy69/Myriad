@@ -77,6 +77,7 @@ namespace Myriad.Pages
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+            await AddPagination(writer);
         }
 
         internal async Task UpdateComment(HTMLWriter writer, IQueryCollection query, string text)

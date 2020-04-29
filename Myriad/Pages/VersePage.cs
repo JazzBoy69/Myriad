@@ -67,6 +67,7 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddEditPageData(writer);
+            await AddPagination(writer);
         }
 
         private async Task WriteRubyText(HTMLWriter writer)
