@@ -28,7 +28,7 @@ namespace Myriad.Data
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
-        DeleteArticleParagraphsFromEnd = 273,
+        DeleteArticleParagraphsFromEnd = 273, UpdateArticleTitle=274,
         CreateCommentParagraph = 280, UpdateCommentParagraph = 281, DeleteCommentParagraphsFromEnd = 282,
         CreateCrossReferences = 290, DeleteCrossReferences= 291,
         CreateRelatedArticleLinks = 300, DeleteRelatedArticleLinks = 301,
@@ -36,7 +36,8 @@ namespace Myriad.Data
         CreatePhrase = 320,
         CreateMatrixWord = 330, UpdateMatrixWord=331, DeleteMatrixWord=332,
         CreateDefinitionSearch=340, DeleteDefinitionSearch = 342, AddParagraphIndexToDefinitionSearch = 343,
-        CreateCommentLink=350, DeleteCommentLink=352
+        CreateCommentLink=350, DeleteCommentLink=352,
+        CreateSynonym=360, UpdateSynonym=361, DeleteSynonyms=362
     }
     public class SqlServerInfo
     {
@@ -198,7 +199,15 @@ namespace Myriad.Data
             { DataOperation.CreateCommentLink,
                 "insert into commentlinks (id, start, last, originalword) values (@key1, @key2, @key3, @key4)" },
             { DataOperation.DeleteCommentLink,
-                "delete from commentlinks where id=@key1" }
+                "delete from commentlinks where id=@key1" },
+            {DataOperation.UpdateArticleTitle,
+                "update tags set title=@key2 where id=@key1" },
+            { DataOperation.CreateSynonym,
+                "insert into synonyms (id, synIndex, text) values (@key1, @key2, @key3)" },
+            { DataOperation.UpdateSynonym,
+                "update synonyms set text=@key3 where id=@key1 and synIndex=@key2" },
+            { DataOperation.DeleteSynonyms,
+                "delete from synonyms where id=@key1 and synIndex>=@key2" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

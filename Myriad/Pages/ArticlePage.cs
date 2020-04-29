@@ -77,10 +77,12 @@ namespace Myriad.Pages
 
         internal async Task UpdateArticle(HTMLWriter writer, IQueryCollection query, string text)
         {
-            string idString = query[queryKeyID];
-            int id = Numbers.Convert(idString);
+            (string title, int id) = await GetTitle(query);
             var paragraphs = GetPageParagraphs(id);
-            var newParagraphs = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var lines = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries);
+            await UpdateArticleTitle(id, title, lines[Ordinals.first].Replace("==", ""));
+            await UpdateSynonyms(id, lines[Ordinals.second]);
+            var newParagraphs = lines[Ordinals.third..].ToList();
             parser = new PageParser(writer);
             pageInfo.ID = id;
             pageInfo.Title = await ReadTitle(id);
@@ -116,10 +118,63 @@ namespace Myriad.Pages
             await AddPageHistory(writer);
         }
 
+        private async Task UpdateSynonyms(int id, string newSynonymLine)
+        {
+            var oldSynonyms = GetSynonyms(id);
+            var newSynonyms = newSynonymLine.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            for (int i = Ordinals.first; i < newSynonyms.Count; i++)
+            {
+                if (i >= oldSynonyms.Count)
+                {
+                    await AddSynonym(id, i, newSynonyms[i].Replace('_', ' '));
+                    continue;
+                }
+                await UpdateSynonym(id, i, newSynonyms[i].Replace('_', ' '));
+            }
+            if (oldSynonyms.Count > newSynonyms.Count)
+            {
+                await DeleteSynonyms(id, newSynonyms.Count);
+            }
+
+        }
+
+        private async Task DeleteSynonyms(int id, int startIndex)
+        {
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteSynonyms),
+                id, startIndex);
+        }
+
+        private async Task UpdateSynonym(int id, int index, string synonym)
+        {
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.UpdateSynonym),
+                id, index, synonym);
+        }
+
+        private async Task AddSynonym(int id, int index, string synonym)
+        {
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateSynonym),
+                id, index, synonym);
+        }
+
+        private async Task UpdateArticleTitle(int id, string originalTitle, string newTitle)
+        {
+            if (originalTitle == newTitle) return;
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.UpdateArticleTitle), id, newTitle);
+        }
+
         internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
         {
-            string idString = query[queryKeyID];
-            int id = Numbers.Convert(idString);
+            (string title, int id) = await GetTitle(query);
+            await writer.Append("==");
+            await writer.Append(title);
+            await writer.Append("==" + Symbol.lineFeed);
+            var synonyms = GetSynonyms(id);
+            for (int i = Ordinals.first; i < synonyms.Count; i++)
+            {
+                if (i > Ordinals.first) await writer.Append(" ");
+                await writer.Append(synonyms[i].Replace(' ', '_'));
+            }
+            await writer.Append(Symbol.lineFeed);
             var paragraphs = GetPageParagraphs(id);
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
