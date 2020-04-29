@@ -117,12 +117,21 @@ namespace Myriad.Search
                 foreach (string word in words)
                 {
                     await writer.Append("<p class=\"definitionnav\"> ");
-                    await writer.Append("<a HREF=/AddArticle?q=");
+                    await writer.Append(HTMLTags.StartAnchor +
+                        HTMLTags.HREF +
+                        ArticlePage.addArticleURL +
+                        HTMLTags.StartQuery +
+                        ArticlePage.queryKeyTitle +
+                        Symbol.equal);
                     await writer.Append(word);
+                    await writer.Append(HTMLTags.OnClick +
+                        JavaScriptFunctions.HandleLink);
                     await writer.Append(">Add Article for ");
-                    await writer.Append("<b>");
+                    await writer.Append(HTMLTags.StartBold);
                     await writer.Append(word.Replace('_', ' '));
-                    await writer.Append("</b></a></p>");
+                    await writer.Append(HTMLTags.EndBold+
+                        HTMLTags.EndAnchor+
+                        HTMLTags.EndParagraph);
                 }
 
 

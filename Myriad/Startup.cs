@@ -47,12 +47,18 @@ namespace Myriad
             {
                 string path = context.Request.Path;
                 //todo write change log
+                if (path == ArticlePage.addArticleURL)
+                {
+                    ArticlePage articlePage = new ArticlePage();
+                    await articlePage.AddArticle(Writer.New(context.Response), context.Request.Query);
+                    return;
+                }
                 if (path.Contains("/Edit/"))
                 {
                     await HandleEditRequest(context, path.Replace("/Edit", ""));
                     return;
                 }
-                if (context.Request.Path == "/SynonymSearch")
+                if (path == "/SynonymSearch")
                 {
                     var searchPage = new SearchPage();
                     await searchPage.LoadQueryInfo(context.Request.Query);

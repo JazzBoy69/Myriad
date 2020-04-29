@@ -31,6 +31,7 @@ namespace Myriad.Pages
     public class ArticlePage : CommonPage
     {
         public const string pageURL = "/Article";
+        public const string addArticleURL = "/AddArticle";
         public const string editURL = "/Edit/Article";
         public const string queryKeyTitle = "Title";
         public const string queryKeyID = "ID";
@@ -75,6 +76,25 @@ namespace Myriad.Pages
             await AddTOCButton(writer);
         }
 
+        internal async Task AddArticle(HTMLWriter writer, IQueryCollection query)
+        {
+            (string title, int similarID) = await GetID(query);
+            int id = await GetNewArticleID();
+            pageInfo = (title, id);
+            await AddSynonym(id, Ordinals.first, title);
+            if (similarID > Number.nothing) title += " (Already Exists)";
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateTag),
+                id, title);
+            await RenderBody(writer);
+        }
+
+        private async Task<int> GetNewArticleID()
+        {
+            var reader = new DataReaderProvider(SqlServerInfo.GetCommand(DataOperation.ReadMaxArticleID));
+            int id = await reader.GetDatum<int>();
+            return id + 1;
+        }
+
         internal async Task UpdateArticle(HTMLWriter writer, IQueryCollection query, string text)
         {
             (string title, int id) = await GetTitle(query);
@@ -91,7 +111,7 @@ namespace Myriad.Pages
             parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
                 HTMLTags.CloseQuoteEndTag);
             parser.SetEndHTML(HTMLTags.EndParagraph);
-            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            for (int i = Ordinals.first; i < newParagraphs.Count; i++)
             {
                 ArticleParagraph articleParagraph = new ArticleParagraph(id, i, newParagraphs[i]);
                 if ((i < paragraphs.Count) && (newParagraphs[i] != paragraphs[i]))

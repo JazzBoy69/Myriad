@@ -25,6 +25,7 @@ namespace Myriad.Data
         ReadMatrixWords, ReadSentenceIndex, ReadSearchWordID, ReadDefinitionSearches,
         ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords, ReadDefinitionSearchesInArticle,
         ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords, ReadMaxCommentID,
+        ReadMaxArticleID,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -37,7 +38,8 @@ namespace Myriad.Data
         CreateMatrixWord = 330, UpdateMatrixWord=331, DeleteMatrixWord=332,
         CreateDefinitionSearch=340, DeleteDefinitionSearch = 342, AddParagraphIndexToDefinitionSearch = 343,
         CreateCommentLink=350, DeleteCommentLink=352,
-        CreateSynonym=360, UpdateSynonym=361, DeleteSynonyms=362
+        CreateSynonym=360, UpdateSynonym=361, DeleteSynonyms=362,
+        CreateTag=370
     }
     public class SqlServerInfo
     {
@@ -196,6 +198,8 @@ namespace Myriad.Data
                 "select max(id) from comments" },
             { DataOperation.CreateCommentParagraph,
                 "insert into comments (id, paragraphindex, text) values (@key1, @key2, @key3)" },
+            { DataOperation.CreateArticleParagraph,
+                "insert into glossary (id, paragraphindex, text) values (@key1, @key2, @key3)" },
             { DataOperation.CreateCommentLink,
                 "insert into commentlinks (id, start, last, originalword) values (@key1, @key2, @key3, @key4)" },
             { DataOperation.DeleteCommentLink,
@@ -207,7 +211,11 @@ namespace Myriad.Data
             { DataOperation.UpdateSynonym,
                 "update synonyms set text=@key3 where id=@key1 and synIndex=@key2" },
             { DataOperation.DeleteSynonyms,
-                "delete from synonyms where id=@key1 and synIndex>=@key2" }
+                "delete from synonyms where id=@key1 and synIndex>=@key2" },
+            { DataOperation.ReadMaxArticleID,
+                "select max(id) from tags" },
+            { DataOperation.CreateTag,
+                "insert into tags (id, title) values (@key1, @key2)" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)
