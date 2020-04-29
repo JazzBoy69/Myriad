@@ -317,7 +317,7 @@ namespace Myriad.Pages
                             paragraph);
         }
 
-        internal async static Task AddCommentParagraph(PageParser parser, ArticleParagraph paragraph)
+        internal async static Task AddCommentParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
             await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateCommentParagraph),
                 paragraph);

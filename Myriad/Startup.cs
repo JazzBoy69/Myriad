@@ -67,6 +67,9 @@ namespace Myriad
                     await versePage.LoadQueryInfo(context.Request.Query);
                     if (context.Request.Query.ContainsKey("accept"))
                     {
+                        context.Request.Form.TryGetValue("text", out var text);
+                        await versePage.UpdateOriginalWordComments(Writer.New(context.Response), text);
+                        return;
                     }
                     await versePage.WriteOriginalWordComments(Writer.New(context.Response));
                     return;

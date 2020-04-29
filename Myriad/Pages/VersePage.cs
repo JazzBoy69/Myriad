@@ -102,14 +102,73 @@ namespace Myriad.Pages
             await EndRubySection(writer);
         }
 
+        internal async Task UpdateOriginalWordComments(HTMLWriter writer, string text)
+        {
+            var originalWords = await ReadOriginalWords();
+            var plainTextWriter = Writer.New();
+            await WriteOriginalWordCommentPlainText(plainTextWriter, originalWords);
+            string originalText = plainTextWriter.Response();
+            string[] originalParagraphs = originalText.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries);
+            string[] newParagraphs = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries);
+            if (originalParagraphs.Length == newParagraphs.Length)
+                await WriteCommentsToDatabase(originalWords, originalParagraphs, newParagraphs);
+            await RenderBody(writer);
+        }
+
+        private async Task WriteCommentsToDatabase(List<(string text, int start, int end)> originalWords, 
+            string[] originalParagraphs, string[] newParagraphs)
+        {
+            MarkupParser parser = new MarkupParser(Writer.New());
+            var linkReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
+               -1, -1);
+            for (int index = Ordinals.first; index < originalWords.Count; index++)
+            {
+                if (originalParagraphs[index] == newParagraphs[index]) continue;
+                int p = originalParagraphs[index].IndexOf("//): ");
+                int q = newParagraphs[index].IndexOf("//): ");
+                if (p != q) continue;
+                string originalComment = (originalParagraphs[index].Length > p + 5) ?
+                    originalParagraphs[index][(p + 5)..] : "";
+                string newComment = (newParagraphs[index].Length > q + 5) ?
+                    newParagraphs[index][(q + 5)..] : "";
+                if (originalComment == newComment) continue;
+                if (originalComment == "")
+                {
+                    int newID = await GetNewCommentID();
+                    parser.SetParagraphInfo(ParagraphType.Comment, newID);
+                    ArticleParagraph newParagraph = new ArticleParagraph(newID, Ordinals.first, newComment);
+                    await EditParagraph.AddCommentParagraph(parser, newParagraph);
+                    continue;
+                }
+                int id = await GetOriginalWordCommentID(originalWords[index].start, originalWords[index].end, linkReader);
+                if (newComment == "")
+                { 
+                    await DataWriterProvider.Write<int, int>(
+                        SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraphsFromEnd),
+                        id, Ordinals.first);
+                    continue;
+                }
+                ArticleParagraph paragraph = new ArticleParagraph(id, Ordinals.first, newComment);
+                parser.SetParagraphInfo(ParagraphType.Comment, id);
+                await EditParagraph.UpdateCommentParagraph(parser, paragraph);
+            }
+        }
+
+        private async Task<int> GetNewCommentID()
+        {
+            var reader = new DataReaderProvider(SqlServerInfo.GetCommand(DataOperation.ReadMaxCommentID));
+            int id = await reader.GetDatum<int>();
+            return id + 1;
+        }
+
         internal async Task WriteOriginalWordComments(HTMLWriter writer)
         {
-            var originalWordReader = new DataReaderProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadOriginalWords),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            List<(string text, int start, int end)> originalWords = 
-                await originalWordReader.GetData<string, int, int>();
-            originalWordReader.Close();
+            List<(string text, int start, int end)> originalWords = await ReadOriginalWords();
+            await WriteOriginalWordCommentPlainText(writer, originalWords);
+        }
+
+        private static async Task WriteOriginalWordCommentPlainText(HTMLWriter writer, List<(string text, int start, int end)> originalWords)
+        {
             var keywordReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordKeywords),
                 -1, -1);
             var linkReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
@@ -131,8 +190,8 @@ namespace Myriad.Pages
                 await writer.Append("** (//");
                 await writer.Append(originalWords[index].text);
                 await writer.Append("//): ");
-                linkReader.SetParameter(originalWords[index].start, originalWords[index].end);
-                int commentID = await linkReader.GetDatum<int>();
+                int commentID = await GetOriginalWordCommentID(originalWords[index].start, originalWords[index].end, 
+                    linkReader);
                 if (commentID > Number.nothing)
                 {
                     commentReader.SetParameter(commentID, Ordinals.first);
@@ -143,6 +202,24 @@ namespace Myriad.Pages
             }
             keywordReader.Close();
             linkReader.Close();
+        }
+
+        private static async Task<int> GetOriginalWordCommentID(int start, int end, DataReaderProvider<int, int> linkReader)
+        {
+            linkReader.SetParameter(start, end);
+            int commentID = await linkReader.GetDatum<int>();
+            return commentID;
+        }
+
+        private async Task<List<(string text, int start, int end)>> ReadOriginalWords()
+        {
+            var originalWordReader = new DataReaderProvider<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadOriginalWords),
+                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+            List<(string text, int start, int end)> originalWords =
+                await originalWordReader.GetData<string, int, int>();
+            originalWordReader.Close();
+            return originalWords;
         }
 
         internal async Task UpdateMatrix(HTMLWriter writer, IQueryCollection query, string text)
