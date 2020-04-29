@@ -187,9 +187,9 @@ namespace Myriad.Data
             {DataOperation.ReadOriginalWords,
                 "select RTrim(text), start, last from searchwords where start>=@key1 and last<=@key2 and weight=200" },
             {DataOperation.ReadOriginalWordCommentLink,
-                "select id from commentlinks where start=@key1 and end=@key2" },
+                "select id from commentlinks where start=@key1 and last=@key2" },
             {DataOperation.ReadOriginalWordKeywords,
-                "select RTrim(text), iscapitalized from keywords where start>=@key1 and last<=@key2" }
+                "select RTrim(text), iscapitalized from keywords where keyid>=@key1 and keyid<=@key2" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

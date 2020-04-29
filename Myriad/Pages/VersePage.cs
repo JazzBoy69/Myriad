@@ -21,7 +21,7 @@ namespace Myriad.Pages
     public class VersePage : ScripturePage
     {
         public const string pageURL = "/Verse";
-        public const string editURL = "/Verse/Edit";
+        public const string editURL = "/Edit/Verse";
         VersePageInfo info = new VersePageInfo();
         List<Keyword> keywords;
 
@@ -112,8 +112,10 @@ namespace Myriad.Pages
             originalWordReader.Close();
             var keywordReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordKeywords),
                 -1, -1);
-            var commentReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
+            var linkReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
                 -1, -1);
+            var commentReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
+                -1, Ordinals.first);
             for (int index = Ordinals.first; index < originalWords.Count; index++)
             {
                 keywordReader.SetParameter(originalWords[index].start, originalWords[index].end);
@@ -126,16 +128,21 @@ namespace Myriad.Pages
                         Symbols.Capitalize(keywords[keywordIndex].text) :
                         keywords[keywordIndex].text);
                 }
-                await writer.Append("**(//");
+                await writer.Append("** (//");
                 await writer.Append(originalWords[index].text);
                 await writer.Append("//): ");
-                commentReader.SetParameter(originalWords[index].start, originalWords[index].end);
-                string comment = await commentReader.GetDatum<string>();
-                if (comment != null) await writer.Append(comment);
+                linkReader.SetParameter(originalWords[index].start, originalWords[index].end);
+                int commentID = await linkReader.GetDatum<int>();
+                if (commentID > Number.nothing)
+                {
+                    commentReader.SetParameter(commentID, Ordinals.first);
+                    string comment = await commentReader.GetDatum<string>();
+                    if (comment != null) await writer.Append(comment);
+                }
                 await writer.Append(Symbol.lineFeed);
             }
             keywordReader.Close();
-            commentReader.Close();
+            linkReader.Close();
         }
 
         internal async Task UpdateMatrix(HTMLWriter writer, IQueryCollection query, string text)

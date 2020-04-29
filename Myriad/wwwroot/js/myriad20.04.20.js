@@ -163,7 +163,7 @@ function SetPaginationButtons() {
 
 function SetEditButton() {
     var editdata = document.getElementById('editdata');
-    var editButton = document.getElementById('editButton');
+    var editButton = document.getElementById('menuEdit');
     if (editdata === null) {
         if (!editButton.classList.contains('hidden'))
             editButton.classList.add('hidden');
@@ -517,7 +517,10 @@ function EditParagraph(editlink) {
 function EditOriginalWords() {
     var path = AddQueryToPath(CurrentPath(), 'originalword=true');
     var menuAccept = document.getElementById('menuAccept');
+    var menuOriginalWord = document.getElementById('menuOriginalWord');
+    menuOriginalWord.classList.add('hidden');
     menuAccept.onclick = AcceptEditOriginalWord;
+
     postAjax(path,{},
         function (data) { ShowEditWindow(data); }
     );
@@ -529,11 +532,13 @@ function ShowEditWindow(data) {
     var menuCancel = document.getElementById('menuCancel');
     var menuEdit = document.getElementById('menuEdit');
     var menuAccept = document.getElementById('menuAccept');
+    var menuOriginalWord = document.getElementById('menuOriginalWord');
     editForm.innerText = data;
     var scrollPos = document.documentElement.scrollTop;
     editForm.setAttribute('data-pos', scrollPos);
     mainPane.classList.add('hidden');
     menuEdit.classList.add('hidden');
+    menuOriginalWord.classList.add('hidden');
     menuCancel.classList.remove('hidden');
     menuAccept.classList.remove('hidden');
     editForm.classList.remove('hidden');
@@ -545,7 +550,7 @@ function CloseEditForm() {
     editForm.classList.add('hidden');
     menuCancel.classList.add('hidden');
     mainPane.classList.remove('hidden');
-    menuEdit.classList.remove('hidden');
+    SetIcons();
     menuAccept.classList.add('hidden');
     var scrollPos = editForm.getAttribute('data-pos');
     document.documentElement.scrollTop = scrollPos;
@@ -564,6 +569,18 @@ function AcceptEditParagraph() {
             text: editForm.innerText
         },
         function (data) { RefreshEditedParagraph(data); }
+    );
+    CloseEditForm();
+}
+
+function AcceptEditOriginalWord() {
+    var editForm = document.getElementById('editForm');
+    var path = AddQueryToPath(CurrentPath(), 'originalword=true&accept=true');
+    postAjax(path,
+        {
+            text: editForm.innerText
+        },
+        function () { LoadMainPane(currentPath()); }
     );
     CloseEditForm();
 }
