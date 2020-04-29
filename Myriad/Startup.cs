@@ -47,7 +47,7 @@ namespace Myriad
             {
                 string path = context.Request.Path;
                 //todo write change log
-                if (path.Contains("/Edit"))
+                if (path.Contains("/Edit/"))
                 {
                     await HandleEditRequest(context, path.Replace("/Edit", ""));
                     return;
@@ -82,7 +82,6 @@ namespace Myriad
                     return;
                 }
                 CommonPage page = await RequestedPage(context);
-                await page.LoadQueryInfo(context.Request.Query);
                 await page.RenderPage();
             });
 

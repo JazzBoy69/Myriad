@@ -398,7 +398,9 @@ namespace Myriad.Pages
                     (info.Ellipses[phrase.Start].StartID.ID, info.Ellipses[phrase.Start].EndID.ID));
             else
                 await WriteRangeText(writer, phrase.Range);
-            await writer.Append(HTMLTags.EndBold+"("+HTMLTags.StartItalic);
+            await writer.Append(HTMLTags.EndBold+"("+HTMLTags.StartSpanWithClass+
+                HTMLClasses.originalword+
+                HTMLTags.CloseQuoteEndTag);
             int i = Ordinals.first;
             bool needSpace = false;
             foreach ((string text, (int start, int end) range) in originalWordsInPhrase)
@@ -416,7 +418,7 @@ namespace Myriad.Pages
                 needSpace = true;
                 i++;
             }
-            await writer.Append(HTMLTags.EndItalic+")");
+            await writer.Append(HTMLTags.EndSpan+")");
         }
         private async Task WritePhraseComment(HTMLWriter writer, int index, VersePageInfo info)
         {
@@ -513,14 +515,16 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndBold + "(");
 
             await WriteVerseLabel(writer, commentID);
-            if (count > 0) await writer.Append("; " + HTMLTags.StartItalic);
+            if (count > 0) await writer.Append("; " + HTMLTags.StartSpanWithClass+
+                HTMLClasses.originalword+
+                HTMLTags.CloseQuoteEndTag);
 
             for (int i = Ordinals.first; i < originalWordsInPhrase.Count; i++)
             {
                 if (i > Ordinals.first) await writer.Append(Symbol.space);
                 await writer.Append(originalWordsInPhrase[i].Replace('_', ' '));
             }
-            if (count > 0) await writer.Append(HTMLTags.EndItalic);
+            if (count > 0) await writer.Append(HTMLTags.EndSpan);
             await writer.Append(")");
         }
 
@@ -555,7 +559,9 @@ namespace Myriad.Pages
             else
                 await WriteRangeText(writer, info.Phrases[index].Range);
             await writer.Append(HTMLTags.EndBold);
-            if (count > 0) await writer.Append("("+HTMLTags.StartItalic);
+            if (count > 0) await writer.Append("("+HTMLTags.StartSpanWithClass+
+                HTMLClasses.originalword+
+                HTMLTags.CloseQuoteEndTag);
             int i = Ordinals.first;
             bool needSpace = false;
             foreach ((string text, (int start, int end) range) in originalWordsInPhrase)
@@ -573,7 +579,7 @@ namespace Myriad.Pages
                 needSpace = true;
                 i++;
             }
-            if (count > 0) await writer.Append(HTMLTags.EndItalic+")");
+            if (count > 0) await writer.Append(HTMLTags.EndSpan+")");
         }
 
         private async Task<(bool needFullLabel, int usedIndex)>
@@ -746,9 +752,11 @@ namespace Myriad.Pages
                     if (synonyms.Contains(cleanLabel))
                     {
                         await writer.Append(HTMLTags.EndBold +
-                            " (" + HTMLTags.StartItalic);
+                            " (" + HTMLTags.StartSpanWithClass+
+                            HTMLClasses.originalword+
+                            HTMLTags.CloseQuoteEndTag);
                         await WriteTagAnchor(writer, label, articleID);
-                        await writer.Append(HTMLTags.EndItalic+"): ");
+                        await writer.Append(HTMLTags.EndSpan+"): ");
                     }
                     else
                     {
@@ -756,17 +764,21 @@ namespace Myriad.Pages
                         await WriteTagAnchor(writer,
                             articleTitle.Replace('(', '[').Replace(')', ']'),
                             articleID);
-                        await writer.Append("; "+HTMLTags.StartItalic);
+                        await writer.Append("; "+HTMLTags.StartSpanWithClass+
+                            HTMLClasses.originalword+
+                            HTMLTags.CloseQuoteEndTag);
                         await writer.Append(label);
-                        await writer.Append(HTMLTags.EndItalic+"): ");
+                        await writer.Append(HTMLTags.EndSpan+"): ");
                     }
                 }
                 else
                 {
                     await writer.Append(HTMLTags.EndBold+
-                        " ("+HTMLTags.StartItalic);
+                        " ("+HTMLTags.StartSpanWithClass+
+                        HTMLClasses.originalword+
+                        HTMLTags.CloseQuoteEndTag);
                     await writer.Append(label);
-                    await writer.Append(HTMLTags.EndItalic+"): ");
+                    await writer.Append(HTMLTags.EndSpan+"): ");
                 }
             }
         }

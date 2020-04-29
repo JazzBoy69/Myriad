@@ -7,6 +7,7 @@ h1, h2, h3 {font-family:"Palatino Linotype", Cambria, Cochin, Georgia,"Times New
 mark{background-color:#ffc;font-family:"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
 article{font-size:1.2rem;}
 .readingverse a{background-color:white;}
+.originalword {font-style:italic;}
 /*Hyperlinks*/
 a{text-decoration:none;color:#4477a1;font-family:inherit;}
 a:not(.ni):hover{color:#4477a1;text-decoration:underline;}
