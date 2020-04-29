@@ -35,7 +35,8 @@ namespace Myriad.Data
         CreateRelatedTags = 310, DeleteRelatedTags=311,
         CreatePhrase = 320,
         CreateMatrixWord = 330, UpdateMatrixWord=331, DeleteMatrixWord=332,
-        CreateDefinitionSearch=340, DeleteDefinitionSearch = 342, AddParagraphIndexToDefinitionSearch = 343
+        CreateDefinitionSearch=340, DeleteDefinitionSearch = 342, AddParagraphIndexToDefinitionSearch = 343,
+        CreateCommentLink=350, DeleteCommentLink=352
     }
     public class SqlServerInfo
     {
@@ -191,7 +192,13 @@ namespace Myriad.Data
             {DataOperation.ReadOriginalWordKeywords,
                 "select RTrim(text), iscapitalized from keywords where keyid>=@key1 and keyid<=@key2" },
             { DataOperation.ReadMaxCommentID,
-                "select max(id) from comments" }
+                "select max(id) from comments" },
+            { DataOperation.CreateCommentParagraph,
+                "insert into comments (id, paragraphindex, text) values (@key1, @key2, @key3)" },
+            { DataOperation.CreateCommentLink,
+                "insert into commentlinks (id, start, last, originalword) values (@key1, @key2, @key3, @key4)" },
+            { DataOperation.DeleteCommentLink,
+                "delete from commentlinks where id=@key1" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

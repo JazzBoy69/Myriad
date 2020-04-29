@@ -98,18 +98,22 @@ function HandleAdditionalSearchTasks() {
 function LoadMainPane(path) {
     postAjax(path, {},
         function (data) {
-            UpdateMainPane(data);
-            var path = CurrentPath();
-            if (path.indexOf('/Search')>-1) {
-                SetSearchFieldText();
-            }
-            history.pushState(null, null, path);
-            SetTitle();
-            HandleAdditionalSearchTasks();
-            HandleHiddenDetails();
-            SetIcons();
-            ScrollWhenReady();
+            WriteMainPane(data);
         });
+}
+
+function WriteMainPane(data) {
+    UpdateMainPane(data);
+    var path = CurrentPath();
+    if (path.indexOf('/Search') > -1) {
+        SetSearchFieldText();
+    }
+    history.pushState(null, null, path);
+    SetTitle();
+    HandleAdditionalSearchTasks();
+    HandleHiddenDetails();
+    SetIcons();
+    ScrollWhenReady();
 }
 
 function SetIcons() {
@@ -580,7 +584,9 @@ function AcceptEditOriginalWord() {
         {
             text: editForm.innerText
         },
-        function () { LoadMainPane(currentPath()); }
+        function (data) {
+            WriteMainPane(data);
+        }
     );
     CloseEditForm();
 }

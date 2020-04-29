@@ -138,6 +138,8 @@ namespace Myriad.Pages
                     parser.SetParagraphInfo(ParagraphType.Comment, newID);
                     ArticleParagraph newParagraph = new ArticleParagraph(newID, Ordinals.first, newComment);
                     await EditParagraph.AddCommentParagraph(parser, newParagraph);
+                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateCommentLink),
+                        newID, originalWords[index].start, originalWords[index].end, 1);
                     continue;
                 }
                 int id = await GetOriginalWordCommentID(originalWords[index].start, originalWords[index].end, linkReader);
@@ -146,6 +148,8 @@ namespace Myriad.Pages
                     await DataWriterProvider.Write<int, int>(
                         SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraphsFromEnd),
                         id, Ordinals.first);
+                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteCommentLink),
+                        id);
                     continue;
                 }
                 ArticleParagraph paragraph = new ArticleParagraph(id, Ordinals.first, newComment);
