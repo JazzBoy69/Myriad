@@ -282,7 +282,7 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 #toc li:first-of-type{padding-top: 1rem;}
 #toc li:last-of-type{padding-bottom: 1rem;}
 #toc li a:hover{text-decoration: none;}
-#modal-overlay{visibility:hidden; opacity: 0; position:absolute; top: 0;left: 0;width: 100%;height:100vh;}
+#modal-overlay{visibility:hidden; opacity: 0; position:fixed; top: 0;left: 0;width: 100%;height:100vh;}
 #bibleindex {
     visibility: hidden;
     opacity: 0;

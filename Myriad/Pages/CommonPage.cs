@@ -52,7 +52,13 @@ namespace Myriad.Pages
             await writer.Append(GetURL() + GetQueryInfo());
             await writer.Append(HTMLTags.EndDiv);
         }
-
+        protected async Task AddTOCButton(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.hastoc + HTMLTags.CloseQuote +
+                HTMLTags.Class + HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag + HTMLTags.EndDiv);
+        }
         public async Task WriteHeader(HTMLWriter writer)
         {
             await writer.Append(LayoutHTML.startOfPage);
@@ -84,7 +90,7 @@ namespace Myriad.Pages
 
         protected abstract string PageScripts();
 
-        public abstract Task AddTOC(HTMLWriter writer);
+        public abstract Task WriteTOC(HTMLWriter writer);
 
         public abstract Task LoadTOCInfo(HttpContext context);
     }

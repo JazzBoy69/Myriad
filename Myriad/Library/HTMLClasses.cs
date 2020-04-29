@@ -58,6 +58,7 @@ namespace Myriad.Library
         internal const string suppressed = "suppressed";
         internal const string editdata = "editdata";
         internal const string originalword = "originalword";
+        internal const string hastoc = "hastoc";
     }
 
 }

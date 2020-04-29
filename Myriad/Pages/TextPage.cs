@@ -197,7 +197,7 @@ namespace Myriad.Pages
             return reader.GetData<int>();
         }
 
-        public override async Task AddTOC(HTMLWriter writer)
+        public override async Task WriteTOC(HTMLWriter writer)
         {
             var ids = GetCommentIDs(citation);
             if (ids.Count < 2) return;

@@ -9,6 +9,7 @@ namespace Myriad.Library
     public class CitationRange
     {
         public const int invalidID = Result.error;
+        public const int AllVerses = 255;
 
         KeyID start;
         KeyID end;
@@ -109,6 +110,12 @@ namespace Myriad.Library
         }
         public void Set(int book, int chapter, int verse)
         {
+            if (verse == AllVerses)
+            {
+                start = new KeyID(book, chapter, 1);
+                end = new KeyID(book, chapter, Bible.Chapters[book][chapter], KeyID.MaxWordIndex);
+                return;
+            }
             start = new KeyID(book, chapter, verse);
             end = new KeyID(book, chapter, verse, KeyID.MaxWordIndex);
         }

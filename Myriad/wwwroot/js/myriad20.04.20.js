@@ -113,7 +113,23 @@ function LoadMainPane(path) {
 }
 
 function SetIcons() {
+    SetTOCButton();
     SetEditButton();
+    SetOriginalWordButton();
+}
+
+function SetTOCButton() {
+    var hasTOC = document.getElementById('hastoc');
+    var tocButton = document.getElementById('menuTOC');
+    if (hasTOC === null) {
+        if (!tocButton.classList.contains('hidden')) {
+            tocButton.classList.add('hidden');
+        }
+        return;
+    }
+    if (tocButton.classList.contains('hidden')) {
+        tocButton.classList.remove('hidden');
+    }
 }
 
 function SetEditButton() {
@@ -126,6 +142,20 @@ function SetEditButton() {
     }
     if (editButton.classList.contains('hidden'))
         editButton.classList.remove('hidden');
+}
+
+function SetOriginalWordButton() {
+    var originalWords = document.getElementsByClassName('originalword');
+    var originalWordButton = document.getElementById('menuOriginalWord');
+    if ((originalWords === null) || (originalWords.length === 0)) {
+        if (!originalWordButton.classList.contains('hidden')) {
+            originalWordButton.classList.add('hidden');
+        }
+        return;
+    }
+    if (originalWordButton.classList.contains('hidden')) {
+        originalWordButton.classList.remove('hidden');
+    }
 }
 
 function AddQueryToPath(path, query) {

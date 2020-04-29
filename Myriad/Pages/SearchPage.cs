@@ -185,7 +185,7 @@ namespace Myriad.Pages
             await writer.Append(GetQueryInfo());
             await writer.Append(HTMLTags.EndDiv);
         }
-        public override async Task AddTOC(HTMLWriter writer)
+        public override async Task WriteTOC(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartList+
                 HTMLTags.StartListItem+

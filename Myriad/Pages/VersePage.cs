@@ -1018,7 +1018,7 @@ namespace Myriad.Pages
             return Task.CompletedTask;
         }
 
-        public override async Task AddTOC(HTMLWriter writer)
+        public override async Task WriteTOC(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartList +
                 HTMLTags.StartListItem +

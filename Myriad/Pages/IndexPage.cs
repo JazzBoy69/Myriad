@@ -63,6 +63,7 @@ ScrollToTop();
             await Parse();
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+            await AddTOCButton(writer);
         }
 
         private async Task Parse()
@@ -131,7 +132,7 @@ ScrollToTop();
             return true;
         }
 
-        public async override Task AddTOC(HTMLWriter writer)
+        public async override Task WriteTOC(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartList);
             await writer.Append(HTMLTags.ID);

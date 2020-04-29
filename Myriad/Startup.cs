@@ -103,7 +103,7 @@ namespace Myriad
         {
             CommonPage partialPage = await RequestedPage(context);
             await partialPage.LoadTOCInfo(context);
-            await partialPage.AddTOC(Writer.New(context.Response));
+            await partialPage.WriteTOC(Writer.New(context.Response));
         }
 
         private async Task HandlePartialRequest(HttpContext context)

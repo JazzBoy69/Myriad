@@ -55,6 +55,7 @@ namespace Myriad.Pages
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+            await AddTOCButton(writer);
         }
 
         private async Task Initialize()
@@ -167,7 +168,7 @@ namespace Myriad.Pages
             reader.Close();
         }
 
-        public override async Task AddTOC(HTMLWriter writer)
+        public override async Task WriteTOC(HTMLWriter writer)
         {
             var ids = GetCommentIDs(citation);
             if (ids.Count < 2) return;
@@ -205,6 +206,8 @@ namespace Myriad.Pages
         public override async Task LoadTOCInfo(HttpContext context)
         {
             await LoadQueryInfo(context.Request.Query);
+            citation = new Citation(citation.CitationRange.Book, citation.CitationRange.FirstChapter, 
+                CitationRange.AllVerses);
         }
 
         public override Task SetupParentPage()

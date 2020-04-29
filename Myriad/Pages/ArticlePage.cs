@@ -72,6 +72,7 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddEditPageData(writer);
+            await AddTOCButton(writer);
         }
 
         internal async Task UpdateArticle(HTMLWriter writer, IQueryCollection query, string text)
@@ -140,6 +141,7 @@ namespace Myriad.Pages
             await writer.Append(pageInfo.ID);
             await writer.Append(HTMLTags.EndDiv);
         }
+
         private async Task AddMainHeading(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartMainHeader);
@@ -240,7 +242,7 @@ namespace Myriad.Pages
             await parser.EndComments();
         }
 
-        public override async Task AddTOC(HTMLWriter writer)
+        public override async Task WriteTOC(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartList);
             await writer.Append(HTMLTags.ID);
