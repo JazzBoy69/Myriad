@@ -45,9 +45,12 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1056, SetFirstVerseAndAddResults },    //Mr 2:1! => :1! 
             { 0x1084, SetFirstChapterAndAddResults },  //Mt 24; =>  _24;
             { 0x1085, SetFirstChapter },               //Mt 24:14 =>  _24:
+            { 0x1232, SetFirstVerse },                 //Ge 30:13, 17-20, 22-24; => -xx, 22-
             { 0x1233, SetFirstVerse },                 //Mt 2:4-6, 14, 15 => -xx, 14,
             { 0x1234, SetFirstVerseAndAddResults },    //Mt 25:31-33, 40; => -xx, 40;
+            { 0x1253, SetSecondVerseAndAddResults },   //Ge 29:32–30:13, 17-20 => xx-xx:13,
             { 0x1254, SetSecondVerseAndAddResults },   //Joh 18:29–19:16  => xx-xx:16
+            { 0x1323, SetSecondVerseAndAddResults },   //Ge 30:13, 17-20, 22-24; => xx, xx-20,
             { 0x1324, SetSecondVerseAndAddResults },   //Mt 24:14, 16-18 =>  , xx-18;
             { 0x1332, SetFirstVerse },                 //Mt 2:4-6, 14, 15, 19-23; xx, xx, 19-
             { 0x1333, SetSecondVerseAndAddResults },   //Mt 2:4-6, 14, 15, 19-23; xx, xx, 15,

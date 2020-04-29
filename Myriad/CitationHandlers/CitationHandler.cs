@@ -61,16 +61,24 @@ namespace Myriad.CitationHandlers
         }
         public List<Citation> ParseCitations(StringRange givenRange, IParagraph givenParagraph)
         {
-            InitializeParser(givenRange, givenParagraph);
-            while (citation.Label.End <= rangeToParse.End)
+            try
             {
-                if (first) SkipLeadingSymbols();
-                GetCount();
-                GetToken();
-                bool success = TakeAction();
-                if (!success) break;
+                InitializeParser(givenRange, givenParagraph);
+                while (citation.Label.End <= rangeToParse.End)
+                {
+                    if (first) SkipLeadingSymbols();
+                    GetCount();
+                    GetToken();
+                    bool success = TakeAction();
+                    if (!success) break;
+                }
+                return results;
             }
-            return results;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
         }
 
         private bool TakeAction()
