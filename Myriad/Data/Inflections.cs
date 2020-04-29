@@ -43,7 +43,7 @@ namespace Myriad.Data
             word = word.Replace("'", "’").Replace("’s", "").Replace("’", "");
             if (index == Result.notfound)
             {
-                if (RemoveNameDiacritics(word) != word) return new List<string>() { RemoveNameDiacritics(word) };
+                if (RemoveDiacritics(word) != word) return new List<string>() { RemoveDiacritics(word) };
                 List<string> roots = EnglishRootsOf(word);
                 if (roots.Count > 0) return roots;
                 if (EnglishDictionary.IsCommonWord(word))
@@ -72,7 +72,7 @@ namespace Myriad.Data
             reader.Close();
             for (int index = Ordinals.first; index < results.Count; index++)
             {
-                results[index] = RemoveNameDiacritics(results[index]);
+                results[index] = RemoveDiacritics(results[index]);
             }
             return results;
         }
@@ -125,6 +125,7 @@ namespace Myriad.Data
             result = result.Replace("’", "");
             result = result.Replace("′", "");
             result = result.Replace("?", "");
+            result = result.Replace("'", "");
             return result;
         }
     }
