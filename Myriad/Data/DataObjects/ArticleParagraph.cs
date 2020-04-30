@@ -17,9 +17,52 @@ namespace Myriad.Data
         {
             this.ID = id;
             this.ParagraphIndex = index;
-            this.Text = text;
+            this.Text = CorrectEditString(text);
         }
+        public static string CorrectEditString(string p)
+        {
+            p = " " + p;
+            // p = p.Replace("\n", "");
+            p = p.Replace(' ', ' ');
+            p = p.Replace('‧', '∙');
+            p = p.Replace('′', '΄');
+            p = p.Replace('•', '∙');
+            p = p.Replace('‧', '∙');
+            p = p.Replace('´', '′');
+            p = p.Replace("--", "—");
+            p = p.Replace(". . . .", ". ._._.");
+            p = p.Replace(". . .", "._._.");
 
+            p = p.Replace(" \"", " “");
+            p = p.Replace(" '", " ‘");
+
+            p = p.Replace("“'", "“‘");
+
+
+
+            p = p.Replace("—" + '"', "—“");
+            p = p.Replace("—'", "—‘");
+
+            p = p.Replace("(\"", "(“");
+            p = p.Replace("('", "(‘");
+
+            p = p.Replace("[\"", "[“");
+            p = p.Replace("['", "[‘");
+
+            p = p.Replace("^\"", "^“");
+            p = p.Replace("**\"", "**“");
+            p = p.Replace("//\"", "//“");
+            p = p.Replace("^'", "^‘");
+            p = p.Replace("**'", "**‘");
+            p = p.Replace("//'", "//‘");
+
+            p = p.Replace("'", "’");
+            p = p.Replace(" \"", " “");
+            p = p.Replace('"', '”');
+            p = p.Substring(Ordinals.second);
+            return p;
+
+        }
         public void Create(DbCommand command)
         {
             throw new NotImplementedException();

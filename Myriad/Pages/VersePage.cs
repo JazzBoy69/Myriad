@@ -452,6 +452,17 @@ namespace Myriad.Pages
             return substituteWords;
         }
 
+        private async Task<string> GetSustituteWord(int id)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSubtituteWords),
+                id);
+            List<(string, int)> substituteWords = await reader.GetData<string, int>();
+            reader.Close();
+            return (substituteWords.Count > Number.nothing) ?
+                substituteWords[Ordinals.first].Item1:
+                "";
+        }
+
 
         private async Task EndRubySection(HTMLWriter writer)
         {
@@ -720,7 +731,6 @@ namespace Myriad.Pages
             string offsetRoot = ((offsetRoots.Count > Number.nothing) && (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
                 offsetRoots[Ordinals.first] :
                 offsetLabel;
-            //Check for exact match between label and article titles
             PageParser parser = new PageParser(writer);
             parser.SetTargetRange(citation.CitationRange);
             parser.HideDetails();
@@ -810,7 +820,7 @@ namespace Myriad.Pages
                 roots[Ordinals.first] :
                 label;
             string searchRoot = SearchPhrase(phraseRange);
-            bool substitute = !(synonyms.Contains(root) || synonyms.Contains(searchRoot) || 
+            bool substitute = !(synonyms.Contains(root) || synonyms.Contains(searchRoot) ||
                 synonyms.Contains(await AllWords.Conform(label)));
             bool part = false;
 
@@ -852,7 +862,7 @@ namespace Myriad.Pages
                 await writer.Append(label);
             }
             else
-                if (!part)
+            if (!part)
             {
                 await writer.Append(HTMLTags.StartBold);
                 await WriteTagAnchor(writer, label, articleID);
@@ -862,50 +872,48 @@ namespace Myriad.Pages
             {
                 if (substitute)
                 {
-                    await writer.Append(HTMLTags.EndBold+" (");
+                    string substituteWord = await GetSustituteWord(phraseRange.start);
+                    if (synonyms.Contains(substituteWord)) articleTitle = substituteWord;
+                    await writer.Append(HTMLTags.EndBold + " (");
                     await WriteTagAnchor(writer, articleTitle, articleID);
                     await writer.Append("): ");
+                    return;
                 }
-                else
-                    await writer.Append(":"+HTMLTags.EndBold+Symbol.space);
+                await writer.Append(":" + HTMLTags.EndBold + Symbol.space);
+                return;
             }
-            else
+            if (substitute)
             {
-                if (substitute)
+                string cleanLabel = Inflections.RemoveDiacritics(label);
+                if (synonyms.Contains(cleanLabel))
                 {
-                    string cleanLabel = Inflections.RemoveDiacritics(label);
-                    if (synonyms.Contains(cleanLabel))
-                    {
-                        await writer.Append(HTMLTags.EndBold +
-                            " (" + HTMLTags.StartSpanWithClass+
-                            HTMLClasses.originalword+
-                            HTMLTags.CloseQuoteEndTag);
-                        await WriteTagAnchor(writer, label, articleID);
-                        await writer.Append(HTMLTags.EndSpan+"): ");
-                    }
-                    else
-                    {
-                        await writer.Append(HTMLTags.EndBold+" (");
-                        await WriteTagAnchor(writer,
-                            articleTitle.Replace('(', '[').Replace(')', ']'),
-                            articleID);
-                        await writer.Append("; "+HTMLTags.StartSpanWithClass+
-                            HTMLClasses.originalword+
-                            HTMLTags.CloseQuoteEndTag);
-                        await writer.Append(label);
-                        await writer.Append(HTMLTags.EndSpan+"): ");
-                    }
-                }
-                else
-                {
-                    await writer.Append(HTMLTags.EndBold+
-                        " ("+HTMLTags.StartSpanWithClass+
-                        HTMLClasses.originalword+
+                    await writer.Append(HTMLTags.EndBold +
+                        " (" + HTMLTags.StartSpanWithClass +
+                        HTMLClasses.originalword +
                         HTMLTags.CloseQuoteEndTag);
-                    await writer.Append(label);
-                    await writer.Append(HTMLTags.EndSpan+"): ");
+                    await WriteTagAnchor(writer, label, articleID);
+                    await writer.Append(HTMLTags.EndSpan + "): ");
+                    return;
                 }
+                string substituteWord = await GetSustituteWord(phraseRange.start);
+                if (synonyms.Contains(substituteWord)) articleTitle = substituteWord;
+                await writer.Append(HTMLTags.EndBold + " (");
+                await WriteTagAnchor(writer,
+                    articleTitle.Replace('(', '[').Replace(')', ']'),
+                    articleID);
+                await writer.Append("; " + HTMLTags.StartSpanWithClass +
+                    HTMLClasses.originalword +
+                    HTMLTags.CloseQuoteEndTag);
+                await writer.Append(label);
+                await writer.Append(HTMLTags.EndSpan + "): ");
+                return;
             }
+            await writer.Append(HTMLTags.EndBold +
+                " (" + HTMLTags.StartSpanWithClass +
+                HTMLClasses.originalword +
+                HTMLTags.CloseQuoteEndTag);
+            await writer.Append(label);
+            await writer.Append(HTMLTags.EndSpan + "): ");
         }
 
         private string SearchPhrase((int start, int end) wordRange)

@@ -12,23 +12,17 @@ namespace Myriad.Data
         internal static List<string> RootsOf(string word)
         {
             if (word.Contains(' ')) return Phrases.RootsOf(word);
-            int index = word.IndexOf('`');
-            if (index == Result.notfound)
+            int index = word.IndexOfAny(Symbols.apostrophes);
+            word = word.Replace("'", "’").Replace('`', '’').Replace("’s", "").Replace("’", "");
+
+            if (RemoveNameDiacritics(word) != word) return new List<string>() { RemoveNameDiacritics(word) };
+            if (index > Result.notfound) return new List<string>() { word };
+            List<string> roots = EnglishRootsOf(word);
+            if (roots.Count > 0) return roots;
+            if (EnglishDictionary.IsCommonWord(word))
             {
-                index = word.IndexOf('\'');
-            }
-            word = word.Replace("'", "’").Replace("’s", "").Replace("’", "");
-            if (index == Result.notfound)
-            {
-                if (RemoveNameDiacritics(word) != word) return new List<string>() { RemoveNameDiacritics(word) };
-                List<string> roots = EnglishRootsOf(word);
-                if (roots.Count > 0) return roots;
-                if (EnglishDictionary.IsCommonWord(word))
-                {
-                    if (EnglishDictionary.CommonInflection(word) != word) return new List<string>()
+                if (EnglishDictionary.CommonInflection(word) != word) return new List<string>()
                     { EnglishDictionary.CommonInflection(word) };
-                }
-                return new List<string>() { };
             }
             return new List<string>() { };
         }
