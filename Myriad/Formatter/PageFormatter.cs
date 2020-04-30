@@ -391,6 +391,18 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndTag);
         }
 
+        public static async Task StartCitationLink(HTMLWriter writer, Citation citation, Citation targetCitation)
+        {
+            await writer.Append(HTMLTags.StartAnchor);
+            await writer.Append(HTMLTags.HREF);
+            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(HTMLTags.StartQuery);
+            await AppendQuery(writer, citation, targetCitation);
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
+            await writer.Append(HTMLTags.EndTag);
+        }
+
         internal static async Task AppendQuery(HTMLWriter writer, Citation citation)
         {
             await writer.Append("start=");
@@ -401,6 +413,29 @@ namespace Myriad.Parser
             {
                 await writer.Append("&word=");
                 await writer.Append(citation.CitationRange.Word);
+            }
+            if (citation.CitationType == CitationTypes.Chapter)
+            {
+                await writer.Append("&navigating=true");
+            }
+        }
+        internal static async Task AppendQuery(HTMLWriter writer, Citation citation, Citation targetCitation)
+        {
+            await writer.Append(ScripturePage.queryKeyStart+Symbol.equal);
+            await writer.Append(citation.CitationRange.StartID.ID);
+            await writer.Append(HTMLTags.Ampersand+ScripturePage.queryKeyEnd+Symbol.equal);
+            await writer.Append(citation.CitationRange.EndID.ID);
+            if (citation.CitationRange.WordIndexIsDeferred)
+            {
+                await writer.Append(HTMLTags.Ampersand+ScripturePage.queryKeyWord+Symbol.equal);
+                await writer.Append(citation.CitationRange.Word);
+            }
+            if (targetCitation != null)
+            {
+                await writer.Append(HTMLTags.Ampersand + ScripturePage.queryKeyTGStart + Symbol.equal);
+                await writer.Append(targetCitation.CitationRange.StartID.ID);
+                await writer.Append(HTMLTags.Ampersand + ScripturePage.queryKeyTGEnd + Symbol.equal);
+                await writer.Append(targetCitation.CitationRange.EndID.ID);
             }
             if (citation.CitationType == CitationTypes.Chapter)
             {

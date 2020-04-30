@@ -1059,9 +1059,9 @@ namespace Myriad.Pages
                 if (!range.Equals(lastRange))
                 {
                     await StartParagraph(writer, entry[Ordinals.first].suppressed);
-                    Citation citation = new Citation(range.start, range.end);
-                    citation.CitationType = CitationTypes.Text;
-                    await CitationConverter.AppendLink(writer, citation);
+                    Citation labelCitation = new Citation(range.start, range.end);
+                    labelCitation.CitationType = CitationTypes.Text;
+                    await CitationConverter.AppendLink(writer, labelCitation, citation);
                     await writer.Append(": ");
                     lastRange = range;
                 }

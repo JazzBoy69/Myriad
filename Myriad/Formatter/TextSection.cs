@@ -20,6 +20,7 @@ namespace Myriad.Formatter
         readonly FigureFormatter figureFormatter;
         bool activeSet;
         Citation sourceCitation;
+        Citation targetCitation;
         bool readingView;
         int headerCount = Ordinals.first;
 
@@ -29,6 +30,11 @@ namespace Myriad.Formatter
             this.writer = writer;
             Parser = new PageParser(writer);
             figureFormatter = new FigureFormatter(writer);
+        }
+
+        public void SetTargetCitation(Citation targetCitation)
+        {
+            this.targetCitation = targetCitation;
         }
 
         public async Task AddTextSection(List<int> commentIDs, int index, Citation sourceCitation, bool navigating, bool readingView)
@@ -291,6 +297,7 @@ namespace Myriad.Formatter
         private async Task AddComment()
         {
             await StartCommentSection();
+            if (targetCitation != null) Parser.SetTargetRange(targetCitation.CitationRange);
             for (int i = Ordinals.second; i < paragraphs.Count; i++)
             {
                 await Parser.ParseParagraph(paragraphs[i], i);

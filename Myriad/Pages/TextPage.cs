@@ -188,6 +188,7 @@ namespace Myriad.Pages
         {
             textSection = new TextSectionFormatter(writer);
             commentIDs = GetCommentIDs(citation);
+            if (targetCitation != null) textSection.SetTargetCitation(targetCitation);
         }
 
         private List<int> GetCommentIDs(Citation citation)
