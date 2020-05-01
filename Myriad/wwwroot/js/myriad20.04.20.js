@@ -26,6 +26,7 @@ function LoadPage(path) {
 
 function LoadCompletePage(path) {
     window.location = path.replace("&partial=true", "");
+    SetIcons();
 }
 
 function HandleTOCClick(event) {
@@ -85,6 +86,7 @@ function LoadMainPaneHistory(path) {
             HandleAdditionalSearchTasks();
             HandleHiddenDetails();
             ScrollWhenReady();
+            SetIcons();
         });
 }
 
@@ -852,11 +854,24 @@ function AddShortcut() {
 function HandleShortcut(e) {
     if (e.keyCode) code = e.keyCode;
     else if (e.which) code = e.which;
-    if (code !== 121) return true; //not F10
-    if (!e.ctrlKey) return true; //Ctrl not pressed
+    let key = "";
+    if (code === 121) key = "F10";
+    if (code === 123) key = "F12";
+    if (key === "") return true;
+    if (!e.ctrlKey) return true;
     e.preventDefault();
-    document.getElementById('searchField').focus();
-    return false;
+    if (key === "F10") {
+        document.getElementById('searchField').focus();
+        return false;
+    }
+    var paginate = document.getElementById('paginate');
+    if (paginate === null) return true;
+    if (e.shiftKey) {
+        GoToPreceding();
+        return false;
+    }
+    GoToNext();
+    return false
 }
 
 function Edit() {

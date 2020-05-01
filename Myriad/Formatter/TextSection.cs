@@ -247,9 +247,9 @@ namespace Myriad.Formatter
                 HTMLTags.Class+
                 HTMLClasses.tab+
                 HTMLTags.CloseQuoteEndTag);
+            activeSet = false;
             for (int i = Ordinals.first; i < idRanges.Count; i++)
             {
-                activeSet = false;
                 await writer.Append(HTMLTags.StartListItem+
                     HTMLTags.ID+
                     HTMLClasses.tabs);
