@@ -42,6 +42,7 @@ namespace Myriad.Pages
         public SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>> AdditionalArticles { get; } = new SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>>();
         public async Task LoadInfo(CitationRange citationRange)
         {
+            await citationRange.ResolveLastWordIndex();
             ReadSearchWords(citationRange);
             FindPhrases(citationRange);
             await ArrangeRelatedArticles(citationRange);
