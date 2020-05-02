@@ -12,10 +12,10 @@ namespace Myriad.Data
         internal static List<string> RootsOf(string word)
         {
             if (word.Contains(' ')) return Phrases.RootsOf(word);
+            word = RemoveNameDiacritics(word);
             int index = word.IndexOfAny(Symbols.apostrophes);
             word = word.Replace("'", "’").Replace('`', '’').Replace("’s", "").Replace("’", "");
 
-            if (RemoveNameDiacritics(word) != word) return new List<string>() { RemoveNameDiacritics(word) };
             if (index > Result.notfound) return new List<string>() { word };
             List<string> roots = EnglishRootsOf(word);
             if (roots.Count > 0) return roots;

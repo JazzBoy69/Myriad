@@ -211,7 +211,7 @@ namespace Myriad.Parser
             {
                 if ((currentCitation.CitationRange.FirstChapter == currentCitation.CitationRange.LastChapter) &&
                     (currentCitation.CitationRange.FirstVerse + 1 == currentCitation.CitationRange.LastVerse))
-                    await writer.Append(", ");
+                    await writer.Append(","+HTMLTags.NonbreakingSpace);
                 else
                     await writer.Append("-");
                 if (!currentCitation.CitationRange.OneChapter)

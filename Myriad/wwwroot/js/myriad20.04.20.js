@@ -864,6 +864,12 @@ function HandleShortcut(e) {
         document.getElementById('searchField').focus();
         return false;
     }
+    var editForm = document.getElementById('editForm');
+    if (!editForm.classList.contains('hidden')) {
+
+        AcceptOrCancelEditForm(!e.shiftKey);
+        return false;
+    }
     var paginate = document.getElementById('paginate');
     if (paginate === null) return true;
     if (e.shiftKey) {
@@ -872,6 +878,15 @@ function HandleShortcut(e) {
     }
     GoToNext();
     return false
+}
+
+function AcceptOrCancelEditForm(accept) {
+    if (accept) {
+        var acceptButton = document.getElementById('menuAccept');
+        acceptButton.click();
+        return;
+    }
+    CloseEditForm();
 }
 
 function Edit() {

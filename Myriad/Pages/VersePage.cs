@@ -1081,6 +1081,7 @@ namespace Myriad.Pages
                     parser.SetParagraphInfo(ParagraphType.Comment, articleID);
                     commentReader.SetParameter(articleID, paragraphIndex);
                     string paragraph = await commentReader.GetDatum<string>();
+                    if (paragraph == null) continue;
                     await parser.ParseParagraph(paragraph, paragraphIndex);
                 }
             }

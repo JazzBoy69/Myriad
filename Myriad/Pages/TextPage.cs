@@ -123,6 +123,7 @@ namespace Myriad.Pages
             await AddEditPageData(writer);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+            await AddPagination(writer);
         }
 
         internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
