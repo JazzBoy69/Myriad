@@ -16,8 +16,8 @@ function HandleLink(event) {
 function LoadPage(path) {
     if (performance.navigation.type === 1) {
         LoadCompletePage(path);
+        HandleHiddenDetails();
         HandleAdditionalSearchTasks();
-        SetIcons();
         return;
     }
     if (path.indexOf('partial') === -1) path = AddQueryToPath(path, 'partial=true');
@@ -26,6 +26,7 @@ function LoadPage(path) {
 
 function LoadCompletePage(path) {
     window.location = path.replace("&partial=true", "");
+    SetupPartialPageLoad();
     SetIcons();
 }
 
@@ -72,6 +73,7 @@ function LoadHistoryPage(path) {
         window.location = path;
         HandleAdditionalSearchTasks();
         HandleHiddenDetails();
+        SetIcons();
         return;
     }
     var target = AddQueryToPath(path, 'partial=true');
@@ -95,6 +97,7 @@ function HandleAdditionalSearchTasks() {
     if (queryElement === null) return;
     SetSearchFieldText();
     LoadSynonymSearchResults();
+    SetupPartialPageLoad();
 }
 
 function LoadMainPane(path) {
@@ -114,6 +117,7 @@ function WriteMainPane(data) {
     SetTitle();
     HandleAdditionalSearchTasks();
     HandleHiddenDetails();
+    SetupPartialPageLoad();
     SetIcons();
     ScrollWhenReady();
 }

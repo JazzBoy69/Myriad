@@ -13,6 +13,8 @@ namespace Myriad.Library
     AddShortcut();
     SetupIndex();
 SetupPartialPageLoad();
+HandleHiddenDetails();
+SetIcons();
 ScrollToTop();
 };
     </script>";
