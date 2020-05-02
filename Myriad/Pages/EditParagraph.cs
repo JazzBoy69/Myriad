@@ -105,6 +105,18 @@ namespace Myriad.Pages
             await UpdateDefinitionSearches(articleID, searches);
         }
 
+        internal static async Task DeleteArticleParagraph(int id, int index)
+        {
+            var citationsToDelete = await ReadRelatedArticleLinks(id, index);
+            ArticleParagraph paragraph = new ArticleParagraph(id, index, "");
+            await DeleteRelatedArticles(paragraph, citationsToDelete);
+            await DeleteDefinitionSearches(paragraph, citationsToDelete);
+            await UpdateRelatedTags(new List<string>(), paragraph);
+            await DataWriterProvider.Write<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.DeleteArticleParagraph),
+                id,index);
+        }
+
         private static async Task UpdateDefinitionSearches(int articleID, 
             List<(int start, int end, int paragraphIndex)> searches)
         {
@@ -329,6 +341,17 @@ namespace Myriad.Pages
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 crossReferencesToAdd);
         }
+        internal async static Task DeleteCommentParagraph(int ID, int index)
+        {
+            var oldCitations = await ReadCrossReferences(ID, index);
+            List<CrossReference> linksToDelete =
+                 await CitationConverter.ToCrossReferences(oldCitations, ID, index);
+            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
+                linksToDelete);
+            await DataWriterProvider.Write<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraph),
+                ID, index);
+        }
 
         internal async static Task AddArticleParagraph(PageParser parser, ArticleParagraph paragraph)
         {
@@ -351,7 +374,6 @@ namespace Myriad.Pages
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
                 tagsToAdd);
         }
-
         private static async Task<List<Citation>> ReadCrossReferences(int ID, int paragraphIndex)
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCrossReferences),

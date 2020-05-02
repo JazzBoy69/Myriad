@@ -36,11 +36,26 @@ namespace Myriad.Data
                     result.Append(newWord);
                     continue;
                 }
-                result.Append(GetClosestMatch(newWord));
+                newWord = await GetCorrectSpelling(words[index]);
+                if (newWord != null)
+                {
+                    result.Append(newWord);
+                    continue;
+                }
+                result.Append(GetClosestMatch(words[index]));
                 result.Append(' ');
             }
             if (result.Length == 0) return "";
             return result.ToString();
+        }
+
+        private static async Task<string> GetCorrectSpelling(string misspelled)
+        {
+            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadCorrectSpelling),
+                misspelled);
+            string correct = await reader.GetDatum<string>();
+            reader.Close();
+            return correct;
         }
 
         internal static async Task<bool> WordExists(string word)
@@ -54,9 +69,8 @@ namespace Myriad.Data
 
         internal static string GetClosestMatch(string word)
         {
+            if (word == null) return null;
             string posibleResult = word;
-            var roots = Inflections.RootsOf(word);
-            if (roots.Contains(word)) return word;
             int distance = 2000;
             if (word.Length > 1)
             {

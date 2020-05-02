@@ -113,9 +113,8 @@ namespace Myriad.Pages
             }
             if (newParagraphs.Count < paragraphs.Count)
             {
-                await DataWriterProvider.Write<int, int>(
-                    SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraphsFromEnd),
-                    id, newParagraphs.Count);
+                for (int i = newParagraphs.Count; i < paragraphs.Count; i++)
+                    await EditParagraph.DeleteCommentParagraph(id, i);
             }
 
             await textFormatter.EndCommentSection();

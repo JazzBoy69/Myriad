@@ -24,7 +24,7 @@ namespace Myriad.Data
                 if (EnglishDictionary.CommonInflection(word) != word) return new List<string>()
                     { EnglishDictionary.CommonInflection(word) };
             }
-            return new List<string>() { };
+            return new List<string>() { word };
         }
         internal static List<string> HardRootsOf(string word)
         {

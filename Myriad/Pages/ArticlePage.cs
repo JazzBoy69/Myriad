@@ -129,9 +129,10 @@ namespace Myriad.Pages
             await parser.EndComments();
             if (newParagraphs.Count < paragraphs.Count)
             {
-                await DataWriterProvider.Write<int, int>(
-                    SqlServerInfo.GetCommand(DataOperation.DeleteArticleParagraphsFromEnd),
-                    id, newParagraphs.Count);
+                for (int i = newParagraphs.Count; i < paragraphs.Count; i++)
+                {
+                    await EditParagraph.DeleteArticleParagraph(pageInfo.ID, i);
+                }
             }
             await AddEditPageData(writer);
             await AddPageTitleData(writer);

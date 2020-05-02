@@ -144,12 +144,8 @@ namespace Myriad.Pages
                 }
                 int id = await GetOriginalWordCommentID(originalWords[index].start, originalWords[index].end, linkReader);
                 if (newComment == "")
-                { 
-                    await DataWriterProvider.Write<int, int>(
-                        SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraphsFromEnd),
-                        id, Ordinals.first);
-                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteCommentLink),
-                        id);
+                {
+                    await EditParagraph.DeleteCommentParagraph(id, Ordinals.first);
                     continue;
                 }
                 ArticleParagraph paragraph = new ArticleParagraph(id, Ordinals.first, newComment);

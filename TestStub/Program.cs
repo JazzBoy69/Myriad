@@ -26,7 +26,7 @@ namespace TestStub
         async private void RunTest()
         {
             string citationText;
-            var citations = CitationConverter.FromString("Mt 5:3, 10, 19, 20");
+            var citations = CitationConverter.FromString("Ge 36:2, 5-8, 14, 18, 25");
             citationText = await CitationConverter.ToString(citations);
             Console.WriteLine(citationText);
         }

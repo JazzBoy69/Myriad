@@ -89,6 +89,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1856, SetFirstVerseAndAddResults },    //Mr 2:1! => _xx:1!
             { 0x1857, SetFirstVerse },                 // Mt 24:14.preached => xx:14.
             { 0x1892, SetFirstVerse },                 //3Jo 1, 5-8 => _xx, 5-
+            { 0x1923, SetSecondVerseAndAddResults },   //Ge 36:2, 5-8, 14 => , xx-8,
             { 0x1924, SetSecondVerseAndAddResults },    //Mt 3:1, 6, 13-17; => , xx-17;
             { 0x1932, AddBrokenCommaMarker },          //Mt 3:1, 6, 13-17; => xx, xx, 13-
             { 0x1933, SetSecondVerseAndAddResults },                 //Mt 5:3, 10, 19, 20 => xx, 19,
