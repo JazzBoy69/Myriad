@@ -29,7 +29,7 @@ namespace Myriad.Pages
 
         public override bool IsValid()
         {
-            return (pageInfo.Query != null) || (pageInfo.IDList != null);
+            return (!string.IsNullOrEmpty(pageInfo.Query)) || (pageInfo.IDList != null);
         }
 
         public void SetPageInfo(SearchPageInfo info)

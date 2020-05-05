@@ -146,7 +146,23 @@ namespace Myriad.Pages
             <span id='zoomclose' onclick=CloseModalPicture(event)>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
         </div>
-<div id=top></div><article><div id=editForm contenteditable=true class='hidden' data-pos=0 data-id=0 data-index=0 data-edittype=0></div><div id='mainPane'>
+<div id=top></div><article>
+<div id=editFormContainer class='flexTabs hidden fixedposition'>
+    <div id='editTabsHeader' class=flexTabsHeader>
+        <ul class='tabs'>
+            <li class='active'>Header 1</li>
+            <li>Header 2</li>
+        </ul>
+    </div>
+    <div id='editTabs' class=flexTabsTabs>
+        <ul id='editTabList' class=tab>
+            <li id=edittab-0 class='active editcontent'>
+                <div id=editForm contenteditable=true data-pos=0 data-id=0 data-index=0 data-edittype=0></div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id='mainPane'>
 ";
         public const string close = @"</div></article></div>";
         public const string tocdiv = "<div id=tocdiv class=hidden></div>";

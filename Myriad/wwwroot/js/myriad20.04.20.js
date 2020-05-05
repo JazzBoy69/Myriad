@@ -129,6 +129,21 @@ function SetIcons() {
     SetOriginalWordButton();
 }
 
+function SetModal() {
+    var search = document.getElementById('search');
+    search.disabled = true;
+    var home = document.querySelector('#menuHome a');
+    home.removeAttribute('href');
+    HidePaginationButtons();
+}
+
+function ResetModal() {
+    var search = document.getElementById('search');
+    search.disabled = false;
+    var home = document.querySelector('#menuHome a');
+    home.href = '/Index?name=home';
+}
+
 function SetTOCButton() {
     var hasTOC = document.getElementById('hastoc');
     var tocButton = document.getElementById('menuTOC');
@@ -145,21 +160,17 @@ function SetTOCButton() {
 
 function SetPaginationButtons() {
     var paginate = document.getElementById('paginate');
+    if (paginate === null) {
+        HidePaginationButtons();
+        return;
+    }
+    ShowPaginationButtons();
+}
+
+function ShowPaginationButtons() {
     var upButton = document.getElementById('menuUp');
     var nextButton = document.getElementById('menuNext');
     var previousButton = document.getElementById('menuPrevious');
-    if (paginate === null) {
-        if (!upButton.classList.contains('hidden')) {
-            upButton.classList.add('hidden');
-        }
-        if (!nextButton.classList.contains('hidden')) {
-            nextButton.classList.add('hidden');
-        }
-        if (!previousButton.classList.contains('hidden')) {
-            previousButton.classList.add('hidden');
-        }
-        return;
-    }
     if (upButton.classList.contains('hidden')) {
         upButton.classList.remove('hidden');
     }
@@ -168,6 +179,21 @@ function SetPaginationButtons() {
     }
     if (previousButton.classList.contains('hidden')) {
         previousButton.classList.remove('hidden');
+    }
+}
+
+function HidePaginationButtons() {
+    var upButton = document.getElementById('menuUp');
+    var nextButton = document.getElementById('menuNext');
+    var previousButton = document.getElementById('menuPrevious');
+    if (!upButton.classList.contains('hidden')) {
+        upButton.classList.add('hidden');
+    }
+    if (!nextButton.classList.contains('hidden')) {
+        nextButton.classList.add('hidden');
+    }
+    if (!previousButton.classList.contains('hidden')) {
+        previousButton.classList.add('hidden');
     }
 }
 
@@ -537,6 +563,8 @@ function EditOriginalWords() {
 }
 
 function ShowEditWindow(data) {
+    var scriptureTabs = document.getElementById('editTabList');
+    scriptureTabs.innerHTML = '<li id=edittab-0 class=\'active editcontent\'><div id=editForm contenteditable=true data-pos=0 data-id=0 data-index=0 data-edittype=0></div></li>';
     var editForm = document.getElementById('editForm');
     var mainPane = document.getElementById('mainPane');
     var menuCancel = document.getElementById('menuCancel');
@@ -551,17 +579,117 @@ function ShowEditWindow(data) {
     menuOriginalWord.classList.add('hidden');
     menuCancel.classList.remove('hidden');
     menuAccept.classList.remove('hidden');
-    editForm.classList.remove('hidden');
+    var editFormContainer = document.getElementById('editFormContainer');
+    editFormContainer.classList.remove('hidden');
+    SetModal();
+    SetEditTabs();
+}
+
+function SetEditTabs() {
+    var section = GetScriptureSection();
+    var header = (typeof section === 'undefined') ?
+        null :
+        section.getElementsByClassName('scripture-header');
+    if ((header !== null) && (header.length>0)){
+        ShowTabsHeader(header[0]);
+        AppendScriptureTabs(section);
+        return;
+    }
+    HideEditTabsHeader();
+}
+
+function GetScriptureSection() {
+    var paragraph = document.getElementsByClassName('updating');
+    if ((paragraph !== null) && (paragraph.length > 0)) {
+        return paragraph[0].closest('.scripture-section');
+    }
+    return document.getElementsByClassName('scripture-section')[0];
+}
+
+function ShowTabsHeader(header) {
+    var listItems = header.getElementsByTagName('li');
+    if (listItems.length === 0) {
+        ShowSingleTextTab(header);
+        return;
+    }
+    var editTabsHeader = document.getElementById('editTabsHeader');
+    var tabs = '<ul class=tabs><li data-index=0 class=active onclick=SwitchEditTab(this)>Comment</li>';
+    for (var i = 0; i < listItems.length; i++) {
+        tabs += '<li data-index=' + (i+1) +' onclick=SwitchEditTab(this)>' + listItems[i].innerText + '</li>';
+    }
+    editTabsHeader.innerHTML = tabs + '</ul>';
+    editTabsHeader.classList.remove('hidden');
+    var editTabs = document.getElementById('editTabs');
+    editTabs.classList.remove('complete');
+}
+
+function AppendScriptureTabs(section) {
+    var existingTabs = section.getElementsByClassName('tab');
+    if ((existingTabs === null) || (existingTabs.length === 0)) {
+        AppendSingleTab(section);
+        return;
+    }
+    var list = existingTabs[0].getElementsByTagName('li');
+    var listHTML = '';
+    for (var i = 0; i < list.length; i++) {
+        listHTML += '<li id=edittab-' + (i + 1) + '><p>' + list[i].innerText + '</p></li>';
+    }
+    var scriptureTabs = document.getElementById('editTabList');
+    scriptureTabs.innerHTML += listHTML;
+}
+
+function AppendSingleTab(section) {
+    var quote = section.getElementsByClassName('scripture-quote')[0];
+    var scriptureTabs = document.getElementById('editTabList');
+    scriptureTabs.innerHTML += '<li id=edittab-1><p>' + quote.innerText+'</p></li>';
+}
+
+function SwitchEditTab(element) {
+    if (element.classList.contains('active')) return;
+    var tabIndex = element.getAttribute('data-index');
+    var siblings = getSiblings(element);
+    RemoveClassFromGroup(siblings, 'active');
+    element.classList.add('active');
+    var tabToActivate = document.getElementById('edittab-' + tabIndex);
+    tabToActivate.classList.add('active');
+    var tabSiblings = getSiblings(tabToActivate);
+    RemoveClassFromGroup(tabSiblings, 'active');
+}
+
+function ShowSingleTextTab(header) {
+    var heading = header.getElementsByTagName('h3');
+    var text = heading[0].innerText;
+    var p = text.indexOf('(');
+    var scripture = text.substr(p + 1, text.length - p - 2);
+    var editTabsHeader = document.getElementById('editTabsHeader');
+    var tabs = '<ul class=tabs><li data-index=0 class=active onclick=SwitchEditTab(this)>Comment</li><li data-index=1 onclick=SwitchEditTab(this)>' + scripture + '</li></ul>';
+    editTabsHeader.innerHTML = tabs;
+    editTabsHeader.classList.remove('hidden');
+    var editTabs = document.getElementById('editTabs');
+    editTabs.classList.remove('complete');
+}
+
+function HideEditTabsHeader() {
+    var editTabsHeader = document.getElementById('editTabsHeader');
+    if (!editTabsHeader.classList.contains('hidden')) {
+        editTabsHeader.classList.add('hidden');
+    }
+    var editTabs = document.getElementById('editTabs');
+    if (!editTabs.classList.contains('complete')) {
+        editTabs.classList.add('complete');
+    }
 }
 
 function CloseEditForm() {
-    var editForm = document.getElementById('editForm');
+    var editFormContainer = document.getElementById('editFormContainer');
     var mainPane = document.getElementById('mainPane'); 
-    editForm.classList.add('hidden');
+    editFormContainer.classList.add('hidden');
     menuCancel.classList.add('hidden');
     mainPane.classList.remove('hidden');
     SetIcons();
+    ResetModal();
     menuAccept.classList.add('hidden');
+    var editForm = document.getElementById('editForm');
     var scrollPos = editForm.getAttribute('data-pos');
     document.documentElement.scrollTop = scrollPos;
 }
@@ -868,7 +996,7 @@ function HandleShortcut(e) {
         document.getElementById('searchField').focus();
         return false;
     }
-    var editForm = document.getElementById('editForm');
+    var editForm = document.getElementById('editFormContainer');
     if (!editForm.classList.contains('hidden')) {
 
         AcceptOrCancelEditForm(!e.shiftKey);

@@ -60,6 +60,12 @@ namespace Myriad.Library
         internal const string originalword = "originalword";
         internal const string hastoc = "hastoc";
         internal const string paginate = "paginate";
+        internal const string flexTabs = "flexTabs";
+        internal const string flexTabsHeader = "flexTabsHeader";
+        internal const string flexTabsTabs = "flexTabsTabs";
+        internal const string definitionsheader = flexTabsHeader;
+        internal const string definitions = flexTabsTabs;
+        internal const string searchTabs = flexTabs;
     }
 
 }

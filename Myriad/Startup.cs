@@ -159,7 +159,8 @@ namespace Myriad
 
             if ((path == SearchPage.pageURL) && (query.ContainsKey("q")))
             {
-                Citation citation = CitationConverter.FromString(query["q"])[Ordinals.first];
+                string searchQuery = query["q"];
+                Citation citation = CitationConverter.FromString(searchQuery)[Ordinals.first];
                 if (citation.CitationType == CitationTypes.Invalid)
                 {
                     CommonPage searchPage = new SearchPage();

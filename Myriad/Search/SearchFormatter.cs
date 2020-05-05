@@ -42,9 +42,9 @@ namespace Myriad.Search
             await writer.Append(HTMLTags.StartDivWithID);
             await writer.Append("definitionDiv");
             await writer.Append(HTMLTags.CloseQuote +
-                HTMLTags.Class);
-            await writer.Append("searchTabs");
-            await writer.Append(HTMLTags.CloseQuoteEndTag);
+                HTMLTags.Class+
+                HTMLClasses.searchTabs+
+                HTMLTags.CloseQuoteEndTag);
         }
 
         internal async static Task WriteDefinitionsBlock(HTMLWriter writer, SearchPageInfo pageInfo)
@@ -60,6 +60,7 @@ namespace Myriad.Search
             await WriteDefinitionHeadings(writer, mainDefinition, headings, pageInfo);
             itemCount = Ordinals.first;
             MarkupParser parser = new MarkupParser(writer);
+            await StartDefinitionTabs(writer);
             foreach (KeyValuePair<string, int> entry in headings.OrderBy(e => e.Key))
             {
                 int id = entry.Value;
@@ -140,6 +141,18 @@ namespace Myriad.Search
             await writer.Append("</ul></div></section>");
         }
 
+        private static async Task StartDefinitionTabs(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithClass +
+                            HTMLClasses.definitions +
+                            HTMLTags.CloseQuoteEndTag +
+                            HTMLTags.StartList +
+                            HTMLTags.ID);
+            await writer.Append("tabs-0-tab");
+            await writer.Append(HTMLTags.Class+HTMLClasses.tab+
+                HTMLTags.CloseQuoteEndTag);
+        }
+
         private static async Task WriteRelatedParagraph(HTMLWriter writer, MarkupParser parser, int id, int paragraphIndex)
         {
             string paragraphText = await GetArticleParagraph(id, paragraphIndex);
@@ -192,7 +205,7 @@ namespace Myriad.Search
         private static async Task StartDefinitionsTitles(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.StartDivWithClass);
-            await writer.Append("definitionsheader");
+            await writer.Append(HTMLClasses.definitionsheader);
             await writer.Append(HTMLTags.CloseQuoteEndTag +
                 HTMLTags.StartList +
                 HTMLTags.ID);
@@ -261,14 +274,16 @@ namespace Myriad.Search
             {
                 int id = entry.Value;
                 string word = entry.Key;
-                await writer.Append("<li id=\"tabs0-");
+                await writer.Append("<li id='tabs0-");
                 await writer.Append(itemCount);
-                await writer.Append("\"");
+                await writer.Append("'");
                 if (mainDefinition != Result.notfound)
                 {
                     if (entry.Value == mainDefinition)
                     {
-                        await writer.Append(" class=\"active\"");
+                        await writer.Append(HTMLTags.Class +
+                            HTMLClasses.active +
+                            HTMLTags.CloseQuote);
                         active = true;
                     }
                 }
@@ -289,17 +304,23 @@ namespace Myriad.Search
             }
             if (!string.IsNullOrEmpty(pageInfo.Query))
             {
-                await writer.Append("<li id=\"tabs0-");
+                await writer.Append("<li id='tabs0-");
                 await writer.Append(itemCount);
-                await writer.Append("\"");
+                await writer.Append("'");
                 await writer.Append(HTMLTags.OnClick +
                     JavaScriptFunctions.HandleDefinitionClick);
-                if (!active) await writer.Append(" class='active'");
-                await writer.Append(">");
+                if (!active)
+                {
+                    await writer.Append(HTMLTags.Class +
+                        HTMLClasses.active +
+                        HTMLTags.CloseQuote);
+                    active = true;
+                }
+                await writer.Append(HTMLTags.EndTag);
                 await writer.Append("Add New Article");
-                await writer.Append("</li>");
+                await writer.Append(HTMLTags.EndListItem);
             }
-            await writer.Append("</ul></div><div class='definitions'><ul id=\"tabs-0-tab\" class=\"tab\">");
+            await writer.Append(HTMLTags.EndList + HTMLTags.EndDiv);
         }
 
         public static async Task AppendSearchResults(int startIndex, int endIndex, HTMLWriter writer, List<SearchSentence> searchResults)
