@@ -5,9 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Feliciana.Library;
 using Feliciana.Data;
-using Myriad.Data;
 
-namespace Myriad.Search
+namespace Myriad.Data
 {
     public class SearchResult : DataObject
     {

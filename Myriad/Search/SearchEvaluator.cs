@@ -362,6 +362,7 @@ namespace Myriad.Search
                 reader.SetParameter(definitionIDs[index], root);
                 results.AddRange(reader.GetData<string>());
             }
+            reader.Close();
             return results;
         }
 

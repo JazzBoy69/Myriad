@@ -152,12 +152,14 @@ namespace Myriad.Pages
                 parser.SetParagraphInfo(ParagraphType.Comment, id);
                 await EditParagraph.UpdateCommentParagraph(parser, paragraph);
             }
+            linkReader.Close();
         }
 
         private async Task<int> GetNewCommentID()
         {
             var reader = new DataReaderProvider(SqlServerInfo.GetCommand(DataOperation.ReadMaxCommentID));
             int id = await reader.GetDatum<int>();
+            reader.Close();
             return id + 1;
         }
 
@@ -200,6 +202,7 @@ namespace Myriad.Pages
                 }
                 await writer.Append(Symbol.lineFeed);
             }
+            commentReader.Close();
             keywordReader.Close();
             linkReader.Close();
         }
@@ -308,7 +311,7 @@ namespace Myriad.Pages
             var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadRelatedArticles),
                 matrixWord.Start, matrixWord.End);
             var relatedArticles = relatedReader.GetClassData<RangeAndParagraph>();
-
+            relatedReader.Close();
             for (int index = Ordinals.first; index < relatedArticles.Count; index++)
             {
                 List<string> synonyms = ArticlePage.GetSynonyms(relatedArticles[index].ArticleID);
@@ -665,6 +668,7 @@ namespace Myriad.Pages
             var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentLinks),
                 commentID);
             (int start, int end) range = await reader.GetDatum<int, int>();
+            reader.Close();
             Citation crossreference = new Citation(range.start, range.end);
             crossreference.CitationType = (crossreference.CitationRange.Length < 10) ?
                  CitationTypes.Verse :

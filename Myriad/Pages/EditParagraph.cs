@@ -98,6 +98,7 @@ namespace Myriad.Pages
             var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchesInArticle),
                 articleID);
             List<(int start, int end, int paragraphIndex)> searches = await reader.GetData<int, int, int>();
+            reader.Close();
             if ((searches.Count == Number.nothing) || (searches[Ordinals.first].paragraphIndex > -1)) return;
             MarkupParser parser = new MarkupParser(Writer.New());
             List<string> paragraphs = ArticlePage.GetPageParagraphs(articleID);

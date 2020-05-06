@@ -343,7 +343,7 @@ namespace Myriad.Pages
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadRelatedArticles),
                 citationRange.StartID.ID, citationRange.EndID.ID);
             relatedArticles = reader.GetClassData<RangeAndParagraph>();
-
+            reader.Close();
             foreach (var article in relatedArticles)
             {
                 if (usedArticles.Contains(article.Key))
@@ -460,6 +460,7 @@ namespace Myriad.Pages
             var reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(DataOperation.DefinitionSearchesInRange),
                 range.start, range.end, articleID);
             List<(int start, int end)> ranges = await reader.GetData<int, int>();
+            reader.Close();
             return ranges.Count > Number.nothing;
         }
 

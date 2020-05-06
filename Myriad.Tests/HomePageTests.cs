@@ -70,6 +70,7 @@ namespace Myriad.Tests
                 SqlServerInfo.GetCommand(DataOperation.ReadNavigationParagraph),
                 53, 7);
             string paragraph = await reader.GetDatum<string>();
+            reader.Close();
             ReadMarkupParagraphs();
             Assert.AreEqual(paragraphs[Ordinals.second], paragraph);
         }

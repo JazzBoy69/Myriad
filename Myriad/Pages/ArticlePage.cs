@@ -93,6 +93,7 @@ namespace Myriad.Pages
         {
             var reader = new DataReaderProvider(SqlServerInfo.GetCommand(DataOperation.ReadMaxArticleID));
             int id = await reader.GetDatum<int>();
+            reader.Close();
             return id + 1;
         }
 
@@ -168,12 +169,14 @@ namespace Myriad.Pages
 
         private async Task UpdateSynonym(int id, int index, string synonym)
         {
+            if (synonym.Contains(' ')) await Phrases.Add(synonym);
             await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.UpdateSynonym),
                 id, index, synonym);
         }
 
         private async Task AddSynonym(int id, int index, string synonym)
         {
+            if (synonym.Contains(' ')) await Phrases.Add(synonym);
             await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateSynonym),
                 id, index, synonym);
         }
@@ -286,6 +289,7 @@ namespace Myriad.Pages
             var synonymID = new DataReaderProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), title);
             id = await synonymID.GetDatum<int>();
+            synonymID.Close();
             title = await ReadTitle(id);
             return (title, id);
         }

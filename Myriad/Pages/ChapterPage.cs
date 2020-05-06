@@ -111,7 +111,9 @@ namespace Myriad.Pages
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            return reader.GetData<int>();
+            var results = reader.GetData<int>();
+            reader.Close();
+            return results;
         }
 
         private async Task WriteChapterComment()
