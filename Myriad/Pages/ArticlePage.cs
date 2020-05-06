@@ -113,6 +113,7 @@ namespace Myriad.Pages
             parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
                 HTMLTags.CloseQuoteEndTag);
             parser.SetEndHTML(HTMLTags.EndParagraph);
+            await DeleteDefinitionSearches(id);
             for (int i = Ordinals.first; i < newParagraphs.Count; i++)
             {
                 ArticleParagraph articleParagraph = new ArticleParagraph(id, i, newParagraphs[i]);
@@ -127,6 +128,7 @@ namespace Myriad.Pages
                     continue;
                 }
                 await parser.ParseParagraph(paragraphs[i], i);
+                await EditParagraph.AddDefinitionSearches(articleParagraph, parser.Citations);
             }
             await parser.EndComments();
             if (newParagraphs.Count < paragraphs.Count)
@@ -139,6 +141,11 @@ namespace Myriad.Pages
             await AddEditPageData(writer);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
+        }
+
+        private async Task DeleteDefinitionSearches(int id)
+        {
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteDefinitionSearches), id);
         }
 
         private async Task UpdateSynonyms(int id, string newSynonymLine)

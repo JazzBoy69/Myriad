@@ -83,13 +83,12 @@ namespace Myriad.Pages
             await UpdateArticleParagraphInDatabase(paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = parser.Citations;
+            await AddDefinitionSearches(paragraph, citations);
             var oldCitations = await ReadRelatedArticleLinks(paragraph.ID, paragraph.ParagraphIndex);
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 await CompareCitationLists(citations, oldCitations);
             await AddRelatedArticles(paragraph, citationsToAdd);
-            await AddDefinitionSearches(paragraph, citationsToAdd);
             await DeleteRelatedArticles(paragraph, citationsToDelete);
-            await DeleteDefinitionSearches(paragraph, citationsToDelete);
             await UpdateRelatedTags(parser.Tags, paragraph);
         }
 
@@ -193,7 +192,7 @@ namespace Myriad.Pages
             reader.Close();
         }
 
-        private static async Task AddDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToAdd)
+        internal static async Task AddDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToAdd)
         {
             List<string> synonyms = ArticlePage.GetSynonyms(paragraph.ID);
             for (int index = Ordinals.first; index < citationsToAdd.Count; index++)
@@ -222,7 +221,7 @@ namespace Myriad.Pages
             var searchWords = new List<SearchWord>();
             for (int index = Ordinals.first; index < synonyms.Count; index++)
             {
-                reader.SetParameter(synonyms[index]);
+                reader.SetParameter(synonyms[index].Replace(' ', '_'));
                 searchWords.AddRange(reader.GetClassData<SearchWord>());
             }
             reader.Close();

@@ -37,6 +37,10 @@ namespace Myriad.Parser
                             HTMLClasses.poetic1 :
                             HTMLClasses.poetic2);
                         await writer.Append(HTMLTags.CloseQuoteEndTag);
+                        if (!navigating && (targetrange.Contains(keywords[index+1].ID)))
+                        {
+                            await writer.Append(HTMLTags.StartMark);
+                        }
                     }
                 }
             }

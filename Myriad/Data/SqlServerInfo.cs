@@ -37,7 +37,8 @@ namespace Myriad.Data
         CreatePhrase = 320,
         CreateMatrixWord = 330, UpdateMatrixWord=331, DeleteMatrixWord=332,
         CreateDefinitionSearch=340, DeleteDefinitionSearch = 342, AddParagraphIndexToDefinitionSearch = 343,
-        CreateCommentLink=350, DeleteCommentLink=352,
+        DeleteDefinitionSearches=344,
+        CreateCommentLink =350, DeleteCommentLink=352,
         CreateSynonym=360, UpdateSynonym=361, DeleteSynonyms=362,
         CreateTag=370
     }
@@ -182,6 +183,8 @@ namespace Myriad.Data
                 "select _id from definitionsearch where id=@key1 and start>=@key2 and last<=@key3" },
             {DataOperation.DeleteDefinitionSearch,
                 "delete from definitionsearch where _id=@key1" },
+            {DataOperation.DeleteDefinitionSearches,
+                "delete from definitionsearch where id=@key1" },
             {DataOperation.CreateDefinitionSearch,
                 "insert into definitionsearch (id, paragraphindex, sentence, wordindex, text, weight, start, last, substitute) values (@key1, @key2, @key3, @key4, @key5, @key6, @key7, @key8, @key9)" },
             {DataOperation.ReadSearchWords,
