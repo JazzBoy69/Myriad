@@ -80,6 +80,7 @@ namespace Myriad.Pages
         {
             (string title, int similarID) = await GetID(query);
             int id = await GetNewArticleID();
+            title = query[queryKeyTitle];
             pageInfo = (title, id);
             await AddSynonym(id, Ordinals.first, title);
             if (similarID > Number.nothing) title += " (Already Exists)";
@@ -281,6 +282,11 @@ namespace Myriad.Pages
                 SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
             int id = await idReader.GetDatum<int>();
             idReader.Close();
+            if (id>0) return (title, id);
+            var synonymID = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), title);
+            id = await synonymID.GetDatum<int>();
+            title = await ReadTitle(id);
             return (title, id);
         }
 

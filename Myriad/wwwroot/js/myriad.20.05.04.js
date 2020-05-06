@@ -550,6 +550,11 @@ function EditParagraph(editlink) {
     );
 }
 
+function ResetEditWindow() {
+    var scriptureTabs = document.getElementById('editTabList');
+    scriptureTabs.innerHTML = '<li id=edittab-0 class=\'active editcontent\'><div id=editForm contenteditable=true data-pos=0 data-id=0 data-index=0 data-edittype=0></div></li>';
+}
+
 function EditOriginalWords() {
     var path = AddQueryToPath(CurrentPath(), 'originalword=true');
     var menuAccept = document.getElementById('menuAccept');
@@ -563,14 +568,12 @@ function EditOriginalWords() {
 }
 
 function ShowEditWindow(data) {
-    var scriptureTabs = document.getElementById('editTabList');
-    scriptureTabs.innerHTML = '<li id=edittab-0 class=\'active editcontent\'><div id=editForm contenteditable=true data-pos=0 data-id=0 data-index=0 data-edittype=0></div></li>';
-    var editForm = document.getElementById('editForm');
     var mainPane = document.getElementById('mainPane');
     var menuCancel = document.getElementById('menuCancel');
     var menuEdit = document.getElementById('menuEdit');
     var menuAccept = document.getElementById('menuAccept');
     var menuOriginalWord = document.getElementById('menuOriginalWord');
+    var editForm = document.getElementById('editForm');
     editForm.innerText = data;
     var scrollPos = document.documentElement.scrollTop;
     editForm.setAttribute('data-pos', scrollPos);
@@ -684,6 +687,7 @@ function CloseEditForm() {
     var editFormContainer = document.getElementById('editFormContainer');
     var mainPane = document.getElementById('mainPane'); 
     editFormContainer.classList.add('hidden');
+    ResetEditWindow();
     menuCancel.classList.add('hidden');
     mainPane.classList.remove('hidden');
     SetIcons();

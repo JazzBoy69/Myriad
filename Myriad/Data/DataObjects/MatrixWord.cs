@@ -132,12 +132,12 @@ namespace Myriad.Data
                 if ((inflection.Length > 1) && (inflection.Substring(Ordinals.first, 2) == "/>"))
                 {
                     Weight = textLinkWeight;
-                    inflection = inflection[Ordinals.third..Ordinals.last];
+                    inflection = inflection[Ordinals.third..];
                 }
                 if ((inflection.Length > 1) && (inflection.Substring(Ordinals.first, 2) == "!#"))
                 {
                     Weight = notTag;
-                    inflection = inflection[Ordinals.third..Ordinals.last];
+                    inflection = inflection[Ordinals.third..];
                 }
                 if (inflection[0] == '+')
                 {

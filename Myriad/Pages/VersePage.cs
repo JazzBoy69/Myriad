@@ -240,7 +240,7 @@ namespace Myriad.Pages
             if (words[Ordinals.first][Ordinals.first] == '{') 
                 words[Ordinals.first] = words[Ordinals.first][Ordinals.second..];
             if (words[Ordinals.last][Ordinals.last] == '}') 
-                words[Ordinals.last] = words[Ordinals.last][Ordinals.first..Ordinals.nexttolast];
+                words[Ordinals.last] = words[Ordinals.last].Substring(Ordinals.first, words[Ordinals.last].Length-1);
             for (int id = start; id <= end; id++)
             {
                 int index = id - start;

@@ -479,6 +479,7 @@ namespace Myriad.Pages
 
         private static async Task<string> ArticleTitle(int articleID)
         {
+            if (articleID == Number.nothing) return "";
             string title = await ArticlePage.ReadTitle(articleID);
             return title.Replace(' ', '_').Replace('\u0a00', '_');
         }

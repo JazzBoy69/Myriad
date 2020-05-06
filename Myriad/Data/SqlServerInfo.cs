@@ -25,7 +25,7 @@ namespace Myriad.Data
         ReadMatrixWords, ReadSentenceIndex, ReadSearchWordID, ReadDefinitionSearches,
         ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords, ReadDefinitionSearchesInArticle,
         ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords, ReadMaxCommentID,
-        ReadMaxArticleID, ReadCorrectSpelling,
+        ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -217,7 +217,9 @@ namespace Myriad.Data
             { DataOperation.CreateTag,
                 "insert into tags (id, title) values (@key1, @key2)" },
             { DataOperation.ReadCorrectSpelling,
-                "select RTrim(correct) from Misspelled where incorrect=@key1" }
+                "select RTrim(correct) from Misspelled where incorrect=@key1" },
+            { DataOperation.ReadIDFromSynonym,
+                "select id from synonyms where text=@key1 order by synIndex" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

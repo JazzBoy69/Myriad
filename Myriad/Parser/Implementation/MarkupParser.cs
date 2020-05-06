@@ -79,6 +79,7 @@ namespace Myriad.Parser
         }
         public async Task ParseParagraph(string paragraph, int index)
         {
+            if (paragraph == null) return;
             paragraphInfo.index = index;
             ResetCrossReferences();
             lastDash = paragraph.LastIndexOf('—');
@@ -353,6 +354,8 @@ namespace Myriad.Parser
                     SearchForEndBracketToken();
                     if (!mainRange.Valid) return;
                     ResetCitationLevel();
+                    mainRange.BumpStart();
+                    mainRange.PullEnd();
                     string tag = currentParagraph.StringAt(mainRange);
                     tags.Add(tag);
                     await formatter.AppendTag(currentParagraph, labelRange, mainRange);
