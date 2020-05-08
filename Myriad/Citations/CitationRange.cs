@@ -25,6 +25,8 @@ namespace Myriad.Library
             return start.GetHashCode()+end.GetHashCode();
         }
         public (int start, int end) Range => (start.ID, end.ID);
+        public int FirstWordIndex => start.WordIndex;
+        public int LastWordIndex => end.WordIndex;
         public CitationRange(int? startID, int? endID)
         {
             this.start = new KeyID(startID);

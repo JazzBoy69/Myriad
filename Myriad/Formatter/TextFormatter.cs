@@ -164,6 +164,17 @@ namespace Myriad.Parser
                 await writer.Append(HTMLTags.CloseQuoteEndTag);
             }
             var citation = new Citation(keyword.Book, keyword.Chapter, keyword.Verse);
+            if (range.FirstVerse == citation.CitationRange.FirstVerse)
+            {
+                if (range.FirstWordIndex > Ordinals.first)
+                {
+                    citation.CitationRange.SetFirstWordIndex(range.FirstWordIndex);
+                }
+            }
+            if (range.LastVerse == citation.CitationRange.LastVerse)
+            {
+                citation.CitationRange.SetLastWordIndex(range.LastWordIndex);
+            }
             if (readingView)
                 citation.CitationType = CitationTypes.Text;
             else
