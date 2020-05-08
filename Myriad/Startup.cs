@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -10,9 +11,11 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Hosting;
 using Feliciana.Library;
 using Feliciana.ResponseWriter;
+using Feliciana.HTML;
 using Myriad.Library;
 using Myriad.Pages;
 using Myriad.Parser;
+using System.Drawing;
 
 namespace Myriad
 {
@@ -24,6 +27,9 @@ namespace Myriad
             services.AddMvc();
             services.AddSession();
             services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+            ImageElement.SetStaticInformation(System.IO.Path.Combine(Directory.GetCurrentDirectory(),
+                "wwwroot", "pictures"), "pictures", JavaScriptFunctions.OpenModalPicture);
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

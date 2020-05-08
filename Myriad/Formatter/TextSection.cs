@@ -188,7 +188,8 @@ namespace Myriad.Formatter
                 await writer.Append(i);
                 if ((!activeSet) && ((range.CitationRange.Contains(sourceCitation.CitationRange)) ||
                     (sourceCitation.CitationRange.Contains(range.CitationRange)) ||
-                    (range.CitationRange.Book == sourceCitation.CitationRange.Book)))
+                    ((range.CitationRange.Book == sourceCitation.CitationRange.Book) && 
+                    (range.CitationRange.FirstChapter==sourceCitation.CitationRange.FirstChapter))))
                 {
                     await writer.Append(HTMLTags.Class +
                         HTMLClasses.active +
@@ -261,7 +262,8 @@ namespace Myriad.Formatter
                 Citation range = new Citation(idRanges[i].start, idRanges[i].end);
                 if ((!activeSet) && ((range.CitationRange.Contains(sourceCitation.CitationRange)) ||
                     (sourceCitation.CitationRange.Contains(range.CitationRange)) ||
-                    (range.CitationRange.Book == sourceCitation.CitationRange.Book)))
+                    ((range.CitationRange.Book == sourceCitation.CitationRange.Book) &&
+                    (range.CitationRange.FirstChapter == sourceCitation.CitationRange.FirstChapter))))
                 {
                     await writer.Append(HTMLClasses.active);
                     activeSet = true;

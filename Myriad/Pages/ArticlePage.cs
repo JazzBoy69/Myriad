@@ -287,7 +287,8 @@ namespace Myriad.Pages
 
         private async Task<(string title, int id)> GetID(IQueryCollection query)
         {
-            string title = query[queryKeyTitle];
+            string queryTitle = query[queryKeyTitle];
+            string title = Inflections.RootsOf(queryTitle.Replace('_', ' ')).First();
             var idReader = new DataReaderProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
             int id = await idReader.GetDatum<int>();

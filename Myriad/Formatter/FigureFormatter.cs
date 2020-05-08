@@ -33,18 +33,18 @@ namespace Myriad.Formatter
             {
                 if ((elements.Count - k) >= 4)
                 {
-                    await FigureElement(elements[k], elements[k + 1], elements[k + 2], elements[k + 3]);
+                    await WriteFigureElement(elements[k], elements[k + 1], elements[k + 2], elements[k + 3]);
                     k += 4;
                 }
                 else
                 if ((elements.Count - k) == 3)
                 {
-                    await FigureElement(elements[k], elements[k + 1], elements[k + 2]);
+                    await WriteFigureElement(elements[k], elements[k + 1], elements[k + 2]);
                     k += 3;
                 }
                 else if ((elements.Count - k) == 2)
                 {
-                    await FigureElement(elements[k], elements[k + 1]);
+                    await WriteFigureElement(elements[k], elements[k + 1]);
                     k += 2;
                 }
                 else
@@ -64,28 +64,28 @@ namespace Myriad.Formatter
                   null;
         }
 
-        private async Task FigureElement(ImageElement imageElement1, ImageElement imageElement2)
+        private async Task WriteFigureElement(ImageElement imageElement1, ImageElement imageElement2)
         {
             string pattern = imageElement1.Pattern + imageElement2.Pattern;
             if ((pattern == "pl") || (pattern == "ss") || (pattern == "sl") || (pattern == "ll") || (pattern == "ls"))
             {
-                await FigurePL(imageElement1, imageElement2);
+                await WriteFigurePL(imageElement1, imageElement2);
                 return;
             }
             if (pattern == "lp")
             {
-                await FigureLP(imageElement1, imageElement2);
+                await WriteFigureLP(imageElement1, imageElement2);
                 return;
             }
             if ((pattern == "sp") || (pattern == "ps") || (pattern == "pp"))
             {
-                await FigurePL(imageElement1, imageElement2);
+                await WriteFigurePL(imageElement1, imageElement2);
                 return;
             }
             await writer.Append(HTMLTags.StartFigure+HTMLTags.StartParagraph+"Error " + pattern + HTMLTags.EndParagraph+HTMLTags.EndFigure);
         }
 
-        private async Task FigurePL(ImageElement imageElement1, ImageElement imageElement2)
+        private async Task WriteFigurePL(ImageElement imageElement1, ImageElement imageElement2)
         {
             AdjustProportions(imageElement1, imageElement2);
             await writer.Append(HTMLTags.StartFigureWithClass +
@@ -106,7 +106,7 @@ namespace Myriad.Formatter
             imageElement1.WidthPercentage *= .99;
         }
 
-        private async Task FigureLP(ImageElement imageElement1, ImageElement imageElement2)
+        private async Task WriteFigureLP(ImageElement imageElement1, ImageElement imageElement2)
         {
             AdjustProportions(imageElement2, imageElement1);
             await writer.Append(HTMLTags.StartFigureWithClass +
@@ -123,36 +123,30 @@ namespace Myriad.Formatter
             return "<figure class=" + imageElement.Class + ">" + imageElement.OnlyChildString + "</figure>";
         }
 
-        private async Task FigureElement(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
+        private async Task WriteFigureElement(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
         {
             string pattern = imageElement1.Pattern + imageElement2.Pattern + imageElement3.Pattern +
                 imageElement4.Pattern;
-            /*      if ((pattern == "ppl") || (pattern == "pps")) return FigurePPL(imageElement1, imageElement2, imageElement3);
-                  if ((pattern == "plp") || (pattern == "psp")) return FigurePPL(imageElement1, imageElement3, imageElement2);
-                  if ((pattern == "lpp") || (pattern == "spp")) return FigureLPP(imageElement1, imageElement2, imageElement3);
-                  if (pattern == "lls") return FigureLLS(imageElement1, imageElement2, imageElement3);
-                  if (pattern == "sps") return FigureSPS(imageElement1, imageElement2, imageElement3);
-                  if (pattern == "lll") return FigureLLL(imageElement1, imageElement2, imageElement3); */
             if ((pattern == "spss") || (pattern == "psss"))
             {
-                await FigureSPSS(imageElement1, imageElement2, imageElement3, imageElement4);
+                await WriteFigureSPSS(imageElement1, imageElement2, imageElement3, imageElement4);
                 return;
             }
             if ((pattern == "psps") || (pattern == "plsp"))
             {
-                await FigurePSPS(imageElement1, imageElement2, imageElement3, imageElement4);
+                await WriteFigurePSPS(imageElement1, imageElement2, imageElement3, imageElement4);
                 return;
             }
             if (pattern == "llll")
             {
-                await FigureLLLL(imageElement1, imageElement2, imageElement3, imageElement4);
+                await WriteFigureLLLL(imageElement1, imageElement2, imageElement3, imageElement4);
                 return;
             }
             await writer.Append(HTMLTags.StartFigure + HTMLTags.StartParagraph +
                 "Error pattern" + HTMLTags.EndParagraph + HTMLTags.EndFigure);
         }
 
-        private async Task FigureLLLL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
+        private async Task WriteFigureLLLL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
         {
             AdjustProportions(imageElement1, imageElement2);
             AdjustProportions(imageElement3, imageElement4);
@@ -166,7 +160,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndFigure);
         }
 
-        private async Task FigurePSPS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
+        private async Task WriteFigurePSPS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
         {
             AdjustProportions(imageElement1, imageElement2);
             AdjustProportions(imageElement3, imageElement4);
@@ -180,7 +174,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndFigure);
         }
 
-        private async Task FigureSPSS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
+        private async Task WriteFigureSPSS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
         {
             AdjustProportions(imageElement1, imageElement2);
             await writer.Append(HTMLTags.StartFigureWithClass +
@@ -193,44 +187,44 @@ namespace Myriad.Formatter
             await writer.Append("</figure>");
         }
 
-        private async Task FigureElement(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
+        private async Task WriteFigureElement(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             string pattern = imageElement1.Pattern + imageElement2.Pattern + imageElement3.Pattern;
             if ((pattern == "spl") || (pattern == "ppl") || (pattern == "pps") || (pattern == "pls"))
             {
-                await FigurePPL(imageElement1, imageElement2, imageElement3);
+                await WriteFigurePPL(imageElement1, imageElement2, imageElement3);
                 return;
             }
             if ((pattern == "plp") || (pattern == "psp") || (pattern == "sls") || (pattern == "sll"))
             {
-                await FigurePPL(imageElement1, imageElement3, imageElement2);
+                await WriteFigurePPL(imageElement1, imageElement3, imageElement2);
                 return;
             }
             if ((pattern == "lpp") || (pattern == "spp"))
             {
-                await FigureLPP(imageElement1, imageElement2, imageElement3);
+                await WriteFigureLPP(imageElement1, imageElement2, imageElement3);
                 return;
             }
             if (pattern == "lls")
             {
-                await FigureLLS(imageElement1, imageElement2, imageElement3);
+                await WriteFigureLLS(imageElement1, imageElement2, imageElement3);
                 return;
             }
             if (pattern == "sps")
             {
-                await FigureSPS(imageElement1, imageElement2, imageElement3);
+                await WriteFigureSPS(imageElement1, imageElement2, imageElement3);
                 return;
             }
             if (pattern == "lll")
             {
-                await FigureLLL(imageElement1, imageElement2, imageElement3);
+                await WriteFigureLLL(imageElement1, imageElement2, imageElement3);
                 return;
             }
             await writer.Append(HTMLTags.StartFigure+HTMLTags.StartParagraph+
                 "Error pattern"+HTMLTags.EndParagraph+HTMLTags.EndFigure);
         }
 
-        private async Task FigureSPS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
+        private async Task WriteFigureSPS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             AdjustProportions(imageElement3, imageElement2);
             await writer.Append(HTMLTags.StartFigureWithClass +
@@ -241,7 +235,7 @@ namespace Myriad.Formatter
             await writer.Append(imageElement3.RightSiblingString);
             await writer.Append(HTMLTags.EndFigure);
         }
-        private async Task FigureLLS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
+        private async Task WriteFigureLLS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             AdjustProportions(imageElement3, imageElement2);
             await writer.Append(HTMLTags.StartFigureWithClass +
@@ -253,7 +247,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndFigure);
         }
 
-        private async Task FigureLLL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
+        private async Task WriteFigureLLL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             AdjustProportions(imageElement3, imageElement2);
             await writer.Append(HTMLTags.StartFigure);
@@ -263,7 +257,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndFigure);
         }
 
-        private async Task FigureLPP(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
+        private async Task WriteFigureLPP(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             if (imageElement2.Height > imageElement3.Height)
             {
@@ -280,7 +274,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndFigure);
         }
 
-        private async Task FigurePPL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
+        private async Task WriteFigurePPL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             AdjustProportions(imageElement1, imageElement2);
             await writer.Append(HTMLTags.StartFigureWithClass +

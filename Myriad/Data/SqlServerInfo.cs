@@ -136,7 +136,7 @@ namespace Myriad.Data
             {DataOperation.DefinitionSearchesInRange,
                 "select start, last from definitionsearch where start>=@key1 and start<=@key2 and id=@key3" },
             {DataOperation.ReadSearchPhrase,
-                    "select RTrim(text) from searchwords where start=@key1 and last=@key1 and (weight=500 or weight=10)" },
+                    "select RTrim(text) from keywords where keyid=@key1" },
             {DataOperation.ReadCrossReferences,
                 "select start, last from crossreferences where commentid=@key1 and paragraphindex=@key2" },
             {DataOperation.CreateCrossReferences,
