@@ -241,6 +241,27 @@ function CurrentPath() {
     return document.location.pathname + document.location.search;
 }
 
+function ActivePath() {
+    var activeTab = document.querySelector('.active.rangedata');
+    if ((activeTab === null) || (typeof activeTab === 'undefined')) return CurrentPath();
+    var pageURL = document.getElementById('pageUrlData');
+    if (pageURL !== null) {
+        var url = pageURL.innerText;
+        var p = url.indexOf('?');
+        var path = url.substr(0, p);
+        path = AddQueryToPath(path, "start=" + activeTab.getAttribute('data-start'));
+        path = AddQueryToPath(path, "end=" + activeTab.getAttribute('data-end'));
+        return path;
+    }
+    if ((document.location.pathname === '/') || (document.location.pathname === '/Index')) {
+        return '/Index';
+    }
+    var location = document.location.pathname;
+    location = AddQueryToPath(location, "start=" + activeTab.getAttribute('data-start'));
+    location = AddQueryToPath(location, "end=" + activeTab.getAttribute('data-end'));
+    return location;
+}
+
 function HasQuery(path) {
     return path.indexOf('?') !== -1;
 }
@@ -928,14 +949,14 @@ function SetThisVerseAsTarget() {
             var a = event.target.href;
             var dta = document.querySelector('.active.rangedata');
             e.preventDefault();
-            var tg = a + '&tgstart=' + dta.attr('data-start') + '&tgend=' + dta.attr('data-end')
+            var tg = a + '&tgstart=' + dta.getAttribute('data-start') + '&tgend=' + dta.getAttribute('data-end')
             location.href = tg;
         }
     }
 }
 
 function GoUp() {
-    var path = CurrentPath();
+    var path = ActivePath();
     path = path.replace('&navigating=true', '');
     path = AddQueryToPath(path, 'up=true&navigating=true');
     LoadPage(path);
@@ -950,7 +971,7 @@ function GoToPreceding() {
 }
 
 function TurnPage(direction) {
-    var path = CurrentPath();
+    var path = ActivePath();
     path = AddQueryToPath(path, direction + '=true&navigating=true');
     LoadPage(path);
 }
