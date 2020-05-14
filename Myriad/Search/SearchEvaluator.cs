@@ -174,9 +174,15 @@ namespace Myriad.Search
 
         internal static int CalculateDistance(SearchSentence sentence, bool filterDistance)
         {
-            if (sentence.WordCount == 1) //todo weight single word searches
+            if (sentence.WordCount == 1)
             {
-                return 0;
+                int score = 25;
+                for (int i = Ordinals.first; i < sentence.Words.Count; i++)
+                {
+                    if (sentence.Words[i].ArticleID > Number.nothing) score -= 5;
+                }
+                score -= sentence.Words.Count;
+                return score;
             }
 
             List<WordPosition> wordPositions = sentence.WordPositions;
