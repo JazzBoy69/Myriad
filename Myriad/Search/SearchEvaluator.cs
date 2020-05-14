@@ -14,6 +14,10 @@ namespace Myriad.Search
     {
         List<int> usedDefinitions = new List<int>();
         List<List<string>> synonyms = new List<List<string>>();
+        List<SearchResult> filteredResults;
+        Dictionary<int, int> sentences = null;
+        List<string> commonWords = new List<string>();
+        Dictionary<(int, int), int> definitionSearchesInSentences = new Dictionary<(int, int), int>();
         private const string definitionSelector = @"select sentence, wordindex, id from definitionsearch
             where ";
 
@@ -22,8 +26,6 @@ namespace Myriad.Search
         internal async Task<List<SearchSentence>> Search(List<string> phrases, 
             SearchPageInfo pageInfo, bool isSynonymQuery)
         {
-            var commonWords = new List<string>();
-            Dictionary<int, int> sentences = null;
             var searchResults = new List<SearchResult>();
             int queryIndex = Ordinals.first;
 
@@ -65,7 +67,6 @@ namespace Myriad.Search
                 }
             }
             //2) Load Definition searches
-            Dictionary<(int, int), int> definitionSearchesInSentences = new Dictionary<(int, int), int>();
             if (usedDefinitions.Count > Number.nothing)
             {
                 var definitionQuery = new StringBuilder(definitionSelector);
@@ -94,19 +95,19 @@ namespace Myriad.Search
             else
                 filteredSentences = sentences;
 
-            var filteredResults = (from sentence in filteredSentences
+            filteredResults = (from sentence in filteredSentences
                                    join result in searchResults
                                    on sentence.Key equals result.SentenceID
                                    orderby sentence.Key
                                    select result).ToList();
             List<SearchSentence> filteredOrSentences = 
-                SetScores(commonWords, sentences, 
-                queryIndex, isSynonymQuery, filteredResults, 
-                definitionSearchesInSentences);
-            return filteredOrSentences ?? new List<SearchSentence>();
+                SetScores(queryIndex, isSynonymQuery, true) ?? new List<SearchSentence>();
+            if (filteredOrSentences.Count<10) filteredOrSentences =
+                    SetScores(queryIndex, isSynonymQuery, false) ?? new List<SearchSentence>();
+            return filteredOrSentences;
         }
 
-        private static List<SearchSentence> SetScores(List<string> commonWords, Dictionary<int, int> sentences, int queryIndex, bool isSynonymQuery, List<SearchResult> filteredResults, Dictionary<(int, int), int> definitionSearchesInSentences)
+        private List<SearchSentence> SetScores(int wordCount, bool isSynonymQuery, bool filterDistance)
         {
             int lastSentence = -1;
             SearchSentence currentSentence = null;
@@ -123,7 +124,7 @@ namespace Myriad.Search
                     lastSentence = result.SentenceID;
                     if (currentSentence != null)
                     {
-                        int score = CalculateDistance(currentSentence);
+                        int score = CalculateDistance(currentSentence, filterDistance);
                         currentSentence.SetScore(score);
                         var commonWordIndices = CommonWordIndices(currentSentence, commonWordCommand);
                         if (commonWordIndices.Count > Number.nothing)
@@ -138,7 +139,7 @@ namespace Myriad.Search
                     }
                     currentSentence = new SearchSentence(
                         result.SentenceID,
-                        queryIndex,
+                        wordCount,
                         sentences[result.SentenceID]);
                 }
                 currentSentence.Add(result);
@@ -146,7 +147,7 @@ namespace Myriad.Search
             List<SearchSentence> filteredOrSentences = null;
             if (currentSentence != null)
             {
-                int score = CalculateDistance(currentSentence);
+                int score = CalculateDistance(currentSentence, filterDistance);
                 currentSentence.SetScore(score);
                 var commonWordIndices = CommonWordIndices(currentSentence, commonWordCommand);
                 if (commonWordIndices.Count > Number.nothing)
@@ -171,7 +172,7 @@ namespace Myriad.Search
             return filteredOrSentences;
         }
 
-        internal static int CalculateDistance(SearchSentence sentence)
+        internal static int CalculateDistance(SearchSentence sentence, bool filterDistance)
         {
             if (sentence.WordCount == 1) //todo weight single word searches
             {
@@ -217,7 +218,7 @@ namespace Myriad.Search
             int coverage = 0;
             foreach (WordPosition entry in wordPositions) coverage += entry.Length;
             int space = (wordPositions.Last().WordIndex - wordPositions.First().WordIndex + 3) - coverage;
-            if ((space < 0) || (space > 7)) space = 300;
+            if (filterDistance && ((space < 0) || (space > 7))) space = 300;
             //test how ordered the results are
             int disorder = EditDistance(wordPositions, sentence.WordCount);
             return space + disorder;
