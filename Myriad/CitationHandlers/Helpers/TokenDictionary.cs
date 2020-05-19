@@ -64,6 +64,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1453, SetFirstVerse },                 //Mt 24:14; 28:19, 20 => ; xx:19,
             { 0x1454, SetFirstVerseAndAddResults },    //Mt 24:14; 28:20; => ; xx:20;
             { 0x1456, SetFirstVerseAndAddResults },    //Mr 2:1! => ; xx:1!
+            { 0x1482, SetFirstChapter },
             { 0x1483, SetFirstChapter },               //Ge 6, 7 => ;xx_6,
             { 0x1484, SetFirstChapterAndAddResults },  //Mt 24; => ;xx_24;
             { 0x1485, SetFirstChapter },               //Mt 24:14 => ;xx _24:
@@ -80,6 +81,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1593, SetFirstVerse },                 //Joh 8:26, 28, 38; => :xx, 28,
             { 0x1594, SetFirstVerseAndAddResults },    //Jas 1:13, 17 => :xx, 17
             { 0x1832, SetSecondVerseAndAddResults },   //2Jo 10, 12-14 => _xx, 12-
+            { 0x1824, SetSecondChapterAndAddResults },
             { 0x1833, SetSecondVerseAndAddResults },   //2Jo 10, 12, 14 => _xx, 12,
             { 0x1834, SetSecondChapterAndAddResults }, //Ge 6, 7; => _xx, 7;
             { 0x1844, SetSecondVerseAndAddResults },   //2Jo 10, 12
