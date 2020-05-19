@@ -828,9 +828,7 @@ namespace Myriad.Pages
             {
                 if (!wordRange.Equals(phraseRange))
                 {
-                    string offsetLabel = SearchPhrase(wordRange).Replace('_', ' ');
-                    if ((offsetLabel.Length > 1) && (offsetLabel.Last() == ' '))
-                        offsetLabel = offsetLabel.Remove(offsetLabel.Length - 1);
+                    string offsetLabel = SearchPhrase(wordRange).Replace('_', ' ').TrimEnd();
                     List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
                     string offsetRoot = ((offsetRoots.Count > Number.nothing) &&
                         (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
@@ -918,8 +916,8 @@ namespace Myriad.Pages
 
         private string SearchPhrase((int start, int end) wordRange)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSearchPhrase),
-                wordRange.start);
+            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadSearchPhrase),
+                wordRange.start, wordRange.end);
             List<string> words = reader.GetData<string>();
             reader.Close();
             StringBuilder result = new StringBuilder();
