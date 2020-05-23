@@ -294,8 +294,17 @@ namespace Myriad.Pages
                 {
                     continue;
                 }
+                var origwords = from w in OriginalWords
+                                where w.End >= word.Start &&
+                                w.Start <= word.End
+                                select w;
+                if (origwords.Any())
+                {
+                    word.SetStart(Math.Min(word.Start, origwords.Min(w => w.Start)));
+                    word.SetEnd(Math.Max(word.End, origwords.Max(w => w.End)));
+                }
                 Phrases.Add(word);
-                if (word.End - word.Start > 1)
+                if (word.End - word.Start > 0)
                 {
                     var owords = from w in OriginalWords
                                  where w.Start == word.Start &&

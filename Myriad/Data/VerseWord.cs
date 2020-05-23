@@ -50,5 +50,15 @@ namespace Myriad.Data
             weight = reader.GetFieldValue<int>(Ordinals.fourth);
             substitute = reader.GetFieldValue<int>(Ordinals.fifth) > 0;
         }
+
+        internal void SetStart(int start)
+        {
+            this.start = start;
+        }
+
+        internal void SetEnd(int end)
+        {
+            this.end = end;
+        }
     }
 }

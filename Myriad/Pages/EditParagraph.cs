@@ -351,6 +351,9 @@ namespace Myriad.Pages
             await DataWriterProvider.Write<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraph),
                 ID, index);
+            await DataWriterProvider.Write<int>(
+                SqlServerInfo.GetCommand(DataOperation.DeleteCommentLink),
+                ID);
         }
 
         internal async static Task AddArticleParagraph(PageParser parser, ArticleParagraph paragraph)

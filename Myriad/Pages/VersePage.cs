@@ -137,6 +137,7 @@ namespace Myriad.Pages
                     int newID = await GetNewCommentID();
                     parser.SetParagraphInfo(ParagraphType.Comment, newID);
                     ArticleParagraph newParagraph = new ArticleParagraph(newID, Ordinals.first, newComment);
+                    newParagraph.OriginalWord = 1;
                     await EditParagraph.AddCommentParagraph(parser, newParagraph);
                     await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateCommentLink),
                         newID, originalWords[index].start, originalWords[index].end, 1);
@@ -518,8 +519,8 @@ namespace Myriad.Pages
         {
             var phrase = info.Phrases[index];
             IEnumerable<(string, (int start, int end))> originalWordsInPhrase = from w in info.OriginalWords
-                                                                 where w.Start >= phrase.Range.start &&
-                                                                 w.End <= phrase.Range.end
+                                                                 where w.Start <= phrase.Range.end &&
+                                                                 w.End >= phrase.Range.start
                                                                  select (w.Text, w.Range);
             int count = originalWordsInPhrase.Count();
             if (count == 0) return;

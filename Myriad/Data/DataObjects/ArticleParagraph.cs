@@ -9,7 +9,8 @@ namespace Myriad.Data
 {
     public class ArticleParagraph : DataObject
     {
-        public int ParameterCount => 3;
+        public int OriginalWord { get; set; } = 0;
+        public int ParameterCount => 4;
         public int ID { get; private set; }
         public string Text { get; private set; }
         public int ParagraphIndex { get; private set; }
@@ -85,6 +86,8 @@ namespace Myriad.Data
                     return this.ParagraphIndex;
                 case Ordinals.third:
                     return Text;
+                case Ordinals.fourth:
+                    return OriginalWord;
                 default:
                     break;
             }
