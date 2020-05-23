@@ -147,6 +147,9 @@ namespace Myriad.Pages
                 if (newComment == "")
                 {
                     await EditParagraph.DeleteCommentParagraph(id, Ordinals.first);
+                                await DataWriterProvider.Write<int>(
+                    SqlServerInfo.GetCommand(DataOperation.DeleteCommentLink),
+                        id);
                     continue;
                 }
                 ArticleParagraph paragraph = new ArticleParagraph(id, Ordinals.first, newComment);
