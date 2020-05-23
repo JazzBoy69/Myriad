@@ -729,7 +729,7 @@ function AcceptEditParagraph() {
             editType: edittype,
             ID: ID,
             paragraphIndex: index,
-            text: editForm.innerText
+            text: editForm.innerText.trim()
         },
         function (data) { RefreshEditedParagraph(data); }
     );
