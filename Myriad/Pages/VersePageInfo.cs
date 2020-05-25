@@ -7,13 +7,13 @@ using Feliciana.Library;
 using Feliciana.Data;
 using Myriad.Data;
 using Myriad.Library;
-using Myriad.Formatter;
 
-namespace Myriad.Pages
+namespace Myriad.Formatter
 {
     public class VersePageInfo
     {
         public const ushort originalWordWeight = 200;
+        public List<Keyword> keywords;
         List<VerseWord> words;
         List<RangeAndParagraph> relatedArticles;
         List<(int commentID, int paragraphIndex)> usedReferences = new List<(int articleID, int paragraphIndex)>();
@@ -490,7 +490,7 @@ namespace Myriad.Pages
         private static async Task<string> ArticleTitle(int articleID)
         {
             if (articleID == Number.nothing) return "";
-            string title = await ArticlePage.ReadTitle(articleID);
+            string title = await Reader.ReadTitle(articleID);
             return title.Replace(' ', '_').Replace('\u0a00', '_');
         }
 

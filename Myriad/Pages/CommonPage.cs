@@ -79,7 +79,7 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndDiv);
         }
 
-        protected abstract Task WriteTitle(HTMLWriter writer);
+        internal abstract Task WriteTitle(HTMLWriter writer);
 
         public abstract Task RenderBody(HTMLWriter writer);
 

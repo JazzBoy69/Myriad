@@ -252,7 +252,7 @@ namespace Myriad.Search
             Dictionary<string, int> headings = new Dictionary<string, int>();
             foreach (int id in pageInfo.UsedDefinitions)
             {
-                string title = await ArticlePage.ReadTitle(id);
+                string title = await Reader.ReadTitle(id);
                 int count = 1;
                 string heading = title;
                 while (headings.ContainsKey(heading))

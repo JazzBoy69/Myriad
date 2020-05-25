@@ -20,7 +20,7 @@ namespace Myriad.Pages
         public const string queryKeyWord = "word";
         public const string queryKeyNavigating = "navigating";
 
-        protected Citation citation;
+        internal Citation citation;
         protected Citation targetCitation;
         protected bool navigating;
 

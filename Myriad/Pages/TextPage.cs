@@ -37,7 +37,7 @@ namespace Myriad.Pages
                citation.CitationType;
         }
 
-        protected async override Task WriteTitle(HTMLWriter writer)
+        internal async override Task WriteTitle(HTMLWriter writer)
         {
             await CitationConverter.ToString(citation, writer);
         }

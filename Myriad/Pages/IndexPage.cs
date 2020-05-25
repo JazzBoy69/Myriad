@@ -108,7 +108,7 @@ ScrollToTop();
             return results;
         }
 
-        protected override async Task WriteTitle(HTMLWriter writer)
+        internal override async Task WriteTitle(HTMLWriter writer)
         {
             var command = SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle);
             var reader = new DataReaderProvider<string>(command, name);

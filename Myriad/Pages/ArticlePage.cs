@@ -50,7 +50,7 @@ namespace Myriad.Pages
             return pageURL;
         }
 
-        protected override async Task WriteTitle(HTMLWriter writer)
+        internal override async Task WriteTitle(HTMLWriter writer)
         {
             await writer.Append(pageInfo.Title);
         }
@@ -107,7 +107,7 @@ namespace Myriad.Pages
             var newParagraphs = lines[Ordinals.third..].ToList();
             parser = new PageParser(writer);
             pageInfo.ID = id;
-            pageInfo.Title = await ReadTitle(id);
+            pageInfo.Title = await Reader.ReadTitle(id);
             await AddMainHeading(writer);
             parser.SetParagraphInfo(ParagraphType.Article, pageInfo.ID);
             parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
@@ -298,7 +298,7 @@ namespace Myriad.Pages
                 SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), title);
             id = await synonymID.GetDatum<int>();
             synonymID.Close();
-            title = await ReadTitle(id);
+            title = await Reader.ReadTitle(id);
             return (title, id);
         }
 
@@ -306,18 +306,10 @@ namespace Myriad.Pages
         {
             string idstring = query[queryKeyID];
             int id = Numbers.Convert(idstring);
-            string title = await ReadTitle(id);
+            string title = await Reader.ReadTitle(id);
             return (title, id);
         }
 
-        public static async Task<string> ReadTitle(int id)
-        {
-            var titleReader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
-            string title = await titleReader.GetDatum<string>();
-            titleReader.Close();
-            return title;
-        }
         public override bool IsValid()
         {
             return (pageInfo.Title != null) && (pageInfo.ID != Result.error);

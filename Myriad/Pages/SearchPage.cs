@@ -133,7 +133,7 @@ namespace Myriad.Pages
             return (book, chapter);
         }
 
-        protected override async Task WriteTitle(HTMLWriter writer)
+        internal override async Task WriteTitle(HTMLWriter writer)
         {
             await writer.Append("Search: ");
             await writer.Append(pageInfo.Query);
