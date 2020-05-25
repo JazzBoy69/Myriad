@@ -282,6 +282,7 @@ function DefinitionTabClick(target) {
 function HandleSearch() {
     var searchField = document.getElementById('searchField');
     var path = AddQueryToPath('/Search', 'q=' + searchField.value);
+    HideIndex();
     LoadPage(path);
     return false;
 }
@@ -386,7 +387,7 @@ function TOCScroll(event) {
 
 function GetLinksInID(id)
 {
-    return document.getElementById(id).childNodes;
+    return document.getElementById(id).querySelectorAll('a');
 }
 
 function AddClassToGroup(g, c) {
@@ -445,7 +446,6 @@ function HandleIndexGroupClick(event) {
     var possibilityLinks = GetLinksInID('possibilities');
     var id = event.target.id;
     if (id === null) return;
-    alert(id);
     var group = "group" + id.substr(id.length - 1);
     for (i = 0; i < possibilityLinks.length; i++) {
         if (possibilityLinks[i].classList.contains(group))
@@ -499,24 +499,32 @@ function HandleBackClick(event) {
 
 function showHideIndex() {
     var overlay = document.getElementById('bibleindex');
-    var article = document.getElementById('mainPane');
-    var ellipsis = document.getElementById('ellipsis');
     if (overlay.classList.contains('show')) {
-        overlay.classList.remove('show');
-        article.classList.remove('blur');
-        if ((ellipsis !== null) && (ellipsis.classList !== null)) {
-            var suppressedParagraphs = document.getElementsByClassName('suppressed');
-            for (var i = 0; i < suppressedParagraphs.length; i++) {
-                if (suppressedParagraphs[i].length < 1) return;
-                ellipsis.removeClass('hidden');
-            }
-        }
+        HideIndex();
     }
     else {
+        var article = document.getElementById('mainPane');
+        var ellipsis = document.getElementById('ellipsis');
         overlay.classList.add('show');
         article.classList.add('blur');
         if ((ellipsis !== null) && (ellipsis.classList !== null)) {
                 ellipsis.classList.add('hidden');
+        }
+    }
+}
+
+function HideIndex() {
+    var overlay = document.getElementById('bibleindex');
+    if (!overlay.classList.contains('show')) return;
+    var article = document.getElementById('mainPane');
+    var ellipsis = document.getElementById('ellipsis');
+    overlay.classList.remove('show');
+    article.classList.remove('blur');
+    if ((ellipsis !== null) && (ellipsis.classList !== null)) {
+        var suppressedParagraphs = document.getElementsByClassName('suppressed');
+        for (var i = 0; i < suppressedParagraphs.length; i++) {
+            if (suppressedParagraphs[i].length < 1) return;
+            ellipsis.removeClass('hidden');
         }
     }
 }

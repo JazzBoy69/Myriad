@@ -48,7 +48,7 @@ namespace Myriad.Pages
             </div>
             <div id=level class='hidden'>0</div>
             <div id='bibleindex'>
-                <section id=possibilities class='buttongrid'>
+                <section id='possibilities' class='buttongrid'>
                     <a id=ge class='indexbutton group1 hidden'>Genesis</a>
                     <a id=ex class='indexbutton group1 hidden'>Exodus</a>
                     <a id=le class='indexbutton group1 hidden'>Leviticus</a>
@@ -167,7 +167,7 @@ namespace Myriad.Pages
         public const string close = @"</div></article></div>";
         public const string tocdiv = "<div id=tocdiv class=hidden></div>";
         public const string modalOverlay = "<div id='modal-overlay'></div>";
-        public const string myriadJavaScript = "<script src='js/myriad.20.05.04.js'></script>";
+        public const string myriadJavaScript = "<script src='js/myriad.20.05.25.js'></script>";
         public const string endofBody = "</body></html>";
     }
 }
