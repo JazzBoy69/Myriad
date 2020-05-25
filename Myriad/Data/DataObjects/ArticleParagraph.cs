@@ -60,9 +60,8 @@ namespace Myriad.Data
             p = p.Replace("'", "’");
             p = p.Replace(" \"", " “");
             p = p.Replace('"', '”');
-            p = p.Substring(Ordinals.second);
+            p = p.Trim();
             return p;
-
         }
         public void Create(DbCommand command)
         {
