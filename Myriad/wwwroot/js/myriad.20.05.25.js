@@ -69,6 +69,12 @@ function LoadTOC() {
 }
 
 function LoadHistoryPage(path) {
+    var editForm = document.getElementById('editFormContainer');
+    if (!editForm.classList.contains('hidden')) {
+        history.pushState(null, null, CurrentPath());
+        CloseEditForm();
+        return;
+    }
     if (performance.navigation.type === 1) {
         window.location = path;
         HandleAdditionalSearchTasks();
