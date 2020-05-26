@@ -688,6 +688,11 @@ function SwitchEditTab(element) {
     RemoveClassFromGroup(tabSiblings, 'active');
 }
 
+function SelectMainEditTab() {
+    var firstTab = document.querySelector('#editTabsHeader ul li');
+    SwitchEditTab(firstTab);
+}
+
 function ShowSingleTextTab(header) {
     var heading = header.getElementsByTagName('h3');
     var text = heading[0].innerText;
@@ -728,6 +733,7 @@ function CloseEditForm() {
 }
 
 function AcceptEditParagraph() {
+    SelectMainEditTab();
     var editForm = document.getElementById('editForm');
     var edittype = editForm.getAttribute('data-edittype');
     var ID = editForm.getAttribute('data-id');
@@ -1066,6 +1072,7 @@ function Edit() {
 }
 
 function AcceptEdit() {
+    SelectMainEditTab();
     var editdata = document.getElementById('editdata');
     var path = AddQueryToPath(editdata.innerText, "accept=true");
     var editForm = document.getElementById('editForm');
