@@ -69,11 +69,25 @@ namespace Myriad.Pages
                 parser.SetTargetRange(targetCitation.CitationRange);
             }
             await AddMainHeading(writer);
-            await Parse(paragraphs);
+            var paragraphIndices = ReadParagraphIndices();
+            if (paragraphIndices.Count > 1)
+                await Parse(paragraphs, paragraphIndices);
+            else
+                await Parse(paragraphs);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddEditPageData(writer);
             await AddTOCButton(writer);
+        }
+
+        private List<int> ReadParagraphIndices()
+        {
+            var reader = new DataReaderProvider<int, int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ParagraphsThatContainVerse),
+                pageInfo.ID, targetCitation.CitationRange.StartID.ID, targetCitation.CitationRange.EndID.ID);
+            var result = reader.GetData<int>();
+            reader.Close();
+            return result;
         }
 
         internal async Task AddArticle(HTMLWriter writer, IQueryCollection query)
@@ -323,6 +337,27 @@ namespace Myriad.Pages
             parser.SetEndHTML(HTMLTags.EndParagraph);
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
+                await parser.ParseParagraph(paragraphs[i], i);
+            }
+            await parser.EndComments();
+        }
+
+        public async Task Parse(List<string> paragraphs, List<int> paragraphIndices)
+        {
+            parser.SetParagraphInfo(ParagraphType.Article, pageInfo.ID);
+            parser.SetEndHTML(HTMLTags.EndParagraph);
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            {
+                if (paragraphIndices.Contains(i))
+                {
+                    parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
+                        HTMLTags.CloseQuoteEndTag);
+                }
+                else
+                {
+                    parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
+                        Symbol.space + HTMLClasses.suppressed + HTMLTags.CloseQuoteEndTag);
+                }
                 await parser.ParseParagraph(paragraphs[i], i);
             }
             await parser.EndComments();

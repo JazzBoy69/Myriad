@@ -25,7 +25,7 @@ namespace Myriad.Data
         ReadMatrixWords, ReadSentenceIndex, ReadSearchWordID, ReadDefinitionSearches,
         ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords, ReadDefinitionSearchesInArticle,
         ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords, ReadMaxCommentID,
-        ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym,
+        ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym, ParagraphsThatContainVerse,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -222,7 +222,9 @@ namespace Myriad.Data
             { DataOperation.ReadCorrectSpelling,
                 "select RTrim(correct) from Misspelled where incorrect=@key1" },
             { DataOperation.ReadIDFromSynonym,
-                "select id from synonyms where text=@key1 order by synIndex" }
+                "select id from synonyms where text=@key1 order by synIndex" },
+            { DataOperation.ParagraphsThatContainVerse,
+                "select distinct paragraphindex from RelatedArticles where articleid=@key1 and last>=@key2 and start<=@key3 order by paragraphindex" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)
