@@ -120,7 +120,7 @@ namespace Myriad.Parser
                 await writer.Append(HTMLTags.StartMark);
             }
             await AppendVerseNumber(keywords[Ordinals.first], range, readingView);
-            if (keywords[Ordinals.first].WordIndex != Ordinals.first)
+            if (!readingView && (keywords[Ordinals.first].WordIndex != Ordinals.first))
             {
                 await writer.Append(Symbol.ellipsis);
             }
