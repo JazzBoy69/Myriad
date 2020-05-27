@@ -82,7 +82,7 @@ namespace Myriad.Pages
         {
             await UpdateArticleParagraphInDatabase(paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
-            var citations = parser.Citations;
+            var citations = await CitationConverter.ResolveCitations(parser.Citations);
             await AddDefinitionSearches(paragraph, citations);
             var oldCitations = await ReadRelatedArticleLinks(paragraph.ID, paragraph.ParagraphIndex);
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
@@ -242,7 +242,7 @@ namespace Myriad.Pages
         private static async Task DeleteRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToDelete)
         {
             List<CrossReference> linksToDelete =
-                            await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
+                            CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedArticleLinks),
                 linksToDelete);
         }
@@ -250,7 +250,7 @@ namespace Myriad.Pages
         private static async Task AddRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToAdd)
         {
             List<CrossReference> linksToAdd =
-                            await CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
+                            CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
                 linksToAdd);
         }
@@ -309,16 +309,16 @@ namespace Myriad.Pages
         {
             await WriteParagraphToDatabase(paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
-            var citations = parser.Citations;
+            var citations = await CitationConverter.ResolveCitations(parser.Citations);
             var oldCitations = await ReadCrossReferences(paragraph.ID, paragraph.ParagraphIndex);
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 await CompareCitationLists(citations, oldCitations);
             List<CrossReference> linksToAdd =
-                await CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
+                CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 linksToAdd);
             List<CrossReference> linksToDelete =
-                await CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
+                CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
                 linksToDelete);
         }
@@ -334,10 +334,10 @@ namespace Myriad.Pages
             await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateCommentParagraph),
                 paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
-            var citations = parser.Citations;
+            var citations = await CitationConverter.ResolveCitations(parser.Citations);
             var tags = parser.Tags;
             List<CrossReference> crossReferencesToAdd =
-                await CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
+                CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 crossReferencesToAdd);
         }
@@ -345,7 +345,7 @@ namespace Myriad.Pages
         {
             var oldCitations = await ReadCrossReferences(ID, index);
             List<CrossReference> linksToDelete =
-                 await CitationConverter.ToCrossReferences(oldCitations, ID, index);
+                 CitationConverter.ToCrossReferences(oldCitations, ID, index);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
                 linksToDelete);
             await DataWriterProvider.Write<int, int>(
@@ -358,10 +358,10 @@ namespace Myriad.Pages
             await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateArticleParagraph),
                 paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
-            var citations = parser.Citations;
+            var citations = await CitationConverter.ResolveCitations(parser.Citations);
             var tags = parser.Tags;
             List<CrossReference> crossReferencesToAdd =
-                await CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
+                CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
                 crossReferencesToAdd);
             await AddDefinitionSearches(paragraph, citations);

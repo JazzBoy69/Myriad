@@ -131,9 +131,10 @@ namespace Myriad.Parser
             }
         }
 
-        internal static async Task<List<CrossReference>> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
+
+        public static async Task<List<Citation>> ResolveCitations(List<Citation> citations)
         {
-            List<CrossReference> result = new List<CrossReference>();
+            List<Citation> result = new List<Citation>();
             for (int index = Ordinals.first; index < citations.Count; index++)
             {
                 Citation citation = citations[index];
@@ -151,6 +152,17 @@ namespace Myriad.Parser
                         await ReadLastWordIndex(citation.CitationRange.StartID.ID,
                         citation.CitationRange.EndID.ID));
                 }
+                result.Add(new Citation(citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID));
+            }
+            return result;
+        }
+
+        internal static List<CrossReference> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
+        {
+            List<CrossReference> result = new List<CrossReference>();
+            for (int index = Ordinals.first; index < citations.Count; index++)
+            {
+                Citation citation = citations[index];
                 result.Add(new CrossReference(ID, paragraphIndex, citations[index].CitationRange.StartID.ID,
                     citations[index].CitationRange.EndID.ID));
             }
