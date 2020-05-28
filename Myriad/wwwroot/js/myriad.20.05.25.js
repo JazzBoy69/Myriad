@@ -287,7 +287,7 @@ function DefinitionTabClick(target) {
 
 function HandleSearch() {
     var searchField = document.getElementById('searchField');
-    var path = AddQueryToPath('/Search', 'q=' + searchField.value);
+    var path = AddQueryToPath('/Search', 'q=' + searchField.value.trim());
     HideIndex();
     LoadPage(path);
     return false;
@@ -727,14 +727,14 @@ function CloseEditForm() {
     var editFormContainer = document.getElementById('editFormContainer');
     var mainPane = document.getElementById('mainPane'); 
     editFormContainer.classList.add('hidden');
+    var editForm = document.getElementById('editForm');
+    var scrollPos = editForm.getAttribute('data-pos');
     ResetEditWindow();
     menuCancel.classList.add('hidden');
     mainPane.classList.remove('hidden');
     SetIcons();
     ResetModal();
     menuAccept.classList.add('hidden');
-    var editForm = document.getElementById('editForm');
-    var scrollPos = editForm.getAttribute('data-pos');
     document.documentElement.scrollTop = scrollPos;
 }
 
