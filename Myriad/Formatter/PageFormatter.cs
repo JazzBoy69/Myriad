@@ -455,20 +455,9 @@ namespace Myriad.Parser
             if (image == null) return;
             await writer.Append(HTMLTags.StartFigureWithClass);
             await writer.Append(image.Class);
-            await writer.Append(HTMLTags.CloseQuoteEndTag+
-                HTMLTags.StartImg);
-            await writer.Append(image.Path);
-            await writer.Append(HTMLTags.CloseQuote+
-                HTMLTags.Width);
-            await writer.Append("100%");
-            await writer.Append(HTMLTags.CloseQuote+
-                HTMLTags.Class);
-            await writer.Append(image.Class);
-            await writer.Append(HTMLTags.CloseQuote+
-                HTMLTags.OnClick+
-                JavaScriptFunctions.OpenModalPicture+
-                HTMLTags.EndSingleTag+
-                HTMLTags.EndFigure);
+            await writer.Append(HTMLTags.CloseQuoteEndTag);
+            await writer.Append(image.ToString());
+            await writer.Append(HTMLTags.EndFigure);
         }
     }
 }
