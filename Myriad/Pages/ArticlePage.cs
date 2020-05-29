@@ -167,6 +167,12 @@ namespace Myriad.Pages
         {
             var oldSynonyms = GetSynonyms(id);
             var newSynonyms = newSynonymLine.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            int identifierIndex = GetIdentifierIndex(newSynonyms);
+            if (identifierIndex != Result.notfound)
+            {
+                await UpdateIdentifier(id, newSynonyms[identifierIndex].Substring(Ordinals.second));
+                newSynonyms.RemoveAt(identifierIndex);
+            }
             for (int i = Ordinals.first; i < newSynonyms.Count; i++)
             {
                 if (i >= oldSynonyms.Count)
@@ -181,6 +187,29 @@ namespace Myriad.Pages
                 await DeleteSynonyms(id, newSynonyms.Count);
             }
 
+        }
+
+        private async Task UpdateIdentifier(int id, string identifier)
+        {
+            string oldIdentifier = await GetIdentifier(id);
+            if (string.IsNullOrEmpty(oldIdentifier))
+            {
+                await DataWriterProvider.Write<int, string>(
+                    SqlServerInfo.GetCommand(DataOperation.CreateIdentifier), id, identifier);
+                return;
+            }
+            if (oldIdentifier == identifier) return;
+            await DataWriterProvider.Write<int, string>(
+                SqlServerInfo.GetCommand(DataOperation.UpdateIdentifier), id, identifier);
+        }
+
+        private int GetIdentifierIndex(List<string> synonyms)
+        {
+            for (int i = Ordinals.first; i < synonyms.Count; i++)
+            {
+                if (synonyms[i][Ordinals.first] == '+') return i;
+            }
+            return Result.notfound;
         }
 
         private async Task DeleteSynonyms(int id, int startIndex)
@@ -215,6 +244,13 @@ namespace Myriad.Pages
             await writer.Append("==");
             await writer.Append(title);
             await writer.Append("==" + Symbol.lineFeed);
+            var articleIdentifier = await GetIdentifier(id);
+            if (!string.IsNullOrEmpty(articleIdentifier))
+            {
+                await writer.Append("+");
+                await writer.Append(articleIdentifier);
+                await writer.Append(" ");
+            }
             var synonyms = GetSynonyms(id);
             for (int i = Ordinals.first; i < synonyms.Count; i++)
             {
@@ -229,6 +265,15 @@ namespace Myriad.Pages
                 await writer.Append(Symbol.lineFeed);
             }
             await EditParagraph.CheckDefinitionSearchesForParagraphIndices(id);
+        }
+
+        private async Task<string> GetIdentifier(int id)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleIdentifier),
+                id);
+            string identifier = await reader.GetDatum<string>();
+            reader.Close();
+            return identifier;
         }
 
         private async Task AddEditPageData(HTMLWriter writer)
@@ -303,10 +348,15 @@ namespace Myriad.Pages
         private async Task<(string title, int id)> GetID(IQueryCollection query)
         {
             string queryTitle = query[queryKeyTitle];
+            int id = await GetIdFromIdentifier(queryTitle);
+            if (id > 0)
+            {
+                return (await Reader.ReadTitle(id), id);
+            }
             string title = Inflections.RootsOf(queryTitle.Replace('_', ' ')).First();
             var idReader = new DataReaderProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
-            int id = await idReader.GetDatum<int>();
+            id = await idReader.GetDatum<int>();
             idReader.Close();
             if (id>0) return (title, id);
             var synonymID = new DataReaderProvider<string>(
@@ -315,6 +365,15 @@ namespace Myriad.Pages
             synonymID.Close();
             title = await Reader.ReadTitle(id);
             return (title, id);
+        }
+
+        private async Task<int> GetIdFromIdentifier(string identifier)
+        {
+            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadIDFromIdentifier),
+                identifier);
+            int id = await reader.GetDatum<int>();
+            reader.Close();
+            return id;
         }
 
         private async Task<(string title, int id)> GetTitle(IQueryCollection query)

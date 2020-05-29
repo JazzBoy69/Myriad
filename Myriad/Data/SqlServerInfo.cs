@@ -13,7 +13,7 @@ namespace Myriad.Data
     {
         ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID, ReadParentNavigationName,
         ReadNavigationTitle, ReadNextNavigationName, ReadPrecedingNavigationName,
-        ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph,
+        ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph, ReadArticleIdentifier,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadPrecedingCommentRange, ReadCommentTitle, ReadRelatedParagraphIndex,
         ReadKeywords, ReadWordIndex, ReadKeywordSentence,
@@ -26,6 +26,7 @@ namespace Myriad.Data
         ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords, ReadDefinitionSearchesInArticle,
         ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords, ReadMaxCommentID,
         ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym, ParagraphsThatContainVerse,
+        ReadIDFromIdentifier,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -40,7 +41,8 @@ namespace Myriad.Data
         DeleteDefinitionSearches=344,
         CreateCommentLink =350, DeleteCommentLink=352,
         CreateSynonym=360, UpdateSynonym=361, DeleteSynonyms=362,
-        CreateTag=370
+        CreateTag=370,
+        CreateIdentifier = 380, UpdateIdentifier = 381
     }
     public class SqlServerInfo
     {
@@ -72,6 +74,8 @@ namespace Myriad.Data
                  "select RTrim(title) from tags where id=@key1"},
             { DataOperation.ReadArticleID,
                  "select id from tags where title=@key1"},
+            { DataOperation.ReadArticleIdentifier,
+                "select text from definitionIDs where id=@key1" },
             { DataOperation.ReadArticleParagraph,
                  "select text from glossary where id=@key1 and paragraphindex=@key2"},
             { DataOperation.ReadArticle,
@@ -224,7 +228,13 @@ namespace Myriad.Data
             { DataOperation.ReadIDFromSynonym,
                 "select id from synonyms where text=@key1 order by synIndex" },
             { DataOperation.ParagraphsThatContainVerse,
-                "select distinct paragraphindex from RelatedArticles where articleid=@key1 and last>=@key2 and start<=@key3 order by paragraphindex" }
+                "select distinct paragraphindex from RelatedArticles where articleid=@key1 and last>=@key2 and start<=@key3 order by paragraphindex" },
+            {DataOperation.CreateIdentifier,
+                "insert into definitionIDs (id, text) values (@key1, @key2)" },
+            { DataOperation.UpdateIdentifier,
+                "update definitionIDs set text=@key2 where id=@key1" },
+            { DataOperation.ReadIDFromIdentifier,
+                "select id from definitionIDs where text like @key1" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

@@ -625,7 +625,7 @@ function ShowEditWindow(data) {
 
 function SetEditTabs() {
     var section = GetScriptureSection();
-    var header = (typeof section === 'undefined') ?
+    var header = ((section === null) || (typeof section === 'undefined')) ?
         null :
         section.getElementsByClassName('scripture-header');
     if ((header !== null) && (header.length>0)){
