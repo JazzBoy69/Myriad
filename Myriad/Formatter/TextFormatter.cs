@@ -147,8 +147,8 @@ namespace Myriad.Parser
         {
             await writer.Append(HTMLTags.StartSpanWithClass +
                 HTMLClasses.versenumber);
-            if (keyword.Verse == 1)
-            {
+            if ((keyword.Verse == 1) && (keyword.WordIndex == Ordinals.first))
+            { 
                 await writer.Append(Symbol.space +
                 HTMLClasses.dropcap +
                 HTMLTags.CloseQuoteEndTag);
