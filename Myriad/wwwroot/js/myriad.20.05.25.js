@@ -860,9 +860,10 @@ function HandleScriptureHeaderClicks() {
     var commentheaders = document.getElementsByClassName('scripture-comment-header');
     RemoveClassFromGroup(commentheaders, 'hidden');
     event.target.parentNode.classList.add('hidden');
-    var mark = event.target.closest('.scripture-section').getElementsByClassName('scripture-comment')[0];
+    var section = event.target.closest('.scripture-section');
+    var mark = section.getElementsByClassName('scripture-comment-header')[0];
     var targetOffset = mark.offsetTop;
-    var h = document.getElementsByTagName('header')[0].offsetHeight+40;
+    var h = document.getElementsByTagName('header')[0].offsetHeight;
     window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
 }
 
