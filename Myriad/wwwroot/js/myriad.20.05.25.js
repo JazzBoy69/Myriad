@@ -864,7 +864,7 @@ function HandleScriptureHeaderClicks() {
     var mark = section.getElementsByClassName('scripture-comment-header')[0];
     var targetOffset = mark.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
-    window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
+    window.scrollTo({ top: targetOffset - h, left: 0});
 }
 
 function HandleCommentHeaderClicks() {
@@ -882,7 +882,7 @@ function HandleCommentHeaderClicks() {
     header.classList.add('visible');
     var targetOffset = header.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
-    window.scrollTo({ top: targetOffset - h, left: 0, behavior: 'smooth' });
+    window.scrollTo({ top: targetOffset - h, left: 0});
 }
 
 function ExpandReadingViewText(event) {

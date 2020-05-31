@@ -36,7 +36,8 @@ namespace Myriad.CitationHandlers.Helpers
             { 0xA048, SetFirstBook },                  // Mt 24:14 => ; Mt 
             { 0xA574, DeferWordIndex },                // Mt 24:14.preached => :xx.preached
             { 0xA448, SetFirstBook },                  // Mt 24:14 => ; ; Mt              
-            { 0xA488, SetFirstBook },                  // Mt 24:14 => ; ; Mt                    
+            { 0xA488, SetFirstBook },                  // Mt 24:14 => ; ; Mt 
+            { 0xA874, DeferWordIndex },
             { 0x1025, SetSecondChapter },              //2Co 6:14-7:1 => -7:  
             { 0x1042, SetFirstVerse },                 //Mt 24:14, 16-18 => xx, 16-xx
             { 0x1048, SetFirstBook },                  //Mt 24:14; Mr 13:10 => ; Mr_
@@ -68,6 +69,8 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1483, SetFirstChapter },               //Ge 6, 7 => ;xx_6,
             { 0x1484, SetFirstChapterAndAddResults },  //Mt 24; => ;xx_24;
             { 0x1485, SetFirstChapter },               //Mt 24:14 => ;xx _24:
+            { 0x1486, SetFirstChapterAndAddResults },
+            { 0x1487, SetFirstChapter },
             { 0x1523, SetSecondVerseAndAddResults },   //Re 16:14-16, 18; => :xx-16,
             { 0x1524, SetSecondVerseAndAddResults },   //Mt 24:45-47 => :xx-47;
             { 0x1525, SetSecondChapter },              //2Co 6:14-7:1 => :xx-7:
@@ -91,6 +94,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1856, SetFirstVerseAndAddResults },    //Mr 2:1! => _xx:1!
             { 0x1857, SetFirstVerse },                 // Mt 24:14.preached => xx:14.
             { 0x1892, SetFirstVerse },                 //3Jo 1, 5-8 => _xx, 5-
+            { 0x1894, SetFirstVerseAndAddResults },
             { 0x1923, SetSecondVerseAndAddResults },   //Ge 36:2, 5-8, 14 => , xx-8,
             { 0x1924, SetSecondVerseAndAddResults },    //Mt 3:1, 6, 13-17; => , xx-17;
             { 0x1932, AddBrokenCommaMarker },          //Mt 3:1, 6, 13-17; => xx, xx, 13-

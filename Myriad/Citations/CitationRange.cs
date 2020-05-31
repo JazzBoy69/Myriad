@@ -174,7 +174,7 @@ namespace Myriad.Library
 
         internal bool Contains(CitationRange targetRange)
         {
-            return (targetRange.start.ID >= start.ID) && (targetRange.end.ID <= end.ID);
+            return (targetRange.start.ID <= end.ID) && (targetRange.end.ID >= start.ID);
         }
 
         internal void ExtendTo(int end)
