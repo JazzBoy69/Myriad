@@ -224,6 +224,10 @@ namespace Myriad.Formatter
             if (readingView)
             {
                 await writer.Append(HTMLTags.CloseQuoteEndTag+
+                    HTMLTags.StartDivWithClass+
+                    HTMLClasses.clear+
+                    HTMLTags.CloseQuoteEndTag+
+                    HTMLTags.EndDiv+
                     "<h3" +
                     HTMLTags.OnClick +
                     "HandleScriptureHeaderClicks()" +
