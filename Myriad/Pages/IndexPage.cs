@@ -148,22 +148,46 @@ ScrollToTop();
                 reader.SetParameter(paragraphs[index]);
                 string title = await reader.GetDatum<string>();
                 if (string.IsNullOrEmpty(title)) title = paragraphs[index];
-                await writer.Append(HTMLTags.StartListItem);
-                await writer.Append(HTMLTags.EndTag);
-                await writer.Append(HTMLTags.StartAnchor);
+                await writer.Append(HTMLTags.StartListItem+
+                    HTMLTags.EndTag+
+                    HTMLTags.StartAnchor);
+                Citation chapterCitation = Citation.InvalidCitation;
                 await writer.Append(HTMLTags.HREF);
-                await writer.Append(pageURL);
-                await writer.Append(HTMLTags.StartQuery);
-                await writer.Append(nameQuery);
-                await writer.Append(paragraphs[index]);
-                await writer.Append(HTMLTags.Ampersand);
-                await writer.Append(HTMLClasses.partial);
-                await writer.Append(HTMLTags.OnClick);
-                await writer.Append(JavaScriptFunctions.HandleTOCClick);
-                await writer.Append(HTMLTags.EndTag);
-                await writer.Append(title);
-                await writer.Append(HTMLTags.EndAnchor);
-                await writer.Append(HTMLTags.EndListItem);
+                if (title[Ordinals.first] == '#')
+                {
+                    chapterCitation = CitationConverter.FromString(title.Substring(Ordinals.second)).First();
+                    await writer.Append(ChapterPage.pageURL+
+                        HTMLTags.StartQuery+
+                        ScripturePage.queryKeyStart+
+                        Symbol.equal);
+                    await writer.Append(chapterCitation.CitationRange.StartID.ID);
+                    await writer.Append(HTMLTags.Ampersand+
+                        ScripturePage.queryKeyEnd+
+                        Symbol.equal);
+                    await writer.Append(chapterCitation.CitationRange.EndID.ID);
+                }
+                else
+                {
+                    await writer.Append(pageURL+
+                        HTMLTags.StartQuery+
+                        nameQuery);
+                    await writer.Append(paragraphs[index]);
+                }
+                await writer.Append(HTMLTags.Ampersand+
+                    HTMLClasses.partial+
+                    HTMLTags.OnClick+
+                    JavaScriptFunctions.HandleTOCClick+
+                    HTMLTags.EndTag);
+                if (title[Ordinals.first] == '#')
+                {
+                   await CitationConverter.ToString(chapterCitation, writer);
+                }
+                else
+                {
+                    await writer.Append(title);
+                }
+                await writer.Append(HTMLTags.EndAnchor+
+                    HTMLTags.EndListItem);
             }
             reader.Close();
             await writer.Append(HTMLTags.EndList);

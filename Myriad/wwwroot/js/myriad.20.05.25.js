@@ -49,6 +49,7 @@ function LoadIndexPane(path) {
             mainPane.innerHTML = data;
             history.pushState(null, null, CurrentPath());
             SetTitle();
+            SetIcons();
         });
 }
 
