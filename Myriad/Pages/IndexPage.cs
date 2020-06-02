@@ -270,7 +270,7 @@ ScrollToTop();
 
         private async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
         {
-            string name = query[queryKeyName];
+            name = query[requestNameQuery];
             var paragraphs = GetPageParagraphs();
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
@@ -279,9 +279,50 @@ ScrollToTop();
             }
         }
 
-        public override Task HandleAcceptedEdit(HttpContext context)
+        public override async Task HandleAcceptedEdit(HttpContext context)
         {
-            throw new NotImplementedException();
+            context.Request.Form.TryGetValue("text", out var text);
+            name = context.Request.Query[requestNameQuery];
+            var existingParagraphs = GetPageParagraphs();
+            string textString = text.ToString().Trim();
+            int id = await GetPageID();
+            var newParagraphs = textString.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            for (int i = Ordinals.first; i < newParagraphs.Count; i++)
+            {
+                if (i >= existingParagraphs.Count)
+                {
+                    await AddParagraph(newParagraphs[i], i, id);
+                    continue;
+                }
+                if (existingParagraphs[i] == newParagraphs[i]) continue;
+                await UpdateParagraph(newParagraphs[i], i, id);
+            }
+            for (int i = newParagraphs.Count; i < existingParagraphs.Count; i++)
+            {
+                await DeleteParagraph(i);
+            }
+            await RenderBody(Writer.New(context.Response));
+        }
+
+        private async Task AddParagraph(string paragraph, int index, int id)
+        {
+            await DataWriterProvider.Write<string, int, string, int>(
+                SqlServerInfo.GetCommand(DataOperation.CreateNavigationParagraph),
+                name, index, paragraph, id);
+        }
+
+        private async Task UpdateParagraph(string paragraph, int index, int id)
+        {
+            await DataWriterProvider.Write<int, int, string>(
+                SqlServerInfo.GetCommand(DataOperation.UpdateNavigationParagraph),
+                id, index, paragraph);
+        }
+
+        private async Task DeleteParagraph(int index)
+        {
+            await DataWriterProvider.Write<string, int>(
+                SqlServerInfo.GetCommand(DataOperation.DeleteNavigationParagraph),
+                name, index);
         }
     }
 }
