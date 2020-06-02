@@ -30,7 +30,8 @@ ScrollToTop();
     public class IndexPage : PaginationPage
     {
         public const string pageURL = "/Index";
-        public const string nameQuery = "name=";
+        public const string editURL = "/Edit/Index";
+        public const string queryKeyName = "name=";
         private const string requestNameQuery = "name";
         private const string defaultName = "home";
         List<string> paragraphs;
@@ -62,11 +63,23 @@ ScrollToTop();
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             await Parse();
             await AddPageTitleData(writer);
+            await AddEditPageData(writer);
             await AddPageHistory(writer);
             await AddTOCButton(writer);
             if (name != defaultName) await AddPagination(writer);
         }
-
+        private async Task AddEditPageData(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.editdata + HTMLTags.CloseQuote +
+                HTMLTags.Class +
+                HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag +
+                editURL + HTMLTags.StartQuery +
+                queryKeyName);
+            await writer.Append(name);
+            await writer.Append(HTMLTags.EndDiv);
+        }
         private async Task Parse()
         {
             bool foundFirstHeading = false;
@@ -170,7 +183,7 @@ ScrollToTop();
                 {
                     await writer.Append(pageURL+
                         HTMLTags.StartQuery+
-                        nameQuery);
+                        queryKeyName);
                     await writer.Append(paragraphs[index]);
                 }
                 await writer.Append(HTMLTags.Ampersand+
@@ -195,7 +208,7 @@ ScrollToTop();
 
         public override string GetQueryInfo()
         {
-            return HTMLTags.StartQuery + nameQuery + name;
+            return HTMLTags.StartQuery + queryKeyName + name;
         }
 
         public override Task LoadTOCInfo(HttpContext context)
@@ -249,9 +262,21 @@ ScrollToTop();
             reader.Close();
         }
 
-        public override Task HandleEditRequest(HttpContext context)
+        public override async Task HandleEditRequest(HttpContext context)
         {
-            throw new NotImplementedException();
+            await WritePlainText(Writer.New(context.Response),
+                context.Request.Query);
+        }
+
+        private async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
+        {
+            string name = query[queryKeyName];
+            var paragraphs = GetPageParagraphs();
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+            {
+                await writer.Append(paragraphs[i]);
+                await writer.Append(Symbol.lineFeed);
+            }
         }
 
         public override Task HandleAcceptedEdit(HttpContext context)
