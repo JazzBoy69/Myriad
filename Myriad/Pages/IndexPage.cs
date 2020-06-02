@@ -198,7 +198,7 @@ ScrollToTop();
                     HTMLTags.EndTag);
                 if (title[Ordinals.first] == '#')
                 {
-                   await CitationConverter.ToString(chapterCitation, writer);
+                   await CitationConverter.ToLongString(chapterCitation, writer);
                 }
                 else
                 {
