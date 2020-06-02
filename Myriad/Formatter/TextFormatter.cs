@@ -52,16 +52,6 @@ namespace Myriad.Parser
 
         private async Task AppendKeyword(Keyword keyword, CitationRange range, CitationRange targetrange, bool navigating, bool readingView)
         {
-            if (keyword.WordIndex == Ordinals.first)
-            {
-                KeyID lastID = new KeyID(keyword.Book, keyword.Chapter, 
-                    keyword.Verse - 1, KeyID.MaxWordIndex);
-                if (!navigating && (targetrange.EndID.ID == lastID.ID))
-                {
-                    await writer.Append(HTMLTags.EndMark);
-                }
-                await AppendVerseNumber(keyword, range, readingView);
-            }
             if (keyword.IsPoetic != poetic)
             {
                 if (poetic)
@@ -87,6 +77,16 @@ namespace Myriad.Parser
             if (!navigating && (keyword.ID == targetrange.StartID.ID))
             {
                 await writer.Append(HTMLTags.StartMark);
+            }
+            if (keyword.WordIndex == Ordinals.first)
+            {
+                KeyID lastID = new KeyID(keyword.Book, keyword.Chapter,
+                    keyword.Verse - 1, KeyID.MaxWordIndex);
+                if (!navigating && (targetrange.EndID.ID == lastID.ID))
+                {
+                    await writer.Append(HTMLTags.EndMark);
+                }
+                await AppendVerseNumber(keyword, range, readingView);
             }
             await AppendTextOfKeyword(writer, keyword);
             if (!navigating && (keyword.ID == targetrange.EndID.ID))
