@@ -53,6 +53,11 @@ ScrollToTop();
             });
         }
 
+        internal void SetName(string pageName)
+        {
+            name = pageName;
+        }
+
         public async override Task RenderBody(HTMLWriter writer)
         {
             //todo edit page

@@ -11,6 +11,7 @@ using Myriad.Parser;
 using Myriad.Data;
 using Myriad.Formatter;
 using Myriad.Library;
+using System.IO.Pipelines;
 
 namespace Myriad.Pages
 {
@@ -24,6 +25,7 @@ namespace Myriad.Pages
         List<string> headings;
         int articleID;
         List<string> articleParagraphs;
+        string indexPageName;
 
 
         //todo edit whole chapter comment
@@ -43,6 +45,14 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
+            if (!string.IsNullOrEmpty(indexPageName))
+            {
+                IndexPage indexPage = new IndexPage();
+                indexPage.SetName(indexPageName);
+                indexPage.SetResponse(response);
+                await indexPage.RenderBody(writer);
+                return;
+            }
             this.writer = writer;
             await Initialize();
             await writer.Append(HTMLTags.StartMainHeader);
@@ -213,9 +223,12 @@ namespace Myriad.Pages
                 CitationRange.AllVerses);
         }
 
-        public override Task SetupParentPage()
+        public override async Task SetupParentPage()
         {
-            throw new NotImplementedException();
+            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadChapterNavigation),
+                citation.CitationRange.Book, citation.CitationRange.FirstChapter);
+            indexPageName = await reader.GetDatum<string>();
+            reader.Close();
         }
 
         public override Task HandleEditRequest(HttpContext context)

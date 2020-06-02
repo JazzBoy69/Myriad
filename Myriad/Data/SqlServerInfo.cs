@@ -13,6 +13,7 @@ namespace Myriad.Data
     {
         ReadNavigationPage, ReadNavigationParagraph, ReadNavigationID, ReadParentNavigationName,
         ReadNavigationTitle, ReadNextNavigationName, ReadPrecedingNavigationName,
+        ReadChapterNavigation,
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph, ReadArticleIdentifier,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadPrecedingCommentRange, ReadCommentTitle, ReadRelatedParagraphIndex,
@@ -74,6 +75,8 @@ namespace Myriad.Data
                 "select text from navigationparagraphs join (select name, paragraphindex from navigationparagraphs where text=@key1) as s on navigationparagraphs.name = s.name and navigationparagraphs.paragraphindex=s.paragraphindex+1" },
             { DataOperation.ReadPrecedingNavigationName,
                 "select text from navigationparagraphs join (select name, paragraphindex from navigationparagraphs where text=@key1) as s on navigationparagraphs.name = s.name and navigationparagraphs.paragraphindex=s.paragraphindex-1" },
+            { DataOperation.ReadChapterNavigation,
+                "select name from chapternavigation where book = @key1 and chapter = @key2" },
             { DataOperation.ReadArticleTitle,
                  "select RTrim(title) from tags where id=@key1"},
             { DataOperation.ReadArticleID,
