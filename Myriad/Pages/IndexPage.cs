@@ -183,6 +183,10 @@ ScrollToTop();
                         ScripturePage.queryKeyEnd+
                         Symbol.equal);
                     await writer.Append(chapterCitation.CitationRange.EndID.ID);
+                    await writer.Append(HTMLTags.Ampersand +
+                        ScripturePage.queryKeyNavigating +
+                        Symbol.equal +
+                        "true");
                 }
                 else
                 {
