@@ -81,6 +81,28 @@ namespace Myriad.Library
             return newCitation;
         }
 
+        internal void Set(VerseReference verse)
+        {
+            if (verse.WordIndex != Result.notfound)
+            {
+                CitationRange.Set(verse.Book, verse.Chapter, verse.Verse,
+                    verse.WordIndex);
+                CitationType = CitationTypes.Verse;
+                return;
+            }
+            if (verse.Verse != Result.notfound)
+            {
+                CitationRange.Set(verse.Book, verse.Chapter, verse.Verse);
+                CitationType = CitationTypes.Text;
+                return;
+            }
+            if (verse.Chapter != Result.notfound)
+            {
+                CitationRange.Set(verse.Book, verse.Chapter);
+                CitationType = CitationTypes.Chapter;
+                return;
+            }
+        }
         internal void Set(VerseReference firstVerse, VerseReference secondVerse)
         {
             if (secondVerse.WordIndex != Result.notfound)

@@ -209,7 +209,8 @@ namespace Myriad.Parser
                 return;
             }
             else
-            if (precedingCitation.CitationRange.LastChapter != currentCitation.CitationRange.FirstChapter)
+            if ((precedingCitation.CitationRange.LastChapter != currentCitation.CitationRange.FirstChapter) &&
+                (currentCitation.CitationType != CitationTypes.Chapter))
             {
                 await writer.Append("; ");
                 await writer.Append(currentCitation.CitationRange.FirstChapter);
@@ -218,6 +219,11 @@ namespace Myriad.Parser
             else
             {
                 await writer.Append(","+HTMLTags.NonbreakingSpace);
+            }
+            if (currentCitation.CitationType == CitationTypes.Chapter)
+            {
+                await writer.Append(currentCitation.CitationRange.FirstChapter);
+                return;
             }
             await writer.Append(currentCitation.CitationRange.FirstVerse);
             if (!currentCitation.CitationRange.IsOneVerse)

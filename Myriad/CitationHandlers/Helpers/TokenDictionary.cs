@@ -85,7 +85,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1594, SetFirstVerseAndAddResults },    //Jas 1:13, 17 => :xx, 17
             { 0x1832, SetSecondVerseAndAddResults },   //2Jo 10, 12-14 => _xx, 12-
             { 0x1824, SetSecondChapterAndAddResults },
-            { 0x1833, SetSecondVerseAndAddResults },   //2Jo 10, 12, 14 => _xx, 12,
+            { 0x1833, SetSecondChapterAndAddResults },   //2Jo 10, 12, 14 => _xx, 12,
             { 0x1834, SetSecondChapterAndAddResults }, //Ge 6, 7; => _xx, 7;
             { 0x1844, SetSecondVerseAndAddResults },   //2Jo 10, 12
             { 0x1852, SetFirstVerse },                 //Mt 24:45-47 => _xx:45- 
@@ -94,7 +94,8 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1856, SetFirstVerseAndAddResults },    //Mr 2:1! => _xx:1!
             { 0x1857, SetFirstVerse },                 // Mt 24:14.preached => xx:14.
             { 0x1892, SetFirstVerse },                 //3Jo 1, 5-8 => _xx, 5-
-            { 0x1894, SetFirstVerseAndAddResults },
+            { 0x1893, SetFirstChapterAndAddResults },  //Ps xx, 95, xx
+            { 0x1894, SetFirstChapterAndAddResults },
             { 0x1923, SetSecondVerseAndAddResults },   //Ge 36:2, 5-8, 14 => , xx-8,
             { 0x1924, SetSecondVerseAndAddResults },    //Mt 3:1, 6, 13-17; => , xx-17;
             { 0x1932, AddBrokenCommaMarker },          //Mt 3:1, 6, 13-17; => xx, xx, 13-

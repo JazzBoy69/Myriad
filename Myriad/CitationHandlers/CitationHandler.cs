@@ -287,6 +287,10 @@ namespace Myriad.CitationHandlers
                 verse.First.Chapter = currentChapter;
                 verse.First.Verse = verse.Second.Verse;
             }
+            if ((verse.First.Book == Result.notfound) && (verse.First.Chapter != Result.notfound))
+            {
+                verse.First.Book = currentBook;
+            }
             if ((verse.Second.Verse != Result.notfound) &&
                 ((lastToken == ',') && (Math.Abs(verse.Second.Verse - verse.First.Verse) > 1)))
             {
@@ -319,7 +323,28 @@ namespace Myriad.CitationHandlers
                 citation.CitationRange = new CitationRange(start, end);
                 return;
             }
-            citation.Set(verse.First, verse.Second);
+            if ((token == ',') && (verse.First.Verse == Result.notfound) && (verse.Second.Chapter != Result.notfound)
+                && (verse.Second.Verse == Result.notfound))
+            {
+                citation.Set(verse.First);
+                VerseReference second = new VerseReference();
+                second.Book = verse.First.Book;
+                second.Chapter = verse.Second.Chapter;
+                AddCitationToResults();
+                verse.First = second;
+                citation.Set(verse.First);
+                lastToken = ' ';
+                token = '~';
+            }
+            else
+            {
+                if ((token == ',') && (verse.First.Verse == Result.notfound))
+                {
+                    lastToken = ' ';
+                    token = '~';
+                }
+                citation.Set(verse.First, verse.Second);
+            }
             currentBook = citation.CitationRange.Book;
             currentChapter = citation.CitationRange.LastChapter;
             if ((token == '!') && (citation.CitationType == CitationTypes.Text))
