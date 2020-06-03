@@ -194,12 +194,24 @@ namespace Myriad
                             break;
                         }
                 }
-                query = new QueryCollection(new Dictionary<string, StringValues>()
+
+                if (citation.CitationType == CitationTypes.Chapter)
+                {
+                    query = new QueryCollection(new Dictionary<string, StringValues>()
                     {
                         { "start", citation.CitationRange.StartID.ToString() },
                         {"end", citation.CitationRange.EndID.ToString() },
                         {"navigating", "true" }
                     });
+                }
+                else
+                {
+                    query = new QueryCollection(new Dictionary<string, StringValues>()
+                    {
+                        { "start", citation.CitationRange.StartID.ToString() },
+                        {"end", citation.CitationRange.EndID.ToString() }
+                    });
+                }
             }
 
             CommonPage page = CreatePageFromPath(path);
