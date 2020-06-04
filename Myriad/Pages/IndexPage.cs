@@ -48,14 +48,14 @@ ScrollToTop();
             name = await Task.Run(() =>
             {
                 if (query.ContainsKey(requestNameQuery))
-                    return query[requestNameQuery].ToString();
+                    return query[requestNameQuery].ToString().Replace("_", " ");
                 return defaultName;
             });
         }
 
         internal void SetName(string pageName)
         {
-            name = pageName;
+            name = pageName.Replace("_", " ");
         }
 
         public async override Task RenderBody(HTMLWriter writer)
@@ -193,7 +193,7 @@ ScrollToTop();
                     await writer.Append(pageURL+
                         HTMLTags.StartQuery+
                         queryKeyName);
-                    await writer.Append(paragraphs[index]);
+                    await writer.Append(paragraphs[index].Replace(" ", "_"));
                 }
                 await writer.Append(HTMLTags.Ampersand+
                     HTMLClasses.partial+
@@ -217,7 +217,7 @@ ScrollToTop();
 
         public override string GetQueryInfo()
         {
-            return HTMLTags.StartQuery + queryKeyName + name;
+            return HTMLTags.StartQuery + queryKeyName + name.Replace(" ", "_");
         }
 
         public override Task LoadTOCInfo(HttpContext context)
@@ -243,7 +243,7 @@ ScrollToTop();
             string newName = await reader.GetDatum<string>();
             name = ((string.IsNullOrEmpty(newName)) || (newName.Contains("=="))) ?
                 name :
-                newName;
+                newName.Replace("_", " ");
             reader.Close();
         }
 
@@ -255,7 +255,7 @@ ScrollToTop();
             string newName = await reader.GetDatum<string>();
             name = (string.IsNullOrEmpty(newName)) ?
                 name :
-                newName;
+                newName.Replace("_", " ");
             reader.Close();
         }
 
@@ -267,7 +267,7 @@ ScrollToTop();
             string newName = await reader.GetDatum<string>();
             name = (string.IsNullOrEmpty(newName)) ?
                 name :
-                newName;
+                newName.Replace("_", " ");
             reader.Close();
         }
 

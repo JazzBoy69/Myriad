@@ -70,7 +70,7 @@ namespace Myriad.Data
             { DataOperation.ReadNavigationTitle,
                  "select heading from navigation where name=@key1"},
             { DataOperation.ReadParentNavigationName,
-                "select name from navigationparagraphs where text=@key1" },
+                "select RTrim(name) from navigationparagraphs where text=@key1" },
             { DataOperation.ReadNextNavigationName,
                 "select text from navigationparagraphs join (select name, paragraphindex from navigationparagraphs where text=@key1) as s on navigationparagraphs.name = s.name and navigationparagraphs.paragraphindex=s.paragraphindex+1" },
             { DataOperation.ReadPrecedingNavigationName,
