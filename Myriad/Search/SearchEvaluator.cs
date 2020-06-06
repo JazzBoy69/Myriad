@@ -104,7 +104,39 @@ namespace Myriad.Search
                 SetScores(queryIndex, isSynonymQuery, true) ?? new List<SearchSentence>();
             if (filteredOrSentences.Count<10) filteredOrSentences =
                     SetScores(queryIndex, isSynonymQuery, false) ?? new List<SearchSentence>();
+            if ((!isSynonymQuery) && (phrases.Count > 1))
+            {
+                filteredOrSentences.AddRange(CompletePhraseSearch(pageInfo.Query, rangeSelection));
+            }
+            filteredOrSentences = (isSynonymQuery) ?
+                (from sentence in filteredOrSentences
+                 where sentence.Score < 25 && sentence.Type > 1
+                 orderby sentence.Type, sentence.Score
+                 select sentence).ToList() :
+                (from sentence in filteredOrSentences
+                 where sentence.Score < 25
+                 orderby sentence.Type, sentence.Score
+                 select sentence).ToList();
             return filteredOrSentences;
+        }
+
+        private List<SearchSentence> CompletePhraseSearch(string query, string rangeSelection)
+        {
+            var results = ReadPhraseResults(query, 0, rangeSelection);
+            int count = query.Count(c => c == ' ');
+            List<SearchSentence> sentences = new List<SearchSentence>();
+            foreach (SearchResult result in results)
+            {
+                if ((definitionSearchesInSentences != null) &&
+                    (definitionSearchesInSentences.ContainsKey(result.Key)))
+                    result.SetArticleID(definitionSearchesInSentences[result.Key]);
+                SearchSentence sentence = new SearchSentence(result.SentenceID, count);
+                sentence.Add(result);
+                sentence.SetScore(1);
+                sentence.SetType(0);
+                sentences.Add(sentence);
+            }
+            return sentences;
         }
 
         private List<SearchSentence> SetScores(int wordCount, bool isSynonymQuery, bool filterDistance)
@@ -144,7 +176,7 @@ namespace Myriad.Search
                 }
                 currentSentence.Add(result);
             }
-            List<SearchSentence> filteredOrSentences = null;
+
             if (currentSentence != null)
             {
                 int score = CalculateDistance(currentSentence, filterDistance);
@@ -159,17 +191,8 @@ namespace Myriad.Search
                     currentSentence.SetType(currentSentence.Type - 1);
                 }
                 orSentences.Add(currentSentence);
-                filteredOrSentences = (isSynonymQuery) ?
-                    (from sentence in orSentences
-                     where sentence.Score < 25 && sentence.Type > 1
-                     orderby sentence.Type, sentence.Score
-                     select sentence).ToList() :
-                    (from sentence in orSentences
-                     where sentence.Score < 25
-                     orderby sentence.Type, sentence.Score
-                     select sentence).ToList();
             }
-            return filteredOrSentences;
+            return orSentences;
         }
 
         internal static int CalculateDistance(SearchSentence sentence, bool filterDistance)
