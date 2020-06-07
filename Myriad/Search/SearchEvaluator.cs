@@ -106,14 +106,19 @@ namespace Myriad.Search
                     SetScores(queryIndex, isSynonymQuery, false) ?? new List<SearchSentence>();
             if ((!isSynonymQuery) && (phrases.Count > 1))
             {
-                filteredOrSentences.AddRange(CompletePhraseSearch(pageInfo.Query, rangeSelection));
+                var completePhraseSentences = CompletePhraseSearch(pageInfo.Query, rangeSelection);
+                for (int index = Ordinals.first; index < completePhraseSentences.Count; index++)
+                {
+                    if (!sentences.ContainsKey(completePhraseSentences[index].SentenceID))
+                        filteredOrSentences.Add(completePhraseSentences[index]);
+                }
             }
             filteredOrSentences = (isSynonymQuery) ?
                 (from sentence in filteredOrSentences
                  where sentence.Score < 25 && sentence.Type > 1
                  orderby sentence.Type, sentence.Score
                  select sentence).ToList() :
-                (from sentence in filteredOrSentences
+                (from sentence in filteredOrSentences.Distinct()
                  where sentence.Score < 25
                  orderby sentence.Type, sentence.Score
                  select sentence).ToList();

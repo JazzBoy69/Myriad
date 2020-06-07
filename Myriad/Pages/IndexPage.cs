@@ -248,9 +248,14 @@ ScrollToTop();
                     string greatuncle = await ReadNextPageName(grandparent);
                     string cousin = await ReadFirstIndexParagraph(greatuncle);
                     newName = await ReadFirstIndexParagraph(cousin);
+                    if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = cousin;
+                    if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = greatuncle;
                 }
                 else
+                {
                     newName = await ReadFirstIndexParagraph(uncle);
+                    if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = uncle;
+                }
             }
             name = ((string.IsNullOrEmpty(newName)) || (newName.Contains("=="))) ?
                 name :
@@ -303,12 +308,15 @@ ScrollToTop();
                     string greatuncle = await ReadPrecedingPageName(greatgrandparent, grandparentIndex);
                     string cousin = await ReadLastChild(greatuncle);
                     newName = await ReadLastChild(cousin);
+                    if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = cousin;
+                    if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = greatuncle;
                 }
                 else
                 {
                     string grandparent = await ReadParentPageName(parent);
                     string uncle = await ReadPrecedingPageName(grandparent, parentIndex);
                     newName = await ReadLastChild(uncle);
+                    if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = uncle;
                 }
             }
             else
