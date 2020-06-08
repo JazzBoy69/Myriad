@@ -330,9 +330,15 @@ namespace Myriad.CitationHandlers
                 VerseReference second = new VerseReference();
                 second.Book = verse.First.Book;
                 second.Chapter = verse.Second.Chapter;
+                brokenComma = true;
+                int end = citation.Label.End;
                 AddCitationToResults();
+                int start = citation.Label.End + 1;
                 verse.First = second;
+                brokenComma = false;
                 citation.Set(verse.First);
+                citation.Label.MoveEndTo(end);
+                citation.Label.MoveStartTo(start);
                 lastToken = ' ';
                 token = '~';
             }
