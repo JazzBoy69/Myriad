@@ -17,6 +17,7 @@ namespace Myriad.Library
         internal const string readingVerse = "readingverse";
         internal const string hidden = "hidden";
         internal const string active = "active";
+        internal const string chrono = "chrono";
         internal const string rangeData = " rangedata";
         internal const string dataStart = " data-start=";
         internal const string dataEnd = " data-end=";

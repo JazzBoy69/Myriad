@@ -134,6 +134,7 @@ function SetIcons() {
     SetPaginationButtons();
     SetEditButton();
     SetOriginalWordButton();
+    SetChronoButton();
 }
 
 function SetModal() {
@@ -230,6 +231,20 @@ function SetOriginalWordButton() {
     }
 }
 
+function SetChronoButton() {
+    var chrono = document.getElementById('chrono');
+    var chronoButton = document.getElementById('menuChrono');
+    if ((chrono === null) || (chrono === 'undefined')) {
+        if (!chronoButton.classList.contains('hidden')) {
+            chronoButton.classList.add('hidden');
+        }
+        return;
+    }
+    if (chronoButton.classList.contains('hidden')) {
+        chronoButton.classList.remove('hidden');
+    }
+}
+
 function AddQueryToPath(path, query) {
     if (HasQuery(path)) {
         return path+'&' + query;
@@ -246,6 +261,25 @@ function CurrentPath() {
         return '/Index';
     }
     return document.location.pathname + document.location.search;
+}
+
+function ShowChrono() {
+    var path = ChronoPath();
+    if (path === null) return;
+    var chrono = document.getElementById('chrono');
+    if ((chrono === null) || (chrono === 'undefined')) return;
+    var id = 'id=' + chrono.innerText;
+    path = AddQueryToPath(path, id);
+    LoadPage(path);
+}
+
+function ChronoPath() {
+    var activeTab = document.querySelector('.active.rangedata');
+    if ((activeTab === null) || (typeof activeTab === 'undefined')) return null;
+    var path = '/Chrono';
+    path = AddQueryToPath(path, "tgstart=" + activeTab.getAttribute('data-start'));
+    path = AddQueryToPath(path, "tgend=" + activeTab.getAttribute('data-end'));
+    return path;
 }
 
 function ActivePath() {

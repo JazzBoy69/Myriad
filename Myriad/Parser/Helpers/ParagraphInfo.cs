@@ -2,7 +2,7 @@
 {
     public enum ParagraphType
     {
-        Article, Comment, Navigation,
+        Article, Comment, Navigation, Chrono,
         Undefined
     }
 

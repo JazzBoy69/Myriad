@@ -8,6 +8,7 @@ using Myriad.Library;
 using Myriad.Parser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using System.Text;
 
 namespace Myriad.Pages
 {
@@ -69,16 +70,20 @@ namespace Myriad.Pages
 
         public override string GetQueryInfo()
         {
-            string info = HTMLTags.StartQuery + queryKeyStart + Symbol.equal + citation.CitationRange.StartID +
-                HTMLTags.Ampersand + queryKeyEnd + Symbol.equal + citation.CitationRange.EndID;
+            StringBuilder info = new StringBuilder(HTMLTags.StartQuery + queryKeyStart + Symbol.equal);
+            info.Append(citation.CitationRange.StartID);
+            info.Append(HTMLTags.Ampersand + queryKeyEnd + Symbol.equal);
+            info.Append(citation.CitationRange.EndID);
             if ((targetCitation != null) && (targetCitation.CitationRange.Valid))
             {
-                info += HTMLTags.Ampersand + queryKeyTGStart + Symbol.equal + targetCitation.CitationRange.StartID+
-                    HTMLTags.Ampersand + queryKeyTGEnd + Symbol.equal + targetCitation.CitationRange.EndID;
+                info.Append(HTMLTags.Ampersand + queryKeyTGStart + Symbol.equal);
+                info.Append(targetCitation.CitationRange.StartID);
+                info.Append(HTMLTags.Ampersand + queryKeyTGEnd + Symbol.equal);
+                info.Append(targetCitation.CitationRange.EndID);
             }
             return (navigating) ?
-                info + HTMLTags.Ampersand + queryKeyNavigating + "=true" :
-                info; 
+                info.Append(HTMLTags.Ampersand + queryKeyNavigating + "=true").ToString() :
+                info.ToString(); 
         }
     }
 }

@@ -40,6 +40,7 @@ namespace Myriad.Pages
                     </li>
                     <li id='menuEdit'><a id='editButton' onclick=Edit()><span class='icon'><img src='images/icons8-edit-48.png' /></span></a></li>
                     <li id='menuOriginalWord' class='hidden'><a id='originalWordButton' onclick=EditOriginalWords()><span class='icon'><img src='images/Aleph.png' /></span></a></li>
+                    <li id='menuChrono' class='hidden'><a id='chronoButton' onclick=ShowChrono()><span class='icon'><img src='images/calendar.png' /></span></a></li>
                     <li id='menuCancel' class='hidden'><a id='cancelEdit' onclick=CloseEditForm()><span class='icon'><img src='images/icons8-unavailable.png' /></span></a></li>
                     <li id='menuAccept' class='hidden'><a id='acceptButton'><span class='icon'><img src='images/icons8-checkmark-52.png' /></span></a></li>
                 </ul>

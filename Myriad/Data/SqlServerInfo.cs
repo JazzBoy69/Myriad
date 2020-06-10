@@ -28,7 +28,7 @@ namespace Myriad.Data
         ReadDefinitionSearchID, ReadDefinitionSearchIDs, ReadSearchWords, ReadDefinitionSearchesInArticle,
         ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords, ReadMaxCommentID,
         ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym, ParagraphsThatContainVerse,
-        ReadIDFromIdentifier,
+        ReadIDFromIdentifier, ReadChronoIDs, ReadChronoTitle, ReadChronoChapterID, ReadChronoArticle,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -250,7 +250,15 @@ namespace Myriad.Data
             { DataOperation.UpdateIdentifier,
                 "update definitionIDs set text=@key2 where id=@key1" },
             { DataOperation.ReadIDFromIdentifier,
-                "select id from definitionIDs where text like @key1" }
+                "select id from definitionIDs where text like @key1" },
+            { DataOperation.ReadChronoIDs,
+                "select commentid from commentsinchapter where chapterid=@key1 order by commentindex" },
+            { DataOperation.ReadChronoTitle,
+                "select heading from commentchapters where _id=@key1" },
+            { DataOperation.ReadChronoChapterID,
+                "select chapterid from commentsinchapter where commentid=@key1" },
+            { DataOperation.ReadChronoArticle,
+                "select text from commentchapterparagraphs where chapterid=@key1 order by paragraphindex" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

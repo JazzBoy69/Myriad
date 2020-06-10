@@ -78,8 +78,22 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddPagination(writer);
+            int chronoID = await Chrono.GetIDFromCitation(citation);
+            if (chronoID > Number.nothing)
+            {
+                await AddChronoLink(writer, chronoID);
+            }
         }
 
+        private async Task AddChronoLink(HTMLWriter writer, int chronoID)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.chrono + HTMLTags.CloseQuote +
+                HTMLTags.Class + HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag);
+            await writer.Append(chronoID);
+            await writer.Append(HTMLTags.EndDiv);
+        }
         internal async Task UpdateComment(HTMLWriter writer, IQueryCollection query, string text)
         {
             string idString = query[queryKeyID];
