@@ -231,6 +231,11 @@ namespace Myriad
                         page = new ArticlePage();
                         break;
                     }
+                case Chrono.pageURL:
+                    {
+                        page = new Chrono();
+                        break;
+                    }
                 case ChapterPage.pageURL:
                     {
                         page = new ChapterPage();
