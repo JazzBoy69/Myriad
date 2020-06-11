@@ -18,7 +18,7 @@ namespace Myriad.Pages
     {
         internal static string getDataURL = "/EditParagraph/GetData";
         internal static string setDataURL = "/EditParagraph/SetData";
-        static Dictionary<ParagraphType, Func<MarkupParser, ArticleParagraph, Task>> updateMethods =
+        static readonly Dictionary<ParagraphType, Func<MarkupParser, ArticleParagraph, Task>> updateMethods =
             new Dictionary<ParagraphType, Func<MarkupParser, ArticleParagraph, Task>>()
             {
                 {ParagraphType.Article, UpdateArticleParagraph },

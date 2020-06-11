@@ -179,9 +179,14 @@ namespace Myriad.Pages
                 if (!string.IsNullOrWhiteSpace(paragraphs[i])) articleParagraphs.Add(paragraphs[i]);
             paragraphReader.Close();
         }
-        public override Task SetupNextPage()
+        public override async Task SetupNextPage()
         {
-            throw new NotImplementedException();
+            var reader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadNextChrono),
+                id);
+            int newID = await reader.GetDatum<int>();
+            id = (newID > Number.nothing) ? newID : id;
+            reader.Close();
         }
 
         public override Task SetupParentPage()
@@ -189,9 +194,14 @@ namespace Myriad.Pages
             throw new NotImplementedException();
         }
 
-        public override Task SetupPrecedingPage()
+        public override async Task SetupPrecedingPage()
         {
-            throw new NotImplementedException();
+            var reader = new DataReaderProvider<int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadPrecedingChrono),
+                id);
+            int newID = await reader.GetDatum<int>();
+            id = (newID > Number.nothing) ? newID : id;
+            reader.Close();
         }
 
         public override async Task WriteTOC(HTMLWriter writer)

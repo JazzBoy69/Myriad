@@ -29,7 +29,7 @@ namespace Myriad.Data
         ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords, ReadMaxCommentID,
         ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym, ParagraphsThatContainVerse,
         ReadIDFromIdentifier, ReadChronoIDs, ReadChronoTitle, ReadChronoChapterID, ReadChronoArticle,
-        ReadChronoParagraph,
+        ReadChronoParagraph, ReadNextChrono, ReadPrecedingChrono,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -264,7 +264,11 @@ namespace Myriad.Data
             { DataOperation.ReadChronoChapterID,
                 "select chapterid from commentsinchapter where commentid=@key1" },
             { DataOperation.ReadChronoArticle,
-                "select text from commentchapterparagraphs where chapterid=@key1 order by paragraphindex" }
+                "select text from commentchapterparagraphs where chapterid=@key1 order by paragraphindex" },
+            { DataOperation.ReadNextChrono,
+                "select nextchapter from commentchapters where _id=@key1" },
+            { DataOperation.ReadPrecedingChrono,
+                "select previouschapter from commentchapters where _id=@key1" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

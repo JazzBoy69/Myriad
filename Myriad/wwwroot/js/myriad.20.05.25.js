@@ -283,6 +283,7 @@ function ChronoPath() {
 }
 
 function ActivePath() {
+    if (CurrentPath().indexOf('/Chrono') > -1) return CurrentPath();
     var activeTab = document.querySelector('.active.rangedata');
     if ((activeTab === null) || (typeof activeTab === 'undefined')) return CurrentPath();
     var pageURL = document.getElementById('pageUrlData');
