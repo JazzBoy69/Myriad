@@ -25,7 +25,7 @@ namespace Myriad.Parser
         protected readonly PageFormatter formatter;
         readonly CitationHandler citationHandler;
         readonly StringRange labelRange = new StringRange();
-        protected ParagraphInfo paragraphInfo;
+        protected ParagraphInfo paragraphInfo = new ParagraphInfo();
         int headerCount = Number.nothing;
 
         readonly List<Citation> allCitations = new List<Citation>();
@@ -41,7 +41,6 @@ namespace Myriad.Parser
         {
             formatter = new PageFormatter(writer);
             citationHandler = new CitationHandler();
-            paragraphInfo.type = ParagraphType.Undefined;
         }
         public void SetTargetRange(CitationRange targetRange)
         {

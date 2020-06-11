@@ -29,6 +29,7 @@ namespace Myriad.Data
         ReadOriginalWords, ReadOriginalWordCommentLink, ReadOriginalWordKeywords, ReadMaxCommentID,
         ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym, ParagraphsThatContainVerse,
         ReadIDFromIdentifier, ReadChronoIDs, ReadChronoTitle, ReadChronoChapterID, ReadChronoArticle,
+        ReadChronoParagraph,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -44,7 +45,8 @@ namespace Myriad.Data
         CreateCommentLink =350, DeleteCommentLink=352,
         CreateSynonym=360, UpdateSynonym=361, DeleteSynonyms=362,
         CreateTag=370,
-        CreateIdentifier = 380, UpdateIdentifier = 381
+        CreateIdentifier = 380, UpdateIdentifier = 381,
+        UpdateChronoParagraph = 390
     }
     public class SqlServerInfo
     {
@@ -60,12 +62,16 @@ namespace Myriad.Data
                  "select text from navigationparagraphs where name=@key1 order by paragraphindex" },
             { DataOperation.ReadNavigationParagraph,
                  "select text from navigationparagraphs where articleid=@key1 and paragraphindex=@key2" },
+            { DataOperation.ReadChronoParagraph,
+                "select text from commentchapterparagraphs where chapterid=@key1 and paragraphindex=@key2" },
             { DataOperation.ReadNavigationParagraphUsingName,
                  "select text from navigationparagraphs where name=@key1 and paragraphindex=@key2" },
             { DataOperation.CreateNavigationParagraph,
                 "insert into navigationparagraphs (name, paragraphindex, text, articleid) values (@key1, @key2, @key3, @key4)" },
             { DataOperation.UpdateNavigationParagraph,
                  "update navigationparagraphs set text=@key3 where articleid=@key1 and paragraphindex=@key2" },
+            { DataOperation.UpdateChronoParagraph,
+                "update commentchapterparagraphs set text=@key3 where chapterid=@key1 and paragraphindex=@key2" },
             { DataOperation.DeleteNavigationParagraph,
                 "delete from navigationparagraphs where name=@key1 and paragraphindex=@key2" },
             { DataOperation.ReadNavigationID,

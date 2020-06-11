@@ -29,6 +29,7 @@ namespace Myriad.Pages
 };
 </script>";
         internal const string pageURL = "/Chrono";
+        public const string editURL = "/Edit/Chrono";
         internal const string queryKeyID = "id";
         internal const string queryKeyTGStart = "tgstart";
         internal const string queryKeyTGEnd = "tgend";
@@ -172,7 +173,10 @@ namespace Myriad.Pages
             }
             var paragraphReader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadChronoArticle),
                 id);
-            articleParagraphs = paragraphReader.GetData<string>();
+            var paragraphs = paragraphReader.GetData<string>();
+            articleParagraphs = new List<string>();
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
+                if (!string.IsNullOrWhiteSpace(paragraphs[i])) articleParagraphs.Add(paragraphs[i]);
             paragraphReader.Close();
         }
         public override Task SetupNextPage()

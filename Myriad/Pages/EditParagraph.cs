@@ -18,65 +18,37 @@ namespace Myriad.Pages
     {
         internal static string getDataURL = "/EditParagraph/GetData";
         internal static string setDataURL = "/EditParagraph/SetData";
+        static Dictionary<ParagraphType, Func<MarkupParser, ArticleParagraph, Task>> updateMethods =
+            new Dictionary<ParagraphType, Func<MarkupParser, ArticleParagraph, Task>>()
+            {
+                {ParagraphType.Article, UpdateArticleParagraph },
+                {ParagraphType.Comment, UpdateCommentParagraph },
+                {ParagraphType.Navigation, UpdateNavigationParagraph },
+                {ParagraphType.Chrono, UpdateChronoParagraph }
+            };
         internal static async Task GetPlainText(HttpContext context)
         {
-            context.Request.Form.TryGetValue("edittype", out var editType);
-            ParagraphType paragraphType = (ParagraphType)Convert.ToInt32(editType);
-            context.Request.Form.TryGetValue("ID", out var ID);
-            int articleID = Convert.ToInt32(ID);
-            context.Request.Form.TryGetValue("paragraphIndex", out var index);
-            int paragraphIndex = Convert.ToInt32(index);
-            switch (paragraphType)
-            {
-                case ParagraphType.Article:
-                    await SendPlainTextParagraph(DataOperation.ReadArticleParagraph, articleID, paragraphIndex, context.Response);
-                    break;
-                case ParagraphType.Comment:
-                    await SendPlainTextParagraph(DataOperation.ReadCommentParagraph, articleID, paragraphIndex, context.Response);
-                    break;
-                case ParagraphType.Navigation:
-                    await SendPlainTextParagraph(DataOperation.ReadNavigationParagraph, articleID, paragraphIndex, context.Response);
-                    break;
-                case ParagraphType.Undefined:
-                    break;
-                default:
-                    break;
-            }
+            ParagraphInfo info = new ParagraphInfo(context);
+            await SendPlainTextParagraph(info, context.Response);
+            if (info.type == ParagraphType.Article) await CheckDefinitionSearchesForParagraphIndices(info.ID);
         }
 
-        private static async Task SendPlainTextParagraph(DataOperation operation, int articleID, int paragraphIndex, HttpResponse response)
+        private static async Task SendPlainTextParagraph(ParagraphInfo info, HttpResponse response)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(operation), articleID, paragraphIndex);
+            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(info.ReadOperation), 
+                info.ID, info.index);
             await response.WriteAsync(await reader.GetDatum<string>());
             reader.Close();
-            await CheckDefinitionSearchesForParagraphIndices(articleID);
         }
 
         internal static async Task SetText(HttpContext context)
         {
-            context.Request.Form.TryGetValue("edittype", out var editType);
-            ParagraphType paragraphType = (ParagraphType)Convert.ToInt32(editType);
-            context.Request.Form.TryGetValue("ID", out var ID);
-            int articleID = Convert.ToInt32(ID);
-            context.Request.Form.TryGetValue("paragraphIndex", out var index);
-            int paragraphIndex = Convert.ToInt32(index);
+            ParagraphInfo info = new ParagraphInfo(context);
+            if (info.type == ParagraphType.Undefined) return;
             context.Request.Form.TryGetValue("text", out var text);
             MarkupParser parser = new MarkupParser(Writer.New(context.Response));
-            ArticleParagraph paragraph = new ArticleParagraph(articleID, paragraphIndex, text);
-            switch (paragraphType)
-            {
-                case ParagraphType.Article:
-                    await UpdateArticleParagraph(parser, paragraph);
-                    break;
-                case ParagraphType.Comment:
-                    await UpdateCommentParagraph(parser, paragraph);
-                    break;
-                case ParagraphType.Navigation:
-                    await UpdateNavigationParagraph(parser, paragraph);
-                    break;
-                default:
-                    return;
-            }
+            ArticleParagraph paragraph = new ArticleParagraph(info.ID, info.index, text);
+            await updateMethods[info.type].Invoke(parser, paragraph);
         }
         public static async Task UpdateArticleParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
@@ -454,6 +426,13 @@ namespace Myriad.Pages
         public static async Task UpdateNavigationParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
             await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.UpdateNavigationParagraph),
+                paragraph);
+            await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
+        }
+
+        public static async Task UpdateChronoParagraph(MarkupParser parser, ArticleParagraph paragraph)
+        {
+            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.UpdateChronoParagraph),
                 paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
         }
