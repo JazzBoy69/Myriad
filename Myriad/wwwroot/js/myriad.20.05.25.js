@@ -644,6 +644,7 @@ function ShowEditWindow(data) {
     var menuEdit = document.getElementById('menuEdit');
     var menuAccept = document.getElementById('menuAccept');
     var menuOriginalWord = document.getElementById('menuOriginalWord');
+    var menuChrono = document.getElementById('menuChrono');
     var editForm = document.getElementById('editForm');
     editForm.innerText = data;
     var scrollPos = document.documentElement.scrollTop;
@@ -651,6 +652,7 @@ function ShowEditWindow(data) {
     mainPane.classList.add('hidden');
     menuEdit.classList.add('hidden');
     menuOriginalWord.classList.add('hidden');
+    menuChrono.classList.add('hidden');
     menuCancel.classList.remove('hidden');
     menuAccept.classList.remove('hidden');
     var editFormContainer = document.getElementById('editFormContainer');
