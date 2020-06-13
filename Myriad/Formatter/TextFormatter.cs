@@ -183,6 +183,11 @@ namespace Myriad.Parser
 
             await writer.Append(HTMLTags.StartBold);
             await PageFormatter.StartCitationLink(writer, citation);
+            if (keyword.Verse == 0)
+            {
+                await writer.Append("Sup");
+            }
+            else
             if (keyword.Verse == 1)
             {
                 await writer.Append(keyword.Chapter);
