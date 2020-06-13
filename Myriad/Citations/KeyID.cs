@@ -156,5 +156,10 @@ namespace Myriad.Library
         {
             return id.ToString();
         }
+
+        internal void SetVerse(int verse)
+        {
+            Set(Book, Chapter, verse);
+        }
     }
 }

@@ -172,7 +172,17 @@ namespace Myriad.Pages
                 pageInfo.SetResults(results);
                 pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
                 await SearchFormatter.AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
+                if (pageInfo.SearchResults.Count < 20)
+                {
+                    await WriteVersesInCommon(writer, pageInfo);
+                }
             }
+        }
+
+        private async Task WriteVersesInCommon(HTMLWriter writer, SearchPageInfo pageInfo)
+        {
+            if (pageInfo.UsedDefinitions.Count < 2) return;
+
         }
         private async Task SaveQuery(HTMLWriter writer)
         {

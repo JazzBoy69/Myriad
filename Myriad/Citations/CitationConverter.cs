@@ -108,7 +108,16 @@ namespace Myriad.Parser
                     await writer.Append(":");
             }
             if (citation.CitationType == CitationTypes.Chapter) return;
-            await writer.Append(citation.CitationRange.FirstVerse);
+            if (citation.CitationRange.FirstVerse == 0)
+            {
+                if ((citation.CitationRange.Book != 18) || (!Bible.ChaptersWithSuperscription.Contains(
+                        citation.CitationRange.FirstChapter)))
+                    citation.CitationRange.SetFirstVerse(1);
+            }
+            if (citation.CitationRange.FirstVerse == 0)
+                await writer.Append("Sup");
+            else
+                await writer.Append(citation.CitationRange.FirstVerse);
             if (citation.CitationType == CitationTypes.Verse) return;
             if (!citation.CitationRange.IsOneVerse)
             {

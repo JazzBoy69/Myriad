@@ -142,6 +142,11 @@ namespace Myriad.Library
             end = new KeyID(book, lastChapter, lastVerse, lastWord);
         }
 
+        internal void SetFirstVerse(int verse)
+        {
+            start.SetVerse(verse);
+        }
+
         public bool OneChapter
         {
             get
