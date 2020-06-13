@@ -39,6 +39,24 @@ namespace Myriad.Search
                 index++;
             }
         }
+
+        public int Center
+        {
+            get
+            {
+                int indices = 0;
+                for (int i = Ordinals.first; i < wordLists.Count; i++)
+                {
+                    int wordindices = 0;
+                    for (int j = Ordinals.first; j < wordLists[i].Count; j++)
+                    {
+                        wordindices += wordLists[i][j].WordIndex;
+                    }
+                    indices += wordindices / wordLists[i].Count;
+                }
+                return indices / wordLists.Count;
+            }
+        }
         public void SetType(int typeNumber)
         {
             type = typeNumber;

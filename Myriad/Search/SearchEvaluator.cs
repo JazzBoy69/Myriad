@@ -44,15 +44,13 @@ namespace Myriad.Search
                     searchResults.AddRange(results);
                     var phraseSentences = AddResultsToSentences(sentences, results, 1);
                     Dictionary<int, int> synSentences = null;
-                    if (isSynonymQuery)
+                    if (isSynonymQuery && (synonyms[queryIndex].Count > 0))
                     {
-                        if (synonyms[queryIndex].Count > 0)
-                        {
-                            var synResults =
-                                ReadPhrasesResults(queryIndex, synonyms, rangeSelection);
-                            searchResults.AddRange(synResults);
-                            synSentences = AddResultsToSentences(sentences, synResults, 3);
-                        }
+                        var synResults =
+                            ReadPhrasesResults(queryIndex, synonyms, rangeSelection);
+                        searchResults.AddRange(synResults);
+                        synSentences = AddResultsToSentences(sentences, synResults, 3);
+
                     }
                     sentences = phraseSentences;
                     if (synSentences != null)
@@ -214,6 +212,7 @@ namespace Myriad.Search
             }
 
             List<WordPosition> wordPositions = sentence.WordPositions;
+            int center = sentence.Center;
             wordPositions.Sort();
             List<int> wordCounts = sentence.WordCounts;
             int extra = wordPositions.Count - sentence.WordCount;
@@ -225,17 +224,17 @@ namespace Myriad.Search
                 while ((wordPositions.Count > sentence.WordCount) && ((wordCounts[first.QueryIndex] > 1) ||
                     (wordCounts[last.QueryIndex] > 1)))
                 {
-                    int low = 1000000;
-                    int high = 1000000;
+                    int low = -1000000;
+                    int high = -1000000;
                     if (wordCounts[first.QueryIndex] > 1)
                     {
-                        low = last.WordIndex - wordPositions.ElementAt(Ordinals.second).WordIndex;
+                        low = center - wordPositions.ElementAt(Ordinals.first).WordIndex;
                     }
                     if (wordCounts[last.QueryIndex] > 1)
                     {
-                        high = wordPositions.ElementAt(wordPositions.Count - 2).WordIndex - first.WordIndex;
+                        high = wordPositions.ElementAt(wordPositions.Count - 1).WordIndex - center;
                     }
-                    if (low < high)
+                    if (low > high)
                     {
                         wordCounts[first.QueryIndex]--;
                         wordPositions.RemoveAt(Ordinals.first);
