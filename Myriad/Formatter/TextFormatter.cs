@@ -57,7 +57,7 @@ namespace Myriad.Parser
                 if (poetic)
                 {
                     poetic = false;
-                    await writer.Append(HTMLTags.EndParagraph);
+                    await writer.Append(HTMLTags.EndParagraph+HTMLTags.StartParagraph);
                 }
                 else
                 {
