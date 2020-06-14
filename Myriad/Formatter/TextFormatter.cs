@@ -57,14 +57,27 @@ namespace Myriad.Parser
                 if (poetic)
                 {
                     poetic = false;
-                    await writer.Append(HTMLTags.EndParagraph+HTMLTags.StartParagraph);
+                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraph);
                 }
                 else
                 {
                     poetic = true;
-                    await writer.Append(HTMLTags.StartParagraphWithClass);
+                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraphWithClass);
                     await writer.Append(HTMLClasses.poetic1);
                     await writer.Append(HTMLTags.CloseQuoteEndTag);
+                }
+            }
+            else if (keyword.ParagraphWordIndex == Ordinals.first)
+            {
+                if (poetic)
+                {
+                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraphWithClass);
+                    await writer.Append(HTMLClasses.poetic1);
+                    await writer.Append(HTMLTags.CloseQuoteEndTag);
+                }
+                else
+                {
+                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraph);
                 }
             }
             if (!navigating && readingView && (targetrange.StartID.ID == keyword.ID))

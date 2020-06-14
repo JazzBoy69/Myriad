@@ -97,6 +97,7 @@ namespace Myriad.Data
             get { return id.ID; }
         }
 
+        public int ParagraphWordIndex => paragraphWordIndex;
         public int ParameterCount => throw new NotImplementedException();
     }
 }
