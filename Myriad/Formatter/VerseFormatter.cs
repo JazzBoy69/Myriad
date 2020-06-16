@@ -49,7 +49,7 @@ namespace Myriad.Formatter
                             lastWordOnTop = wordsOnTop[Ordinals.last].EndID;
                         }
                     }
-                    await TextFormatter.AppendTextOfKeyword(writer, page.info.keywords[i]);
+                    await AppendTextOfKeyword(writer, page.info.keywords[i]);
                     if (page.info.keywords[i].ID == lastWordOnTop)
                     {
                         await writer.Append("<rt>");
@@ -60,6 +60,21 @@ namespace Myriad.Formatter
                 }
             }
             await EndRubySection(writer);
+        }
+
+        public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
+        {
+            await writer.Append(keyword.LeadingSymbols.ToString());
+            if (keyword.IsCapitalized)
+            {
+                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
+                await writer.Append(keyword.Text.Slice(Ordinals.second).ToString());
+            }
+            else
+            {
+                await writer.Append(keyword.Text.ToString().Replace('`', '’'));
+            }
+            await writer.Append(keyword.TrailingSymbols.ToString().Replace("<br>", ""));
         }
 
         private static async Task WriteSubstituteText(HTMLWriter writer, List<RubyInfo> wordsOnTop)
