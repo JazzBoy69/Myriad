@@ -196,6 +196,11 @@ namespace Myriad.Parser
 
             await writer.Append(HTMLTags.StartBold);
             await PageFormatter.StartCitationLink(writer, citation);
+            if ((keyword.WordIndex > Ordinals.first) && readingView)
+            {
+                await writer.Append(HTMLTags.Ellipsis);
+            }
+            else
             if (keyword.Verse == 0)
             {
                 await writer.Append("Sup");
