@@ -146,11 +146,17 @@ namespace Myriad.Formatter
             reader.Close();
             return results;
         }
-        public List<Keyword> ReadKeywords(Citation citation)
+        public static List<Keyword> ReadKeywords(Citation citation)
+        {
+            return ReadKeywords(
+                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+        }
+
+        public static List<Keyword> ReadKeywords(int start, int end)
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+                start, end);
             var result = reader.GetClassData<Keyword>();
             reader.Close();
             return result;

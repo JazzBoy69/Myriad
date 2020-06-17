@@ -174,15 +174,17 @@ namespace Myriad.Pages
                 await SearchFormatter.AppendSearchResults(0, 100, writer, pageInfo.SearchResults);
                 if (pageInfo.SearchResults.Count < 20)
                 {
-                    await WriteVersesInCommon(writer, pageInfo);
+                    await WriteVersesInCommon(writer, searchEvaluator);
                 }
             }
         }
 
-        private async Task WriteVersesInCommon(HTMLWriter writer, SearchPageInfo pageInfo)
+        private async Task WriteVersesInCommon(HTMLWriter writer, SearchEvaluator evaluator)
         {
-            if (pageInfo.UsedDefinitions.Count < 2) return;
-
+            if (evaluator.PhraseDefinitions.Count < 2) return;
+            var ranges = await ExtendedSearch.EvaluatePhraseDefinitions(evaluator.PhraseDefinitions);
+            var results = ExtendedSearch.GetResults(evaluator.PhraseDefinitions, ranges);
+            await ExtendedSearch.WriteResults(writer, results);
         }
         private async Task SaveQuery(HTMLWriter writer)
         {

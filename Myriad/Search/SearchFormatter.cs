@@ -451,19 +451,23 @@ namespace Myriad.Search
                 ellipsis = false;
                 if (links.ContainsKey(idx))
                 {
-                    await writer.Append("<a HREF=" + ArticlePage.pageURL + "?id=");
-                    await writer.Append(links[idx].Item1);
-                    await writer.Append("&tgstart=");
-                    await writer.Append(startID);
-                    await writer.Append("&tgend=");
-                    await writer.Append(endID);
-                    await AppendPartialPageHandler(writer);
-                    await writer.Append(">");
-
+                    await AppendSearchArticle(writer, startID, endID, links[idx].Item1);
                 }
                 await AppendSearchResultWord(writer, searchresultwords[idx], sentenceKeywords[idx]);
                 if (endLinks.Contains(idx)) await writer.Append("</a>");
             }
+        }
+
+        internal static async Task AppendSearchArticle(HTMLWriter writer, int startID, int endID, int id)
+        {
+            await writer.Append("<a HREF=" + ArticlePage.pageURL + "?id=");
+            await writer.Append(id);
+            await writer.Append("&tgstart=");
+            await writer.Append(startID);
+            await writer.Append("&tgend=");
+            await writer.Append(endID);
+            await AppendPartialPageHandler(writer);
+            await writer.Append(">");
         }
 
         private static async Task AppendPartialPageHandler(HTMLWriter writer)

@@ -14,6 +14,7 @@ namespace Myriad.Search
     {
         List<int> usedDefinitions = new List<int>();
         List<List<string>> synonyms = new List<List<string>>();
+        List<List<int>> phraseDefinitions = new List<List<int>>();
         List<SearchResult> filteredResults;
         Dictionary<int, int> sentences = null;
         List<string> commonWords = new List<string>();
@@ -21,6 +22,8 @@ namespace Myriad.Search
         private const string definitionSelector = @"select sentence, wordindex, id from definitionsearch
             where ";
 
+
+        internal List<List<int>> PhraseDefinitions => phraseDefinitions;
         public List<int> UsedDefinitions => usedDefinitions;
 
         internal async Task<List<SearchSentence>> Search(List<string> phrases, 
@@ -379,6 +382,7 @@ namespace Myriad.Search
                 var roots = Inflections.HardRootsOf(phrase.Replace('_', ' '));
                 //get definition ids for phrase
                 List<int> definitionIDs = GetDefinitionIDs(roots);
+                phraseDefinitions.Add(definitionIDs);
                 //get synonyms for phrase
                 var thisPhraseSynonyms = GetSynonyms(definitionIDs, phrase);
                 synonyms.Add(thisPhraseSynonyms);
