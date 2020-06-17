@@ -384,7 +384,9 @@ namespace Myriad.Search
                 List<int> definitionIDs = GetDefinitionIDs(roots);
                 phraseDefinitions.Add(definitionIDs);
                 //get synonyms for phrase
-                var thisPhraseSynonyms = GetSynonyms(definitionIDs, phrase);
+                var thisPhraseSynonyms = (definitionIDs.Count == 0) ? 
+                    roots : 
+                    GetSynonyms(definitionIDs, phrase);
                 synonyms.Add(thisPhraseSynonyms);
                 usedDefinitions.AddRange(definitionIDs);
             }

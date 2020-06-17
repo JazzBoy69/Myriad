@@ -182,8 +182,8 @@ namespace Myriad.Pages
         private async Task WriteVersesInCommon(HTMLWriter writer, SearchEvaluator evaluator)
         {
             if (evaluator.PhraseDefinitions.Count < 2) return;
-            var ranges = await ExtendedSearch.EvaluatePhraseDefinitions(evaluator.PhraseDefinitions);
-            var results = ExtendedSearch.GetResults(evaluator.PhraseDefinitions, ranges);
+            var citations = await ExtendedSearch.EvaluatePhraseDefinitions(evaluator.PhraseDefinitions);
+            var results = ExtendedSearch.GetResults(evaluator.PhraseDefinitions, citations);
             await ExtendedSearch.WriteResults(writer, results);
         }
         private async Task SaveQuery(HTMLWriter writer)

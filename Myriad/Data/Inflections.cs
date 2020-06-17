@@ -68,7 +68,7 @@ namespace Myriad.Data
             {
                 results[index] = RemoveDiacritics(results[index]);
             }
-            return results;
+            return results.Distinct().ToList();
         }
 
         private static List<string> EnglishRootsOfPhrase(string phrase)
@@ -93,7 +93,7 @@ namespace Myriad.Data
             {
                 result.Add(phraseResult);
             }
-            return result;
+            return result.Distinct().ToList();
         }
 
         internal static string RemoveNameDiacritics(string word)

@@ -16,19 +16,29 @@ namespace Myriad.Search
 {
     public class ExtendedSearch
     {
-        public static async Task<List<(int, int)>> EvaluatePhraseDefinitions(List<List<int>> phraseDefinitions)
+        public static async Task<List<Citation>> EvaluatePhraseDefinitions(List<List<int>> phraseDefinitions)
         {
-            if (phraseDefinitions.Count < 2) return new List<(int, int)>();
+            if (phraseDefinitions.Count < 2) return new List<Citation>();
             var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(
                 GenerateCommonRangeQuery(phraseDefinitions)));
             var ranges = await reader.GetData<int, int>();
             reader.Close();
-            return ranges.Distinct().ToList();
+            var keys = new List<(int, int)>();
+            var result = new List<Citation>();
+            for (int i = Ordinals.first; i < ranges.Count; i++)
+            {
+                Citation citation = new Citation(ranges[i].Item1, ranges[i].Item2);
+                await citation.CitationRange.ResolveLastWordIndex();
+                if (keys.Contains(citation.CitationRange.Key)) continue;
+                keys.Add(citation.CitationRange.Key);
+                result.Add(citation);
+            }
+            return result;
         }
 
         private static string GenerateCommonRangeQuery(List<List<int>> phraseDefinitions)
         {
-            StringBuilder query = new StringBuilder("select maxstart=(SELECT MAX(x) FROM (VALUES ");
+            StringBuilder query = new StringBuilder("select distinct maxstart=(SELECT MAX(x) FROM (VALUES ");
             AppendMaxStart(phraseDefinitions, query);
             AppendMinLast(phraseDefinitions, query);
             AppendJoinStatements(phraseDefinitions, query);
@@ -106,13 +116,13 @@ namespace Myriad.Search
             query.Append(")");
         }
 
-        internal static List<List<ExtendedSearchRange>> GetResults(List<List<int>> phraseDefinitions, List<(int, int)> ranges)
+        internal static List<List<ExtendedSearchRange>> GetResults(List<List<int>> phraseDefinitions, List<Citation> citations)
         {
             var results = new List<List<ExtendedSearchRange>>();
-            for (int i = Ordinals.first; i < ranges.Count; i++)
+            for (int i = Ordinals.first; i < citations.Count; i++)
             {
-                var definitionSearches = ReadDefinitionSearches(phraseDefinitions, ranges[i]);
-                results.Add(SplitRange(ranges[i], definitionSearches));
+                var definitionSearches = ReadDefinitionSearches(phraseDefinitions, citations[i].CitationRange.Key);
+                results.Add(SplitRange(citations[i].CitationRange.Key, definitionSearches));
             }
             return results;
         }
@@ -120,9 +130,9 @@ namespace Myriad.Search
         private static List<ExtendedSearchRange> SplitRange((int, int) range, List<ExtendedSearchArticle> definitionSearches)
         {
             definitionSearches = definitionSearches.OrderBy(ds => ds.Start).ToList();
-            int end = Math.Min(range.Item2, range.Item1 + 25);
             int start = range.Item1;
-            ExtendedSearchRange searchRange = new ExtendedSearchRange(range.Item1, end);
+            int end = Math.Max(range.Item2, start+25);
+            ExtendedSearchRange searchRange = new ExtendedSearchRange(start, end);
             var result = new List<ExtendedSearchRange>();
             for (int i = Ordinals.first; i < definitionSearches.Count; i++)
             {
