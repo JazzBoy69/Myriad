@@ -26,9 +26,9 @@ namespace TestStub
         async private void RunTest()
         {
             string citationText;
-            var citations = CitationConverter.FromString("Psalms 8, 19, 23, 29"); //2Jo 10, 12, 14
+            var citations = CitationConverter.FromString("Jude 18-21, 25"); //2Jo 10, 12, 14
             Paragraph paragraph = new Paragraph();
-            paragraph.Text = "Psalms 8, 19, 23, 29";
+            paragraph.Text = "Jude 18-21, 25";
             string first = paragraph.StringAt(citations[Ordinals.first].Label);
             string second = paragraph.StringAt(citations[Ordinals.second].Label);
             citationText = await CitationConverter.ToString(citations);
