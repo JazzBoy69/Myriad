@@ -74,7 +74,7 @@ namespace Myriad.Formatter
             {
                 await writer.Append(keyword.Text.ToString().Replace('`', '’'));
             }
-            await writer.Append(keyword.TrailingSymbols.ToString().Replace("<br>", ""));
+            await writer.Append(keyword.TrailingSymbols.ToString().Replace("<br>", "").Replace("— ", "—"));
         }
 
         private static async Task WriteSubstituteText(HTMLWriter writer, List<RubyInfo> wordsOnTop)

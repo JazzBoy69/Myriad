@@ -153,7 +153,7 @@ namespace Myriad.Parser
             {
                 await writer.Append(keyword.Text.ToString().Replace('`', '’'));
             }
-            await writer.Append(keyword.TrailingSymbols.ToString());
+            await writer.Append(keyword.TrailingSymbols.ToString().Replace("— ", "—"));
         }
 
         private async Task AppendVerseNumber(Keyword keyword, CitationRange range, bool readingView)
