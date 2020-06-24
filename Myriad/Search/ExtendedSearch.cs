@@ -22,6 +22,7 @@ namespace Myriad.Search
             var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(
                 GenerateCommonRangeQuery(phraseDefinitions)));
             var ranges = await reader.GetData<int, int>();
+            ranges = ranges.OrderByDescending(r => r.Item2 - r.Item1).ToList();
             reader.Close();
             var keys = new List<(int, int)>();
             var result = new List<Citation>();
@@ -29,11 +30,21 @@ namespace Myriad.Search
             {
                 Citation citation = new Citation(ranges[i].Item1, ranges[i].Item2);
                 await citation.CitationRange.ResolveLastWordIndex();
-                if (keys.Contains(citation.CitationRange.Key)) continue;
+                (int, int) key = citation.CitationRange.Key;
+                if (PresentIn(keys, key)) continue;
                 keys.Add(citation.CitationRange.Key);
                 result.Add(citation);
             }
             return result;
+        }
+
+        private static bool PresentIn(List<(int, int)> keys, (int, int) key)
+        {
+            for (int i = Ordinals.first; i < keys.Count; i++)
+            {
+                if ((key.Item1 >= keys[i].Item1) && (key.Item2 <= keys[i].Item2)) return true;
+            }
+            return false;
         }
 
         private static string GenerateCommonRangeQuery(List<List<int>> phraseDefinitions)
