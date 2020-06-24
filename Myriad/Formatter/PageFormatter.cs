@@ -334,9 +334,27 @@ namespace Myriad.Parser
         {
             foreach (var citation in citations)
             {
+                if (!citation.CitationRange.Valid)
+                {
+                    await AppendText(paragraph, citation);
+                    continue;
+                }
                 await AppendCitation(paragraph, citation);
             }
         }
+
+        private async Task AppendText(IParagraph paragraph, Citation citation)
+        {
+            if (citation.LeadingSymbols.Length > 0)
+                await writer.Append(paragraph.
+                    SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End).ToString());
+            await writer.Append(paragraph.SpanAt(citation.Label.Start,
+                citation.Label.End).ToString());
+            if (citation.TrailingSymbols.Length > 0)
+                await writer.Append(paragraph.
+                    SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
+        }
+
         internal async Task AppendCitationWithLabel(IParagraph paragraph, Citation citation)
         {
             await StartCitationAnchor(writer, citation);

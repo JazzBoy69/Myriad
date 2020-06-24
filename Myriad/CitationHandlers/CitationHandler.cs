@@ -259,6 +259,9 @@ namespace Myriad.CitationHandlers
 
         public void InitializeParser(StringRange givenRange, IParagraph givenParagraph)
         {
+            currentBook = Result.notfound;
+            currentChapter = Result.notfound;
+            currentWord = "";
             rangeToParse = givenRange;
             paragraphToParse = givenParagraph;
             char lastChar = givenParagraph.CharAt(rangeToParse.End);
