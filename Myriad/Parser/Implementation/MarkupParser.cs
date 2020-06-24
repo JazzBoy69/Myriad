@@ -27,6 +27,7 @@ namespace Myriad.Parser
         readonly StringRange labelRange = new StringRange();
         protected ParagraphInfo paragraphInfo = new ParagraphInfo();
         int headerCount = Number.nothing;
+        protected HTMLWriter writer;
 
         readonly List<Citation> allCitations = new List<Citation>();
         readonly List<string> tags = new List<string>();
@@ -39,6 +40,7 @@ namespace Myriad.Parser
 
         public MarkupParser(HTMLWriter writer)
         {
+            this.writer = writer;
             formatter = new PageFormatter(writer);
             citationHandler = new CitationHandler();
         }
@@ -93,6 +95,20 @@ namespace Myriad.Parser
             };
             await ParseParagraph();
         }
+
+        internal async Task ParseString(string text)
+        {
+            currentParagraph = new Paragraph();
+            currentParagraph.Text = text;
+            Initialize();
+            await Parse();
+            mainRange.MoveEndToLimit();
+            if (citationLevel > 0)
+            {
+                await HandleCitations();
+            }
+            await formatter.AppendString(currentParagraph, mainRange);
+        }
         protected async Task ParseParagraph()
         {
             try
@@ -101,19 +117,24 @@ namespace Myriad.Parser
                 Initialize();
                 await HandleStart();
                 if (foundEndToken) return;
-                SearchForToken();
-                foundEndToken = false;
-                while (mainRange.Valid)
-                {
-                    await HandleToken();
-                    if (foundEndToken) break;
-                    MoveToNextToken();
-                }
+                await Parse();
                 if (!foundEndToken) await HandleEnd();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private async Task Parse()
+        {
+            SearchForToken();
+            foundEndToken = false;
+            while (mainRange.Valid)
+            {
+                await HandleToken();
+                if (foundEndToken) break;
+                MoveToNextToken();
             }
         }
 
@@ -205,11 +226,8 @@ namespace Myriad.Parser
                 await formatter.AppendFigure(currentParagraph.Text, formats);
                 return true;
             }
-            //Todo Handle Table tokens
-
             return false;
         }
-
         virtual protected async Task HandleEnd()
         {
             mainRange.MoveEndToLimit();
@@ -435,7 +453,7 @@ namespace Myriad.Parser
             var rangeToParse = new StringRange(mainRange.Start, mainRange.End - 1);
             List<Citation> citations =
                 citationHandler.ParseCitations(rangeToParse, currentParagraph);
-            if (citations.Count < 1) return;
+            if ((citations == null) || (citations.Count < 1)) return;
             allCitations.AddRange(citations);
             if (formats.labelExists)
             {

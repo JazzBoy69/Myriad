@@ -15,6 +15,9 @@ namespace Myriad.Parser
         public const int bold = 0x2A2A;
         public const int italic = 0x2F2F;
         public const int detail = 0x2B2B;
+        public const int startTable = 0x5B7C;//"[|"
+        public const int endTable = 0x7C2D; //"|-"
+        public const int tableRow = 0x7C7C;
         public static readonly char[] brackettokens = new char[] { '|', '}' };
         public static readonly char[] tokens = new char[] { '*', '^', '/', '=', '(', '[', '{', ')', ']', '}', '~', '#', '|', '_', '+' };
     }
