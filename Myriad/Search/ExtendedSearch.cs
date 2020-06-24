@@ -116,36 +116,36 @@ namespace Myriad.Search
             query.Append(")");
         }
 
-        internal static List<List<ExtendedSearchRange>> GetResults(List<List<int>> phraseDefinitions, List<Citation> citations)
+        internal static List<List<ExtendedSearchRange>> GetResults(SearchEvaluator evaluator, List<Citation> citations)
         {
             var results = new List<List<ExtendedSearchRange>>();
             for (int i = Ordinals.first; i < citations.Count; i++)
             {
-                var definitionSearches = ReadDefinitionSearches(phraseDefinitions, citations[i].CitationRange.Key);
-                results.Add(SplitRange(citations[i].CitationRange.Key, definitionSearches));
+                var definitionSearches = ReadDefinitionSearches(evaluator.PhraseDefinitions, citations[i].CitationRange.Key);
+                results.Add(SplitRange(evaluator, citations[i].CitationRange.Key, definitionSearches));
             }
             return results;
         }
 
-        private static List<ExtendedSearchRange> SplitRange((int, int) range, List<ExtendedSearchArticle> definitionSearches)
+        private static List<ExtendedSearchRange> SplitRange(SearchEvaluator evaluator, (int, int) range, List<ExtendedSearchArticle> definitionSearches)
         {
             definitionSearches = definitionSearches.OrderBy(ds => ds.Start).ToList();
             int start = range.Item1;
-            int end = Math.Max(range.Item2, start+25);
+            int end = Math.Min(range.Item2, start+25);
             ExtendedSearchRange searchRange = new ExtendedSearchRange(start, end);
             var result = new List<ExtendedSearchRange>();
             for (int i = Ordinals.first; i < definitionSearches.Count; i++)
             {
                 if (definitionSearches[i].Start < end)
                 {
-                    searchRange.AddSearchResult(definitionSearches[i]);
+                    searchRange.AddDefinitionSearch(definitionSearches[i]);
                     continue;
                 }
                 result.Add(searchRange.Copy());
                 start = definitionSearches[i].Start - 10;
                 end = definitionSearches[i].End + 15;
                 searchRange = new ExtendedSearchRange(start, end);
-                searchRange.AddSearchResult(definitionSearches[i]);
+                searchRange.AddDefinitionSearch(definitionSearches[i]);
             }
             result.Add(searchRange);
             return result;
@@ -180,7 +180,7 @@ namespace Myriad.Search
                 await writer.Append(": ");
                 for (int j = Ordinals.first; j < results[i].Count; j++)
                 {
-                    if (j > Ordinals.first) await writer.Append(HTMLTags.Ellipsis);
+                    if (j > Ordinals.first) await writer.Append(HTMLTags.Ellipsis+Symbol.space);
                     await AppendResult(writer, results[i][j]);
                 }
                 await writer.Append(HTMLTags.EndParagraph);
@@ -197,6 +197,7 @@ namespace Myriad.Search
                 if ((articleIndex < extendedSearchRange.DefinitionSearches.Count) &&
                     (extendedSearchRange.DefinitionSearches[articleIndex].Start == keywords[i].ID))
                 {
+                    await writer.Append(HTMLTags.StartBold);
                     await AppendSearchArticle(writer, extendedSearchRange.DefinitionSearches[articleIndex]);
                 }
                 await TextFormatter.AppendTextOfKeyword(writer, keywords[i]);
@@ -204,6 +205,7 @@ namespace Myriad.Search
                     (extendedSearchRange.DefinitionSearches[articleIndex].End == keywords[i].ID))
                 {
                     await writer.Append(HTMLTags.EndAnchor);
+                    await writer.Append(HTMLTags.EndBold);
                     articleIndex++;
                     while ((articleIndex < extendedSearchRange.DefinitionSearches.Count) &&
                         (extendedSearchRange.DefinitionSearches[articleIndex].Start <= keywords[i].ID))

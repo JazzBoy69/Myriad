@@ -16,6 +16,7 @@ namespace Myriad.Search
         List<List<string>> synonyms = new List<List<string>>();
         List<List<int>> phraseDefinitions = new List<List<int>>();
         List<SearchResult> filteredResults;
+        List<SearchResult> searchResults;
         Dictionary<int, int> sentences = null;
         List<string> commonWords = new List<string>();
         Dictionary<(int, int), int> definitionSearchesInSentences = new Dictionary<(int, int), int>();
@@ -26,10 +27,12 @@ namespace Myriad.Search
         internal List<List<int>> PhraseDefinitions => phraseDefinitions;
         public List<int> UsedDefinitions => usedDefinitions;
 
+        internal List<SearchResult> SearchResults => searchResults;
+
         internal async Task<List<SearchSentence>> Search(List<string> phrases, 
             SearchPageInfo pageInfo, bool isSynonymQuery)
         {
-            var searchResults = new List<SearchResult>();
+            searchResults = new List<SearchResult>();
             int queryIndex = Ordinals.first;
 
             string rangeSelection = RangeSelection(pageInfo.CitationRange);

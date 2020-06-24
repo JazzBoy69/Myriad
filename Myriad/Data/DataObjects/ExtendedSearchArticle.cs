@@ -4,7 +4,7 @@ using System.Data.Common;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Myriad.Search
+namespace Myriad.Data
 {
     internal class ExtendedSearchArticle : DataObject
     {
@@ -26,16 +26,16 @@ namespace Myriad.Search
 
         public async Task Read(DbDataReader reader)
         {
-            start = await reader.GetFieldValueAsync<int>(Ordinals.first);
-            end = await reader.GetFieldValueAsync<int>(Ordinals.second);
-            articleID = await reader.GetFieldValueAsync<int>(Ordinals.third);
+            articleID = await reader.GetFieldValueAsync<int>(Ordinals.first);
+            start = await reader.GetFieldValueAsync<int>(Ordinals.second);
+            end = await reader.GetFieldValueAsync<int>(Ordinals.third);
         }
 
         public void ReadSync(DbDataReader reader)
         {
-            start = reader.GetFieldValue<int>(Ordinals.first);
-            end = reader.GetFieldValue<int>(Ordinals.second);
-            articleID = reader.GetFieldValue<int>(Ordinals.third);
+            articleID = reader.GetFieldValue<int>(Ordinals.first);
+            start = reader.GetFieldValue<int>(Ordinals.second);
+            end = reader.GetFieldValue<int>(Ordinals.third);
         }
     }
 }
