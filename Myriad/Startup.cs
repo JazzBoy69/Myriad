@@ -52,7 +52,6 @@ namespace Myriad
             app.Run(async context =>
             {
                 string path = context.Request.Path;
-                //todo write change log
                 if (path == ArticlePage.addArticleURL)
                 {
                     ArticlePage articlePage = new ArticlePage();
