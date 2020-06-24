@@ -168,6 +168,7 @@ namespace Myriad.Formatter
                     await StartParagraph(writer, entry[Ordinals.first].suppressed);
                     Citation labelCitation = new Citation(range.start, range.end);
                     labelCitation.CitationType = CitationTypes.Text;
+                    labelCitation.Navigating = true;
                     await CitationConverter.AppendLink(writer, labelCitation, page.citation);
                     await writer.Append(": ");
                     lastRange = range;
@@ -453,6 +454,7 @@ namespace Myriad.Formatter
             crossreference.CitationType = (crossreference.CitationRange.Length < 10) ?
                  CitationTypes.Verse :
                  CitationTypes.Text;
+            crossreference.Navigating = true;
             await CitationConverter.AppendLink(writer, crossreference);
         }
 

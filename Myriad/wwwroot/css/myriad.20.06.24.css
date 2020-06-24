@@ -5,6 +5,8 @@ h1, h2, h3 {font-family:"Palatino Linotype", Cambria, Cochin, Georgia,"Times New
 .sidenote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
 .textquote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
 mark{background-color:#ffc;font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
+.scripture-text {font-family:Spectral,'Fira Sans','Droid Serif',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-size:1.5rem;}
+.scripture-text mark{background-color:#ffc;font-family:Spectral,'Droid Serif',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
 article{font-size:1.35rem;font-feature-settings: "liga" 1;}
 .readingverse a{background-color:white;}
 .originalword {font-style:italic;}
@@ -91,7 +93,8 @@ div.sidenote{margin-bottom:.75em;}
 h2{font-size:1.75em;line-height: 1.25em;margin-bottom:.25rem;}
 h3{font-size:1.4em;margin-bottom:.25rem;margin-top:.4rem;line-height:1.4em;}
 ul, li, ol, dl{list-style:none;padding:0;}
-p{line-height:1.5em;padding-bottom:.5em;line-height:1.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
+p{line-height:1.5em;padding-bottom:.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
+.scripture-text p{line-height:1.4em;}
 .sidenote p{padding-bottom: .5em;}
 .sidenote details p{padding-bottom:.1em;}
 .scripture h3{margin-bottom:0.5em;}
@@ -383,6 +386,8 @@ body{text-rendering:optimizeSpeed;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;margin-top:2px;}
 /*HORIZONTAL SPACING */
+.editcontent{padding-left:2rem;}
+.scripture-text{font-size:1.35rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:33rem;padding-left:1rem;font-size:1.15rem;}
@@ -436,12 +441,13 @@ ul.tabs {display:inline-block;}
 
 @media only screen and (max-width:480px){
 body{text-rendering:optimizeSpeed;}
-
+.scripture-text{font-size:1.35rem;}
 .icon img, #search{zoom: 50%;}
 #searchField{width: 10rem;}
 .menu li{width: 2.5rem;margin:0 0 .7rem 0;}
 .buttongrid {padding-bottom: 1rem;}
 /*HORIZONTAL SPACING */
+.editcontent{padding-left:1rem;padding-right:1rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:20rem;padding-left:1em;font-size:1rem;}

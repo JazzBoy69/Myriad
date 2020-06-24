@@ -414,7 +414,7 @@ namespace Myriad.Parser
                 await writer.Append("&word=");
                 await writer.Append(citation.CitationRange.Word);
             }
-            if (citation.CitationType == CitationTypes.Chapter)
+            if ((citation.CitationType == CitationTypes.Chapter) || citation.Navigating)
             {
                 await writer.Append("&navigating=true");
             }
@@ -437,7 +437,7 @@ namespace Myriad.Parser
                 await writer.Append(HTMLTags.Ampersand + ScripturePage.queryKeyTGEnd + Symbol.equal);
                 await writer.Append(targetCitation.CitationRange.EndID.ID);
             }
-            if (citation.CitationType == CitationTypes.Chapter)
+            if ((citation.CitationType == CitationTypes.Chapter) || citation.Navigating)
             {
                 await writer.Append("&navigating=true");
             }

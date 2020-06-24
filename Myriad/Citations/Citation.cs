@@ -15,6 +15,7 @@ namespace Myriad.Library
         public StringRange TrailingSymbols = new StringRange();
         public CitationRange CitationRange = CitationRange.InvalidRange();
         public CitationTypes CitationType = CitationTypes.Invalid;
+        public bool Navigating = false;
 
         public Citation()
         {
