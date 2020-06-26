@@ -10,8 +10,7 @@ namespace Myriad.Data
 {
     public class Phrases
     {
-        //todo refactor this class
-        internal static async Task<List<string>> GetPhrases(List<string> words) //todo refactor
+        internal static List<string> GetPhrases(List<string> words) 
         {
             var result = new List<string>();
             if (words.Count == 1)
@@ -21,33 +20,34 @@ namespace Myriad.Data
             }
             for (int index = Ordinals.first; index < words.Count; index++)
             {
-                var roots = Inflections.HardRootsOf(words[index]);
-                foreach (string root in roots)
-                {
-                    var possibilities = (from phrase in PhrasesThatStartWith(words[index], root)
-                                         orderby phrase.Count(c => c == ' ') descending
-                                         select phrase).ToList();
-                    bool found = false;
-                    if (possibilities.Any())
-                    {
-                        foreach (string possibility in possibilities)
-                        {
-                            if (Compare(words, index, possibility))
-                            {
-                                result.Add(possibility);
-                                index += possibility.Count(c => c == ' ');
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!found) result.Add(words[index]);
-                }
+                string possibility = GetMatchingPhrase(words, index);
+                index += possibility.Count(c => c == ' ');
+                result.Add(possibility);
             }
             return result;
         }
-        //todo refactor
-        internal static bool Compare(List<string> words, int index, string testPhrase)
+
+        private static string GetMatchingPhrase(List<string> words, int index)
+        {
+            var possibilities = PhrasesThatStartWith(words[index]);
+            string possibility = EvaluatePossibilities(words, index, possibilities);
+            return possibility;
+        }
+
+        private static string EvaluatePossibilities(List<string> words, int index, List<string> possibilities)
+        {
+            if (!possibilities.Any()) return words[index];
+            for (int i = Ordinals.first; i<possibilities.Count; i++)
+            {
+                if (PhraseMatches(words, index, possibilities[i]))
+                {
+                    return possibilities[i];
+                }
+            }
+            return words[index];
+        }
+
+        internal static bool PhraseMatches(List<string> words, int index, string testPhrase)
         {
             string[] testWords = testPhrase.Split(new char[] { ' ' });
             if ((index + testWords.Length) > words.Count) return false;
@@ -62,23 +62,26 @@ namespace Myriad.Data
             while (testIndex < testWords.Length)
             {
                 var testWordRoots = Inflections.RootsOf(testWords[testIndex]);
-                if (!testWordRoots.Contains(words[index + testIndex]))
-                {
-                    bool found = false;
-                    var offsetRoots = Inflections.RootsOf(words[index + testIndex]);
-                    foreach (string root in offsetRoots.Distinct())
-                    {
-                        if (testWordRoots.Contains(root))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) return false;
-                }
+                if (!RootsMatch(testWordRoots, words[index + testIndex])) return false;
                 testIndex++;
             }
-            return true;
+            return true; 
+        }
+
+        private static bool RootsMatch(List<string> testRoots, string word)
+        {
+            if (testRoots.Contains(word)) return true;
+            bool found = false;
+            var offsetRoots = Inflections.RootsOf(word).Distinct().ToList();
+            for (int i = Ordinals.first; i<offsetRoots.Count; i++)
+            {
+                if (testRoots.Contains(offsetRoots[i]))
+                {
+                    found = true;
+                    break;
+                }
+            }
+            return found;
         }
 
         internal static List<string> RootsOf(string words)
@@ -98,14 +101,20 @@ namespace Myriad.Data
             }
             return new List<string>() { phrase.ToString() };
         }
-        internal static List<string> PhrasesThatStartWith(string word, string root)
+        internal static List<string> PhrasesThatStartWith(string word)
         {
-            var reader = new DataReaderProvider<string, 
-                string>(SqlServerInfo.GetCommand(DataOperation.ReadPhrases),
-                word, root);
+            var roots = Inflections.HardRootsOf(word);
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadPhrases),
+                word);
             var phrases = reader.GetData<string>();
+            for (int i = Ordinals.first; i < roots.Count; i++)
+            {
+                reader.SetParameter(roots[i]);
+                phrases.AddRange(reader.GetData<string>());
+            }
             reader.Close();
-            return phrases;
+            return phrases.Distinct().ToList();
         }
 
         internal static async Task Add(string firstWord, string phrase)
@@ -115,8 +124,8 @@ namespace Myriad.Data
             int id = await reader.GetDatum<int>();
             reader.Close();
             if (id > Number.nothing) return;
-            await DataWriterProvider.Write<string, string>(SqlServerInfo.GetCommand(DataOperation.CreatePhrase),
-                firstWord, phrase);
+            await DataWriterProvider.Write<string, string, int>(SqlServerInfo.GetCommand(DataOperation.CreatePhrase),
+                firstWord, phrase, phrase.Count(c => c==' ')+1);
             await CreateSearchWordPhrase(phrase);
         }
 

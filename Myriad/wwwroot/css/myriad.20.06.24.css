@@ -1,5 +1,5 @@
 /*FONTS AND COLORS*/
-body{font-size:87.5%;font-size:14px;font-weight:300;line-height:1.5em;color:#64605d;text-rendering:optimizeLegibility;font-family:'Fira Sans','Segoe UI', Roboto, Lato, 'Helvetica Neue', Arial, sans-serif;}
+body{font-size:87.5%;font-size:14px;font-weight:300;line-height:1.5em;color:#3a3838;text-rendering:optimizeLegibility;font-family:'Fira Sans','Segoe UI', Roboto, Lato, 'Helvetica Neue', Arial, sans-serif;}
 h1, h2, h3 {font-family:"Palatino Linotype", Cambria, Cochin, Georgia,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
 .sidenote h3{font-family:"Calibri", Roboto, Lato, Arial, sans-serif;}
 .sidenote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
@@ -90,9 +90,10 @@ sup, sub {vertical-align: baseline; position: relative;top:-0.4em;}
 sub {top: 0.4em;}
 
 div.sidenote{margin-bottom:.75em;}
-h2{font-size:1.75em;line-height: 1.25em;margin-bottom:.25rem;}
-h3{font-size:1.4em;margin-bottom:.25rem;margin-top:.4rem;line-height:1.4em;}
+h2{font-size:1.75em;line-height: 2rem;margin-bottom:1rem;}
+h3{font-size:1.4em;margin-bottom:1rem;margin-top:.4rem;line-height:2rem;}
 ul, li, ol, dl{list-style:none;padding:0;}
+ul {margin-top:.5rem;}
 p{line-height:1.5em;padding-bottom:.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
 .scripture-text p{line-height:1.4em;}
 .sidenote p{padding-bottom: .5em;}
