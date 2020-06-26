@@ -319,16 +319,61 @@ namespace Myriad.Search
         private static List<SearchResult> ReadPhraseResults(string phrase, int queryIndex, 
             string rangeSelection)
         {
-            var orQuery = new StringBuilder(
-                "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
-            orQuery.Append(queryIndex);
-            orQuery.Append(" from searchwords as sw where ");
-            orQuery.Append("sw.text='");
-            orQuery.Append(phrase.Replace(' ', '_'));
-            orQuery.Append("'");
-            orQuery.Append(rangeSelection);
-            var results = ReadSearchResults(orQuery.ToString());
+            string query = PhraseQuery(phrase, queryIndex, rangeSelection);
+            var results = ReadSearchResults(query);
+            if (!phrase.Contains(' ')) return results;
+            query = PhraseWordQuery(phrase, queryIndex, rangeSelection);
+            results.AddRange(ReadSearchResults(query));
             return results;
+        }
+
+        private static string PhraseWordQuery(string phrase, int queryIndex, string rangeSelection)
+        {
+            var words = phrase.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var query = new StringBuilder(
+                "select sw0.sentence, sw0.wordindex, ");
+            query.Append(words.Count);
+            query.Append(", ");
+            query.Append(queryIndex);
+            query.Append(" from searchwords as sw0 ");
+            for (int i = Ordinals.second; i < words.Count; i++)
+            {
+                query.Append("join searchwords as sw");
+                query.Append(i);
+                query.Append(" on sw");
+                query.Append(i);
+                query.Append(".start = sw0.start+");
+                query.Append(i);
+                query.Append(" ");
+            }
+            query.Append("where ");
+            for (int i = Ordinals.first; i < words.Count; i++)
+            {
+                if (i > Ordinals.first) query.Append(" and ");
+                var variations = Variations(words[i]);
+                AppendORSelection(query, variations, "sw" + i + ".text");
+            }
+            return query.ToString();
+        }
+
+        private static List<string> Variations(string word)
+        {
+            var result = new List<string>() { word };
+            result.AddRange(Inflections.RootsOf(word));
+            return result.Distinct().ToList();
+        }
+
+        private static string PhraseQuery(string phrase, int queryIndex, string rangeSelection)
+        {
+            var query = new StringBuilder(
+                            "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
+            query.Append(queryIndex);
+            query.Append(" from searchwords as sw where ");
+            query.Append("sw.text='");
+            query.Append(phrase.Replace(' ', '_'));
+            query.Append("'");
+            query.Append(rangeSelection);
+            return query.ToString();
         }
 
         private static List<SearchResult> ReadSearchResults(string query)
@@ -365,6 +410,15 @@ namespace Myriad.Search
         private static void AppendORSelection(StringBuilder builder, List<string> list,
             string selector)
         {
+            if (list.Count == 0) return;
+            if (list.Count == 1)
+            {
+                builder.Append(selector);
+                builder.Append("='");
+                builder.Append(list[Ordinals.first]);
+                builder.Append("'");
+                return;
+            }
             builder.Append(selector);
             builder.Append(" in (");
             for (int i = Ordinals.first; i < list.Count; i++)
