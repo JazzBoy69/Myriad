@@ -323,6 +323,7 @@ namespace Myriad.Search
             var results = ReadSearchResults(query);
             if (!phrase.Contains(' ')) return results;
             query = PhraseWordQuery(phrase, queryIndex, rangeSelection);
+            if (string.IsNullOrEmpty(query)) return results;
             results.AddRange(ReadSearchResults(query));
             return results;
         }
@@ -330,6 +331,11 @@ namespace Myriad.Search
         private static string PhraseWordQuery(string phrase, int queryIndex, string rangeSelection)
         {
             var words = phrase.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            for (int i = Ordinals.first; i < words.Count; i++)
+            {
+                if (EnglishDictionary.IsCommonWord(words[i]))
+                    return "";
+            }
             var query = new StringBuilder(
                 "select sw0.sentence, sw0.wordindex, ");
             query.Append(words.Count);
