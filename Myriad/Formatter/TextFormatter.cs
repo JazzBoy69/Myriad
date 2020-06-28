@@ -26,7 +26,7 @@ namespace Myriad.Parser
             {
                 await AppendKeyword(keywords[index], range, targetrange, navigating, readingView);
                 if ((keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound)
-                    && (poetic))
+                    && poetic)
                 {
                     await writer.Append(HTMLTags.EndParagraph);
                     if (index < keywords.Count - 1)
@@ -65,6 +65,11 @@ namespace Myriad.Parser
                     await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraphWithClass);
                     await writer.Append(HTMLClasses.poetic1);
                     await writer.Append(HTMLTags.CloseQuoteEndTag);
+                    if (!navigating && (keyword.ID != targetrange.StartID.ID) 
+                        && (targetrange.Contains(keyword.ID)))
+                    {
+                        await writer.Append(HTMLTags.StartMark);
+                    }
                 }
             }
             else if (keyword.ParagraphWordIndex == Ordinals.first)

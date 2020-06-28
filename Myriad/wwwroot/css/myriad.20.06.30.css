@@ -1,12 +1,12 @@
 /*FONTS AND COLORS*/
 body{font-size:87.5%;font-size:14px;font-weight:300;line-height:1.5em;color:#3a3838;text-rendering:optimizeLegibility;font-family:'Fira Sans','Segoe UI', Roboto, Lato, 'Helvetica Neue', Arial, sans-serif;}
-h1, h2, h3 {font-family:"Palatino Linotype", Cambria, Cochin, Georgia,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
+h1, h2, h3 {font-family:Spectral,'Droid Serif','Roboto Slab',Lato,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
 .sidenote h3{font-family:"Calibri", Roboto, Lato, Arial, sans-serif;}
 .sidenote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
 .textquote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
 mark{background-color:#ffc;font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
-.scripture-text {font-family:Spectral,'Fira Sans','Droid Serif',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-size:1.5rem;}
-.scripture-text mark{background-color:#ffc;font-family:Spectral,'Droid Serif',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
+.scripture-text {font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;font-size:1.5rem;}
+.scripture-text mark{background-color:#ffc;font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;}
 article{font-size:1.35rem;font-feature-settings: "liga" 1;}
 .readingverse a{background-color:white;}
 .originalword {font-style:italic;}
@@ -388,7 +388,7 @@ body{text-rendering:optimizeSpeed;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;margin-top:2px;}
 /*HORIZONTAL SPACING */
 .editcontent{padding-left:2rem;}
-.scripture-text{font-size:1.35rem;}
+.scripture-text{font-size:1.15rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:33rem;padding-left:1rem;font-size:1.15rem;}
@@ -442,7 +442,7 @@ ul.tabs {display:inline-block;}
 
 @media only screen and (max-width:480px){
 body{text-rendering:optimizeSpeed;}
-.scripture-text{font-size:1.35rem;}
+.scripture-text{font-size:1rem;}
 .icon img, #search{zoom: 50%;}
 #searchField{width: 10rem;}
 .menu li{width: 2.5rem;margin:0 0 .7rem 0;}
@@ -452,8 +452,8 @@ body{text-rendering:optimizeSpeed;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:20rem;padding-left:1em;font-size:1rem;}
-.readingverse {position:relative;left:0rem;display:none;}
-.readingverse.visible{display:inline;font-weight:600;}
+.readingverse {display:none;}
+.readingverse.visible{display:inline;position:relative;left:0rem;font-weight:600;}
 figure.portrait, figure.square, .sidenote{float:none;width:16rem; border-left:none;}
 figure.square{padding-left: 0; }
 figure.portrait{padding-left: 1rem; }
