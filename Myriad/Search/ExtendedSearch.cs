@@ -211,7 +211,7 @@ namespace Myriad.Search
                     await writer.Append(HTMLTags.StartBold);
                     await AppendSearchArticle(writer, extendedSearchRange.DefinitionSearches[articleIndex]);
                 }
-                await TextFormatter.AppendTextOfKeyword(writer, keywords[i]);
+                await TextFormatter.AppendTextOfKeyword(writer, keywords[i], true, false);
                 if ((articleIndex < extendedSearchRange.DefinitionSearches.Count) &&
                     (extendedSearchRange.DefinitionSearches[articleIndex].End == keywords[i].ID))
                 {

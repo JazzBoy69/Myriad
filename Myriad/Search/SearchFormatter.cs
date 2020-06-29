@@ -525,40 +525,15 @@ namespace Myriad.Search
             }
             if (searchResultWord.Highlight)
             {
-                if (keyword.IsCapitalized)
-                {
-                    await writer.Append("<b>");
-                    await writer.Append(keyword.LeadingSymbolString);
-                    await writer.Append(Symbols.Capitalize(keyword.TextString).Replace('`', '’'));
-                    await writer.Append(keyword.TrailingSymbolString);
-                    await writer.Append("</b> ");
-                }
-                else
-                {
-                    await writer.Append("<b>");
-                    await writer.Append(keyword.LeadingSymbolString);
-                    await writer.Append(keyword.TextString.Replace('`', '’'));
-                    await writer.Append(keyword.TrailingSymbolString);
-                    await writer.Append("</b> ");
-                }
+                await writer.Append("<b>");
+                await TextFormatter.AppendTextOfKeyword(writer, keyword, false, true);
+                await writer.Append("</b> ");
                 return;
             }
             if (searchResultWord.Used)
             {
-                if (keyword.IsCapitalized)
-                {
-                    await writer.Append(keyword.LeadingSymbolString);
-                    await writer.Append(Symbols.Capitalize(keyword.TextString).Replace('`', '’'));
-                    await writer.Append(keyword.TrailingSymbolString);
-                    await writer.Append(" ");
-                }
-                else
-                {
-                    await writer.Append(keyword.LeadingSymbolString);
-                    await writer.Append(keyword.TextString.Replace('`', '’'));
-                    await writer.Append(keyword.TrailingSymbolString);
-                    await writer.Append(" ");
-                }
+                await TextFormatter.AppendTextOfKeyword(writer, keyword, false, true);
+                await writer.Append(" ");
             }
         }
 

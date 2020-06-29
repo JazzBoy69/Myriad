@@ -16,6 +16,7 @@ namespace Myriad.Data
         string text;
         string trailingSymbols;
         private bool isCapitalized;
+        private bool isMainText;
         private bool isPoetic;
 
         public async Task Read(DbDataReader reader)
@@ -25,8 +26,9 @@ namespace Myriad.Data
             text = await reader.GetFieldValueAsync<string>(Ordinals.third);
             trailingSymbols = await reader.GetFieldValueAsync<string>(Ordinals.fourth);
             isCapitalized = await reader.GetFieldValueAsync<int>(Ordinals.fifth) != 0;
-            isPoetic = await reader.GetFieldValueAsync<int>(Ordinals.sixth) != 0;
-            paragraphWordIndex = await reader.GetFieldValueAsync<int>(Ordinals.seventh);
+            isMainText = await reader.GetFieldValueAsync<int>(Ordinals.sixth) != 0;
+            isPoetic = await reader.GetFieldValueAsync<int>(Ordinals.seventh) != 0;
+            paragraphWordIndex = await reader.GetFieldValueAsync<int>(Ordinals.eighth);
         }
 
 
@@ -42,8 +44,9 @@ namespace Myriad.Data
             text =  reader.GetFieldValue<string>(Ordinals.third);
             trailingSymbols =  reader.GetFieldValue<string>(Ordinals.fourth);
             isCapitalized =  reader.GetFieldValue<int>(Ordinals.fifth) != 0;
-            isPoetic =  reader.GetFieldValue<int>(Ordinals.sixth) != 0;
-            paragraphWordIndex =  reader.GetFieldValue<int>(Ordinals.seventh);
+            isMainText = reader.GetFieldValue<int>(Ordinals.sixth) != 0;
+            isPoetic = reader.GetFieldValue<int>(Ordinals.seventh) != 0;
+            paragraphWordIndex = reader.GetFieldValue<int>(Ordinals.eighth);
         }
 
         public ReadOnlySpan<char> LeadingSymbols
@@ -74,6 +77,11 @@ namespace Myriad.Data
         public bool IsPoetic
         {
             get { return isPoetic; }
+        }
+
+        public bool IsMainText
+        {
+            get { return isMainText; }
         }
 
         public int Chapter

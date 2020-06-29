@@ -878,6 +878,7 @@ function HandleHiddenDetails()
         }
     }
     SetupSuppressedParagraphs();
+    HandleExtraInfo();
 }
 
 
@@ -946,6 +947,21 @@ function ExpandReadingViewText(event) {
     }
 }
 
+function HandleExtraInfo() {
+    var extrainfo = document.getElementsByClassName('extrainfo');
+    if (extrainfo.length == 0) return;
+    SetupEllipsis(false, ShowHideExtraInfo);
+}
+
+function ShowHideExtraInfo() {
+    var extrainfo = document.getElementsByClassName('extrainfo');
+    if (extrainfo[0].classList.contains('hidden')) {
+        RemoveClassFromGroup(extrainfo, 'hidden');
+        return;
+    }
+    AddClassToGroup(extrainfo, 'hidden');
+}
+
 function OpenModalPicture(event) {
     var img = event.target;
     document.getElementById('modal-image').src = img.src;
@@ -960,7 +976,6 @@ function CloseModalPicture(event) {
 
 function SetupSuppressedParagraphs() {
     var suppressedParagraphs = document.getElementsByClassName('suppressed');
-    var ellipsis = document.getElementById('ellipsis');
     var hideEllipsis = true;
     for (var i = 0; i < suppressedParagraphs.length; i++) {
         suppressedParagraphs[i].onclick = function (event) {
@@ -970,6 +985,11 @@ function SetupSuppressedParagraphs() {
         if (suppressedParagraphs[i].length < 1) return;
         hideEllipsis = false;
     }
+    SetupEllipsis(hideEllipsis, ShowHiddenParagraphs);
+}
+
+function SetupEllipsis(hideEllipsis, clickHandler) {
+    var ellipsis = document.getElementById('ellipsis');
     if (hideEllipsis) {
         if (!ellipsis.classList.contains('hidden')) {
             ellipsis.classList.add('hidden');
@@ -979,7 +999,7 @@ function SetupSuppressedParagraphs() {
     if (ellipsis.classList.contains('hidden')) {
         ellipsis.classList.remove('hidden');
     }
-    ellipsis.onclick = ShowHiddenParagraphs;
+    ellipsis.onclick = clickHandler;
 }
 
 function ShowHiddenParagraphs(event) {

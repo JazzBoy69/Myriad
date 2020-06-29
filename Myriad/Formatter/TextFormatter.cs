@@ -106,7 +106,7 @@ namespace Myriad.Parser
                 }
                 await AppendVerseNumber(keyword, range, readingView);
             }
-            await AppendTextOfKeyword(writer, keyword);
+            await AppendTextOfKeyword(writer, keyword, readingView, readingView);
             if (!navigating && (keyword.ID == targetrange.EndID.ID))
             {
                 await writer.Append(HTMLTags.EndMark);
@@ -142,23 +142,35 @@ namespace Myriad.Parser
             {
                 await writer.Append(Symbol.ellipsis);
             }
-            await AppendTextOfKeyword(writer, keywords[Ordinals.first]);
+            await AppendTextOfKeyword(writer, keywords[Ordinals.first], readingView, readingView);
             return poetic;
         }
 
-        public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
+        public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword, bool hideFootnotes, bool hideDiacritics)
         {
+            if (hideFootnotes && !keyword.IsMainText)
+            {
+                await writer.Append(HTMLClasses.startExtraInfo);
+            }
             await writer.Append(keyword.LeadingSymbols.ToString());
             if (keyword.IsCapitalized)
             {
                 await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                await writer.Append(keyword.Text.Slice(Ordinals.second).ToString());
+                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
+                if (hideDiacritics) text = text.Replace("΄", HTMLClasses.startExtraInfo+"΄"+HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+                await writer.Append(text);
             }
             else
             {
-                await writer.Append(keyword.Text.ToString().Replace('`', '’'));
+                string text = keyword.Text.ToString().Replace('`', '’');
+                if (hideDiacritics) text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+                await writer.Append(text);
             }
             await writer.Append(keyword.TrailingSymbols.ToString().Replace("— ", "—"));
+            if (hideFootnotes && !keyword.IsMainText)
+            {
+                await writer.Append(HTMLTags.EndSpan);
+            }
         }
 
         private async Task AppendVerseNumber(Keyword keyword, CitationRange range, bool readingView)
