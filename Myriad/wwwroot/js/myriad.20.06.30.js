@@ -708,14 +708,14 @@ function AppendScriptureTabs(section) {
     var list = existingTabs[0].getElementsByTagName('li');
     var listHTML = '';
     for (var i = 0; i < list.length; i++) {
-        listHTML += '<li id=edittab-' + (i + 1) + '><p>' + list[i].innerText + '</p></li>';
+        listHTML += '<li id=edittab-' + (i + 1) + '><p>' + list[i].getElementsByClassName('cleanquote')[0].innerText + '</p></li>';
     }
     var scriptureTabs = document.getElementById('editTabList');
     scriptureTabs.innerHTML += listHTML;
 }
 
 function AppendSingleTab(section) {
-    var quote = section.getElementsByClassName('scripture-quote')[0];
+    var quote = section.getElementsByClassName('cleanquote')[0];
     var scriptureTabs = document.getElementById('editTabList');
     scriptureTabs.innerHTML += '<li id=edittab-1><p>' + quote.innerText+'</p></li>';
 }

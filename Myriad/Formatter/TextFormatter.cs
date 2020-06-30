@@ -172,6 +172,25 @@ namespace Myriad.Parser
                 await writer.Append(HTMLTags.EndSpan);
             }
         }
+        public async static Task AppendCleanTextOfKeyword(HTMLWriter writer, Keyword keyword, bool hideFootnotes, bool hideDiacritics)
+        {
+            if (hideFootnotes && !keyword.IsMainText) return;
+            await writer.Append(keyword.LeadingSymbols.ToString());
+            if (keyword.IsCapitalized)
+            {
+                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
+                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
+                if (hideDiacritics) text = text.Replace("΄", "").Replace("·", "");
+                await writer.Append(text);
+            }
+            else
+            {
+                string text = keyword.Text.ToString().Replace('`', '’');
+                if (hideDiacritics) text = text.Replace("΄", "").Replace("·", "");
+                await writer.Append(text);
+            }
+            await writer.Append(keyword.TrailingSymbols.ToString().Replace("— ", "—"));
+        }
 
         private async Task AppendVerseNumber(Keyword keyword, CitationRange range, bool readingView)
         {
@@ -252,6 +271,14 @@ namespace Myriad.Parser
             await writer.Append(citation.CitationRange.EndID.ID);
             await writer.Append(HTMLTags.EndTag);
             await writer.Append(HTMLTags.EndDiv);
+        }
+
+        internal async Task AppendCleanQuote(List<Keyword> keywords)
+        {
+            for (int i = Ordinals.first; i < keywords.Count; i++)
+            {
+                await AppendCleanTextOfKeyword(writer, keywords[i], true, true);
+            }
         }
     }
 }

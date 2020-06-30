@@ -134,6 +134,11 @@ namespace Myriad.Formatter
                 HTMLClasses.scriptureQuote+
                 HTMLTags.CloseQuoteEndTag);
             await formatter.AppendKeywords(keywords, citation.CitationRange, sourceCitation.CitationRange, navigating, readingView);
+            await writer.Append(HTMLTags.EndDiv +
+                HTMLTags.StartDivWithClass +
+                HTMLClasses.cleanquote +
+                HTMLTags.CloseQuoteEndTag);
+            await formatter.AppendCleanQuote(keywords);
             await writer.Append(HTMLTags.EndDiv+
                 HTMLTags.EndSection);
         }
@@ -300,6 +305,11 @@ namespace Myriad.Formatter
                     HTMLClasses.scriptureQuote+
                     HTMLTags.CloseQuoteEndTag);
                 await formatter.AppendKeywords(keywords, range.CitationRange, sourceCitation.CitationRange, navigating, readingView);
+                await writer.Append(HTMLTags.EndDiv);
+                await writer.Append(HTMLTags.StartDivWithClass +
+                    HTMLClasses.cleanquote +
+                    HTMLTags.CloseQuoteEndTag);
+                await formatter.AppendCleanQuote(keywords);
                 await writer.Append(HTMLTags.EndDiv+
                     HTMLTags.EndSection+
                     HTMLTags.EndListItem);

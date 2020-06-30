@@ -68,6 +68,7 @@ namespace Myriad.Library
         internal const string definitions = flexTabsTabs;
         internal const string searchTabs = flexTabs;
         internal const string startExtraInfo = "<span class='extrainfo hidden'>";
+        internal const string cleanquote = "cleanquote hidden";
     }
 
 }
