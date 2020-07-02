@@ -73,7 +73,7 @@ p.suppressed, .suppressed p {padding-left: .5em; padding-top: .25em; white-space
 .hiddendetail::before {content: "...";color: #4477a1;background-color: whiteSmoke;}
 .hiddendetail + .hiddendetail::before{content:"";}
 .editparagraph {color:#4477a1; font-size:small;cursor: pointer;   vertical-align: baseline;position: relative;top: -0.4em;}
-.dropcap {float: left;font-size: 3em;line-height: 0.5;margin: 0.205em 0 0 0;padding-bottom: .287em;}
+.dropcap {float: left;font-size: 3em;line-height: 0.5;margin: 0.205em 0 0 0;padding-bottom: .25rem;}
 .firstpoetic .dropcap {margin-right: 1rem;}
 
 /* Tables */
