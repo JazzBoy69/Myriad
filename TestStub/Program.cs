@@ -26,11 +26,11 @@ namespace TestStub
         async private void RunTest()
         {
             string citationText;
-            var citations = CitationConverter.FromString("Jude 18-21, 25"); //2Jo 10, 12, 14
+            var citations = CitationConverter.FromString("1Jo 2:3.know"); //2Jo 10, 12, 14
             Paragraph paragraph = new Paragraph();
-            paragraph.Text = "Jude 18-21, 25";
+           /* paragraph.Text = "1Jo 2:3";
             string first = paragraph.StringAt(citations[Ordinals.first].Label);
-            string second = paragraph.StringAt(citations[Ordinals.second].Label);
+            string second = paragraph.StringAt(citations[Ordinals.second].Label); */
             citationText = await CitationConverter.ToString(citations);
             Console.WriteLine(citationText);
         }
