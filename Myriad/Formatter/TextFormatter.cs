@@ -152,7 +152,14 @@ namespace Myriad.Parser
             {
                 await writer.Append(HTMLClasses.startExtraInfo);
             }
-            await writer.Append(keyword.LeadingSymbols.ToString());
+            if (!hideFootnotes && (keyword.WordIndex == Ordinals.first))
+            {
+                await writer.Append(keyword.LeadingSymbols.ToString().Substring(Ordinals.second));
+            }
+            else
+            {
+                await writer.Append(keyword.LeadingSymbols.ToString());
+            }
             if (keyword.IsCapitalized)
             {
                 await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
@@ -167,7 +174,7 @@ namespace Myriad.Parser
                 await writer.Append(text);
             }
             string trailing = keyword.TrailingSymbolString.Replace("— ", "—");
-            if (trailing.Contains(']'))
+            if ((trailing.Length>0) && !keyword.IsMainText && (trailing[Ordinals.first]==']'))
             {
                 await writer.Append(trailing[Ordinals.first]);
                 if (hideFootnotes && !keyword.IsMainText)
@@ -261,6 +268,7 @@ namespace Myriad.Parser
             }
             else
             {
+                await writer.Append(Symbol.space);
                 await writer.Append(keyword.Verse);
             }
             await writer.Append(HTMLTags.EndAnchor +
