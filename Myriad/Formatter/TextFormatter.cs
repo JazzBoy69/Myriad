@@ -166,10 +166,23 @@ namespace Myriad.Parser
                 if (hideDiacritics) text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
                 await writer.Append(text);
             }
-            await writer.Append(keyword.TrailingSymbols.ToString().Replace("— ", "—"));
-            if (hideFootnotes && !keyword.IsMainText)
+            string trailing = keyword.TrailingSymbolString.Replace("— ", "—");
+            if (trailing.Contains(']'))
             {
-                await writer.Append(HTMLTags.EndSpan);
+                await writer.Append(trailing[Ordinals.first]);
+                if (hideFootnotes && !keyword.IsMainText)
+                {
+                    await writer.Append(HTMLTags.EndSpan);
+                }
+                if (trailing.Length > 1) await writer.Append(trailing.Substring(Ordinals.second));
+            }
+            else
+            {
+                await writer.Append(keyword.TrailingSymbols.ToString());
+                if (hideFootnotes && !keyword.IsMainText)
+                {
+                    await writer.Append(HTMLTags.EndSpan);
+                }
             }
         }
         public async static Task AppendCleanTextOfKeyword(HTMLWriter writer, Keyword keyword, bool hideFootnotes, bool hideDiacritics)

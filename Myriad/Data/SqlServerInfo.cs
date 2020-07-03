@@ -121,12 +121,12 @@ namespace Myriad.Data
             { DataOperation.ReadCommentLinks,
                  "select start, last from commentlinks where id=@key1" },
             { DataOperation.ReadKeywords,
-                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
+                 "select keyid, ' '+RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                  " where keyid>=@key1 and keyid<=@key2" },
             { DataOperation.ReadWordIndex,
                 "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" },
             {DataOperation.ReadKeywordSentence,
-                "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols)+' ', iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
+                "select keyid, ' '+RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                 " where sentenceID=@key1 order by keyid" },
             {DataOperation.ReadLastWordIndex,
                 "select Max(versewordindex) from keywords where keyid>=@key1 and keyid<=@key2" },
