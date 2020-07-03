@@ -153,7 +153,7 @@ namespace Myriad.Search
                     continue;
                 }
                 result.Add(searchRange.Copy());
-                start = definitionSearches[i].Start - 10;
+                start = Math.Max(definitionSearches[i].Start - 10, searchRange.End+1);
                 end = definitionSearches[i].End + 15;
                 searchRange = new ExtendedSearchRange(start, end);
                 searchRange.AddDefinitionSearch(definitionSearches[i]);
