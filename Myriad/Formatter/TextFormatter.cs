@@ -154,11 +154,11 @@ namespace Myriad.Parser
             }
             if (!hideFootnotes && (keyword.WordIndex == Ordinals.first))
             {
-                await writer.Append(keyword.LeadingSymbols.ToString().Substring(Ordinals.second));
+                await writer.Append(keyword.LeadingSymbolsString.Substring(Ordinals.second));
             }
             else
             {
-                await writer.Append(keyword.LeadingSymbols.ToString());
+                await writer.Append(keyword.LeadingSymbolsString);
             }
             if (keyword.IsCapitalized)
             {
@@ -173,7 +173,7 @@ namespace Myriad.Parser
                 if (hideDiacritics) text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
                 await writer.Append(text);
             }
-            string trailing = keyword.TrailingSymbolString.Replace("— ", "—");
+            string trailing = keyword.TrailingSymbolString;
             if ((trailing.Length>0) && !keyword.IsMainText && (trailing[Ordinals.first]==']'))
             {
                 await writer.Append(trailing[Ordinals.first]);
@@ -195,7 +195,7 @@ namespace Myriad.Parser
         public async static Task AppendCleanTextOfKeyword(HTMLWriter writer, Keyword keyword, bool hideFootnotes, bool hideDiacritics)
         {
             if (hideFootnotes && !keyword.IsMainText) return;
-            await writer.Append(keyword.LeadingSymbols.ToString());
+            await writer.Append(keyword.LeadingSymbolsString);
             if (keyword.IsCapitalized)
             {
                 await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
@@ -209,7 +209,7 @@ namespace Myriad.Parser
                 if (hideDiacritics) text = text.Replace("΄", "").Replace("·", "");
                 await writer.Append(text);
             }
-            await writer.Append(keyword.TrailingSymbols.ToString().Replace("— ", "—"));
+            await writer.Append(keyword.TrailingSymbols.ToString());
         }
 
         private async Task AppendVerseNumber(Keyword keyword, CitationRange range, bool readingView)

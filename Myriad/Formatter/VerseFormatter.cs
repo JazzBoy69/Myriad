@@ -64,7 +64,7 @@ namespace Myriad.Formatter
 
         public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
         {
-            await writer.Append(keyword.LeadingSymbols.ToString());
+            await writer.Append(keyword.LeadingSymbolsString);
             if (keyword.IsCapitalized)
             {
                 await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());

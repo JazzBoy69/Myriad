@@ -53,6 +53,10 @@ namespace Myriad.Data
         {
             get { return leadingSymbols.AsSpan(); }
         }
+        public string LeadingSymbolsString
+        {
+            get { return leadingSymbols.ToString().Replace('_', ' '); }
+        }
         public ReadOnlySpan<char> Text
         {
             get { return text.AsSpan(); }
