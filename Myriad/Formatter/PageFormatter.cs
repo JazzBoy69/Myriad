@@ -462,7 +462,8 @@ namespace Myriad.Parser
         }
         internal async Task AppendFigure(string par, Formats formats)
         {
-            string filename = par.Replace("[[", "").Replace("]]", "");
+            int index = par.IndexOf("]]");
+            string filename = par.Substring(Ordinals.third, index - 2);
             await AppendFigure(new ImageElement(filename));
             formats.figure = true;
             formats.editable = false;

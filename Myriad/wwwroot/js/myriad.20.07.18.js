@@ -943,7 +943,7 @@ function ExpandReadingViewText(event) {
         parentheader.classList.add('visible');
         var expandedVerseNumbers = document.getElementsByClassName('versenumber');
         AddClassToGroup(expandedVerseNumbers, 'visible');
-        event.target.parentNode.parentNode.classList.add('expanded');
+        textSection.classList.add('expanded');
     }
 }
 

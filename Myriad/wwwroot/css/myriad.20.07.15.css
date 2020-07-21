@@ -380,13 +380,14 @@ ul.tabs{width:38rem;}
 body{text-rendering:optimizeSpeed;}
 /*--Menu--*/
 .icon img, #search{zoom: 50%;}
-#searchField{width: 15rem;}
+#searchField{width: 12rem;}
 .indexbutton {font-size: 1.5rem;height:2.5rem;}
 #possibilities {height: 15rem;}
 .flexTabsHeader ul{margin-bottom:0;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;margin-top:2px;}
 /*HORIZONTAL SPACING */
+#menuHome{display:none;}
 .editcontent{padding-left:2rem;}
 .scripture-text{font-size:1.15rem;}
 img.portrait {float:none;}
@@ -444,7 +445,8 @@ ul.tabs {display:inline-block;}
 body{text-rendering:optimizeSpeed;}
 .scripture-text{font-size:1rem;}
 .icon img, #search{zoom: 50%;}
-#searchField{width: 10rem;}
+#searchField{width: 8rem;}
+#menuHome{display:none;}
 .menu li{width: 2.5rem;margin:0 0 .7rem 0;}
 .buttongrid {padding-bottom: 1rem;}
 /*HORIZONTAL SPACING */
