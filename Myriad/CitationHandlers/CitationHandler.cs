@@ -395,7 +395,8 @@ namespace Myriad.CitationHandlers
             }
             pointer++;
             var newCitation = citation.Copy();
-            results.Add(newCitation);
+            if (newCitation.CitationRange.Valid)
+                results.Add(newCitation);
             citation = new Citation();
             citation.Label.MoveStartTo(pointer);
             citation.Label.MoveEndTo(pointer);
