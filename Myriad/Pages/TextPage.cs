@@ -72,6 +72,7 @@ namespace Myriad.Pages
             }
             else
             {
+                await AddTimeLine(writer, commentIDs[Ordinals.first]);
                 await textSection.AddTextSection(commentIDs, Ordinals.first, citation, navigating, readingView);
                 await AddEditPageData(writer);
             }
@@ -83,6 +84,20 @@ namespace Myriad.Pages
             {
                 await AddChronoLink(writer, chronoID);
             }
+        }
+
+        private async Task AddTimeLine(HTMLWriter writer, int commentID)
+        {
+            int chronoID = await GetChronoID(commentID);
+            await Timeline.Write(writer, chronoID);
+        }
+
+        private async Task<int> GetChronoID(int commentID)
+        {
+            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadChronoChapterID), commentID);
+            int result = await reader.GetDatum<int>();
+            reader.Close();
+            return result;
         }
 
         private async Task AddChronoLink(HTMLWriter writer, int chronoID)

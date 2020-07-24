@@ -30,6 +30,7 @@ namespace Myriad.Data
         ReadMaxArticleID, ReadCorrectSpelling, ReadIDFromSynonym, ParagraphsThatContainVerse,
         ReadIDFromIdentifier, ReadChronoIDs, ReadChronoTitle, ReadChronoChapterID, ReadChronoArticle,
         ReadChronoParagraph, ReadNextChrono, ReadPrecedingChrono, ReadExtendedDefinitionSearch,
+        ReadChronoIndex, ReadEvent, ReadPrecedingMajorEvents, ReadNextMajorEvents, ReadPrecedingEvent, ReadNextEvent,
 
         CreateNavigationParagraph = 256, UpdateNavigationParagraph = 257, DeleteNavigationParagraph = 258,
         CreateArticleParagraph = 270, UpdateArticleParagraph = 271, DeleteArticleParagraph = 272,
@@ -270,7 +271,17 @@ namespace Myriad.Data
             { DataOperation.ReadPrecedingChrono,
                 "select previouschapter from commentchapters where _id=@key1" },
             { DataOperation.ReadExtendedDefinitionSearch,
-                "select id, start, last from definitionsearch where id=@key1 and start<=@key3 and last>=@key2" }
+                "select id, start, last from definitionsearch where id=@key1 and start<=@key3 and last>=@key2" },
+            { DataOperation.ReadEvent,
+                "select chronoID, chronoIndex, picture, xoffset, yoffset from timeline where chronoID=@key1" },
+            { DataOperation.ReadPrecedingMajorEvents,
+                "select chronoID, chronoIndex, picture, xoffset, yoffset from timeline where importance=1 and chronoIndex<@key1 order by chronoIndex" },
+            { DataOperation.ReadNextMajorEvents,
+                "select chronoID, chronoIndex, picture, xoffset, yoffset from timeline where importance=1 and chronoIndex>@key1 order by chronoIndex" },
+            { DataOperation.ReadPrecedingEvent,
+                "select chronoID, chronoIndex, picture, xoffset, yoffset from timeline where picture!=@key2 and chronoIndex<@key1 order by chronoIndex desc" },
+            { DataOperation.ReadNextEvent,
+                "select chronoID, chronoIndex, picture, xoffset, yoffset from timeline where importance<3 and chronoIndex>@key1 order by chronoIndex" }
         };
 
         public static DataCommand GetCommand(DataOperation operation)

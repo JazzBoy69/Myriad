@@ -20,8 +20,33 @@ a.error{color:red;}
 b{font-weight:500;}
 
 
-/*Edit*/
-
+/*Timeline*/
+.timeline{height: 13vw;}
+.majorevent{z-index: 5; height: 9vw; width: 9vw; object-fit: cover; position: absolute;}
+.event{margin-top: 1rem; z-index: 10; height: 9vw; width: 9vw; object-fit: cover; position: absolute;}
+.currentevent{margin-top: 2rem; z-index:15; height: 9vw; width: 9vw; object-fit: cover; position: absolute;}
+.col1.left{left:1%;}
+.col2.left{left:10%;}
+.col3.left{left:19%;}
+.col4.left{left:28%;}
+.col5.left{left:37%;}
+.col6.left{left:46%;}
+.col7.left{left:55%;}
+.col8.left{left:64%;}
+.col9.left{left:73%;}
+.col10.left{left:82%;}
+.col11.left{left:91%;}
+.col11.right{right:1%;}
+.col10.right{right:10%;}
+.col9.right{right:19%;}
+.col8.right{right:28%;}
+.col7.right{right:37%;}
+.col6.right{right:46%;}
+.col5.right{right:55%;}
+.col4.right{right:64%;}
+.col3.right{right:73%;}
+.col2.right{right:82%;}
+.col1.right{right:91%;}
 
 /*Ruby*/
 ruby{font-family:Lato, "Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
