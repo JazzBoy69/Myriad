@@ -72,7 +72,7 @@ namespace Myriad.Pages
             }
             else
             {
-                await AddTimeLine(writer, commentIDs[Ordinals.first]);
+                //await AddTimeLine(writer, commentIDs[Ordinals.first]);
                 await textSection.AddTextSection(commentIDs, Ordinals.first, citation, navigating, readingView);
                 await AddEditPageData(writer);
             }

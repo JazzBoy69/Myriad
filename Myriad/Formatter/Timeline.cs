@@ -133,7 +133,6 @@ namespace Myriad.Formatter
         {
             await writer.Append(HTMLTags.StartDivWithClass +
                 HTMLClasses.timeline + Symbol.space+
-                HTMLClasses.hidden+
                 HTMLTags.CloseQuoteEndTag);
         }
 

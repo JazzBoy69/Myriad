@@ -125,6 +125,7 @@ namespace Myriad.Pages
         {
             this.writer = writer;
             Initialize();
+            await Timeline.Write(writer, id);
             await writer.Append(HTMLTags.StartMainHeader);
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndMainHeader);
