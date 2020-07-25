@@ -28,7 +28,7 @@ namespace Myriad.Data
         }
         internal static List<string> HardRootsOf(string word)
         {
-            if (word.Contains(' ')) return Phrases.RootsOf(word);
+            if (word.Contains(' ')) return new List<string>() { word };
             int index = word.IndexOf('`');
             if (index == Result.notfound)
             {
