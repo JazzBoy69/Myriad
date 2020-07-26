@@ -190,7 +190,7 @@ namespace Myriad.Formatter
         private async Task WriteFigureElement(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             string pattern = imageElement1.Pattern + imageElement2.Pattern + imageElement3.Pattern;
-            if ((pattern == "spl") || (pattern == "ppl") || (pattern == "pps") || (pattern == "pls") || (pattern == "pll"))
+            if ((pattern == "spl") || (pattern == "ppl") || (pattern == "pps") || (pattern == "pls") || (pattern == "pll") || (pattern=="ssl"))
             {
                 await WriteFigurePPL(imageElement1, imageElement2, imageElement3);
                 return;
