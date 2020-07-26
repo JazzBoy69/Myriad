@@ -20,8 +20,8 @@ namespace Myriad.Formatter
             var precedingMajorEvents = ReadPrecedingMajorEvents(currentEvent);
             var nextEvent = ReadNextEvent(currentEvent);
             var nextMajorEvents = ReadNextMajorEvents(currentEvent);
-            if ((precedingMajorEvents.Count>1) && ((precedingMajorEvents[precedingMajorEvents.Count - 1].ID == currentEvent.ID) || 
-                (precedingMajorEvents[precedingMajorEvents.Count - 1].ID == precedingEvent.ID)))
+            if ((precedingMajorEvents.Count>1) && ((precedingMajorEvents[precedingMajorEvents.Count - 1].Picture == currentEvent.Picture) || 
+                (precedingMajorEvents[precedingMajorEvents.Count - 1].Picture == precedingEvent.Picture)))
             {
                 precedingMajorEvents.RemoveAt(precedingMajorEvents.Count - 1);
             }
@@ -32,7 +32,7 @@ namespace Myriad.Formatter
                 {
                     nextMajorEvents.RemoveAt(Ordinals.first);
                 }
-                if (precedingMajorEvents.Count > 6)
+                while (precedingMajorEvents.Count > 5)
                     precedingMajorEvents.RemoveAt(Ordinals.first);
             }
             await StartTimeline(writer);
