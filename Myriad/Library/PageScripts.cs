@@ -26,6 +26,7 @@ ScrollToTop();
     SetupIndex();
 SetupPartialPageLoad();
 HandleHiddenDetails();
+SetIcons();
 ScrollToTop();
 };
     </script>";

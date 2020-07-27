@@ -14,12 +14,6 @@ function HandleLink(event) {
 }
 
 function LoadPage(path) {
-    if (performance.navigation.type === 1) {
-        LoadCompletePage(path);
-        HandleHiddenDetails();
-        HandleAdditionalSearchTasks();
-        return;
-    }
     if (path.indexOf('partial') === -1) path = AddQueryToPath(path, 'partial=true');
     LoadMainPane(path);
 }
