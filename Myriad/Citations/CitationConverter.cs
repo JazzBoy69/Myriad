@@ -78,6 +78,13 @@ namespace Myriad.Parser
             await Append(writer, citation, true);
         }
 
+        internal static async Task AppendChapterTitle(HTMLWriter writer, CitationRange citationRange)
+        {      
+            await writer.Append(Bible.AbbreviationsTitleCase[citationRange.Book]);
+            await writer.Append("_");
+            await writer.Append(citationRange.FirstChapter);
+        }
+
         public static async Task ToLongString(List<Citation> citations, HTMLWriter writer)
         {
             for (var i = Ordinals.first; i < citations.Count; i++)

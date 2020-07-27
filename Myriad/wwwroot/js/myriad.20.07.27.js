@@ -47,6 +47,17 @@ function LoadIndexPane(path) {
         });
 }
 
+function LoadMainPaneAfterEdit(path) {
+    path = AddQueryToPath(path, 'partial=true');
+    postAjax(path, {},
+        function (data) {
+            var mainPane = document.getElementById('mainPane');
+            mainPane.innerHTML = data;
+            SetTitle();
+            SetIcons();
+        });
+}
+
 function LoadTOC() {
     path = AddQueryToPath(CurrentPath(), 'toc=1');
     postAjax(path, {},
@@ -1139,7 +1150,18 @@ function AcceptEdit() {
         {
             text: editForm.innerText
         },
-        function (data) { UpdateMainPane(data); }
+        function (data) {
+            let evaluatePath = new RegExp('(\\/)([A-Z][a-z]*?)(\\?)');
+            var pageURL = document.getElementById('pageUrlData').innerText;
+            var editURL = document.getElementById('editdata').innerText;
+            var page = pageURL.match(evaluatePath)[0];
+            var editPage = editURL.match(evaluatePath)[0];
+            if (page === editPage) {
+                mainPane.innerHTML = data; 
+                return;
+            }
+            LoadMainPaneAfterEdit(pageURL);
+        }
     );
     CloseEditForm();
 }

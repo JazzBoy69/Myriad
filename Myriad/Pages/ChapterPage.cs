@@ -18,6 +18,7 @@ namespace Myriad.Pages
     public class ChapterPage : ScripturePage
     {
         public const string pageURL = "/Chapter";
+        public const string editURL = "/Edit/Article";
         HTMLWriter writer;
         List<int> commentIDs;
         TextSectionFormatter textSection;
@@ -67,6 +68,19 @@ namespace Myriad.Pages
             await AddPageHistory(writer);
             await AddTOCButton(writer);
             await AddPagination(writer);
+            await AddEditPageData(writer);
+        }
+        private async Task AddEditPageData(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.StartDivWithID +
+                HTMLClasses.editdata + HTMLTags.CloseQuote +
+                HTMLTags.Class +
+                HTMLClasses.hidden +
+                HTMLTags.CloseQuoteEndTag +
+                editURL + HTMLTags.StartQuery +
+                ArticlePage.queryKeyTitle + Symbol.equal);
+            await CitationConverter.AppendChapterTitle(writer, citation.CitationRange);
+            await writer.Append(HTMLTags.EndDiv);
         }
 
         private async Task Initialize()

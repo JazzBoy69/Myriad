@@ -97,10 +97,8 @@ namespace Myriad.Pages
             int id = await GetNewArticleID();
             title = query[queryKeyTitle];
             pageInfo = (title, id);
-            await AddSynonym(id, Ordinals.first, title);
             if (similarID > Number.nothing) title += " (Already Exists)";
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateTag),
-                id, title);
+            await CreateNewArticle(title, id);
             await RenderBody(writer);
         }
 
@@ -351,7 +349,7 @@ namespace Myriad.Pages
             int id = await GetIdFromIdentifier(queryTitle);
             if (id > 0)
             {
-                return (await Reader.ReadTitle(id), id);
+                return (query[queryKeyTitle], id);
             }
             string title = Inflections.RootsOf(queryTitle.Replace('_', ' ')).First();
             var idReader = new DataReaderProvider<string>(
@@ -363,8 +361,22 @@ namespace Myriad.Pages
                 SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), title);
             id = await synonymID.GetDatum<int>();
             synonymID.Close();
+            if (id == 0)
+            {
+                id = await GetNewArticleID();
+                title = query[queryKeyTitle];
+                await CreateNewArticle(title, id);
+                return (title.Replace('_', ' '), id);
+            }
             title = await Reader.ReadTitle(id);
             return (title, id);
+        }
+
+        private async Task CreateNewArticle(string title, int id)
+        {
+            await AddSynonym(id, Ordinals.first, title);
+            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateTag),
+                id, title.Replace('_', ' '));
         }
 
         private async Task<int> GetIdFromIdentifier(string identifier)
@@ -378,6 +390,7 @@ namespace Myriad.Pages
 
         private async Task<(string title, int id)> GetTitle(IQueryCollection query)
         {
+            if (query.ContainsKey(queryKeyTitle)) return await GetID(query);
             string idstring = query[queryKeyID];
             int id = Numbers.Convert(idstring);
             string title = await Reader.ReadTitle(id);
