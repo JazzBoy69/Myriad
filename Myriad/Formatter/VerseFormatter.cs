@@ -69,7 +69,7 @@ namespace Myriad.Formatter
             if (keyword.IsCapitalized)
             {
                 await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                await writer.Append(keyword.Text.Slice(Ordinals.second).ToString());
+                await writer.Append(keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’'));
             }
             else
             {
