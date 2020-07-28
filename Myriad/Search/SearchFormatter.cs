@@ -389,6 +389,7 @@ namespace Myriad.Search
                 if (word.Substitute)
                 {
                     //if (word.Length > 1) await FormatPhraseText(writer, word);
+                    if (word.Length > 1) searchresultwords[word.WordIndex].Length = word.Length;
                     highlight = word.WordIndex;
                     if (searchresultwords[word.WordIndex].IsMainText)
                         searchresultwords[word.WordIndex].SubstituteText = word.Text;
@@ -434,7 +435,7 @@ namespace Myriad.Search
             {
                 if (searchresultwords[idx].Erased)
                 {
-                    if (endLinks.Contains(idx)) await writer.Append(HTMLTags.EndAnchor);
+                    //if (endLinks.Contains(idx)) await writer.Append(HTMLTags.EndAnchor);
                     continue;
                 }
                 if (!searchresultwords[idx].Used)
@@ -447,14 +448,35 @@ namespace Myriad.Search
                     }
                     continue;
                 }
-
+                if (searchresultwords[idx].Erased) continue;
                 ellipsis = false;
+                if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
+                    await writer.Append(HTMLTags.StartBold);
+                await writer.Append(sentenceKeywords[idx].LeadingSymbolString);
+                if (searchresultwords[idx].Substituted)
+                {
+                    if (searchresultwords[idx].IsMainText)
+                        await writer.Append("[");
+                    else
+                        await writer.Append("(");
+                }
                 if (links.ContainsKey(idx))
                 {
                     await AppendSearchArticle(writer, startID, endID, links[idx].Item1);
                 }
                 await AppendSearchResultWord(writer, searchresultwords[idx], sentenceKeywords[idx]);
-                if (endLinks.Contains(idx)) await writer.Append("</a>");
+                if (endLinks.Contains(idx+searchresultwords[idx].Length-1)) 
+                    await writer.Append(HTMLTags.EndAnchor);
+                if (searchresultwords[idx].Substituted)
+                {
+                    if (searchresultwords[idx].IsMainText)
+                        await writer.Append("]");
+                    else
+                        await writer.Append(")");
+                }
+                await writer.Append(sentenceKeywords[idx].TrailingSymbolString);
+                if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
+                    await writer.Append(HTMLTags.EndBold);
             }
         }
 
@@ -485,57 +507,39 @@ namespace Myriad.Search
             {
                 if (keyword.IsCapitalized)
                 {
-                    await writer.Append("<b>");
-                    await writer.Append(keyword.LeadingSymbolString);
-                    if (searchResultWord.IsMainText)
-                        await writer.Append("[");
-                    else
-                        await writer.Append("(");
                     await writer.Append(Symbols.Capitalize(searchResultWord.SubstituteText).Replace('_', ' '));
-                    if (searchResultWord.SubstituteText.IndexOf(' ') == Result.notfound)
-                    {
-                        if (searchResultWord.IsMainText)
-                            await writer.Append("]");
-                        else
-                            await writer.Append(")");
-                    }
-                    await writer.Append(keyword.TrailingSymbolString);
-                    await writer.Append("</b> ");
                 }
                 else
                 {
-                    await writer.Append("<b>");
-                    await writer.Append(keyword.LeadingSymbolString);
-                    if (searchResultWord.IsMainText)
-                        await writer.Append("[");
-                    else
-                        await writer.Append("(");
                     await writer.Append(searchResultWord.SubstituteText.Replace('_', ' '));
-                    if (searchResultWord.SubstituteText.IndexOf(' ') == Result.notfound)
-                    {
-                        if (searchResultWord.IsMainText)
-                            await writer.Append("]");
-                        else
-                            await writer.Append(")");
-                    }
-                    await writer.Append(keyword.TrailingSymbolString);
-                    await writer.Append("</b> ");
                 }
                 return;
             }
             if (searchResultWord.Highlight)
             {
-                await writer.Append("<b>");
-                await TextFormatter.AppendTextOfKeyword(writer, keyword, false, true);
-                await writer.Append("</b> ");
+                await AppendTextOfSearchKeyword(writer, keyword);
                 return;
             }
             if (searchResultWord.Used)
             {
-                await TextFormatter.AppendTextOfKeyword(writer, keyword, false, true);
-                await writer.Append(" ");
+                await AppendTextOfSearchKeyword(writer, keyword);
             }
         }
-
+        public async static Task AppendTextOfSearchKeyword(HTMLWriter writer, Keyword keyword)
+        {
+            if (keyword.IsCapitalized)
+            {
+                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
+                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
+                text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+                await writer.Append(text);
+            }
+            else
+            {
+                string text = keyword.Text.ToString().Replace('`', '’');
+                text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+                await writer.Append(text);
+            }
+        }
     }
 }

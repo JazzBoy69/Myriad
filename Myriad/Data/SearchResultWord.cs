@@ -17,6 +17,7 @@ namespace Myriad.Data
         bool erased = false;
         readonly bool isMainText = true;
         readonly int id;
+        int length = 1;
 
         internal bool IsMainText
         {
@@ -32,6 +33,8 @@ namespace Myriad.Data
         public bool Highlight { get { return highlighted; } set { highlighted = value; } }
 
         public bool Erased { get { return erased; } set { erased = value; } }
+
+        public int Length { get { return length; } set { length = value; } }
 
         public string SubstituteText
         {
