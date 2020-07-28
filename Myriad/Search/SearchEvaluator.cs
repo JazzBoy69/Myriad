@@ -35,7 +35,6 @@ namespace Myriad.Search
             searchResults = new List<SearchResult>();
             int queryIndex = Ordinals.first;
 
-            string rangeSelection = RangeSelection(pageInfo.CitationRange);
             for (int index = Ordinals.first; index < phrases.Count; index++)
             {
                 if (EnglishDictionary.IsCommonWord(phrases[index]))
@@ -46,14 +45,14 @@ namespace Myriad.Search
                 else
                 {
                     List<SearchResult> results =
-                        ReadPhraseResults(phrases[index], queryIndex, rangeSelection);
+                        ReadPhraseResults(phrases[index], queryIndex, pageInfo.CitationRange);
                     searchResults.AddRange(results);
                     var phraseSentences = AddResultsToSentences(sentences, results, 1);
                     Dictionary<int, int> synSentences = null;
                     if (isSynonymQuery && (synonyms[queryIndex].Count > 0))
                     {
                         var synResults =
-                            ReadPhrasesResults(queryIndex, synonyms, rangeSelection);
+                            ReadPhrasesResults(queryIndex, synonyms, pageInfo.CitationRange);
                         searchResults.AddRange(synResults);
                         synSentences = AddResultsToSentences(sentences, synResults, 3);
 
@@ -75,7 +74,14 @@ namespace Myriad.Search
             {
                 var definitionQuery = new StringBuilder(definitionSelector);
                 AppendORSelection(definitionQuery, usedDefinitions.Distinct().ToList(), "id =");
-                definitionQuery.Append(rangeSelection);
+                if ((pageInfo.CitationRange != null) && (pageInfo.CitationRange.Valid))
+                {
+                    definitionQuery.Append(" and (start>=");
+                    definitionQuery.Append(pageInfo.CitationRange.StartID);
+                    definitionQuery.Append(" and last<=");
+                    definitionQuery.Append(pageInfo.CitationRange.EndID);
+                    definitionQuery.Append(") ");
+                }
                 definitionSearchesInSentences =
                     await ReadDefinitionSearches(definitionQuery.ToString());
             }
@@ -110,7 +116,7 @@ namespace Myriad.Search
                     SetScores(queryIndex, isSynonymQuery, false) ?? new List<SearchSentence>();
             if ((!isSynonymQuery) && (phrases.Count > 1))
             {
-                var completePhraseSentences = CompletePhraseSearch(pageInfo.Query, rangeSelection);
+                var completePhraseSentences = CompletePhraseSearch(pageInfo.Query, pageInfo.CitationRange);
                 for (int index = Ordinals.first; index < completePhraseSentences.Count; index++)
                 {
                     if (!sentences.ContainsKey(completePhraseSentences[index].SentenceID))
@@ -129,9 +135,9 @@ namespace Myriad.Search
             return filteredOrSentences;
         }
 
-        private List<SearchSentence> CompletePhraseSearch(string query, string rangeSelection)
+        private List<SearchSentence> CompletePhraseSearch(string query, CitationRange searchRange)
         {
-            var results = ReadPhraseResults(query, 0, rangeSelection);
+            var results = ReadPhraseResults(query, 0, searchRange);
             int count = query.Count(c => c == ' ');
             List<SearchSentence> sentences = new List<SearchSentence>();
             foreach (SearchResult result in results)
@@ -317,18 +323,18 @@ namespace Myriad.Search
         }
 
         private static List<SearchResult> ReadPhraseResults(string phrase, int queryIndex, 
-            string rangeSelection)
+            CitationRange searchRange)
         {
-            string query = PhraseQuery(phrase, queryIndex, rangeSelection);
+            string query = PhraseQuery(phrase, queryIndex, searchRange);
             var results = ReadSearchResults(query);
             if (!phrase.Contains(' ')) return results;
-            query = PhraseWordQuery(phrase, queryIndex, rangeSelection);
+            query = PhraseWordQuery(phrase, queryIndex, searchRange);
             if (string.IsNullOrEmpty(query)) return results;
             results.AddRange(ReadSearchResults(query));
             return results;
         }
 
-        private static string PhraseWordQuery(string phrase, int queryIndex, string rangeSelection)
+        private static string PhraseWordQuery(string phrase, int queryIndex, CitationRange searchRange)
         {
             var words = phrase.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
             for (int i = Ordinals.first; i < words.Count; i++)
@@ -359,6 +365,14 @@ namespace Myriad.Search
                 var variations = Variations(words[i]);
                 AppendORSelection(query, variations, "sw" + i + ".text");
             }
+            if ((searchRange != null) && (searchRange.Valid))
+            {
+                query.Append(" and (sw0.start>=");
+                query.Append(searchRange.StartID);
+                query.Append(" and sw0.last<=");
+                query.Append(searchRange.EndID);
+                query.Append(") ");
+            }
             return query.ToString();
         }
 
@@ -369,7 +383,7 @@ namespace Myriad.Search
             return result.Distinct().ToList();
         }
 
-        private static string PhraseQuery(string phrase, int queryIndex, string rangeSelection)
+        private static string PhraseQuery(string phrase, int queryIndex, CitationRange searchRange)
         {
             var query = new StringBuilder(
                             "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
@@ -378,7 +392,14 @@ namespace Myriad.Search
             query.Append("sw.text='");
             query.Append(phrase.Replace(' ', '_'));
             query.Append("'");
-            query.Append(rangeSelection);
+            if ((searchRange != null) && (searchRange.Valid))
+            {
+                query.Append(" and (sw.start>=");
+                query.Append(searchRange.StartID);
+                query.Append(" and sw.last<=");
+                query.Append(searchRange.EndID);
+                query.Append(") ");
+            }
             return query.ToString();
         }
 
@@ -391,14 +412,21 @@ namespace Myriad.Search
         }
 
         private static List<SearchResult> ReadPhrasesResults(int queryIndex,
-                List<List<string>> synonyms, string rangeSelection)
+                List<List<string>> synonyms, CitationRange searchRange)
         {
             var synQuery = new StringBuilder(
             "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
             synQuery.Append(queryIndex);
             synQuery.Append(" from searchwords as sw where ");
             AppendORSelection(synQuery, synonyms[queryIndex], "sw.text");
-            synQuery.Append(rangeSelection);
+            if ((searchRange != null) && (searchRange.Valid))
+            {
+                synQuery.Append(" and (sw.start>=");
+                synQuery.Append(searchRange.StartID);
+                synQuery.Append(" and sw.last<=");
+                synQuery.Append(searchRange.EndID);
+                synQuery.Append(") ");
+            }
             return ReadSearchResults(synQuery.ToString());
         }
         private static void AppendORSelection(StringBuilder builder, List<int> list,

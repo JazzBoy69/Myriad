@@ -16,11 +16,11 @@ namespace Myriad.Search
 {
     public class ExtendedSearch
     {
-        public static async Task<List<Citation>> EvaluatePhraseDefinitions(List<List<int>> phraseDefinitions)
+        public static async Task<List<Citation>> EvaluatePhraseDefinitions(List<List<int>> phraseDefinitions, CitationRange searchRange)
         {
             if (phraseDefinitions.Count < 2) return new List<Citation>();
             var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(
-                GenerateCommonRangeQuery(phraseDefinitions)));
+                GenerateCommonRangeQuery(phraseDefinitions, searchRange)));
             var ranges = await reader.GetData<int, int>();
             ranges = ranges.OrderByDescending(r => r.Item2 - r.Item1).ToList();
             reader.Close();
@@ -47,17 +47,17 @@ namespace Myriad.Search
             return false;
         }
 
-        private static string GenerateCommonRangeQuery(List<List<int>> phraseDefinitions)
+        private static string GenerateCommonRangeQuery(List<List<int>> phraseDefinitions, CitationRange searchRange)
         {
             StringBuilder query = new StringBuilder("select distinct maxstart=(SELECT MAX(x) FROM (VALUES ");
             AppendMaxStart(phraseDefinitions, query);
             AppendMinLast(phraseDefinitions, query);
             AppendJoinStatements(phraseDefinitions, query);
-            AppendWhereStatement(phraseDefinitions, query);
+            AppendWhereStatement(phraseDefinitions, searchRange, query);
             return query.ToString();
         }
 
-        private static void AppendWhereStatement(List<List<int>> phraseDefinitions, StringBuilder query)
+        private static void AppendWhereStatement(List<List<int>> phraseDefinitions, CitationRange searchRange, StringBuilder query)
         {
             query.Append("where ");
             for (int i = Ordinals.first; i < phraseDefinitions.Count; i++)
@@ -72,6 +72,14 @@ namespace Myriad.Search
                 query.Append(i);
                 query.Append(".articleid=");
                 query.Append(phraseDefinitions[i][Ordinals.first]);
+            }
+            if ((searchRange != null) && (searchRange.Valid))
+            {
+                query.Append(" and (ra0.start>=");
+                query.Append(searchRange.StartID);
+                query.Append(" and ra0.last<=");
+                query.Append(searchRange.EndID);
+                query.Append(")");
             }
         }
 
