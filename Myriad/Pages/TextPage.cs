@@ -152,6 +152,11 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddPagination(writer);
+            int chronoID = await Chrono.GetIDFromCitation(citation);
+            if (chronoID > Number.nothing)
+            {
+                await AddChronoLink(writer, chronoID);
+            }
         }
 
         internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
