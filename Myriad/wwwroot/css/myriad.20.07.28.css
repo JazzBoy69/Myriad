@@ -49,7 +49,7 @@ b{font-weight:500;}
 .col1.right{right:91%;}
 
 /*Ruby*/
-ruby{font-family:Lato, "Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
+ruby{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
 rt {
     font-size: .65em;
     text-align: center;

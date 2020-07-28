@@ -417,7 +417,7 @@ namespace Myriad.Search
             var synQuery = new StringBuilder(
             "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
             synQuery.Append(queryIndex);
-            synQuery.Append(", sw.substitute, sw.RTrim(text), from searchwords as sw where ");
+            synQuery.Append(", sw.substitute, RTrim(sw.text) from searchwords as sw where ");
             AppendORSelection(synQuery, synonyms[queryIndex], "sw.text");
             if ((searchRange != null) && (searchRange.Valid))
             {

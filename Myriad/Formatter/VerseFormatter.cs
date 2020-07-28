@@ -40,6 +40,7 @@ namespace Myriad.Formatter
                 List<RubyInfo> wordsOnTop = new List<RubyInfo>();
                 for (int i = Ordinals.first; i < page.info.keywords.Count; i++)
                 {
+                    await writer.Append(page.info.keywords[i].LeadingSymbolsString);
                     if (lastWordOnTop == Result.notfound)
                     {
                         wordsOnTop = Reader.ReadSustituteText(page.info.keywords[i].ID);
@@ -57,6 +58,7 @@ namespace Myriad.Formatter
                         await writer.Append("</rt></ruby>");
                         lastWordOnTop = Result.notfound;
                     }
+                    await writer.Append(page.info.keywords[i].TrailingSymbols.ToString().Replace("<br>", "").Replace("— ", "—"));
                 }
             }
             await EndRubySection(writer);
@@ -64,7 +66,6 @@ namespace Myriad.Formatter
 
         public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
         {
-            await writer.Append(keyword.LeadingSymbolsString);
             if (keyword.IsCapitalized)
             {
                 await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
@@ -74,7 +75,6 @@ namespace Myriad.Formatter
             {
                 await writer.Append(keyword.Text.ToString().Replace('`', '’'));
             }
-            await writer.Append(keyword.TrailingSymbols.ToString().Replace("<br>", "").Replace("— ", "—"));
         }
 
         private static async Task WriteSubstituteText(HTMLWriter writer, List<RubyInfo> wordsOnTop)
