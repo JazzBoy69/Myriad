@@ -347,7 +347,7 @@ namespace Myriad.Search
             query.Append(words.Count);
             query.Append(", ");
             query.Append(queryIndex);
-            query.Append(" from searchwords as sw0 ");
+            query.Append(", sw0.substitute, RTrim(sw0.text) from searchwords as sw0 ");
             for (int i = Ordinals.second; i < words.Count; i++)
             {
                 query.Append("join searchwords as sw");
@@ -388,7 +388,7 @@ namespace Myriad.Search
             var query = new StringBuilder(
                             "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
             query.Append(queryIndex);
-            query.Append(" from searchwords as sw where ");
+            query.Append(", sw.substitute, RTrim(sw.text) from searchwords as sw where ");
             query.Append("sw.text='");
             query.Append(phrase.Replace(' ', '_'));
             query.Append("'");
@@ -417,7 +417,7 @@ namespace Myriad.Search
             var synQuery = new StringBuilder(
             "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
             synQuery.Append(queryIndex);
-            synQuery.Append(" from searchwords as sw where ");
+            synQuery.Append(", sw.substitute, sw.RTrim(text), from searchwords as sw where ");
             AppendORSelection(synQuery, synonyms[queryIndex], "sw.text");
             if ((searchRange != null) && (searchRange.Valid))
             {
@@ -564,7 +564,6 @@ and wordindex>@key2 and wordindex<@key3 and ");
         {
             try
             {
-                if (sentence.Space < 0) return new List<int>();
                 var reader = new DataReaderProvider<int, int, int>(
                     SqlServerInfo.CreateCommandFromQuery(query),
                     sentence.SentenceID,

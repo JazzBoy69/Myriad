@@ -24,9 +24,6 @@ namespace Myriad.Data
         public int SentenceID => sentenceID;
         public int WordIndex => wordIndex;
         public int QueryIndex => queryIndex;
-        public int Weight => weight;
-        public int StartID => start;
-        public int EndID => end;
         public string Text => text;
         public int ArticleID => articleID;
         public int Length { get { return length; } }
@@ -80,6 +77,8 @@ namespace Myriad.Data
                 wordIndex = await reader.GetFieldValueAsync<int>(Ordinals.second);
                 length = await reader.GetFieldValueAsync<int>(Ordinals.third);
                 queryIndex = await reader.GetFieldValueAsync<int>(Ordinals.fourth);
+                substitute = await reader.GetFieldValueAsync<int>(Ordinals.fifth);
+                text = await reader.GetFieldValueAsync<string>(Ordinals.sixth);
             }
             catch (Exception ex)
             {
@@ -119,6 +118,8 @@ namespace Myriad.Data
             wordIndex = reader.GetFieldValue<int>(Ordinals.second);
             length = reader.GetFieldValue<int>(Ordinals.third);
             queryIndex = reader.GetFieldValue<int>(Ordinals.fourth);
+            substitute = reader.GetFieldValue<int>(Ordinals.fifth);
+            text = reader.GetFieldValue<string>(Ordinals.sixth);
         }
     }
 }

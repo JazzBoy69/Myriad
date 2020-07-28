@@ -16,12 +16,7 @@ namespace Myriad.Search
         readonly List<int> wordCounts = new List<int>();
         List<SearchResult> words = new List<SearchResult>();
         readonly private int wordCount;
-        int totalWeight = 0;
         private int type;
-        private int space;
-
-        public int Space
-        { get { return space; } }
 
         public int Type { get { return type; } }
         public int WordCount => wordCount;
@@ -102,7 +97,6 @@ namespace Myriad.Search
         internal void Add(SearchResult searchResult, int queryIndex)
         {
             if (queryIndex >= wordLists.Count) return;
-            totalWeight += searchResult.Weight;
             wordLists[queryIndex].Add(searchResult);
             wordCounts[queryIndex]++;
             wordPositions.Add(new WordPosition(searchResult.WordIndex, queryIndex, searchResult.Length));
