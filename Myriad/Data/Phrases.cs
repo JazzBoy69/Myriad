@@ -90,14 +90,12 @@ namespace Myriad.Data
             if (result.Count > 0) return result;
             StringBuilder phrase = new StringBuilder();
             string[] wordList = words.Split(new char[] { ' ', '_' });
-            int count = wordList.Length;
-            foreach (string word in wordList)
+            for (int i=Ordinals.first; i<wordList.Length; i++)
             {
-                var roots = Inflections.EnglishRootsOf(word);
-                string root = (roots.Contains(word)) ? word : roots[Ordinals.first];
+                if (i > Ordinals.first) phrase.Append(' ');
+                var roots = Inflections.EnglishRootsOf(wordList[i]);
+                string root = (roots.Contains(wordList[i])) ? wordList[i] : roots[Ordinals.first];
                 phrase.Append(root);
-                if (count > 1) phrase.Append(' ');
-                count++;
             }
             return new List<string>() { phrase.ToString() };
         }

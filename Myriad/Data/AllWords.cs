@@ -78,14 +78,14 @@ namespace Myriad.Data
                     SqlServerInfo.CreateCommandFromQuery("select RTrim(text) from synonyms"));
                 var words = reader.GetData<string>();
                 reader.Close();
-                foreach (string s in words)
+                for (int i=Ordinals.first; i<words.Count; i++)
                 {
-                    int d = DistanceBetween(word, s);
-                    if (d == 1) return s;
+                    int d = DistanceBetween(words[i], words[i]);
+                    if (d == 1) return words[i];
                     if (d < distance)
                     {
                         distance = d;
-                        posibleResult = s;
+                        posibleResult = words[i];
                     }
                 }
             }
@@ -94,14 +94,14 @@ namespace Myriad.Data
                 SqlServerInfo.CreateCommandFromQuery("select RTrim(text) from allwords"));
             var allwords = allreader.GetData<string>();
             allreader.Close();
-            foreach (string w in allwords)
+            for (int i=Ordinals.first; i<allwords.Count; i++)
             {
-                int d = DistanceBetween(word, w);
-                if (d == 1) return w;
+                int d = DistanceBetween(word, allwords[i]);
+                if (d == 1) return allwords[i];
                 if (d < distance)
                 {
                     distance = d;
-                    posibleResult = w;
+                    posibleResult = allwords[i];
                 }
             }
 

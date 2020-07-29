@@ -140,13 +140,13 @@ namespace Myriad.Search
             var results = ReadPhraseResults(query, 0, searchRange);
             int count = query.Count(c => c == ' ');
             List<SearchSentence> sentences = new List<SearchSentence>();
-            foreach (SearchResult result in results)
+            for (int i=Ordinals.first; i<results.Count; i++)
             {
                 if ((definitionSearchesInSentences != null) &&
-                    (definitionSearchesInSentences.ContainsKey(result.Key)))
-                    result.SetArticleID(definitionSearchesInSentences[result.Key]);
-                SearchSentence sentence = new SearchSentence(result.SentenceID, count);
-                sentence.Add(result);
+                    (definitionSearchesInSentences.ContainsKey(results[i].Key)))
+                    results[i].SetArticleID(definitionSearchesInSentences[results[i].Key]);
+                SearchSentence sentence = new SearchSentence(results[i].SentenceID, count);
+                sentence.Add(results[i]);
                 sentence.SetScore(1);
                 sentence.SetType(0);
                 sentences.Add(sentence);
@@ -160,15 +160,14 @@ namespace Myriad.Search
             SearchSentence currentSentence = null;
             var orSentences = new List<SearchSentence>();
             var commonWordCommand = CreateCommonWordQuery(commonWords);
-
-            foreach (SearchResult result in filteredResults)
+            for (int i=Ordinals.first; i<filteredResults.Count; i++)
             {
                 if ((definitionSearchesInSentences != null) &&
-                    (definitionSearchesInSentences.ContainsKey(result.Key)))
-                    result.SetArticleID(definitionSearchesInSentences[result.Key]);
-                if (result.SentenceID != lastSentence)
+                    (definitionSearchesInSentences.ContainsKey(filteredResults[i].Key)))
+                    filteredResults[i].SetArticleID(definitionSearchesInSentences[filteredResults[i].Key]);
+                if (filteredResults[i].SentenceID != lastSentence)
                 {
-                    lastSentence = result.SentenceID;
+                    lastSentence = filteredResults[i].SentenceID;
                     if (currentSentence != null)
                     {
                         int score = CalculateDistance(currentSentence, filterDistance);
@@ -176,20 +175,20 @@ namespace Myriad.Search
                         var commonWordIndices = CommonWordIndices(currentSentence, commonWordCommand);
                         if (commonWordIndices.Count > Number.nothing)
                         {
-                            foreach (int index in commonWordIndices)
+                            for (int j = Ordinals.first; j < commonWordIndices.Count; j++)
                             {
-                                currentSentence.Add(new SearchResult(currentSentence.SentenceID, index, 1, 0));
+                                currentSentence.Add(new SearchResult(currentSentence.SentenceID, commonWordIndices[j], 1, 0));
                             }
                             currentSentence.SetType(currentSentence.Type-1);
                         }
                         orSentences.Add(currentSentence);
                     }
                     currentSentence = new SearchSentence(
-                        result.SentenceID,
+                        filteredResults[i].SentenceID,
                         wordCount,
-                        sentences[result.SentenceID]);
+                        sentences[filteredResults[i].SentenceID]);
                 }
-                currentSentence.Add(result);
+                currentSentence.Add(filteredResults[i]);
             }
 
             if (currentSentence != null)
@@ -199,9 +198,9 @@ namespace Myriad.Search
                 var commonWordIndices = CommonWordIndices(currentSentence, commonWordCommand);
                 if (commonWordIndices.Count > Number.nothing)
                 {
-                    foreach (int index in commonWordIndices)
+                    for (int j=Ordinals.first; j<commonWordIndices.Count; j++)
                     {
-                        currentSentence.Add(new SearchResult(currentSentence.SentenceID, index, 1, 0));
+                        currentSentence.Add(new SearchResult(currentSentence.SentenceID, commonWordIndices[j], 1, 0));
                     }
                     currentSentence.SetType(currentSentence.Type - 1);
                 }
@@ -261,57 +260,36 @@ namespace Myriad.Search
                 }
             }
             int coverage = 0;
-            foreach (WordPosition entry in wordPositions) coverage += entry.Length;
+            for (int i = Ordinals.first; i < wordPositions.Count; i++) coverage += wordPositions[i].Length;
             int space = (wordPositions.Last().WordIndex - wordPositions.First().WordIndex + 3) - coverage;
             if (filterDistance && ((space < 0) || (space > 7))) space = 300;
-            //test how ordered the results are
             int disorder = EditDistance(wordPositions, sentence.WordCount);
             return space + disorder;
         }
 
         private static int EditDistance(List<WordPosition> wordPositions, int wordCount)
         {
-            int n = wordPositions.Count;
-            int m = wordCount;
-            int[,] d = new int[n + 1, m + 1];
+            int width = wordPositions.Count+1;
+            int height = wordCount+1;
+            int[,] grid = new int[width, height];
+            if (width == 0) return height;
+            if (height == 0) return width;
 
-            // Step 1
-            if (n == 0)
-            {
-                return m;
-            }
+            for (int x = 0; x < width; grid[x, 0] = x++) ;
+            for (int y = 0; y < height; grid[0, y] = y++) ;
 
-            if (m == 0)
+            for (int x = 1; x < width; x++)
             {
-                return n;
-            }
-
-            // Step 2
-            for (int i = 0; i <= n; d[i, 0] = i++)
-            {
-            }
-
-            for (int j = 0; j <= m; d[0, j] = j++)
-            {
-            }
-
-            // Step 3
-            for (int i = 1; i <= n; i++)
-            {
-                //Step 4
-                for (int j = 1; j <= m; j++)
+                for (int y = 1; y < height; y++)
                 {
-                    // Step 5
-                    int cost = ((j - 1) == wordPositions.ElementAt(i - 1).QueryIndex) ? 0 : 1;
+                    int cost = ((y - 1) == wordPositions.ElementAt(x - 1).QueryIndex) ? 0 : 1;
 
-                    // Step 6
-                    d[i, j] = Math.Min(
-                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
-                        d[i - 1, j - 1] + cost);
+                    grid[x, y] = Math.Min(
+                        Math.Min(grid[x - 1, y] + 1, grid[x, y - 1] + 1),
+                        grid[x - 1, y - 1] + cost);
                 }
             }
-            // Step 7
-            return d[n, m] - (wordPositions.Count - wordCount);
+            return grid[width-1, height-1] - (wordPositions.Count - wordCount);
         }
 
 
@@ -467,17 +445,17 @@ namespace Myriad.Search
 
         internal void EvaluateSynonyms(List<string> phrases)
         {
-            foreach (string phrase in phrases)
+            for (int i=Ordinals.first; i<phrases.Count; i++)
             {
-                if (EnglishDictionary.IsCommonWord(phrase)) continue;
-                var roots = Inflections.HardRootsOf(phrase.Replace('_', ' '));
+                if (EnglishDictionary.IsCommonWord(phrases[i])) continue;
+                var roots = Inflections.HardRootsOf(phrases[i].Replace('_', ' '));
                 //get definition ids for phrase
                 List<int> definitionIDs = GetDefinitionIDs(roots);
                 phraseDefinitions.Add(definitionIDs);
                 //get synonyms for phrase
                 var thisPhraseSynonyms = (definitionIDs.Count == 0) ? 
                     roots : 
-                    GetSynonyms(definitionIDs, phrase);
+                    GetSynonyms(definitionIDs, phrases[i]);
                 synonyms.Add(thisPhraseSynonyms);
                 usedDefinitions.AddRange(definitionIDs);
             }

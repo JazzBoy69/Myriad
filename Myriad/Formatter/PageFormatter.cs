@@ -312,9 +312,9 @@ namespace Myriad.Parser
 
         public async Task AppendCitationLabels(IParagraph paragraph, List<Citation> citations)
         {
-            foreach (var citation in citations)
+            for (int i=Ordinals.first; i<citations.Count; i++)
             {
-                await AppendCitationLabel(paragraph, citation);
+                await AppendCitationLabel(paragraph, citations[i]);
             }
         }
 
@@ -332,14 +332,14 @@ namespace Myriad.Parser
 
         public async Task AppendCitations(IParagraph paragraph, List<Citation> citations)
         {
-            foreach (var citation in citations)
+            for (int i=Ordinals.first; i<citations.Count; i++)
             {
-                if (!citation.CitationRange.Valid)
+                if (!citations[i].CitationRange.Valid)
                 {
-                    await AppendText(paragraph, citation);
+                    await AppendText(paragraph, citations[i]);
                     continue;
                 }
-                await AppendCitation(paragraph, citation);
+                await AppendCitation(paragraph, citations[i]);
             }
         }
 

@@ -219,19 +219,17 @@ namespace Myriad.Formatter
 
         public string OriginalWordsInRange(int start, int end)
         {
-            IEnumerable<string> originalWordsInPhrase = from w in OriginalWords
+            var originalWordsInPhrase = (from w in OriginalWords
                                                         where w.Start >= start &&
                                                         w.End <= end
-                                                        select w.Text;
+                                                        select w.Text).ToList();
             int count = originalWordsInPhrase.Count();
             if (count == 0) return "";
-            int i = Ordinals.first;
             StringBuilder sb = new StringBuilder();
-            foreach (string word in originalWordsInPhrase)
+            for (int i=Ordinals.first; i<originalWordsInPhrase.Count; i++)
             {
-                sb.Append(word.Replace('_', ' '));
-                if (i < count - 1) sb.Append(" ");
-                i++;
+                if (i > Ordinals.first) sb.Append(' ');
+                sb.Append(originalWordsInPhrase[i].Replace('_', ' '));
             }
             return sb.ToString();
         }
@@ -353,17 +351,17 @@ namespace Myriad.Formatter
                 citationRange.StartID.ID, citationRange.EndID.ID);
             relatedArticles = reader.GetClassData<RangeAndParagraph>();
             reader.Close();
-            foreach (var article in relatedArticles)
+            for (int i=Ordinals.first; i<relatedArticles.Count; i++)
             {
-                if (usedArticles.Contains(article.Key))
+                if (usedArticles.Contains(relatedArticles[i].Key))
                 {
                     continue;
                 }
-                if (((article.EndID-article.StartID)<10) && (article.StartID >= citationRange.StartID.ID) && 
-                    (article.EndID <= citationRange.EndID.ID) &&
-                        ((article.StartID != citationRange.StartID.ID) || (article.EndID != citationRange.EndID.ID)))
+                if (((relatedArticles[i].EndID- relatedArticles[i].StartID)<10) && (relatedArticles[i].StartID >= citationRange.StartID.ID) && 
+                    (relatedArticles[i].EndID <= citationRange.EndID.ID) &&
+                        ((relatedArticles[i].StartID != citationRange.StartID.ID) || (relatedArticles[i].EndID != citationRange.EndID.ID)))
                 { // Add an article reference to a single phrase in verse to definition searches
-                    await ArrangeDefinitionSearch((article.StartID, article.EndID, article.ArticleID));
+                    await ArrangeDefinitionSearch((relatedArticles[i].StartID, relatedArticles[i].EndID, relatedArticles[i].ArticleID));
                     continue;
                 }
             }
@@ -409,16 +407,16 @@ namespace Myriad.Formatter
         {
             //Add related article
             List<(int articleID, int paragraphIndex)> result = new List<(int articleID, int paragraphIndex)>();
-            IEnumerable<int> articleParagraphs = (from paragraph in relatedArticles
+            var articleParagraphs = (from paragraph in relatedArticles
                                                   where paragraph.ArticleID == commentInfo.articleID
                                                   orderby paragraph.ParagraphIndex
-                                                  select paragraph.ParagraphIndex).Distinct();
+                                                  select paragraph.ParagraphIndex).Distinct().ToList();
             List<int> newParagraphs = new List<int>();
-            foreach (int paragraphIndex in articleParagraphs)
+            for (int i=Ordinals.first; i<articleParagraphs.Count; i++)
             {
-                if (usedArticles.Contains((commentInfo.articleID, paragraphIndex))) continue;
-                newParagraphs.Add(paragraphIndex);
-                usedArticles.Add((commentInfo.articleID, paragraphIndex));
+                if (usedArticles.Contains((commentInfo.articleID, articleParagraphs[i]))) continue;
+                newParagraphs.Add(articleParagraphs[i]);
+                usedArticles.Add((commentInfo.articleID, articleParagraphs[i]));
             }
             if (newParagraphs.Count == 0) return;
             if (PhraseArticles.ContainsKey(index))

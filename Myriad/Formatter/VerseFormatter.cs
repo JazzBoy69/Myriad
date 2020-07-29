@@ -322,12 +322,10 @@ namespace Myriad.Formatter
                         needFullLabel = false;
                         needLabel = false;
                     }
-                    bool first = true;
                     parser.SetParagraphInfo(ParagraphType.Article, entry.articleID);
-                    foreach (int paragraphIndex in entry.paragraphIndices)
+                    for (int j=Ordinals.first; j<entry.paragraphIndices.Count; j++)
                     {
-                        if (first) first = false;
-                        else
+                        if (j > Ordinals.first) 
                         {
                             await writer.Append(HTMLTags.StartParagraphWithClass +
                                 HTMLClasses.comment +
@@ -342,9 +340,9 @@ namespace Myriad.Formatter
                             await writer.Append(": ");
                             needLabel = false;
                         }
-                        reader.SetParameter(entry.articleID, paragraphIndex);
+                        reader.SetParameter(entry.articleID, entry.paragraphIndices[j]);
                         string paragraph = await reader.GetDatum<string>();
-                        await parser.ParseParagraph(paragraph, paragraphIndex);
+                        await parser.ParseParagraph(paragraph, entry.paragraphIndices[j]);
                     }
                     currentIndex++;
                 }
@@ -462,10 +460,10 @@ namespace Myriad.Formatter
         {
             (int start, int end) phraseRange = info.Phrases[index].Range;
 
-            IEnumerable<(string, (int start, int end))> originalWordsInPhrase = from w in info.OriginalWords
+            List<(string text, (int start, int end) range)> originalWordsInPhrase = (from w in info.OriginalWords
                                                                                 where w.Start >= phraseRange.start &&
                                                                                 w.End <= phraseRange.end
-                                                                                select (w.Text, w.Range);
+                                                                                select (w.Text, w.Range)).ToList();
             int count = originalWordsInPhrase.Count();
             await writer.Append(HTMLTags.StartParagraphWithClass +
                 HTMLClasses.comment +
@@ -480,22 +478,18 @@ namespace Myriad.Formatter
             if (count > 0) await writer.Append("(" + HTMLTags.StartSpanWithClass +
                 HTMLClasses.originalword +
                 HTMLTags.CloseQuoteEndTag);
-            int i = Ordinals.first;
-            bool needSpace = false;
-            foreach ((string text, (int start, int end) range) in originalWordsInPhrase)
+            for (int i=Ordinals.first; i<originalWordsInPhrase.Count; i++)
             {
                 if (info.Ellipses.ContainsKey(phrase.Start))
                 {
-                    if ((range.start == info.Ellipses[phrase.Start].StartID.ID) &&
-                        (range.end == info.Ellipses[phrase.Start].EndID.ID))
+                    if ((originalWordsInPhrase[i].range.start == info.Ellipses[phrase.Start].StartID.ID) &&
+                        (originalWordsInPhrase[i].range.end == info.Ellipses[phrase.Start].EndID.ID))
                     {
                         continue;
                     }
                 }
-                if (needSpace) await writer.Append(Symbol.space);
-                await writer.Append(text.Replace("_", HTMLTags.NonbreakingSpace));
-                needSpace = true;
-                i++;
+                if (i>Ordinals.first) await writer.Append(Symbol.space);
+                await writer.Append(originalWordsInPhrase[i].text.Replace("_", HTMLTags.NonbreakingSpace));
             }
             if (count > 0) await writer.Append(HTMLTags.EndSpan + ")");
         }
@@ -529,21 +523,19 @@ namespace Myriad.Formatter
                         HTMLClasses.comment +
                         HTMLTags.CloseQuoteEndTag);
                     await WriteFullLabel(writer, page, index, entry.range, entry.articleID, title);
-                    bool first = true;
 
                     parser.SetParagraphInfo(ParagraphType.Article, entry.articleID);
-                    foreach (int paragraphIndex in entry.paragraphIndices)
+                    for (int i=Ordinals.first; i<entry.paragraphIndices.Count; i++)
                     {
-                        if (first) first = false;
-                        else
+                        if (i > Ordinals.first) 
                         {
                             await writer.Append(HTMLTags.StartParagraphWithClass +
                                 HTMLClasses.comment +
                                 HTMLTags.CloseQuoteEndTag);
                         }
-                        reader.SetParameter(entry.articleID, paragraphIndex);
+                        reader.SetParameter(entry.articleID, entry.paragraphIndices[i]);
                         string paragraph = await reader.GetDatum<string>();
-                        await parser.ParseParagraph(paragraph, paragraphIndex);
+                        await parser.ParseParagraph(paragraph, entry.paragraphIndices[i]);
                     }
                     needFullLabel = false;
                     resultIndex = usedIndex;
@@ -566,20 +558,18 @@ namespace Myriad.Formatter
                             HTMLClasses.comment +
                             HTMLTags.CloseQuoteEndTag);
                         await WriteFullLabel(writer, page, index, entry.range, entry.articleID, title);
-                        bool first = true;
                         parser.SetParagraphInfo(ParagraphType.Article, entry.articleID);
-                        foreach (int paragraphIndex in entry.paragraphIndices)
+                        for (int i=Ordinals.first; i<entry.paragraphIndices.Count; i++)
                         {
-                            if (first) first = false;
-                            else
+                            if (i>Ordinals.first)
                             {
                                 await writer.Append(HTMLTags.StartParagraphWithClass +
                                     HTMLClasses.comment +
                                     HTMLTags.CloseQuoteEndTag);
                             }
-                            reader.SetParameter(entry.articleID, paragraphIndex);
+                            reader.SetParameter(entry.articleID, entry.paragraphIndices[i]);
                             string paragraph = await reader.GetDatum<string>();
-                            await parser.ParseParagraph(paragraph, paragraphIndex);
+                            await parser.ParseParagraph(paragraph, entry.paragraphIndices[i]);
                         }
                         needFullLabel = false;
                         resultIndex = usedIndex;
@@ -698,21 +688,18 @@ namespace Myriad.Formatter
         internal static string ReadRangeText((int start, int end) range, VersePageInfo info)
         {
             StringBuilder result = new StringBuilder();
-            var wordsInRange = from w in info.keywords
+            var wordsInRange = (from w in info.keywords
                                where w.ID >= range.start &&
                                w.ID <= range.end
-                               select w;
-
-            bool first = true;
+                               select w).ToList();
             bool opened = false;
-            foreach (var word in wordsInRange)
+            for (int i= Ordinals.first; i<wordsInRange.Count; i++)
             {
-                if ((!first) && (HasOpenBracket(word))) opened = true;
-                if (!opened) result.Append(TextWithoutSymbols(word));
+                if ((i>Ordinals.first) && (HasOpenBracket(wordsInRange[i]))) opened = true;
+                if (!opened) result.Append(TextWithoutSymbols(wordsInRange[i]));
                 else
-                    result.Append(FormattedTextWithBrackets(word));
-                if (HasCloseBracket(word)) opened = false;
-                first = false;
+                    result.Append(FormattedTextWithBrackets(wordsInRange[i]));
+                if (HasCloseBracket(wordsInRange[i])) opened = false;
             }
             if (opened) result.Append(']');
             return result.ToString();
@@ -757,50 +744,45 @@ namespace Myriad.Formatter
             VersePageInfo info, 
             VerseWord phrase)
         {
-            var wordsInRange = from w in info.keywords
+            var wordsInRange = (from w in info.keywords
                                where w.ID >= phrase.Range.start &&
                                w.ID <= phrase.Range.end
-                               select w;
-
-            bool first = true;
+                               select w).ToList();
             bool opened = false;
             bool ellipsis = false;
-            foreach (var word in wordsInRange)
+            for (int i=Ordinals.first; i<wordsInRange.Count; i++)
             {
-                if ((word.ID >= info.Ellipses[phrase.Start].Range.start) && 
-                    (word.ID <= info.Ellipses[phrase.Start].Range.end))
+                if ((wordsInRange[i].ID >= info.Ellipses[phrase.Start].Range.start) && 
+                    (wordsInRange[i].ID <= info.Ellipses[phrase.Start].Range.end))
                 {
                     if (!ellipsis) await writer.Append("... ");
                     ellipsis = true;
                     continue;
                 }
                 ellipsis = false;
-                if ((!first) && (HasOpenBracket(word))) opened = true;
-                if (!opened) await writer.Append(TextWithoutSymbols(word));
+                if ((i>Ordinals.first) && (HasOpenBracket(wordsInRange[i]))) opened = true;
+                if (!opened) await writer.Append(TextWithoutSymbols(wordsInRange[i]));
                 else
-                    await writer.Append(FormattedTextWithBrackets(word));
-                if (HasCloseBracket(word)) opened = false;
-                first = false;
+                    await writer.Append(FormattedTextWithBrackets(wordsInRange[i]));
+                if (HasCloseBracket(wordsInRange[i])) opened = false;
             }
             if (opened) await writer.Append(']');
         }
         private static async Task WriteRangeText(HTMLWriter writer, (int start, int end) range, VersePageInfo info)
         {
-            var wordsInRange = from w in info.keywords
+            var wordsInRange = (from w in info.keywords
                                where w.ID >= range.start &&
                                w.ID <= range.end
-                               select w;
+                               select w).ToList();
 
-            bool first = true;
             bool opened = false;
-            foreach (var word in wordsInRange)
+            for (int i = Ordinals.first; i < wordsInRange.Count; i++)
             {
-                if ((!first) && (HasOpenBracket(word))) opened = true;
-                if (!opened) await writer.Append(TextWithoutSymbols(word));
+                if ((i>Ordinals.first) && (HasOpenBracket(wordsInRange[i]))) opened = true;
+                if (!opened) await writer.Append(TextWithoutSymbols(wordsInRange[i]));
                 else
-                    await writer.Append(FormattedTextWithBrackets(word));
-                if (HasCloseBracket(word)) opened = false;
-                first = false;
+                    await writer.Append(FormattedTextWithBrackets(wordsInRange[i]));
+                if (HasCloseBracket(wordsInRange[i])) opened = false;
             }
             if (opened) await writer.Append(']');
         }

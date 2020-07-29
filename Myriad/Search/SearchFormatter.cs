@@ -71,17 +71,17 @@ namespace Myriad.Search
                 {
                     await WriteDefinition(writer, parser, id, definition);
                     List<(int id, int index)> usedParagraphs = new List<(int, int)>() { (id, 0) };
-                    foreach (int otherID in pageInfo.UsedDefinitions)
+                    for (int i=Ordinals.first; i<pageInfo.UsedDefinitions.Count; i++)
                     {
-                        if (otherID == id) continue;
+                        if (pageInfo.UsedDefinitions[i] == id) continue;
                         parser.SetParagraphInfo(ParagraphType.Article, id);
-                        List<int> relatedParagraphIndices = GetRelatedParagraphIndices(id, otherID);
-                        foreach (int paragraphIndex in relatedParagraphIndices)
+                        List<int> relatedParagraphIndices = GetRelatedParagraphIndices(id, pageInfo.UsedDefinitions[i]);
+                        for (int j=Ordinals.first; j<relatedParagraphIndices.Count; j++)
                         {
-                            (int id, int index) key = (id, paragraphIndex);
+                            (int id, int index) key = (id, relatedParagraphIndices[j]);
                             if (usedParagraphs.Contains(key)) continue;
                             usedParagraphs.Add(key);
-                            await WriteRelatedParagraph(writer, parser, id, paragraphIndex);
+                            await WriteRelatedParagraph(writer, parser, id, relatedParagraphIndices[j]);
                         }
                     }
                 }
@@ -115,7 +115,7 @@ namespace Myriad.Search
                 bool setActive = (mainDefinition == Result.notfound);
                 await StartDefinitionTab(writer, setActive, itemCount);
                 string[] words = pageInfo.Query.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string word in words)
+                for (int i=Ordinals.first; i<words.Length; i++)
                 {
                     await writer.Append("<p class=\"definitionnav\"> ");
                     await writer.Append(HTMLTags.StartAnchor +
@@ -124,12 +124,12 @@ namespace Myriad.Search
                         HTMLTags.StartQuery +
                         ArticlePage.queryKeyTitle +
                         Symbol.equal);
-                    await writer.Append(word);
+                    await writer.Append(words[i]);
                     await writer.Append(HTMLTags.OnClick +
                         JavaScriptFunctions.HandleLink);
                     await writer.Append(">Add Article for ");
                     await writer.Append(HTMLTags.StartBold);
-                    await writer.Append(word.Replace('_', ' '));
+                    await writer.Append(words[i].Replace('_', ' '));
                     await writer.Append(HTMLTags.EndBold+
                         HTMLTags.EndAnchor+
                         HTMLTags.EndParagraph);
@@ -223,24 +223,22 @@ namespace Myriad.Search
             var synonymReader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadSynonymsFromID),
                 -1);
-            foreach (int id in pageInfo.UsedDefinitions)
+            for (int i=Ordinals.first; i<pageInfo.UsedDefinitions.Count; i++)
             {
-                synonymReader.SetParameter(id);
+                synonymReader.SetParameter(pageInfo.UsedDefinitions[i]);
                 List<string> synonyms = synonymReader.GetData<string>();
                 if (synonyms.Count == 0) continue;
-                int synIndex = Ordinals.first;
-                foreach (string synonym in synonyms)
+                for (int synIndex = Ordinals.first; synIndex < synonyms.Count; synIndex++)
                 {
-                    if (pageInfo.Query.Contains(synonym))
+                    if (pageInfo.Query.Contains(synonyms[synIndex]))
                     {
                         if (synIndex < lowestIndex)
                         {
                             lowestIndex = synIndex;
-                            mainDefinition = id;
+                            mainDefinition = pageInfo.UsedDefinitions[i];
                             break;
                         }
                     }
-                    synIndex++;
                 }
             }
             synonymReader.Close();
@@ -250,9 +248,9 @@ namespace Myriad.Search
         private static async Task<Dictionary<string, int>> GetDefinitionHeadings(SearchPageInfo pageInfo)
         {
             Dictionary<string, int> headings = new Dictionary<string, int>();
-            foreach (int id in pageInfo.UsedDefinitions)
+            for (int i=Ordinals.first; i<pageInfo.UsedDefinitions.Count; i++)
             {
-                string title = await Reader.ReadTitle(id);
+                string title = await Reader.ReadTitle(pageInfo.UsedDefinitions[i]);
                 int count = 1;
                 string heading = title;
                 while (headings.ContainsKey(heading))
@@ -260,7 +258,7 @@ namespace Myriad.Search
                     count++;
                     heading = title + ' ' + count;
                 }
-                headings.Add(heading, id);
+                headings.Add(heading, pageInfo.UsedDefinitions[i]);
             }
             return headings;
         }
@@ -359,56 +357,59 @@ namespace Myriad.Search
             if (searchresultwords.Count == Number.nothing) return;
             var links = new Dictionary<int, (int, int)>();
             List<int> endLinks = new List<int>();
-            foreach (SearchResult word in searchSentence.Words)
+            for (int i=Ordinals.first; i<searchSentence.Words.Count; i++)
             {
-                int start = word.WordIndex - 4;
+                int start = searchSentence.Words[i].WordIndex - 4;
                 if (start < 0) start = Ordinals.first;
                 if (startID == -1) startID = sentenceKeywords[start].ID;
-                int end = word.WordIndex + word.Length + 3;
+                int end = searchSentence.Words[i].WordIndex + searchSentence.Words[i].Length + 3;
                 if (end >= searchresultwords.Count) end = searchresultwords.Count - 1;
                 endID = sentenceKeywords[end].ID;
-                int highlight = word.WordIndex + word.Length - 1;
+                int highlight = searchSentence.Words[i].WordIndex + searchSentence.Words[i].Length - 1;
                 if (highlight >= searchresultwords.Count) highlight = searchresultwords.Count - 1;
-                if (word.ArticleID != -1)
+                if (searchSentence.Words[i].ArticleID != -1)
                 {
-                    if (links.ContainsKey(word.WordIndex))
+                    if (links.ContainsKey(searchSentence.Words[i].WordIndex))
                     {
-                        if (highlight > links[word.WordIndex].Item2)
+                        if (highlight > links[searchSentence.Words[i].WordIndex].Item2)
                         {
-                            endLinks.Remove(links[word.WordIndex].Item2);
-                            links[word.WordIndex] = (word.ArticleID, highlight);
+                            endLinks.Remove(links[searchSentence.Words[i].WordIndex].Item2);
+                            links[searchSentence.Words[i].WordIndex] = (searchSentence.Words[i].ArticleID, highlight);
                             endLinks.Add(highlight);
                         }
                     }
                     else
                     {
-                        links.Add(word.WordIndex, (word.ArticleID, highlight));
+                        links.Add(searchSentence.Words[i].WordIndex, (searchSentence.Words[i].ArticleID, highlight));
                         endLinks.Add(highlight);
                     }
                 }
-                if (word.Substitute)
+                if (searchSentence.Words[i].Substitute)
                 {
                     //if (word.Length > 1) await FormatPhraseText(writer, word);
-                    if (word.Length > 1) searchresultwords[word.WordIndex].Length = word.Length;
-                    highlight = word.WordIndex;
-                    if (searchresultwords[word.WordIndex].IsMainText)
-                        searchresultwords[word.WordIndex].SubstituteText = word.Text;
+                    if (searchSentence.Words[i].Length > 1) searchresultwords[searchSentence.Words[i].WordIndex].Length = 
+                            searchSentence.Words[i].Length;
+                    highlight = searchSentence.Words[i].WordIndex;
+                    if (searchresultwords[searchSentence.Words[i].WordIndex].IsMainText)
+                        searchresultwords[searchSentence.Words[i].WordIndex].SubstituteText = searchSentence.Words[i].Text;
                     else
-                        searchresultwords[word.WordIndex].SubstituteText = word.Text.Replace('[', '(').Replace(']', ')');
-                    if (word.Length > 1)
+                        searchresultwords[searchSentence.Words[i].WordIndex].SubstituteText = 
+                            searchSentence.Words[i].Text.Replace('[', '(').Replace(']', ')');
+                    if (searchSentence.Words[i].Length > 1)
                     {
-                        int i = word.WordIndex + 1;
-                        while ((i < word.WordIndex + word.Length) && (i < searchresultwords.Count))
+                        int wordIndex = searchSentence.Words[i].WordIndex + 1;
+                        while ((wordIndex < searchSentence.Words[i].WordIndex + searchSentence.Words[i].Length) && 
+                            (wordIndex < searchresultwords.Count))
                         {
-                            searchresultwords[i].Erased = true;
-                            i++;
+                            searchresultwords[wordIndex].Erased = true;
+                            wordIndex++;
                         }
                     }
                 }
                 int index = start;
-                while (index < word.WordIndex)
+                while (index < searchSentence.Words[i].WordIndex)
                 {
-                    if (word.WordIndex >= searchresultwords.Count) break;
+                    if (searchSentence.Words[i].WordIndex >= searchresultwords.Count) break;
                     searchresultwords[index].Used = true;
                     index++;
                 }

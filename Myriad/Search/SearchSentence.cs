@@ -175,9 +175,9 @@ namespace Myriad.Search
             get
             {
                 if (words.Count > 0) return words;
-                foreach (List<SearchResult> list in wordLists)
+                for (int i=Ordinals.first; i<wordLists.Count; i++)
                 {
-                    words.AddRange(list);
+                    words.AddRange(wordLists[i]);
                 }
                 words = words.OrderBy(w => w.WordIndex).ToList();
                 return words;

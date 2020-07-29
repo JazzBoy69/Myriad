@@ -58,17 +58,17 @@ namespace Myriad.Parser
         {
             string[] cells = header.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries);
             await formatter.Append("<table><tr>");
-            foreach (string cell in cells)
+            for (int i=Ordinals.first; i<cells.Length;i++)
             {
-                if (cell.Length < 2)
+                if (cells[i].Length < 2)
                 {
                     await formatter.Append("<th></th>");
                     mainRange.MoveEndToLimit();
                     mainRange.MoveStartTo(mainRange.End + 2);
                     continue;
                 }
-                bool left = cell.First() != ' ';
-                bool right = cell.Last() != ' ';
+                bool left = cells[i].First() != ' ';
+                bool right = cells[i].Last() != ' ';
 
                 if (!left && !right)
                 {
@@ -83,7 +83,7 @@ namespace Myriad.Parser
                 {
                     await formatter.Append("th class='left'>");
                 }
-                await ParseString(cell.Trim());
+                await ParseString(cells[i].Trim());
                 await formatter.Append("</th>");
             }
             await formatter.Append("</tr>");
@@ -93,15 +93,15 @@ namespace Myriad.Parser
         {
             string[] cells = row.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries);
             await formatter.Append("<tr>");
-            foreach (string cell in cells)
+            for (int i=Ordinals.first; i<cells.Length; i++)
             {
-                if (cell.Length < 2)
+                if (cells[i].Length < 2)
                 {
                     await formatter.Append("<td></td>");
                     continue;
                 }
-                bool left = cell.First() != ' ';
-                bool right = cell.Last() != ' ';
+                bool left = cells[i].First() != ' ';
+                bool right = cells[i].Last() != ' ';
                 if (!left && !right)
                 {
                     await formatter.Append("<td class='center'>");
@@ -115,7 +115,7 @@ namespace Myriad.Parser
                 {
                     await formatter.Append("td class='left'>");
                 }
-                await ParseString(cell.Trim());
+                await ParseString(cells[i].Trim());
                 await formatter.Append("</td>");
             }
             await formatter.Append("</tr>");

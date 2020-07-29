@@ -20,11 +20,11 @@ namespace Myriad.Formatter
         public async Task GroupPictures(List<string> textofParagraphs)
         {
             List<ImageElement> elements = new List<ImageElement>();
-            foreach (string paragraph in textofParagraphs)
+            for (int i=Ordinals.first; i<textofParagraphs.Count; i++)
             {
-                if ((paragraph.Length > 2) && (paragraph.Substring(0, 2) == "[["))
+                if ((textofParagraphs[i].Length > 2) && (textofParagraphs[i].Substring(0, 2) == "[["))
                 {
-                    ImageElement imageElement = GetImageElement(paragraph);
+                    ImageElement imageElement = GetImageElement(textofParagraphs[i]);
                     if (imageElement != null) elements.Add(imageElement);
                 }
             }
