@@ -158,7 +158,15 @@ namespace Myriad.Parser
             }
             else
             {
-                await writer.Append(keyword.LeadingSymbolsString);
+                if ((keyword.WordIndex == Ordinals.first) && (keyword.ParagraphWordIndex != Ordinals.first))
+                {
+                    await writer.Append(HTMLTags.NonbreakingSpace);
+                    await writer.Append(keyword.LeadingSymbolString.Substring(Ordinals.second));
+                }
+                else
+                {
+                    await writer.Append(keyword.LeadingSymbolsString);
+                }
             }
             if (keyword.IsCapitalized)
             {
@@ -273,7 +281,6 @@ namespace Myriad.Parser
             }
             await writer.Append(HTMLTags.EndAnchor +
                 HTMLTags.EndBold+
-                HTMLTags.NonbreakingSpace+
                 HTMLTags.EndSpan);
             if (keyword.Verse == 1)
             {
