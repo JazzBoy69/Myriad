@@ -130,7 +130,10 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithClass+
                 HTMLClasses.scriptureQuote+
                 HTMLTags.CloseQuoteEndTag);
-            await formatter.AppendKeywords(keywords, citation.CitationRange, sourceCitation.CitationRange, navigating, readingView);
+            if (readingView)
+                await AppendReadingViewKeywords(keywords, citation, navigating);
+            else
+                await AppendKeywords(keywords, citation, navigating);
             await writer.Append(HTMLTags.EndDiv +
                 HTMLTags.StartDivWithClass +
                 HTMLClasses.cleanquote +
@@ -139,6 +142,27 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndDiv+
                 HTMLTags.EndSection);
         }
+
+        private async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation, bool navigating)
+        {
+            if (navigating)
+            {
+                await formatter.AppendReadingViewKeywords(keywords, citation);
+                return;
+            }
+            await formatter.AppendReadingViewKeywords(keywords, citation, sourceCitation); 
+        }
+
+        private async Task AppendKeywords(List<Keyword> keywords, Citation citation, bool navigating)
+        {
+            if (navigating)
+            {
+                await formatter.AppendKeywords(keywords, citation);
+                return;
+            }
+            await formatter.AppendKeywords(keywords, citation, sourceCitation);
+        }
+
         public static async Task<List<(int start, int end)>> ReadLinks(int commentID)
         {
             var reader = new DataReaderProvider<int>(
@@ -274,7 +298,7 @@ namespace Myriad.Formatter
                 await writer.Append(i);
                 await writer.Append(HTMLClasses.tabSuffix);
                 await writer.Append(HTMLTags.Class);
-                Citation range = new Citation(idRanges[i].start, idRanges[i].end);
+                Citation citation = new Citation(idRanges[i].start, idRanges[i].end);
                 if (i==activeIndex)
                 {
                     await writer.Append(HTMLClasses.active);
@@ -295,12 +319,15 @@ namespace Myriad.Formatter
                     "ExpandReadingViewText(event)");
                 }
                 await writer.Append(HTMLTags.EndTag);
-                List<Keyword> keywords = ReadKeywords(range);
+                List<Keyword> keywords = ReadKeywords(citation);
                 formatter = new TextFormatter(writer);
                 await writer.Append(HTMLTags.StartDivWithClass +
                     HTMLClasses.scriptureQuote +
                     HTMLTags.CloseQuoteEndTag);
-                await formatter.AppendKeywords(keywords, range.CitationRange, sourceCitation.CitationRange, navigating, readingView);
+                if (readingView)
+                    await AppendReadingViewKeywords(keywords, citation, navigating);
+                else
+                    await AppendKeywords(keywords, citation, navigating);
                 await writer.Append(HTMLTags.EndDiv);
                 await writer.Append(HTMLTags.StartDivWithClass +
                     HTMLClasses.cleanquote +

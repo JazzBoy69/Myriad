@@ -19,101 +19,98 @@ namespace Myriad.Parser
             this.writer = writer;
         }
 
-        public async Task AppendKeywords(List<Keyword> keywords, CitationRange range, CitationRange targetrange, bool navigating, bool readingView)
+        public async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation)
         {
-            await AppendFirstWord(keywords, range, targetrange, navigating, readingView);
-            for (int index = Ordinals.second; index < keywords.Count; index++)
+            await StartParagraph(keywords);
+            for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await AppendKeyword(keywords[index], range, targetrange, navigating, readingView);
-                if ((keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound)
-                    && poetic)
-                {
-                    await writer.Append(HTMLTags.EndParagraph);
-                    if (index < keywords.Count - 1)
-                    {
-                        await writer.Append(HTMLTags.StartParagraphWithClass);
-                        await writer.Append(
-                            (keywords[index + 1].WordIndex == Ordinals.first) ?
-                            HTMLClasses.poetic1 :
-                            HTMLClasses.poetic2);
-                        await writer.Append(HTMLTags.CloseQuoteEndTag);
-                        if (!navigating && (targetrange.Contains(keywords[index+1].ID)))
-                        {
-                            await writer.Append(HTMLTags.StartMark);
-                        }
-                    }
-                }
-            }
-            if (range.Contains(keywords[Ordinals.last].ID) && (range.EndID.ID > keywords[Ordinals.last].ID))
-            {
-                await writer.Append(HTMLTags.EndMark);
+                if ((keywords[index].WordIndex == Ordinals.first) || (index==Ordinals.first))
+                    await AppendReadingViewVerseNumber(keywords[index], citation);
+                await AppendTextOfReadingViewKeyword(writer, keywords[index]);
+                if (poetic) await CheckForNewPoeticParagraph(keywords, index);
             }
         }
 
-        private async Task AppendKeyword(Keyword keyword, CitationRange range, CitationRange targetrange, bool navigating, bool readingView)
+        internal async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation)
         {
-            if (keyword.IsPoetic != poetic)
+            await StartParagraph(keywords);
+            for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                if (poetic)
+                if (keywords[index].WordIndex == Ordinals.first)
                 {
-                    poetic = false;
-                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraph);
-                }
-                else
-                {
-                    poetic = true;
-                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraphWithClass);
-                    await writer.Append(HTMLClasses.poetic1);
-                    await writer.Append(HTMLTags.CloseQuoteEndTag);
-                    if (!navigating && (keyword.ID != targetrange.StartID.ID) 
-                        && (targetrange.Contains(keyword.ID)))
+                    KeyID lastID = new KeyID(keywords[index].Book, keywords[index].Chapter,
+                        keywords[index].Verse - 1, KeyID.MaxWordIndex);
+                    if (targetCitation.CitationRange.EndID.ID == lastID.ID)
                     {
-                        await writer.Append(HTMLTags.StartMark);
+                        await writer.Append(HTMLTags.EndMark);
                     }
+                    await AppendReadingViewVerseNumber(keywords[index], citation);
                 }
-            }
-            else if (keyword.ParagraphWordIndex == Ordinals.first)
-            {
-                if (poetic)
-                {
-                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraphWithClass);
-                    await writer.Append(HTMLClasses.poetic1);
-                    await writer.Append(HTMLTags.CloseQuoteEndTag);
-                }
-                else
-                {
-                    await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraph);
-                }
-            }
-            if (!navigating && readingView && (targetrange.StartID.ID == keyword.ID))
-            {
-                await writer.Append(HTMLTags.StartSpanWithClass +
-                    HTMLClasses.target +
-                    HTMLTags.CloseQuoteEndTag +
-                    HTMLTags.EndSpan);
-            }
-            if (!navigating && (keyword.ID == targetrange.StartID.ID))
-            {
-                await writer.Append(HTMLTags.StartMark);
-            }
-            if (keyword.WordIndex == Ordinals.first)
-            {
-                KeyID lastID = new KeyID(keyword.Book, keyword.Chapter,
-                    keyword.Verse - 1, KeyID.MaxWordIndex);
-                if (!navigating && (targetrange.EndID.ID == lastID.ID))
+                await AddReadingViewHighlightFormatting(keywords[index], targetCitation);
+                await AppendTextOfReadingViewKeyword(writer, keywords[index]);
+                if (targetCitation.CitationRange.EndID.ID == keywords[index].ID)
                 {
                     await writer.Append(HTMLTags.EndMark);
                 }
-                await AppendVerseNumber(keyword, range, readingView);
+                if (poetic) await CheckForNewPoeticParagraph(keywords, index, targetCitation);
             }
-            await AppendTextOfKeyword(writer, keyword, readingView, readingView);
-            if (!navigating && (keyword.ID == targetrange.EndID.ID))
+            if (targetCitation.CitationRange.Contains(keywords[Ordinals.last].ID) &&
+                (targetCitation.CitationRange.EndID.ID > keywords[Ordinals.last].ID))
             {
                 await writer.Append(HTMLTags.EndMark);
             }
         }
 
-        private async Task<bool> AppendFirstWord(List<Keyword> keywords, CitationRange range, CitationRange targetrange, bool navigating, bool readingView)
+        internal async Task AppendKeywords(List<Keyword> keywords, Citation citation)
+        {
+            await StartParagraph(keywords);
+            for (int index = Ordinals.first; index < keywords.Count; index++)
+            {
+                if ((keywords[index].WordIndex==Ordinals.first) || (index == Ordinals.first))
+                    await AppendVerseNumber(keywords[index], citation);
+                await AppendTextOfKeyword(writer, keywords[index]);
+                if (poetic) await CheckForNewPoeticParagraph(keywords, index);
+            }
+        }
+        internal async Task AppendKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation)
+        {
+            if (citation.Equals(targetCitation))
+            {
+                await AppendKeywords(keywords, citation);
+                return;
+            }
+            await StartParagraph(keywords);
+            for (int index = Ordinals.first; index < keywords.Count; index++)
+            {
+                if ((keywords[index].WordIndex == Ordinals.first) || (index==Ordinals.first))
+                {
+                    KeyID lastID = new KeyID(keywords[index].Book, keywords[index].Chapter,
+                    keywords[index].Verse - 1, KeyID.MaxWordIndex);
+                    if (targetCitation.CitationRange.EndID.ID == lastID.ID)
+                    {
+                        await writer.Append(HTMLTags.EndMark);
+                    }
+                    await AppendVerseNumber(keywords[index], citation);
+                }
+                if (targetCitation.CitationRange.StartID.ID == keywords[index].ID)
+                {
+                    await writer.Append(HTMLTags.StartMark);
+                }
+                await AppendTextOfKeyword(writer, keywords[index]);
+                if (targetCitation.CitationRange.EndID.ID == keywords[index].ID)
+                {
+                    await writer.Append(HTMLTags.EndMark);
+                }
+                if (poetic) await CheckForNewPoeticParagraph(keywords, index, targetCitation);
+            }
+            if (targetCitation.CitationRange.Contains(keywords[Ordinals.last].ID) && 
+                (targetCitation.CitationRange.EndID.ID > keywords[Ordinals.last].ID))
+            {
+                await writer.Append(HTMLTags.EndMark);
+            }
+        }
+
+        private async Task StartParagraph(List<Keyword> keywords)
         {
             poetic = keywords[Ordinals.first].IsPoetic;
             if (poetic)
@@ -126,66 +123,142 @@ namespace Myriad.Parser
             {
                 await writer.Append(HTMLTags.StartParagraph);
             }
-            if (!navigating && readingView && (targetrange.StartID.ID == keywords[Ordinals.first].ID))
+        }
+
+
+        private async Task CheckForNewPoeticParagraph(List<Keyword> keywords, int index, Citation targetCitation)
+        {
+            if ((keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound)
+                && poetic)
+            {
+                await writer.Append(HTMLTags.EndParagraph);
+                if (index < keywords.Count - 1)
+                {
+                    await writer.Append(HTMLTags.StartParagraphWithClass);
+                    await writer.Append(
+                        (keywords[index + 1].WordIndex == Ordinals.first) ?
+                        HTMLClasses.poetic1 :
+                        HTMLClasses.poetic2);
+                    await writer.Append(HTMLTags.CloseQuoteEndTag);
+                    if (targetCitation.CitationRange.Contains(keywords[index + 1].ID))
+                    {
+                        await writer.Append(HTMLTags.StartMark);
+                    }
+                }
+            }
+        }
+        private async Task CheckForNewPoeticParagraph(List<Keyword> keywords, int index)
+        {
+            if (keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound)
+            {
+                await writer.Append(HTMLTags.EndParagraph);
+                if (index < keywords.Count - 1)
+                {
+                    await writer.Append(HTMLTags.StartParagraphWithClass);
+                    await writer.Append(
+                        (keywords[index + 1].WordIndex == Ordinals.first) ?
+                        HTMLClasses.poetic1 :
+                        HTMLClasses.poetic2);
+                    await writer.Append(HTMLTags.CloseQuoteEndTag);
+                }
+            }
+        }
+
+        private async Task AppendPoeticFormatting(Keyword keyword, CitationRange targetrange)
+        {
+            if (keyword.IsPoetic != poetic)
+            {
+                await UpdatePoetic(keyword, targetrange);
+                return;
+            }
+            if (keyword.ParagraphWordIndex == Ordinals.first)
+            {
+                await StartNewParagraph();
+            }
+        }
+
+        private async Task StartNewParagraph()
+        {
+            if (poetic)
+            {
+                await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraphWithClass);
+                await writer.Append(HTMLClasses.poetic1);
+                await writer.Append(HTMLTags.CloseQuoteEndTag);
+            }
+            else
+            {
+                await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraph);
+            }
+        }
+
+        private async Task UpdatePoetic(Keyword keyword, CitationRange targetrange)
+        {
+            if (poetic)
+            {
+                poetic = false;
+                await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraph);
+            }
+            else
+            {
+                poetic = true;
+                await writer.Append(HTMLTags.EndParagraph + HTMLTags.StartParagraphWithClass);
+                await writer.Append(HTMLClasses.poetic1);
+                await writer.Append(HTMLTags.CloseQuoteEndTag);
+                if ((keyword.ID != targetrange.StartID.ID)
+                    && (targetrange.Contains(keyword.ID)))
+                {
+                    await writer.Append(HTMLTags.StartMark);
+                }
+            }
+        }
+
+        private async Task AddReadingViewHighlightFormatting(Keyword keyword, Citation targetCitation)
+        {
+            if (targetCitation.CitationRange.StartID.ID == keyword.ID)
             {
                 await writer.Append(HTMLTags.StartSpanWithClass +
                     HTMLClasses.target +
                     HTMLTags.CloseQuoteEndTag +
-                    HTMLTags.EndSpan);
+                    HTMLTags.EndSpan+
+                    HTMLTags.StartMark);
             }
-            if (!navigating && (targetrange.Contains(keywords[Ordinals.first].ID)))
-            {
-                await writer.Append(HTMLTags.StartMark);
-            }
-            await AppendVerseNumber(keywords[Ordinals.first], range, readingView);
-            if (!readingView && (keywords[Ordinals.first].WordIndex != Ordinals.first))
-            {
-                await writer.Append(Symbol.ellipsis);
-            }
-            await AppendTextOfKeyword(writer, keywords[Ordinals.first], readingView, readingView);
-            return poetic;
         }
 
-        public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword, bool hideFootnotes, bool hideDiacritics)
+        public async static Task AppendTextOfReadingViewKeyword(HTMLWriter writer, Keyword keyword)
         {
-            if (hideFootnotes && !keyword.IsMainText)
+            if (!keyword.IsMainText)
             {
                 await writer.Append(HTMLClasses.startExtraInfo);
             }
-            if (!hideFootnotes && (keyword.WordIndex == Ordinals.first))
+
+            if ((keyword.WordIndex == Ordinals.first) && (keyword.ParagraphWordIndex != Ordinals.first))
             {
-                await writer.Append(keyword.LeadingSymbolsString.Substring(Ordinals.second));
+                await writer.Append(HTMLTags.NonbreakingSpace);
+                await writer.Append(keyword.LeadingSymbolString.Substring(Ordinals.second));
             }
             else
             {
-                if ((keyword.WordIndex == Ordinals.first) && (keyword.ParagraphWordIndex != Ordinals.first))
-                {
-                    await writer.Append(HTMLTags.NonbreakingSpace);
-                    await writer.Append(keyword.LeadingSymbolString.Substring(Ordinals.second));
-                }
-                else
-                {
-                    await writer.Append(keyword.LeadingSymbolsString);
-                }
+                await writer.Append(keyword.LeadingSymbolsString);
             }
+
             if (keyword.IsCapitalized)
             {
                 await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
                 string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
-                if (hideDiacritics) text = text.Replace("΄", HTMLClasses.startExtraInfo+"΄"+HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+                text = HideDiacritics(text);
                 await writer.Append(text);
             }
             else
             {
                 string text = keyword.Text.ToString().Replace('`', '’');
-                if (hideDiacritics) text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+                text = HideDiacritics(text);
                 await writer.Append(text);
             }
             string trailing = keyword.TrailingSymbolString;
-            if ((trailing.Length>0) && !keyword.IsMainText && (trailing[Ordinals.first]==']'))
+            if ((trailing.Length > 0) && !keyword.IsMainText && (trailing[Ordinals.first] == ']'))
             {
                 await writer.Append(trailing[Ordinals.first]);
-                if (hideFootnotes && !keyword.IsMainText)
+                if (!keyword.IsMainText)
                 {
                     await writer.Append(HTMLTags.EndSpan);
                 }
@@ -194,11 +267,41 @@ namespace Myriad.Parser
             else
             {
                 await writer.Append(keyword.TrailingSymbols.ToString());
-                if (hideFootnotes && !keyword.IsMainText)
+                if (!keyword.IsMainText)
                 {
                     await writer.Append(HTMLTags.EndSpan);
                 }
             }
+        }
+
+        private static string HideDiacritics(string text)
+        {
+            text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+            return text;
+        }
+
+        public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
+        {
+            if (keyword.WordIndex == Ordinals.first)
+            {
+                await writer.Append(keyword.LeadingSymbolsString.Substring(Ordinals.second));
+            }
+            else
+            {
+                await writer.Append(keyword.LeadingSymbolsString);
+            }
+            if (keyword.IsCapitalized)
+            {
+                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
+                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');       
+                await writer.Append(text);
+            }
+            else
+            {
+                string text = keyword.Text.ToString().Replace('`', '’');    
+                await writer.Append(text);
+            }
+            await writer.Append(keyword.TrailingSymbols.ToString());
         }
         public async static Task AppendCleanTextOfKeyword(HTMLWriter writer, Keyword keyword, bool hideFootnotes, bool hideDiacritics)
         {
@@ -220,7 +323,66 @@ namespace Myriad.Parser
             await writer.Append(keyword.TrailingSymbols.ToString());
         }
 
-        private async Task AppendVerseNumber(Keyword keyword, CitationRange range, bool readingView)
+        private async Task AppendReadingViewVerseNumber(Keyword keyword, Citation citation)
+        {
+            await writer.Append(HTMLTags.StartSpanWithClass +
+                HTMLClasses.versenumber);
+            if ((keyword.Verse == 1) && (keyword.WordIndex == Ordinals.first))
+            {
+                await writer.Append(Symbol.space +
+                HTMLClasses.dropcap +
+                HTMLTags.CloseQuoteEndTag);
+            }
+            else
+
+                await writer.Append(Symbol.space + HTMLClasses.readingVerse
+                    + HTMLTags.CloseQuoteEndTag);
+
+            var thisVerse = new Citation(keyword.Book, keyword.Chapter, keyword.Verse);
+            if (citation.CitationRange.FirstVerse == thisVerse.CitationRange.FirstVerse)
+            {
+                if (citation.CitationRange.FirstWordIndex > Ordinals.first)
+                {
+                    thisVerse.CitationRange.SetFirstWordIndex(citation.CitationRange.FirstWordIndex);
+                }
+            }
+            if (citation.CitationRange.LastVerse == thisVerse.CitationRange.LastVerse)
+            {
+                thisVerse.CitationRange.SetLastWordIndex(citation.CitationRange.LastWordIndex);
+            }
+                thisVerse.CitationType = CitationTypes.Text;
+
+            await writer.Append(HTMLTags.StartBold);
+            await PageFormatter.StartCitationLink(writer, thisVerse);
+            if (keyword.WordIndex > Ordinals.first)
+            {
+                await writer.Append(HTMLTags.Ellipsis);
+            }
+            else
+            if (keyword.Verse == 0)
+            {
+                await writer.Append("Sup");
+            }
+            else
+            if (keyword.Verse == 1)
+            {
+                await writer.Append(keyword.Chapter);
+            }
+            else
+            {
+                await writer.Append(Symbol.space);
+                await writer.Append(keyword.Verse);
+            }
+            await writer.Append(HTMLTags.EndAnchor +
+                HTMLTags.EndBold +
+                HTMLTags.EndSpan);
+            if (keyword.Verse == 1)
+            {
+                await writer.Append(HTMLTags.EndSpan);
+            }
+        }
+
+        private async Task AppendVerseNumber(Keyword keyword, Citation citation)
         {
             await writer.Append(HTMLTags.StartSpanWithClass +
                 HTMLClasses.versenumber);
@@ -231,36 +393,27 @@ namespace Myriad.Parser
                 HTMLTags.CloseQuoteEndTag);
             }
             else
-            if (readingView)
-            {
-                await writer.Append(Symbol.space + HTMLClasses.readingVerse
-                    + HTMLTags.CloseQuoteEndTag);
-            }
-            else
             {
                 await writer.Append(HTMLTags.CloseQuoteEndTag);
             }
-            var citation = new Citation(keyword.Book, keyword.Chapter, keyword.Verse);
-            if (range.FirstVerse == citation.CitationRange.FirstVerse)
+            var thisVerse = new Citation(keyword.Book, keyword.Chapter, keyword.Verse);
+            if (citation.CitationRange.FirstVerse == thisVerse.CitationRange.FirstVerse)
             {
-                if (range.FirstWordIndex > Ordinals.first)
+                if (citation.CitationRange.FirstWordIndex > Ordinals.first)
                 {
-                    citation.CitationRange.SetFirstWordIndex(range.FirstWordIndex);
+                    thisVerse.CitationRange.SetFirstWordIndex(citation.CitationRange.FirstWordIndex);
                 }
             }
-            if (range.LastVerse == citation.CitationRange.LastVerse)
+            if (citation.CitationRange.LastVerse == thisVerse.CitationRange.LastVerse)
             {
-                citation.CitationRange.SetLastWordIndex(range.LastWordIndex);
+                thisVerse.CitationRange.SetLastWordIndex(citation.CitationRange.LastWordIndex);
             }
-            if (readingView)
-                citation.CitationType = CitationTypes.Text;
-            else
-                citation.CitationType = CitationTypes.Verse;
+                thisVerse.CitationType = CitationTypes.Verse;
 
 
             await writer.Append(HTMLTags.StartBold);
-            await PageFormatter.StartCitationLink(writer, citation);
-            if ((keyword.WordIndex > Ordinals.first) && readingView)
+            await PageFormatter.StartCitationLink(writer, thisVerse);
+            if (keyword.WordIndex != Ordinals.first)
             {
                 await writer.Append(HTMLTags.Ellipsis);
             }
@@ -285,6 +438,11 @@ namespace Myriad.Parser
             if (keyword.Verse == 1)
             {
                 await writer.Append(HTMLTags.EndSpan);
+            }
+            else
+            if (keyword.WordIndex==Ordinals.first)
+            {
+                await writer.Append(HTMLTags.NonbreakingSpace);
             }
         }
 

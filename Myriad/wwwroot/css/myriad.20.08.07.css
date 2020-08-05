@@ -98,7 +98,7 @@ p.suppressed, .suppressed p {padding-left: .5em; padding-top: .25em; white-space
 .hiddendetail::before {content: "...";color: #4477a1;background-color: whiteSmoke;}
 .hiddendetail + .hiddendetail::before{content:"";}
 .editparagraph {color:#4477a1; font-size:small;cursor: pointer;   vertical-align: baseline;position: relative;top: -0.4em;}
-.dropcap {float: left;font-size: 3em;line-height: 0.5;margin: 0.205em 0 0 0;padding-bottom: .25rem;}
+.dropcap {float: left;font-size: 3em;line-height: 0.5;margin: 0.205em 0 0 0;padding-bottom: .25rem;padding-right:.5rem;}
 .firstpoetic .dropcap {margin-right: 1rem;}
 
 /* Tables */
@@ -475,7 +475,6 @@ body{text-rendering:optimizeSpeed;}
 .menu li{width: 2.5rem;margin:0 0 .7rem 0;}
 .buttongrid {padding-bottom: 1rem;}
 /*HORIZONTAL SPACING */
-.dropcap {padding-right:.5rem;}
 .editcontent{padding-left:1rem;padding-right:1rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
