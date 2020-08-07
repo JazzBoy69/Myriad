@@ -18,7 +18,12 @@ namespace Myriad.Search
     {
         public static async Task<List<Citation>> EvaluatePhraseDefinitions(List<List<int>> phraseDefinitions, CitationRange searchRange)
         {
-            if (phraseDefinitions.Count < 2) return new List<Citation>();
+            int definitionCount = Number.nothing;
+            for (int i = Ordinals.first; i < phraseDefinitions.Count; i++)
+            {
+                if (phraseDefinitions[i].Count > Number.nothing) definitionCount++;
+            }
+            if (definitionCount < 2) return new List<Citation>();
             var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(
                 GenerateCommonRangeQuery(phraseDefinitions, searchRange)));
             var ranges = await reader.GetData<int, int>();
@@ -60,10 +65,13 @@ namespace Myriad.Search
         private static void AppendWhereStatement(List<List<int>> phraseDefinitions, CitationRange searchRange, StringBuilder query)
         {
             query.Append("where ");
+            int usedCount = Number.nothing;
             for (int i = Ordinals.first; i < phraseDefinitions.Count; i++)
             {
-                if (i > Ordinals.first) query.Append(" and ");
-                if (phraseDefinitions[i].Count > 1)
+                if (phraseDefinitions[i].Count == Number.nothing) continue;
+                usedCount++;
+                if (usedCount > Ordinals.first) query.Append(" and ");
+                if (phraseDefinitions[i].Count > Number.single)
                 {
                     AppendOr(query, i, phraseDefinitions[i]);
                     continue;
