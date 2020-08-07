@@ -34,6 +34,11 @@ namespace Myriad.Parser
         internal async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation)
         {
             await StartParagraph(keywords);
+            if ((targetCitation.CitationRange.StartID.ID < citation.CitationRange.StartID.ID) &&
+                (targetCitation.CitationRange.EndID.ID >= citation.CitationRange.StartID.ID))
+            {
+                await AppendReadingViewHighlightFormatting();
+            }
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 if (keywords[index].WordIndex == Ordinals.first)
@@ -46,7 +51,10 @@ namespace Myriad.Parser
                     }
                     await AppendReadingViewVerseNumber(keywords[index], citation);
                 }
-                await AddReadingViewHighlightFormatting(keywords[index], targetCitation);
+                if (targetCitation.CitationRange.StartID.ID == keywords[index].ID)
+                {
+                    await AppendReadingViewHighlightFormatting();
+                }
                 await AppendTextOfReadingViewKeyword(writer, keywords[index]);
                 if (targetCitation.CitationRange.EndID.ID == keywords[index].ID)
                 {
@@ -212,16 +220,13 @@ namespace Myriad.Parser
             }
         }
 
-        private async Task AddReadingViewHighlightFormatting(Keyword keyword, Citation targetCitation)
+        private async Task AppendReadingViewHighlightFormatting()
         {
-            if (targetCitation.CitationRange.StartID.ID == keyword.ID)
-            {
-                await writer.Append(HTMLTags.StartSpanWithClass +
-                    HTMLClasses.target +
-                    HTMLTags.CloseQuoteEndTag +
-                    HTMLTags.EndSpan+
-                    HTMLTags.StartMark);
-            }
+            await writer.Append(HTMLTags.StartSpanWithClass +
+                HTMLClasses.target +
+                HTMLTags.CloseQuoteEndTag +
+                HTMLTags.EndSpan +
+                HTMLTags.StartMark);
         }
 
         public async static Task AppendTextOfReadingViewKeyword(HTMLWriter writer, Keyword keyword)
