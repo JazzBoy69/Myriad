@@ -93,7 +93,8 @@ namespace Myriad.Pages
 
         internal async Task AddArticle(HTMLWriter writer, IQueryCollection query)
         {
-            (string title, int similarID) = await GetID(query);
+            string title = query[queryKeyTitle].ToString();
+            int similarID = await GetSimilarID(title);
             int id = await GetNewArticleID();
             title = query[queryKeyTitle];
             pageInfo = (title, id);
@@ -346,21 +347,8 @@ namespace Myriad.Pages
         private async Task<(string title, int id)> GetID(IQueryCollection query)
         {
             string queryTitle = query[queryKeyTitle];
-            int id = await GetIdFromIdentifier(queryTitle);
-            if (id > 0)
-            {
-                return (query[queryKeyTitle], id);
-            }
-            string title = Inflections.RootsOf(queryTitle.Replace('_', ' ')).First();
-            var idReader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
-            id = await idReader.GetDatum<int>();
-            idReader.Close();
-            if (id>0) return (title, id);
-            var synonymID = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), title);
-            id = await synonymID.GetDatum<int>();
-            synonymID.Close();
+            int id = await GetSimilarID(queryTitle);
+            string title;
             if (id == 0)
             {
                 id = await GetNewArticleID();
@@ -370,6 +358,26 @@ namespace Myriad.Pages
             }
             title = await Reader.ReadTitle(id);
             return (title, id);
+        }
+
+        private async Task<int> GetSimilarID(string queryTitle)
+        {
+            int id = await GetIdFromIdentifier(queryTitle);
+            if (id > 0)
+            {
+                return id;
+            }
+            string title = Inflections.RootsOf(queryTitle.Replace('_', ' ')).First();
+            var idReader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
+            id = await idReader.GetDatum<int>();
+            idReader.Close();
+            if (id > 0) return id;
+            var synonymID = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), title);
+            id = await synonymID.GetDatum<int>();
+            synonymID.Close();
+            return id;
         }
 
         private async Task CreateNewArticle(string title, int id)
