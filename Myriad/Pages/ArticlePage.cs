@@ -165,7 +165,17 @@ namespace Myriad.Pages
         private async Task UpdateSynonyms(int id, string newSynonymLine)
         {
             var oldSynonyms = GetSynonyms(id);
-            var newSynonyms = newSynonymLine.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var synonyms = newSynonymLine.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var newSynonyms = new List<string>();
+            for (int i = Ordinals.first; i < synonyms.Count; i++)
+            {
+                if (synonyms[i].Contains('_') || synonyms[i].Contains('+'))
+                {
+                    newSynonyms.Add(synonyms[i]);
+                    continue;
+                }
+                newSynonyms.Add(Inflections.RootsOf(synonyms[i]).First());
+            }
             int identifierIndex = GetIdentifierIndex(newSynonyms);
             if (identifierIndex != Result.notfound)
             {

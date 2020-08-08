@@ -65,6 +65,7 @@ namespace Myriad.Search
             {
                 int id = entry.Value;
                 bool setActive = (mainDefinition == Result.notfound) || (entry.Value == mainDefinition);
+                if (setActive && (mainDefinition == Result.notfound)) mainDefinition = entry.Value;
                 await StartDefinitionTab(writer, setActive, itemCount);
                 string definition = await GetArticleParagraph(id, Ordinals.first);
                 if (!string.IsNullOrEmpty(definition))
