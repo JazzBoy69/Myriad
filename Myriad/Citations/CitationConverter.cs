@@ -152,25 +152,30 @@ namespace Myriad.Parser
         {
             List<Citation> result = new List<Citation>();
             for (int index = Ordinals.first; index < citations.Count; index++)
-            {
-                Citation citation = citations[index];
-                if (citation.CitationRange.WordIndexIsDeferred)
-                {
-                    citation.CitationRange.SetWordIndex(
-                        await ReadDeferredWord(citation.CitationRange.Word,
-                        citation.CitationRange.StartID.ID,
-                        citation.CitationRange.EndID.ID)
-                        );
-                }
-                if (citation.CitationRange.EndID.WordIndex == KeyID.MaxWordIndex)
-                {
-                    citation.CitationRange.SetLastWordIndex(
-                        await ReadLastWordIndex(citation.CitationRange.StartID.ID,
-                        citation.CitationRange.EndID.ID));
-                }
-                result.Add(new Citation(citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID));
+            {   
+                result.Add(await ResolveCitation(citations[index]));
             }
             return result;
+        }
+
+        public async static Task<Citation> ResolveCitation(Citation citation)
+        {
+            Citation newCitation = citation.Copy();
+            if (citation.CitationRange.WordIndexIsDeferred)
+            {
+                newCitation.CitationRange.SetWordIndex(
+                    await ReadDeferredWord(citation.CitationRange.Word,
+                    citation.CitationRange.StartID.ID,
+                    citation.CitationRange.EndID.ID)
+                    );
+            }
+            if (citation.CitationRange.EndID.WordIndex == KeyID.MaxWordIndex)
+            {
+                newCitation.CitationRange.SetLastWordIndex(
+                    await ReadLastWordIndex(citation.CitationRange.StartID.ID,
+                    citation.CitationRange.EndID.ID));
+            }
+            return newCitation;
         }
 
         internal static List<CrossReference> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
