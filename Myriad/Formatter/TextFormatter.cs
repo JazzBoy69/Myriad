@@ -157,7 +157,7 @@ namespace Myriad.Parser
                 return;
             }
             await StartParagraph(keywords);
-            int paragraphIndex = Ordinals.first;
+            paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 await StartPoetic(keywords[index]);
