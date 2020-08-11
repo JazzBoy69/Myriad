@@ -80,7 +80,7 @@ namespace Myriad.Data
                 reader.Close();
                 for (int i=Ordinals.first; i<words.Count; i++)
                 {
-                    int d = DistanceBetween(words[i], words[i]);
+                    int d = DistanceBetween(word, words[i]);
                     if (d == 1) return words[i];
                     if (d < distance)
                     {

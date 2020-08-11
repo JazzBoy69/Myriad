@@ -86,7 +86,7 @@ namespace Myriad.Parser
             targetCitation = await CitationConverter.ResolveCitation(targetCitation);
             citation = await CitationConverter.ResolveCitation(citation);
             await StartParagraph(keywords);
-            await StartReadingViewHighlighting(citation, targetCitation);
+           // await StartReadingViewHighlighting(citation, targetCitation);
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
@@ -94,6 +94,7 @@ namespace Myriad.Parser
                 await AddVerseNumber(keywords, index, citation);
                 await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
+                paragraphIndex++;
                 await EndHighlight(keywords[index], targetCitation);
                 await EndPoetic(keywords, index, targetCitation);
             }
