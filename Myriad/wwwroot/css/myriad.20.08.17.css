@@ -142,7 +142,8 @@ article{width:60rem;padding-left:10rem;}
 .firstpoetic .readingverse {position:absolute;left:18.5rem;}
 .poetic .readingverse {position:absolute;left:18.5rem;}
 figure{-webkit-margin-start:0;-webkit-margin-end:0;}
-figure.portrait, figure.square, .sidenote{display:block;float:right;width:26rem; border-left:2px solid #d3d3d3;}
+figure.portrait, figure.square, .sidenote{display:block;float:right;width:26rem;}
+figure.portrait, .sidenote{ border-left:2px solid #d3d3d3;}
 .crossrefs+.sidenote{float:none;border:0;}
 .rightside {margin-left:1%;}
 img.portrait {float:right;}
