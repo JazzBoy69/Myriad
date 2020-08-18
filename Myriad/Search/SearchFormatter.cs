@@ -67,7 +67,7 @@ namespace Myriad.Search
                 bool setActive = (mainDefinition == Result.notfound) || (entry.Value == mainDefinition);
                 if (setActive && (mainDefinition == Result.notfound)) mainDefinition = entry.Value;
                 await StartDefinitionTab(writer, setActive, itemCount);
-                string definition = await GetArticleParagraph(id, Ordinals.first);
+                string definition = await GetDefinition(id);
                 if (!string.IsNullOrEmpty(definition))
                 {
                     await WriteDefinition(writer, parser, id, definition);
@@ -140,6 +140,18 @@ namespace Myriad.Search
                 await writer.Append("</li>");
             }
             await writer.Append("</ul></div></section>");
+        }
+
+        private async static Task<string> GetDefinition(int id)
+        {
+            string definition = "[[";
+            int index = Ordinals.first;
+            while (definition[Ordinals.first] == '[')
+            {
+                definition = await GetArticleParagraph(id, index);
+                index++;
+            }
+            return definition;
         }
 
         private static async Task StartDefinitionTabs(HTMLWriter writer)
