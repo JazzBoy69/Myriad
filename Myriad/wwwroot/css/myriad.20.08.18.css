@@ -13,6 +13,7 @@ article{font-size:1.35rem;font-feature-settings: "liga" 1;}
 /*Hyperlinks*/
 a{text-decoration:none;color:#4477a1;font-family:inherit;}
 a:not(.ni):hover{color:#4477a1;text-decoration:underline;}
+.dropcap a:hover{text-decoration:none;}
 p.nav a, p.definitionnav a, p.versenav a{padding-right:1rem;}
 a.target{background-color:#ff8}
 .suppressed a.target{background-color:#dd8;}
