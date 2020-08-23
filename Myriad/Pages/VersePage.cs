@@ -199,7 +199,8 @@ namespace Myriad.Pages
             string[] words = matrix.Split(new string[] { "} {" }, StringSplitOptions.RemoveEmptyEntries);
             int start = Numbers.Convert(query[queryKeyStart]);
             int end = Numbers.Convert(query[queryKeyEnd]);
-            int length = await CitationConverter.ReadLastWordIndex(start, end) + 1;
+            KeyID keyID = new KeyID(end);
+            int length = await CitationConverter.ReadLastWordIndex(keyID.Book, keyID.Chapter, keyID.Verse) + 1;
             end = start + length - 1;
             citation = new Citation(start, end);
             citation.CitationType = CitationTypes.Verse;
@@ -363,7 +364,8 @@ namespace Myriad.Pages
         {
             int start = Numbers.Convert(query[queryKeyStart]);
             int end = Numbers.Convert(query[queryKeyEnd]);
-            end = start+await CitationConverter.ReadLastWordIndex(start, end);
+            KeyID keyID = new KeyID(end);
+            end = start+await CitationConverter.ReadLastWordIndex(keyID.Book, keyID.Chapter, keyID.Verse);
             for (int id = start; id<= end; id++)
             {
                 if (id > start) await writer.Append(' ');

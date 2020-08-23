@@ -388,8 +388,8 @@ namespace Myriad.Pages
                 if (newCitations[index].CitationRange.EndID.WordIndex == KeyID.MaxWordIndex)
                 {
                     newCitations[index].CitationRange.SetLastWordIndex(
-                        await CitationConverter.ReadLastWordIndex(newCitations[index].CitationRange.StartID.ID,
-                        newCitations[index].CitationRange.EndID.ID));
+                        await CitationConverter.ReadLastWordIndex(newCitations[index].CitationRange.Book,
+                        newCitations[index].CitationRange.LastChapter, newCitations[index].CitationRange.LastVerse));
                 }
                 for (int otherIndex = Ordinals.first; otherIndex < oldCitations.Count; otherIndex++)
                 {

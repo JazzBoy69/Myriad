@@ -112,7 +112,7 @@ namespace Myriad.Parser
 
         private async Task EndHighlight(Keyword keyword, Citation targetCitation)
         {
-            if (targetCitation.CitationRange.EndID.ID == keyword.ID)
+            if (keyword.ID == targetCitation.CitationRange.EndID.ID)
             {
                 await writer.Append(HTMLTags.EndMark);
             }

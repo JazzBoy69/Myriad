@@ -130,7 +130,7 @@ namespace Myriad.Data
                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                 " where sentenceID=@key1 order by keyid" },
             {DataOperation.ReadLastWordIndex,
-                "select Max(versewordindex) from keywords where keyid>=@key1 and keyid<=@key2" },
+                "select Max(versewordindex) from keywords where book=@key1 and chapter=@key2 and verse=@key3" },
             { DataOperation.ReadFromAllWords,
                 "select text from allwords where text=@key1" },
             { DataOperation.ReadRoots,

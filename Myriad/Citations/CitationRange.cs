@@ -272,7 +272,7 @@ namespace Myriad.Library
 
         public async Task ResolveLastWordIndex()
         {
-            SetLastWordIndex(await CitationConverter.ReadLastWordIndex(StartID.ID, EndID.ID));
+            SetLastWordIndex(await CitationConverter.ReadLastWordIndex(EndID.Book, EndID.Chapter, EndID.Verse));
         }
         public string Word
         {

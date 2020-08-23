@@ -172,8 +172,8 @@ namespace Myriad.Parser
             if (citation.CitationRange.EndID.WordIndex == KeyID.MaxWordIndex)
             {
                 newCitation.CitationRange.SetLastWordIndex(
-                    await ReadLastWordIndex(citation.CitationRange.StartID.ID,
-                    citation.CitationRange.EndID.ID));
+                    await ReadLastWordIndex(citation.CitationRange.Book, citation.CitationRange.LastChapter,
+                    citation.CitationRange.LastVerse));
             }
             return newCitation;
         }
@@ -190,10 +190,10 @@ namespace Myriad.Parser
             return result;
         }
 
-        internal static async Task<int> ReadLastWordIndex(int startID, int endID)
+        internal static async Task<int> ReadLastWordIndex(int book, int chapter, int verse)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLastWordIndex),
-                startID, endID);
+            var reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLastWordIndex),
+                book, chapter, verse);
             int result = await reader.GetDatum<int>();
             reader.Close();
             return result;
