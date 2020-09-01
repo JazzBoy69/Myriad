@@ -1098,7 +1098,12 @@ function HandleShortcut(e) {
     let key = "";
     if (code === 121) key = "F10";
     if (code === 123) key = "F12";
+    if (code === 131) key = "F20";
     if (key === "") return true;
+    if (key === "F20") {
+        GoUp();
+        return;
+    }
     if (!e.ctrlKey) return true;
     e.preventDefault();
     if (key === "F10") {
