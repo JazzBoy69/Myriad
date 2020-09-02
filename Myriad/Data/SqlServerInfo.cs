@@ -257,7 +257,7 @@ namespace Myriad.Data
             { DataOperation.UpdateIdentifier,
                 "update definitionIDs set text=@key2 where id=@key1" },
             { DataOperation.ReadIDFromIdentifier,
-                "select id from definitionIDs where text like @key1" },
+                "select id from definitionIDs where text=@key1" },
             { DataOperation.ReadChronoIDs,
                 "select commentid from commentsinchapter where chapterid=@key1 order by commentindex" },
             { DataOperation.ReadChronoTitle,

@@ -377,14 +377,22 @@ namespace Myriad.Pages
             {
                 return id;
             }
-            string title = Inflections.RootsOf(queryTitle.Replace('_', ' ')).First();
+            queryTitle = queryTitle.Replace('_', ' ');
+            string title = Inflections.RootsOf(queryTitle).First();
             var idReader = new DataReaderProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
             id = await idReader.GetDatum<int>();
             idReader.Close();
             if (id > 0) return id;
             var synonymID = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), title);
+                SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), queryTitle);
+            id = await synonymID.GetDatum<int>();
+            if (id > 0)
+            {
+                synonymID.Close();
+                return id;
+            }
+            synonymID.SetParameter(title);
             id = await synonymID.GetDatum<int>();
             synonymID.Close();
             return id;
