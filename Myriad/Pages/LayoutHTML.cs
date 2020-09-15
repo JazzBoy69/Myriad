@@ -13,7 +13,7 @@ namespace Myriad.Pages
     <meta charset='utf-8' />
     <meta name='viewport' content='user-scalable=no,width=device-width, initial-scale=1, maximum-scale=1' />";
         public const string header =
-@"<link rel='stylesheet' href='css/myriad.20.08.18.css' />
+@"<link rel='stylesheet' href='css/myriad.20.09.15.css' />
     <link rel='shortcut icon' href='images/MyriadIcon.png'>
 
 </head>
@@ -139,6 +139,7 @@ namespace Myriad.Pages
                     <a id=num9 class='indexbutton indexnumber hidden'>9</a>
                     <a id=num0 class='indexbutton indexnumber hidden'>0</a>
                     <a id=numColon class='indexbutton indexnumber hidden'>:</a>
+                    <a id=numBang class='indexbutton indexnumber hidden'>!</a>
                     <a id=back class='indexbutton'>Back</a>
                     <a id=go class='indexbutton hidden'>Go</a>
                 </section>
@@ -169,7 +170,7 @@ namespace Myriad.Pages
         public const string close = @"</div></article></div>";
         public const string tocdiv = "<div id=tocdiv class=hidden></div>";
         public const string modalOverlay = "<div id='modal-overlay'></div>";
-        public const string myriadJavaScript = "<script src='js/myriad.20.08.31.js'></script>";
+        public const string myriadJavaScript = "<script src='js/myriad.20.09.15.js'></script>";
         public const string endofBody = "</body></html>";
     }
 }

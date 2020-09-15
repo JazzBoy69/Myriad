@@ -251,16 +251,16 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 #toc li:last-of-type{padding-bottom: 1rem;}
 #toc li a:hover{text-decoration: none;}
 #modal-overlay{visibility:hidden; opacity: 0; position:fixed; top: 0;left: 0;width: 100%;height:100vh;}
-#bibleindex {visibility: hidden;opacity: 0;position: absolute;top: 4rem;left: 0;width: 100%;transition: visibility 0s, opacity 0.2s linear;}
+#bibleindex {z-index:-15; visibility:hidden;opacity: 0;position: absolute;top: 4rem;left: 0;height: 100vh;width: 100%;transition: visibility 0s, opacity 0.2s linear;}
 #modal-overlay img {position: absolute;top: 50%;}
 #modal-overlay.show {visibility:visible;background-color: black;opacity: .4;z-index:2;}
 #bibleindex.show {visibility: visible;background-color: black;opacity: .7;transition: display .2s;z-index: 2;transition: visibility 0s, opacity 0.2s linear;}
 .blur {opacity: .7;filter: blur(3px);}
 
-#indexscripture {font-size: 3rem;}
+#indexscripture {font-size: 1rem;}
 .buttongrid {display: grid;grid-template-columns: 1fr 1fr 1fr;grid-row-gap: .25rem;grid-column-gap: .25rem;padding-bottom: 1.5rem;padding-left:2rem;padding-right:2rem;padding-top:.5rem;}
-#possibilities {height: 18rem;}
-.indexbutton {height: 3rem;padding-left: .25rem;padding-right: .25rem;padding-top: .5rem;padding-bottom: .5rem;background-color: #fff;border-radius: 3px;border: 1px solid #c4c4c4;font-size: 2rem;color: #333;background-image: linear-gradient(to bottom,transparent,transparent 50%,rgba(0,0,0,.04));box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), inset 0 1px 0 0 rgba(255,255,255,.45), inset 0 -1px 0 0 rgba(255,255,255,.15), 0 1px 0 0 rgba(255,255,255,.15);text-shadow: 0 1px rgba(255,255,255,.4);}
+#possibilities {height: 15rem;}
+.indexbutton {font-size: 1.5rem;height: 1.7rem;padding-left: .25rem;padding-right: .25rem;padding-top: .5rem;padding-bottom: .5rem;background-color: #fff;border-radius: 3px;border: 1px solid #c4c4c4;color: #333;background-image: linear-gradient(to bottom,transparent,transparent 50%,rgba(0,0,0,.04));box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), inset 0 1px 0 0 rgba(255,255,255,.45), inset 0 -1px 0 0 rgba(255,255,255,.15), 0 1px 0 0 rgba(255,255,255,.15);text-shadow: 0 1px rgba(255,255,255,.4);}
 .indexbutton:hover {background-color: #eaeaea;}
 
 /*SCRIPTURE TABS*/

@@ -532,7 +532,7 @@ function HandleBackClick(event) {
         searchField.value = "";
         RemoveClassFromGroup(indexgroup, 'hidden');
         AddClassToGroup(indexnumber, 'hidden');
-        document.getElementById('level').textContent = "0";
+        SaveIndexLevel(0);
         document.getElementById('go').classList.add('hidden');
         return;
     }
@@ -540,9 +540,30 @@ function HandleBackClick(event) {
     reference = reference.substr(0, reference.length - 1);
     searchField.value = reference;
     level--;
-    document.getElementById('level').textContent = level.toString();
+    SaveIndexLevel(level);
 }
 
+function ResetIndex() {
+    var searchField = document.getElementById('searchField');
+    var possibilityLinks = GetLinksInID('possibilities');
+    var indexgroup = keys.getElementsByClassName('indexgroup');
+    var indexnumber = keys.getElementsByClassName('indexnumber');
+    for (i = 0; i < possibilityLinks.length; i++) {
+        if (possibilityLinks[i].classList.contains('common'))
+            possibilityLinks[i].classList.remove('hidden');
+        else
+            possibilityLinks[i].classList.add('hidden');
+    }
+    searchField.value = "";
+    RemoveClassFromGroup(indexgroup, 'hidden');
+    AddClassToGroup(indexnumber, 'hidden');
+    document.getElementById('go').classList.add('hidden');
+    SaveIndexLevel(0);
+}
+
+function SaveIndexLevel(level) {
+    document.getElementById('level').textContent = level.toString();
+}
 
 function showHideIndex() {
     var overlay = document.getElementById('bibleindex');
@@ -557,6 +578,7 @@ function showHideIndex() {
         if ((ellipsis !== null) && (ellipsis.classList !== null)) {
                 ellipsis.classList.add('hidden');
         }
+        ResetIndex();
     }
 }
 
@@ -571,10 +593,11 @@ function HideIndex() {
         var suppressedParagraphs = document.getElementsByClassName('suppressed');
         for (var i = 0; i < suppressedParagraphs.length; i++) {
             if (suppressedParagraphs[i].length < 1) return;
-            ellipsis.removeClass('hidden');
+            ellipsis.classList.remove('hidden');
         }
     }
 }
+
 
 function showHideMenu() {
     var toc = document.getElementById('tocdiv');
