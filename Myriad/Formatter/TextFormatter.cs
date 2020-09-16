@@ -470,6 +470,7 @@ namespace Myriad.Parser
             if (keyword.Verse == 0)
             {
                 await writer.Append("Sup");
+                await writer.Append(HTMLTags.NonbreakingSpace);
                 return;
             }
             if (keyword.Verse == 1)

@@ -1008,7 +1008,8 @@ function SetupSuppressedParagraphs() {
     for (var i = 0; i < suppressedParagraphs.length; i++) {
         suppressedParagraphs[i].onclick = function (event) {
             var paragraph = event.target.closest('.suppressed');
-            paragraph.classList.remove('suppressed');
+            if (paragraph !== null)
+                paragraph.classList.remove('suppressed');
         };
         if (suppressedParagraphs[i].length < 1) return;
         hideEllipsis = false;
