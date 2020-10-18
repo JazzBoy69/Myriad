@@ -140,6 +140,7 @@ namespace Myriad.Pages
                     <a id=num0 class='indexbutton indexnumber hidden'>0</a>
                     <a id=numColon class='indexbutton indexnumber hidden'>:</a>
                     <a id=numBang class='indexbutton indexnumber hidden'>!</a>
+                    <a id=numDash class='indexbutton indexnumber hidden'>-</a>
                     <a id=back class='indexbutton'>Back</a>
                     <a id=go class='indexbutton hidden'>Go</a>
                 </section>
