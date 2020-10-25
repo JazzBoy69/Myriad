@@ -24,6 +24,7 @@ namespace Myriad.CitationHandlers
         IParagraph paragraphToParse;
         bool first = true;
         bool brokenComma = false;
+        bool skip = false;
         int currentBook;
         int currentChapter;
         string currentWord;
@@ -127,7 +128,14 @@ namespace Myriad.CitationHandlers
                     EndParsingSession();
                     return true;
                 }
-                AddCitationToResults();
+                if (skip)
+                {
+                    skip = false;
+                }
+                else
+                {
+                    AddCitationToResults();
+                }
                 if (action == TokenDictionary.AddBrokenCommaMarker)
                 {
                     tokenBeforeLast = '~';
@@ -326,6 +334,25 @@ namespace Myriad.CitationHandlers
                 citation.CitationRange = new CitationRange(start, end);
                 return;
             }
+            if ((token == '-') && (lastToken == ',') && (verse.Second.Chapter == Result.notfound))
+            {
+                citation.Set(verse.First);
+                VerseReference second = new VerseReference();
+                second.Book = verse.First.Book;
+                second.Chapter = verse.First.Chapter;
+                second.Verse = count;
+                brokenComma = true;
+                int end = citation.Label.End+1;
+                AddCitationToResults();
+                int start = citation.Label.End;
+                verse.First = second;
+                brokenComma = false;
+                citation.Set(verse.First);
+                citation.Label.MoveEndTo(end);
+                citation.Label.MoveStartTo(start);
+                skip = true;
+            }
+            else
             if ((token == ',') && (verse.First.Verse == Result.notfound) && (verse.Second.Chapter != Result.notfound)
                 && (verse.Second.Verse == Result.notfound))
             {

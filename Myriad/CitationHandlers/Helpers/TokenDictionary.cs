@@ -103,7 +103,8 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1933, SetSecondVerseAndAddResults },                 //Mt 5:3, 10, 19, 20 => xx, 19,
             { 0x1934, SetSecondVerseAndAddResults },   //Joh 8:26, 28, 38; => , xx, 38;
             { 0x1993, SetFirstVerse },
-            { 0x1994, SetFirstVerseAndAddResults }   //Joh 8:26, 28, 38; => , xx, 38;
+            { 0x1994, SetFirstVerseAndAddResults },   //Joh 8:26, 28, 38; => , xx, 38;
+            { 0x1992, SetFirstVerse }
         };
 
         public static int Lookup(char nextToLastToken, char lastToken, char token, int count)
