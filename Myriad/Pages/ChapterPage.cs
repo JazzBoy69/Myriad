@@ -36,7 +36,8 @@ namespace Myriad.Pages
 
         internal override async Task WriteTitle(HTMLWriter writer)
         {
-            await CitationConverter.ToLongString(citation, writer);
+            citation.LabelType = LabelTypes.Normal;
+            await CitationConverter.ToString(citation, writer);
         }
 
         protected override string PageScripts()

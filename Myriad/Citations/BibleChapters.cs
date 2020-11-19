@@ -238,6 +238,27 @@ namespace Myriad.Library
             "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John",
             "3 John", "Jude", "Revelation"
             };
+        public static List<string> LongNamesTitleCase = new List<string> {
+            "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
+            "Joshua", "Judges", "Ruth", "First Samuel", "Second Samuel", "First Kings",
+            "Second Kings", "First Chronicles", "Second Chronicles", "Ezra", "Nehemiah",
+            "Esther", "Job", "Psalm", "Proverbs", "Ecclesiastes",
+            "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations",
+            "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah",
+            "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai",
+            "Zechariah", "Malachi", "Matthew", "Mark", "Luke", "John",
+            "Acts", "Romans", "First Corinthians", "Second Corinthians", "Galatians",
+            "Ephesians", "Philippians", "Colossians", "First Thessalonians",
+            "Second Thessalonians", "First Timothy", "Second Timothy", "Titus", "Philemon",
+            "Hebrews", "James", "First Peter", "Second Peter", "First John", "Second John",
+            "Third John", "Jude", "Revelation"
+            };
+        public static Dictionary<LabelTypes, List<string>> Names = new Dictionary<LabelTypes, List<string>>()
+        {
+            {LabelTypes.Long, LongNamesTitleCase },
+            {LabelTypes.Normal, NamesTitleCase },
+            {LabelTypes.Short, AbbreviationsTitleCase }
+        };
         internal static List<string> LongAbbreviations = new List<string> {
             "GEN.", "EX.", "LEV.", "NUM.", "DEUT.", "JOSH.", "JUDG.", "RUTH",           //0-7
             "1 SAM.", "2 SAM.", "1 KI.", "2 KI.", "1 CHRON.", "2 CHRON.", "EZRA",       //8-14

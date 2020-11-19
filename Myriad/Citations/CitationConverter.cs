@@ -46,37 +46,19 @@ namespace Myriad.Parser
 
         public static async Task ToString(Citation citation, HTMLWriter writer)
         {
-            await Append(writer, citation, false);
+            await Append(writer, citation);
         }
 
         public static async Task ToString(List<Citation> citations, HTMLWriter writer)
         {
             for (var i = Ordinals.first; i < citations.Count; i++)
             {
-                if (i == Ordinals.first) await Append(writer, citations[i], false);
+                if (i == Ordinals.first) await Append(writer, citations[i]);
                 else
                     await AppendNext(writer, citations[i - 1], citations[i]);
             }
         }
 
-        public static async Task<string> ToLongString(Citation citation)
-        {
-            var writer = Writer.New();
-            await ToLongString(citation, writer);
-            return writer.Response();
-        }
-
-        public static async Task<string> ToLongString(List<Citation> citations)
-        {
-            var writer = Writer.New();
-            await ToLongString(citations, writer);
-            return writer.Response();
-        }
-
-        public static async Task ToLongString(Citation citation, HTMLWriter writer)
-        {
-            await Append(writer, citation, true);
-        }
 
         internal static async Task AppendChapterTitle(HTMLWriter writer, CitationRange citationRange)
         {      
@@ -85,28 +67,13 @@ namespace Myriad.Parser
             await writer.Append(citationRange.FirstChapter);
         }
 
-        public static async Task ToLongString(List<Citation> citations, HTMLWriter writer)
-        {
-            for (var i = Ordinals.first; i < citations.Count; i++)
-            {
-                if (i == Ordinals.first) await Append(writer, citations[i], true);
-                else
-                    await AppendNext(writer, citations[i - 1], citations[i]);
-            }
-        }
 
-        internal async static Task Append(HTMLWriter writer, Citation citation, bool longName)
+        internal async static Task Append(HTMLWriter writer, Citation citation)
         {
             if ((citation.CitationRange.Book < Ordinals.first) ||
                 (citation.CitationRange.Book >= Bible.Abbreviations.Count)) return;
-            if (longName)
-            {
-                await writer.Append(Bible.NamesTitleCase[citation.CitationRange.Book]);
-            }
-            else
-            {
-                await writer.Append(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
-            }
+
+            await writer.Append(Bible.Names[citation.LabelType][citation.CitationRange.Book]);
             await writer.Append(HTMLTags.NonbreakingSpace);
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
@@ -211,14 +178,14 @@ namespace Myriad.Parser
         public static async Task AppendLink(HTMLWriter writer, Citation citation)
         {
             await PageFormatter.StartCitationLink(writer, citation);
-            await Append(writer, citation, false);
+            await Append(writer, citation);
             await writer.Append(HTMLTags.EndAnchor);
         }
 
         public static async Task AppendLink(HTMLWriter writer, Citation citation, Citation targetCitation)
         {
             await PageFormatter.StartCitationLink(writer, citation, targetCitation);
-            await Append(writer, citation, false);
+            await Append(writer, citation);
             await writer.Append(HTMLTags.EndAnchor);
         }
         private static async Task AppendNext(HTMLWriter writer, Citation precedingCitation, Citation currentCitation)
@@ -226,7 +193,7 @@ namespace Myriad.Parser
             if (precedingCitation.CitationRange.Book != currentCitation.CitationRange.Book)
             {
                 await writer.Append("; ");
-                await Append(writer, currentCitation, false);
+                await Append(writer, currentCitation);
                 return;
             }
             else

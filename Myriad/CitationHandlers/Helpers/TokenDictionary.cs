@@ -37,7 +37,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0xA574, DeferWordIndex },                // Mt 24:14.preached => :xx.preached
             { 0xA448, SetFirstBook },                  // Mt 24:14 => ; ; Mt              
             { 0xA488, SetFirstBook },                  // Mt 24:14 => ; ; Mt 
-            { 0xA874, DeferWordIndex },
+            { 0xA874, DeferWordIndex },                // Mt 24:14.preached => :14.xxxxxx
             { 0x1025, SetSecondChapter },              //2Co 6:14-7:1 => -7:  
             { 0x1042, SetFirstVerse },                 //Mt 24:14, 16-18 => xx, 16-xx
             { 0x1048, SetFirstBook },                  //Mt 24:14; Mr 13:10 => ; Mr_
@@ -65,12 +65,12 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1453, SetFirstVerse },                 //Mt 24:14; 28:19, 20 => ; xx:19,
             { 0x1454, SetFirstVerseAndAddResults },    //Mt 24:14; 28:20; => ; xx:20;
             { 0x1456, SetFirstVerseAndAddResults },    //Mr 2:1! => ; xx:1!
-            { 0x1482, SetFirstChapter },
+            { 0x1482, SetFirstChapter },               //Ge 6-8; => Ge xx-;
             { 0x1483, SetFirstChapter },               //Ge 6, 7 => ;xx_6,
             { 0x1484, SetFirstChapterAndAddResults },  //Mt 24; => ;xx_24;
             { 0x1485, SetFirstChapter },               //Mt 24:14 => ;xx _24:
             { 0x1486, SetFirstChapterAndAddResults },
-            { 0x1487, SetFirstChapter },
+            { 0x1487, SetFirstChapter },               //Ge 6-8; => Ge xx-
             { 0x1523, SetSecondVerseAndAddResults },   //Re 16:14-16, 18; => :xx-16,
             { 0x1524, SetSecondVerseAndAddResults },   //Mt 24:45-47 => :xx-47;
             { 0x1525, SetSecondChapter },              //2Co 6:14-7:1 => :xx-7:
@@ -85,7 +85,7 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1594, SetFirstVerseAndAddResults },    //Jas 1:13, 17 => :xx, 17
             { 0x1823, SetSecondVerseAndAddResults },   //Jude 18-21, 25 => xx-21,
             { 0x1832, SetSecondVerseAndAddResults },   //2Jo 10, 12-14 => _xx, 12-
-            { 0x1824, SetSecondChapterAndAddResults },
+            { 0x1824, SetSecondChapterAndAddResults },  //Ge 6-8; => 6-xx;
             { 0x1833, SetSecondChapterAndAddResults },   //2Jo 10, 12, 14 => _xx, 12,
             { 0x1834, SetSecondChapterAndAddResults }, //Ge 6, 7; => _xx, 7;
             { 0x1844, SetSecondVerseAndAddResults },   //2Jo 10, 12
@@ -100,11 +100,11 @@ namespace Myriad.CitationHandlers.Helpers
             { 0x1923, SetSecondVerseAndAddResults },   //Ge 36:2, 5-8, 14 => , xx-8,
             { 0x1924, SetSecondVerseAndAddResults },    //Mt 3:1, 6, 13-17; => , xx-17;
             { 0x1932, AddBrokenCommaMarker },          //Mt 3:1, 6, 13-17; => xx, xx, 13-
-            { 0x1933, SetSecondVerseAndAddResults },                 //Mt 5:3, 10, 19, 20 => xx, 19,
+            { 0x1933, SetSecondVerseAndAddResults },   //Mt 5:3, 10, 19, 20 => xx, 19,
             { 0x1934, SetSecondVerseAndAddResults },   //Joh 8:26, 28, 38; => , xx, 38;
-            { 0x1993, SetFirstVerse },
+            { 0x1993, SetFirstVerse },                 //Joh 8:26, 28, 38, 42 => , 28, xx,
             { 0x1994, SetFirstVerseAndAddResults },   //Joh 8:26, 28, 38; => , xx, 38;
-            { 0x1992, SetFirstVerse }
+            { 0x1992, SetFirstVerse }                 //Joh 8:26, 28, 38-42; => , 28, xx-
         };
 
         public static int Lookup(char nextToLastToken, char lastToken, char token, int count)

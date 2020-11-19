@@ -7,6 +7,10 @@ namespace Myriad.Library
     {
         Chapter, Text, Verse, Invalid
     }
+    public enum LabelTypes
+    {
+        Long, Short, Normal
+    }
     public class Citation
     {
         public StringRange DisplayLabel = new StringRange();
@@ -15,6 +19,7 @@ namespace Myriad.Library
         public StringRange TrailingSymbols = new StringRange();
         public CitationRange CitationRange = CitationRange.InvalidRange();
         public CitationTypes CitationType = CitationTypes.Invalid;
+        public LabelTypes LabelType = LabelTypes.Short;
         public bool Navigating = false;
 
         public Citation()
