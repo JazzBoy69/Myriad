@@ -28,8 +28,6 @@ namespace Myriad.Pages
         List<string> articleParagraphs;
         string indexPageName;
 
-
-        //todo edit whole chapter comment
         internal ChapterPage()
         {
         }

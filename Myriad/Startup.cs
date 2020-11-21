@@ -19,7 +19,6 @@ using System.Drawing;
 
 namespace Myriad
 {
-    //todo Change all object methods to static. Use separate info object to pass state between functions
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)

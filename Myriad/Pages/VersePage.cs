@@ -29,8 +29,6 @@ namespace Myriad.Pages
             return pageURL;
         }
 
-        //TODO research page
-
         protected override CitationTypes GetCitationType()
         {
             return CitationTypes.Verse;

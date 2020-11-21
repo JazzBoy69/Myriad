@@ -270,7 +270,7 @@ namespace Myriad.Formatter
             }
             await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
         }
-        //todo refactor
+
         private async Task AddScriptureTextToTabs(List<(int start, int end)> idRanges, int index, bool navigating)
         {
             await writer.Append(HTMLTags.StartList +

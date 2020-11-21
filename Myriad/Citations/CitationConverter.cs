@@ -16,7 +16,7 @@ namespace Myriad.Parser
         public static List<Citation> FromString(string stringToConvert)
         {
             if (string.IsNullOrEmpty(stringToConvert)) return new List<Citation>() { Citation.InvalidCitation };
-            var citationHandler = new QueryCitationHandler();
+            var citationHandler = new QueryCitationHandler2();
             IParagraph paragraph = new Paragraph()
             {
                 Text = stringToConvert

@@ -7,11 +7,26 @@ namespace Myriad.CitationHandlers
 {
     public class CitationHandler2
     {
+        const int name = 0;
+        const int chapter = 1;
+        const int verse = 2;
+        const int word = 3;
+        const int start = 4;
         Citation citation = new Citation();
         StringRange rangeToParse;
+        StringRange labelRange;
+        int[,] scriptureReference = new int[3, 4]
+            { {-1,-1,-1,-1 },
+              {-1,-1,-1,-1 },
+              {-1,-1,-1,-1 }
+            };
+        int nameLength;
+        int continuation = 0;
+        int mode;
         List<Citation> results;
         IParagraph paragraphToParse;
         int count;
+        char token;
         public List<Citation> ParseCitations(StringRange givenRange, IParagraph givenParagraph)
         {
             try
@@ -19,7 +34,10 @@ namespace Myriad.CitationHandlers
                 InitializeParser(givenRange, givenParagraph);
                 while (citation.Label.End <= rangeToParse.End)
                 {
-                    bool success = true;
+                    if (mode == start) SkipLeadingSpaces();
+                    GetCount();
+                    GetToken();
+                    bool success = EvaluateToken();
                     if (!success) break;
                 }
                 return results;
@@ -42,7 +60,249 @@ namespace Myriad.CitationHandlers
             citation.Label.MoveStartTo(rangeToParse.Start);
             citation.Label.MoveEndTo(rangeToParse.Start);
             count = Number.nothing;
+            mode = start;
         }
 
+        public void SkipLeadingSpaces()
+        {
+            citation.LeadingSymbols.MoveStartTo(citation.Label.Start);
+            while ((citation.Label.Start <= rangeToParse.End) && (paragraphToParse.CharAt(citation.Label.Start) == ' '))
+            {
+                citation.Label.BumpStart();
+            }
+            citation.LeadingSymbols.MoveEndTo(citation.Label.Start - 1);
+            citation.Label.MoveEndTo(citation.Label.Start);
+        }
+
+        public void GetCount()
+        {
+            labelRange = new StringRange(citation.Label.Start, citation.Label.Start);
+            bool foundZero = false;
+            bool lookForNumber = true;
+            count = Number.nothing;
+
+            while (lookForNumber && (citation.Label.End <= rangeToParse.End))
+            {
+                char c = paragraphToParse.CharAt(citation.Label.End);
+                switch (c)
+                {
+                    case '0':
+                        foundZero = true;
+                        count *= 10;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '1':
+                        count *= 10;
+                        count++;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '2':
+                        count *= 10;
+                        count += 2;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '3':
+                        count *= 10;
+                        count += 3;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '4':
+                        count *= 10;
+                        count += 4;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '5':
+                        count *= 10;
+                        count += 5;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '6':
+                        count *= 10;
+                        count += 6;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '7':
+                        count *= 10;
+                        count += 7;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '8':
+                        count *= 10;
+                        count += 8;
+                        citation.Label.BumpEnd();
+                        continue;
+                    case '9':
+                        count *= 10;
+                        count += 9;
+                        citation.Label.BumpEnd();
+                        continue;
+                    default:
+                        lookForNumber = false;
+                        break;
+                }
+                if ((count == 0) && (!foundZero)) count = Result.notfound;
+            }
+        }
+
+        public void GetToken()
+        {
+            bool foundToken = false;
+            while (citation.Label.End <= rangeToParse.End)
+            {
+                token = paragraphToParse.CharAt(citation.Label.End);
+                if ((token == ' ') || (token == ':') ||
+                    (token == ',') || (token == '-') ||
+                    (token == '.') || (token == ';') ||
+                    (token == '!') || (token == '–'))
+                {
+                    foundToken = true;
+                    break;
+                }
+                if (citation.Label.End < rangeToParse.End) count = Result.notfound;
+                citation.Label.BumpEnd();
+            }
+            if (!foundToken)
+            {
+                token = ';';
+            }
+            if (citation.Label.End > rangeToParse.End)
+                citation.Label.MoveEndTo(rangeToParse.End);
+        }
+
+        private bool EvaluateToken()
+        {
+            if (token == ' ') return SpaceToken();
+            if (token == ':') return ColonToken();
+            if (token == ';') return SemiColonToken();
+            return false;
+        }
+
+        private bool SpaceToken()
+        {
+            string currentName = paragraphToParse.StringAt(citation.Label.Start, citation.Label.End - 1);
+            count = IndexOfBook(currentName);
+            if (count == Result.notfound)
+            {
+                if ((currentName == "First") || (currentName == "Second") ||
+                    (currentName == "Third") || (currentName == "Song") ||
+                    (currentName == "Song of"))
+                {
+                    count = Number.nothing;
+                    citation.Label.BumpEnd();
+                    mode = name;
+                    nameLength = 2;
+                    return true;
+                }
+                if ((currentName == "1") || (currentName == "2") ||
+                    (currentName == "3"))
+                {
+                    count = Number.nothing;
+                    citation.Label.BumpEnd();
+                    mode = name;
+                    nameLength = 1;
+                    return true;
+                }
+                return false;
+            }
+            nameLength++;
+            scriptureReference[0, name] = count;
+            citation.Label.BumpEnd();
+            mode = (Bible.IsShortBook(count)) ? verse : chapter;
+            return true;
+        }
+
+        private bool ColonToken()
+        {
+            if (count == Result.notfound) return false;
+            scriptureReference[continuation, chapter] = count;
+            mode = verse;
+            citation.Label.BumpEnd();
+            return true;
+        }
+        private bool SemiColonToken()
+        {
+            //Todo handle deferred word index
+            scriptureReference[continuation, mode] = count;
+            mode = start;
+            return EvaluateStack();
+        }
+
+        private bool EvaluateStack()
+        {
+            if (Bible.IsShortBook(scriptureReference[0,name])) return EvaluateShortStack();
+            VerseReference firstVerse = new VerseReference();
+            EvaluateThirdVerse();
+            EvaluateSecondVerse();
+            return true;
+        }
+
+        private void EvaluateSecondVerse()
+        {
+            if (scriptureReference[Ordinals.second, verse] == Result.notfound)
+            {
+                ApplyShortCitation();
+                MoveVerse(Ordinals.third, Ordinals.first);
+                return;
+            }
+            //apply long citation; reset verses
+            ApplyLongCitation();
+            if (mode == word) mode = verse;
+            if (scriptureReference[Ordinals.third, verse] != Result.notfound)
+            {
+                MoveVerse(Ordinals.third, Ordinals.first);
+            }
+            else
+            {
+                ResetVerses();
+            }
+        }
+
+        private void ApplyShortCitation()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ApplyLongCitation()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ResetVerses()
+        {
+            for (int i = Ordinals.first; i <= Ordinals.third; i++)
+            {
+                ResetVerse(i);
+            }
+        }
+
+        private void MoveVerse(int from, int to)
+        {
+            scriptureReference[to, verse] = scriptureReference[from, verse];
+            scriptureReference[to, word] = scriptureReference[from, word];
+            ResetVerse(from); 
+        }
+
+        private void ResetVerse(int ordinal)
+        {
+            scriptureReference[ordinal, chapter] = Result.notfound;
+            scriptureReference[ordinal, verse] = Result.notfound;
+            scriptureReference[ordinal, word] = Result.notfound;
+        }
+
+        private void EvaluateThirdVerse()
+        {
+            //if verse3 == verse1 + 1 move to verse2 
+            //reset verse3    
+        }
+
+        private bool EvaluateShortStack()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual int IndexOfBook(string book)
+        {
+            return Bible.IndexOfBook(book);
+        }
     }
 }
