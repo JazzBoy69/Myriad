@@ -20,7 +20,7 @@ namespace Myriad.CitationHandlers
               {-1,-1,-1,-1 },
               {-1,-1,-1,-1 }
             };
-        int nameLength;
+        LabelTypes nameLength;
         int continuation = 0;
         int mode;
         List<Citation> results;
@@ -61,6 +61,7 @@ namespace Myriad.CitationHandlers
             citation.Label.MoveEndTo(rangeToParse.Start);
             count = Number.nothing;
             mode = start;
+            nameLength = LabelTypes.Short;
         }
 
         public void SkipLeadingSpaces()
@@ -190,7 +191,7 @@ namespace Myriad.CitationHandlers
                     count = Number.nothing;
                     citation.Label.BumpEnd();
                     mode = name;
-                    nameLength = 2;
+                    nameLength = LabelTypes.Long;
                     return true;
                 }
                 if ((currentName == "1") || (currentName == "2") ||
@@ -199,12 +200,11 @@ namespace Myriad.CitationHandlers
                     count = Number.nothing;
                     citation.Label.BumpEnd();
                     mode = name;
-                    nameLength = 1;
+                    nameLength = LabelTypes.Normal;
                     return true;
                 }
                 return false;
             }
-            nameLength++;
             scriptureReference[0, name] = count;
             citation.Label.BumpEnd();
             mode = (Bible.IsShortBook(count)) ? verse : chapter;
@@ -241,11 +241,13 @@ namespace Myriad.CitationHandlers
             if (scriptureReference[Ordinals.second, verse] == Result.notfound)
             {
                 ApplyShortCitation();
+                citation.Label.BumpEnd();
                 MoveVerse(Ordinals.third, Ordinals.first);
                 return;
             }
             //apply long citation; reset verses
             ApplyLongCitation();
+            citation.Label.BumpEnd();
             if (mode == word) mode = verse;
             if (scriptureReference[Ordinals.third, verse] != Result.notfound)
             {
@@ -259,7 +261,16 @@ namespace Myriad.CitationHandlers
 
         private void ApplyShortCitation()
         {
-            throw new NotImplementedException();
+            VerseReference verseReference = new VerseReference(
+                scriptureReference[Ordinals.first, name],
+                scriptureReference[Ordinals.first, chapter],
+                scriptureReference[Ordinals.first, verse],
+                scriptureReference[Ordinals.first, word]);
+
+            Citation citation = new Citation();
+            citation.Set(verseReference);
+            citation.LabelType = nameLength;
+            results.Add(citation);
         }
 
         private void ApplyLongCitation()

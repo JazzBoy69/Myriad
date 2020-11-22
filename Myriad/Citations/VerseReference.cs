@@ -9,6 +9,17 @@ namespace Myriad.Library
         public int Verse = Result.notfound;
         public int WordIndex = Result.notfound;
 
+        public VerseReference()
+        {
+
+        }
+        public VerseReference(int book, int chapter, int verse, int word)
+        {
+            Book = book;
+            Chapter = chapter;
+            Verse = verse;
+            WordIndex = word;
+        }
         public void Set(int index, int value)
         {
             switch (index)
