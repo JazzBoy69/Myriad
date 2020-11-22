@@ -175,6 +175,7 @@ namespace Myriad.CitationHandlers
             if (token == ' ') return SpaceToken();
             if (token == ':') return ColonToken();
             if (token == ';') return SemiColonToken();
+            if (token == '-') return DashToken();
             return false;
         }
 
@@ -224,12 +225,25 @@ namespace Myriad.CitationHandlers
             //Todo handle deferred word index
             scriptureReference[continuation, mode] = count;
             mode = start;
+            continuation = 0;
+            citation.Label.BumpEnd();
             return EvaluateStack();
+        }
+
+        private bool DashToken()
+        {
+            if (continuation > 0)
+            {
+                ApplyShortCitation();
+            }
+            scriptureReference[Ordinals.first, mode] = count;
+            continuation = 1;
+            citation.Label.BumpEnd();
+            return true;
         }
 
         private bool EvaluateStack()
         {
-            if (Bible.IsShortBook(scriptureReference[0,name])) return EvaluateShortStack();
             VerseReference firstVerse = new VerseReference();
             EvaluateThirdVerse();
             EvaluateSecondVerse();
@@ -275,7 +289,21 @@ namespace Myriad.CitationHandlers
 
         private void ApplyLongCitation()
         {
-            throw new NotImplementedException();
+            VerseReference firstReference = new VerseReference(
+                scriptureReference[Ordinals.first, name],
+                scriptureReference[Ordinals.first, chapter],
+                scriptureReference[Ordinals.first, verse],
+                scriptureReference[Ordinals.first, word]);
+            VerseReference secondReference = new VerseReference(
+                scriptureReference[Ordinals.second, name],
+                scriptureReference[Ordinals.second, chapter],
+                scriptureReference[Ordinals.second, verse],
+                scriptureReference[Ordinals.second, word]);
+
+            Citation citation = new Citation();
+            citation.Set(firstReference, secondReference);
+            citation.LabelType = nameLength;
+            results.Add(citation);
         }
 
         private void ResetVerses()
