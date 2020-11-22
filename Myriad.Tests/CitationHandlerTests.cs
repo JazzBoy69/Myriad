@@ -20,7 +20,8 @@ namespace Myriad.Tests
             { "Mt 24:45-47", "Mt&nbsp;24:45-47" },
             { "Mt 24:14, 16-18", "Mt&nbsp;24:14, 16-18" },
             { "Mt 24:14, 16, 18", "Mt&nbsp;24:14, 16, 18" },
-            { "Mt 24:14, 15, 18", "Mt&nbsp;24:14,&nbsp;15, 18" }
+            { "Mt 24:14, 15, 18", "Mt&nbsp;24:14,&nbsp;15, 18" },
+            { "Mt 24:14; Mr 13:10", "Mt&nbsp;24:14; Mr&nbsp;13:10" }
         };
         [Test]
         public async Task CitationTests()

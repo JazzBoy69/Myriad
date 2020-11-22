@@ -200,9 +200,11 @@ namespace Myriad.CitationHandlers
                 }
                 return false;
             }
+            mode = chapter;
+            ResetVerses();
             scriptureReference[0, name] = count;
             position++;
-            mode = (Bible.IsShortBook(count)) ? verse : chapter;
+            if (Bible.IsShortBook(count)) mode = verse;
             return true;
         }
 
