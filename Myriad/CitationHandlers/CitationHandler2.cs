@@ -268,6 +268,7 @@ namespace Myriad.CitationHandlers
             if (scriptureReference[Ordinals.second, verse] == Result.notfound)
             {
                 ApplyShortCitation();
+                ResetVerse(Ordinals.first);
                 MoveVerse(Ordinals.third, Ordinals.first);
                 return;
             }
