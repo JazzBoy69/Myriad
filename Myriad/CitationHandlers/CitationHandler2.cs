@@ -225,10 +225,15 @@ namespace Myriad.CitationHandlers
         {
             //Todo handle deferred word index
             scriptureReference[continuation, mode] = count;
-            mode = start;
             continuation = 0;
             citation.Label.BumpEnd();
-            return EvaluateStack();
+            bool success = true;
+            while (ReferenceToFirstVerseExists() && success)
+            {
+                success = EvaluateStack();
+            }
+            mode = start;
+            return success;
         }
 
         private bool DashToken()
@@ -250,7 +255,7 @@ namespace Myriad.CitationHandlers
             citation.Label.BumpEnd();
             if (continuation == 0)
             {
-                continuation = 3;
+                continuation = 2;
                 return true;
             }
             return EvaluateStack();
@@ -269,13 +274,11 @@ namespace Myriad.CitationHandlers
             if (scriptureReference[Ordinals.second, verse] == Result.notfound)
             {
                 ApplyShortCitation();
-                citation.Label.BumpEnd();
                 MoveVerse(Ordinals.third, Ordinals.first);
                 return;
             }
             //apply long citation; reset verses
             ApplyLongCitation();
-            citation.Label.BumpEnd();
             if (mode == word) mode = verse;
             if (scriptureReference[Ordinals.third, verse] != Result.notfound)
             {
@@ -326,6 +329,7 @@ namespace Myriad.CitationHandlers
             {
                 ResetVerse(i);
             }
+            nameLength = LabelTypes.Short;
         }
 
         private void MoveVerse(int from, int to)
@@ -348,9 +352,10 @@ namespace Myriad.CitationHandlers
             //reset verse3    
         }
 
-        private bool EvaluateShortStack()
+
+        private bool ReferenceToFirstVerseExists()
         {
-            throw new NotImplementedException();
+            return scriptureReference[Ordinals.first, mode] != Result.notfound;
         }
 
         protected virtual int IndexOfBook(string book)
