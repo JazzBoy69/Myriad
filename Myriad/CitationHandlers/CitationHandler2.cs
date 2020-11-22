@@ -277,6 +277,12 @@ namespace Myriad.CitationHandlers
             continuation = 0;
             ResetVerse(Ordinals.first);
             ResetVerse(Ordinals.second);
+            if (scriptureReference[Ordinals.second, chapter] != Result.notfound)
+            {
+                scriptureReference[Ordinals.first, chapter] = scriptureReference[Ordinals.second, chapter];
+                ResetVerse(Ordinals.second);
+                scriptureReference[Ordinals.second, chapter] = Result.notfound;
+            }
             if (mode == word) mode = verse;
             if (scriptureReference[Ordinals.third, verse] != Result.notfound)
             {
