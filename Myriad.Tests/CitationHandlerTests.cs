@@ -17,7 +17,10 @@ namespace Myriad.Tests
         Dictionary<string, string> Citations = new Dictionary<string, string>()
         {
             { "Mt 24:14", "Mt&nbsp;24:14" },
-            { "Mt 24:45-47", "Mt&nbsp;24:45-47" }
+            { "Mt 24:45-47", "Mt&nbsp;24:45-47" },
+            { "Mt 24:14, 16-18", "Mt&nbsp;24:14, 16-18" }/*,
+            { "Mt 24:14, 16, 18", "Mt&nbsp;24:14, 16, 18" },
+            { "Mt 24:14, 15, 18", "Mt&nbsp;24:14, 15, 18" } */
         };
         [Test]
         public async Task CitationTests()

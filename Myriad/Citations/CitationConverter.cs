@@ -206,7 +206,7 @@ namespace Myriad.Parser
             }
             else
             {
-                await writer.Append(","+HTMLTags.NonbreakingSpace);
+                await writer.Append(", ");
             }
             if (currentCitation.CitationType == CitationTypes.Chapter)
             {

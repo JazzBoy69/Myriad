@@ -175,7 +175,8 @@ namespace Myriad.CitationHandlers
             if (token == ' ') return SpaceToken();
             if (token == ':') return ColonToken();
             if (token == ';') return SemiColonToken();
-            if (token == '-') return DashToken();
+            if ((token == '-') || (token == '–')) return DashToken();
+            if (token == ',') return CommaToken();
             return false;
         }
 
@@ -240,6 +241,19 @@ namespace Myriad.CitationHandlers
             continuation = 1;
             citation.Label.BumpEnd();
             return true;
+        }
+
+        private bool CommaToken()
+        {
+            scriptureReference[continuation, mode] = count;
+            citation.Label.BumpEnd();
+            citation.Label.BumpEnd();
+            if (continuation == 0)
+            {
+                continuation = 3;
+                return true;
+            }
+            return EvaluateStack();
         }
 
         private bool EvaluateStack()
