@@ -279,14 +279,13 @@ namespace Myriad.CitationHandlers
             }
             //apply long citation; reset verses
             ApplyLongCitation();
+            continuation = 0;
+            ResetVerse(Ordinals.first);
+            ResetVerse(Ordinals.second);
             if (mode == word) mode = verse;
             if (scriptureReference[Ordinals.third, verse] != Result.notfound)
             {
                 MoveVerse(Ordinals.third, Ordinals.first);
-            }
-            else
-            {
-                ResetVerses();
             }
         }
 
@@ -341,15 +340,17 @@ namespace Myriad.CitationHandlers
 
         private void ResetVerse(int ordinal)
         {
-            scriptureReference[ordinal, chapter] = Result.notfound;
+            if (mode==chapter) scriptureReference[ordinal, chapter] = Result.notfound;
             scriptureReference[ordinal, verse] = Result.notfound;
             scriptureReference[ordinal, word] = Result.notfound;
         }
 
         private void EvaluateThirdVerse()
         {
-            //if verse3 == verse1 + 1 move to verse2 
-            //reset verse3    
+            if (scriptureReference[Ordinals.third, verse] == scriptureReference[Ordinals.first, verse] + 1)
+            {
+                MoveVerse(Ordinals.third, Ordinals.second);
+            }  
         }
 
 
