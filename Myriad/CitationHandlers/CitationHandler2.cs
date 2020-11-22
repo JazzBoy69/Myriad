@@ -12,15 +12,15 @@ namespace Myriad.CitationHandlers
         const int verse = 2;
         const int word = 3;
         const int start = 4;
-        Citation citation = new Citation();
         StringRange rangeToParse;
-        StringRange labelRange;
         int[,] scriptureReference = new int[3, 4]
             { {-1,-1,-1,-1 },
               {-1,-1,-1,-1 },
               {-1,-1,-1,-1 }
             };
         LabelTypes nameLength;
+        int position;
+        int startPosition;
         int continuation = 0;
         int mode;
         List<Citation> results;
@@ -32,9 +32,10 @@ namespace Myriad.CitationHandlers
             try
             {
                 InitializeParser(givenRange, givenParagraph);
-                while (citation.Label.End <= rangeToParse.End)
+                while (position <= rangeToParse.End)
                 {
                     if (mode == start) SkipLeadingSpaces();
+                    startPosition = position;
                     GetCount();
                     GetToken();
                     bool success = EvaluateToken();
@@ -56,9 +57,7 @@ namespace Myriad.CitationHandlers
             char lastChar = givenParagraph.CharAt(rangeToParse.End);
             if (lastChar == '.') rangeToParse.PullEnd();
             results = new List<Citation>();
-            citation = new Citation();
-            citation.Label.MoveStartTo(rangeToParse.Start);
-            citation.Label.MoveEndTo(rangeToParse.Start);
+            position = rangeToParse.Start;
             count = Number.nothing;
             mode = start;
             nameLength = LabelTypes.Short;
@@ -66,76 +65,72 @@ namespace Myriad.CitationHandlers
 
         public void SkipLeadingSpaces()
         {
-            citation.LeadingSymbols.MoveStartTo(citation.Label.Start);
-            while ((citation.Label.Start <= rangeToParse.End) && (paragraphToParse.CharAt(citation.Label.Start) == ' '))
+            while ((position <= rangeToParse.End) && (paragraphToParse.CharAt(position) == ' '))
             {
-                citation.Label.BumpStart();
+                position++;
             }
-            citation.LeadingSymbols.MoveEndTo(citation.Label.Start - 1);
-            citation.Label.MoveEndTo(citation.Label.Start);
         }
 
         public void GetCount()
         {
-            labelRange = new StringRange(citation.Label.Start, citation.Label.Start);
             bool foundZero = false;
             bool lookForNumber = true;
             count = Number.nothing;
 
-            while (lookForNumber && (citation.Label.End <= rangeToParse.End))
+            while (lookForNumber && (position <= rangeToParse.End))
             {
-                char c = paragraphToParse.CharAt(citation.Label.End);
+                char c = paragraphToParse.CharAt(position);
                 switch (c)
                 {
                     case '0':
                         foundZero = true;
                         count *= 10;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '1':
                         count *= 10;
                         count++;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '2':
                         count *= 10;
                         count += 2;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '3':
                         count *= 10;
                         count += 3;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '4':
                         count *= 10;
                         count += 4;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '5':
                         count *= 10;
                         count += 5;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '6':
                         count *= 10;
                         count += 6;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '7':
                         count *= 10;
                         count += 7;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '8':
                         count *= 10;
                         count += 8;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     case '9':
                         count *= 10;
                         count += 9;
-                        citation.Label.BumpEnd();
+                        position++;
                         continue;
                     default:
                         lookForNumber = false;
@@ -148,9 +143,9 @@ namespace Myriad.CitationHandlers
         public void GetToken()
         {
             bool foundToken = false;
-            while (citation.Label.End <= rangeToParse.End)
+            while (position <= rangeToParse.End)
             {
-                token = paragraphToParse.CharAt(citation.Label.End);
+                token = paragraphToParse.CharAt(position);
                 if ((token == ' ') || (token == ':') ||
                     (token == ',') || (token == '-') ||
                     (token == '.') || (token == ';') ||
@@ -159,15 +154,13 @@ namespace Myriad.CitationHandlers
                     foundToken = true;
                     break;
                 }
-                if (citation.Label.End < rangeToParse.End) count = Result.notfound;
-                citation.Label.BumpEnd();
+                if (position < rangeToParse.End) count = Result.notfound;
+                position++;
             }
             if (!foundToken)
             {
                 token = ';';
             }
-            if (citation.Label.End > rangeToParse.End)
-                citation.Label.MoveEndTo(rangeToParse.End);
         }
 
         private bool EvaluateToken()
@@ -182,7 +175,7 @@ namespace Myriad.CitationHandlers
 
         private bool SpaceToken()
         {
-            string currentName = paragraphToParse.StringAt(citation.Label.Start, citation.Label.End - 1);
+            string currentName = paragraphToParse.StringAt(startPosition, position-1);
             count = IndexOfBook(currentName);
             if (count == Result.notfound)
             {
@@ -191,7 +184,7 @@ namespace Myriad.CitationHandlers
                     (currentName == "Song of"))
                 {
                     count = Number.nothing;
-                    citation.Label.BumpEnd();
+                    position++;
                     mode = name;
                     nameLength = LabelTypes.Long;
                     return true;
@@ -200,7 +193,7 @@ namespace Myriad.CitationHandlers
                     (currentName == "3"))
                 {
                     count = Number.nothing;
-                    citation.Label.BumpEnd();
+                    position++;
                     mode = name;
                     nameLength = LabelTypes.Normal;
                     return true;
@@ -208,7 +201,7 @@ namespace Myriad.CitationHandlers
                 return false;
             }
             scriptureReference[0, name] = count;
-            citation.Label.BumpEnd();
+            position++;
             mode = (Bible.IsShortBook(count)) ? verse : chapter;
             return true;
         }
@@ -218,7 +211,7 @@ namespace Myriad.CitationHandlers
             if (count == Result.notfound) return false;
             scriptureReference[continuation, chapter] = count;
             mode = verse;
-            citation.Label.BumpEnd();
+            position++;
             return true;
         }
         private bool SemiColonToken()
@@ -226,7 +219,7 @@ namespace Myriad.CitationHandlers
             //Todo handle deferred word index
             scriptureReference[continuation, mode] = count;
             continuation = 0;
-            citation.Label.BumpEnd();
+            position++;
             bool success = true;
             while (ReferenceToFirstVerseExists() && success)
             {
@@ -244,15 +237,14 @@ namespace Myriad.CitationHandlers
             }
             scriptureReference[Ordinals.first, mode] = count;
             continuation = 1;
-            citation.Label.BumpEnd();
+            position++;
             return true;
         }
 
         private bool CommaToken()
         {
             scriptureReference[continuation, mode] = count;
-            citation.Label.BumpEnd();
-            citation.Label.BumpEnd();
+            position += 2;
             if (continuation == 0)
             {
                 continuation = 2;
