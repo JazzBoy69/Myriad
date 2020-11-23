@@ -78,20 +78,24 @@ namespace Myriad.Parser
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
                 await writer.Append(citation.CitationRange.FirstChapter);
-                if (citation.CitationType != CitationTypes.Chapter)
+                if ((citation.CitationType != CitationTypes.Chapter) && 
+                    (citation.CitationType != CitationTypes.ChapterRange))
                     await writer.Append(":");
             }
             if (citation.CitationType == CitationTypes.Chapter) return;
-            if (citation.CitationRange.FirstVerse == 0)
+            if (citation.CitationType != CitationTypes.ChapterRange)
             {
-                if ((citation.CitationRange.Book != 18) || (!Bible.ChaptersWithSuperscription.Contains(
-                        citation.CitationRange.FirstChapter)))
-                    citation.CitationRange.SetFirstVerse(1);
+                if (citation.CitationRange.FirstVerse == 0)
+                {
+                    if ((citation.CitationRange.Book != 18) || (!Bible.ChaptersWithSuperscription.Contains(
+                            citation.CitationRange.FirstChapter)))
+                        citation.CitationRange.SetFirstVerse(1);
+                }
+                if (citation.CitationRange.FirstVerse == 0)
+                    await writer.Append("Sup");
+                else
+                    await writer.Append(citation.CitationRange.FirstVerse);
             }
-            if (citation.CitationRange.FirstVerse == 0)
-                await writer.Append("Sup");
-            else
-                await writer.Append(citation.CitationRange.FirstVerse);
             if (citation.CitationType == CitationTypes.Verse) return;
             if (!citation.CitationRange.IsOneVerse)
             {
@@ -104,8 +108,12 @@ namespace Myriad.Parser
                 }
                 if (!citation.CitationRange.OneChapter)
                 {
-                    await writer.Append("–");
+                    if (citation.CitationType == CitationTypes.ChapterRange)
+                        await writer.Append("-");
+                    else
+                        await writer.Append("–");
                     await writer.Append(citation.CitationRange.LastChapter);
+                    if (citation.CitationType == CitationTypes.ChapterRange) return;
                     await writer.Append(":");
                 }
                 else

@@ -5,7 +5,7 @@ namespace Myriad.Library
 {
     public enum CitationTypes
     {
-        Chapter, Text, Verse, Invalid
+        ChapterRange, Chapter, Text, Verse, Invalid
     }
     public enum LabelTypes
     {
@@ -143,7 +143,7 @@ namespace Myriad.Library
             {
                 CitationRange.Set(firstVerse.Book, firstVerse.Chapter, Ordinals.first,
                     secondVerse.Chapter, Bible.Chapters[firstVerse.Book][secondVerse.Chapter]);
-                CitationType = CitationTypes.Text;
+                CitationType = CitationTypes.ChapterRange;
                 return;
             }
             if (firstVerse.WordIndex != Result.notfound)

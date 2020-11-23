@@ -266,7 +266,7 @@ namespace Myriad.CitationHandlers
 
         private void EvaluateSecondVerse()
         {
-            if (scriptureReference[Ordinals.second, verse] == Result.notfound)
+            if (scriptureReference[Ordinals.second, mode] == Result.notfound)
             {
                 ApplyShortCitation();
                 ResetVerse(Ordinals.first);

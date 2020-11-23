@@ -38,10 +38,26 @@ namespace Myriad.Tests
             { "2 Corinthians 6:14–7:1", "2&nbsp;Corinthians&nbsp;6:14–7:1" },
             { "Second Corinthians 6:14-7:1", "Second Corinthians&nbsp;6:14–7:1" }
         };
+        Dictionary<string, string> NewCitations = new Dictionary<string, string>()
+        {
+            { "Ge 6-8", "Ge&nbsp;6-8" }
+        };
         [Test]
         public async Task CitationTests()
         {
             foreach (KeyValuePair<string, string> entry in Citations)
+            {
+                List<Citation> citations = CitationConverter.FromString(entry.Key);
+                var writer = Writer.New();
+                await CitationConverter.ToString(citations, writer);
+                string citationText = writer.Response();
+                Assert.AreEqual(entry.Value, citationText);
+            }
+        }
+        [Test]
+        public async Task NewCitationTests()
+        {
+            foreach (KeyValuePair<string, string> entry in NewCitations)
             {
                 List<Citation> citations = CitationConverter.FromString(entry.Key);
                 var writer = Writer.New();
