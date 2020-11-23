@@ -68,7 +68,7 @@ namespace Myriad.Tests
         };
         Dictionary<string, string> NewCitations = new Dictionary<string, string>()
         {
-
+            {"Mt 24:14.8", "Mt&nbsp;24:14" }
         };
         [Test]
         public async Task CitationTests()

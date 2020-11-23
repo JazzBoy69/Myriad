@@ -126,7 +126,7 @@ namespace Myriad.Library
         public void Set(int book, int chapter, int verse, int wordIndex)
         {
             start = new KeyID(book, chapter, verse, wordIndex);
-            end = new KeyID(book, chapter, verse, KeyID.MaxWordIndex);
+            end = new KeyID(book, chapter, verse, wordIndex);
         }
         internal void Set(int book, int firstChapter, int firstVerse, int lastChapter, int lastVerse)
         {

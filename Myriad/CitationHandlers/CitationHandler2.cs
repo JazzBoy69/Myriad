@@ -171,6 +171,7 @@ namespace Myriad.CitationHandlers
             if ((token == '-') || (token == '–')) return DashToken();
             if (token == ',') return CommaToken();
             if (token == '!') return BangToken();
+            if (token == '.') return DotToken();
             return false;
         }
 
@@ -262,6 +263,14 @@ namespace Myriad.CitationHandlers
             ApplyShortCitation();
             results[results.Count - 1].CitationType = CitationTypes.Verse;
             return false;
+        }
+
+        private bool DotToken()
+        {
+            scriptureReference[continuation, verse] = count;
+            position++;
+            mode = word;
+            return true;
         }
 
         private bool EvaluateStack()
