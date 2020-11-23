@@ -332,15 +332,7 @@ namespace Myriad.Parser
 
         public async Task AppendCitations(IParagraph paragraph, List<Citation> citations)
         {
-            for (int i=Ordinals.first; i<citations.Count; i++)
-            {
-                if (!citations[i].CitationRange.Valid)
-                {
-                    await AppendText(paragraph, citations[i]);
-                    continue;
-                }
-                await AppendCitation(paragraph, citations[i]);
-            }
+            await CitationConverter.AppendLinks(citations, writer);
         }
 
         private async Task AppendText(IParagraph paragraph, Citation citation)
@@ -360,19 +352,6 @@ namespace Myriad.Parser
             await StartCitationAnchor(writer, citation);
             await writer.Append(paragraph.SpanAt(citation.DisplayLabel).ToString());
             await writer.Append(HTMLTags.EndAnchor);
-        }
-        internal async Task AppendCitation(IParagraph paragraph, Citation citation)
-        {
-            if (citation.LeadingSymbols.Length > 0)
-                await writer.Append(paragraph.
-                    SpanAt(citation.LeadingSymbols.Start, citation.LeadingSymbols.End).ToString());
-            await StartCitationAnchor(writer, citation);
-            await writer.Append(paragraph.SpanAt(citation.Label.Start,
-                citation.Label.End).ToString());
-            await writer.Append(HTMLTags.EndAnchor);
-            if (citation.TrailingSymbols.Length > 0)
-                await writer.Append(paragraph.
-                    SpanAt(citation.TrailingSymbols.Start, citation.TrailingSymbols.End).ToString());
         }
 
         private async Task StartCitationAnchor(HTMLWriter writer, Citation citation)

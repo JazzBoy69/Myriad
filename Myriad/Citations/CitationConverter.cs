@@ -202,6 +202,18 @@ namespace Myriad.Parser
             await Append(writer, citation);
             await writer.Append(HTMLTags.EndAnchor);
         }
+
+        public static async Task AppendLinks(List<Citation> citations, HTMLWriter writer)
+        {
+            for (var i = Ordinals.first; i < citations.Count; i++)
+            {
+                await PageFormatter.StartCitationLink(writer, citations[i]);
+                if (i == Ordinals.first) await Append(writer, citations[i]);
+                else
+                    await AppendNext(writer, citations[i - 1], citations[i]);
+                await writer.Append(HTMLTags.EndAnchor);
+            }
+        }
         private static async Task AppendNext(HTMLWriter writer, Citation precedingCitation, Citation currentCitation)
         {
             if (precedingCitation.CitationRange.Book != currentCitation.CitationRange.Book)

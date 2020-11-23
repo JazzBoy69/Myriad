@@ -19,6 +19,7 @@ namespace Myriad.CitationHandlers
               {-1,-1,-1,-1 }
             };
         LabelTypes nameLength;
+        int labelStart;
         int position;
         int startPosition;
         int continuation = 0;
@@ -58,6 +59,7 @@ namespace Myriad.CitationHandlers
             if (lastChar == '.') rangeToParse.PullEnd();
             results = new List<Citation>();
             position = rangeToParse.Start;
+            labelStart = rangeToParse.Start;
             count = Number.nothing;
             mode = start;
             nameLength = LabelTypes.Short;
@@ -331,6 +333,8 @@ namespace Myriad.CitationHandlers
             Citation citation = new Citation();
             citation.Set(verseReference);
             citation.LabelType = nameLength;
+            citation.Label = new StringRange(labelStart, position);
+            labelStart = position + 1;
             results.Add(citation);
         }
 
@@ -355,6 +359,8 @@ namespace Myriad.CitationHandlers
             Citation citation = new Citation();
             citation.Set(firstReference, secondReference);
             citation.LabelType = nameLength;
+            citation.Label = new StringRange(labelStart, position);
+            labelStart = position + 1;
             results.Add(citation);
         }
 
@@ -375,6 +381,8 @@ namespace Myriad.CitationHandlers
             Citation citation = new Citation();
             citation.CitationType = CitationTypes.Verse;
             citation.CitationRange = new CitationRange(start, end);
+            citation.Label = new StringRange(labelStart, position);
+            labelStart = position + 1;
             results.Add(citation);
             return true;
         }
