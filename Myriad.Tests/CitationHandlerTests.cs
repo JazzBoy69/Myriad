@@ -36,11 +36,12 @@ namespace Myriad.Tests
             { "Mt 6:33; 24:45-47", "Mt&nbsp;6:33; 24:45-47" },
             { "2Co 6:14–7:1", "2Co&nbsp;6:14–7:1" },
             { "2 Corinthians 6:14–7:1", "2&nbsp;Corinthians&nbsp;6:14–7:1" },
-            { "Second Corinthians 6:14-7:1", "Second Corinthians&nbsp;6:14–7:1" }
+            { "Second Corinthians 6:14-7:1", "Second Corinthians&nbsp;6:14–7:1" },
+            { "Ge 6-8", "Ge&nbsp;6-8" }
         };
         Dictionary<string, string> NewCitations = new Dictionary<string, string>()
         {
-            { "Ge 6-8", "Ge&nbsp;6-8" }
+            { "Ge 6, 7", "Ge&nbsp;6,&nbsp;7" }
         };
         [Test]
         public async Task CitationTests()

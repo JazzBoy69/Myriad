@@ -334,6 +334,7 @@ namespace Myriad.CitationHandlers
 
         private void MoveVerse(int from, int to)
         {
+            if (mode == chapter) scriptureReference[to, chapter] = scriptureReference[from, chapter];
             scriptureReference[to, verse] = scriptureReference[from, verse];
             scriptureReference[to, word] = scriptureReference[from, word];
             ResetVerse(from); 
@@ -348,7 +349,7 @@ namespace Myriad.CitationHandlers
 
         private void EvaluateThirdVerse()
         {
-            if (scriptureReference[Ordinals.third, verse] == scriptureReference[Ordinals.first, verse] + 1)
+            if (scriptureReference[Ordinals.third, mode] == scriptureReference[Ordinals.first, mode] + 1)
             {
                 MoveVerse(Ordinals.third, Ordinals.second);
             }  

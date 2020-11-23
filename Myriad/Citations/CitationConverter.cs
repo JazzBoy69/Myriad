@@ -78,7 +78,7 @@ namespace Myriad.Parser
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
                 await writer.Append(citation.CitationRange.FirstChapter);
-                if ((citation.CitationType != CitationTypes.Chapter) && 
+                if ((citation.CitationType != CitationTypes.Chapter) &&
                     (citation.CitationType != CitationTypes.ChapterRange))
                     await writer.Append(":");
             }
@@ -97,29 +97,35 @@ namespace Myriad.Parser
                     await writer.Append(citation.CitationRange.FirstVerse);
             }
             if (citation.CitationType == CitationTypes.Verse) return;
-            if (!citation.CitationRange.IsOneVerse)
+            if (citation.CitationRange.IsOneVerse) return;
+
+            if ((citation.CitationRange.FirstChapter == citation.CitationRange.LastChapter) &&
+                (citation.CitationRange.FirstVerse + 1 == citation.CitationRange.LastVerse))
             {
-                if ((citation.CitationRange.FirstChapter == citation.CitationRange.LastChapter) &&
-                    (citation.CitationRange.FirstVerse + 1 == citation.CitationRange.LastVerse))
+                await writer.Append("," + HTMLTags.NonbreakingSpace);
+                await writer.Append(citation.CitationRange.LastVerse);
+                return;
+            }
+            if (!citation.CitationRange.OneChapter)
+            {
+                if ((citation.CitationRange.LastChapter == citation.CitationRange.FirstChapter + 1) &&
+                    (citation.CitationType == CitationTypes.ChapterRange))
                 {
-                    await writer.Append("," + HTMLTags.NonbreakingSpace);
-                    await writer.Append(citation.CitationRange.LastVerse);
-                    return;
-                }
-                if (!citation.CitationRange.OneChapter)
-                {
-                    if (citation.CitationType == CitationTypes.ChapterRange)
-                        await writer.Append("-");
-                    else
-                        await writer.Append("–");
-                    await writer.Append(citation.CitationRange.LastChapter);
-                    if (citation.CitationType == CitationTypes.ChapterRange) return;
-                    await writer.Append(":");
+                    await writer.Append(",&nbsp;");
                 }
                 else
+                if (citation.CitationType == CitationTypes.ChapterRange)
                     await writer.Append("-");
-                await writer.Append(citation.CitationRange.LastVerse);
+                else
+                    await writer.Append("–");
+                await writer.Append(citation.CitationRange.LastChapter);
+                if (citation.CitationType == CitationTypes.ChapterRange) return;
+                await writer.Append(":");
             }
+            else
+                await writer.Append("-");
+            await writer.Append(citation.CitationRange.LastVerse);
+
         }
 
 
