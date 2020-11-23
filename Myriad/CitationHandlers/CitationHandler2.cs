@@ -219,11 +219,19 @@ namespace Myriad.CitationHandlers
         }
         private bool SemiColonToken()
         {
-            //Todo handle deferred word index
+            bool success = true;
+            if ((mode == word) && (count == Result.notfound))
+            {
+                success = EvaluateWordStack();
+                continuation = 0;
+                position++;
+                mode = start;
+                nameLength = LabelTypes.Short;
+                return success;
+            }
             scriptureReference[continuation, mode] = count;
             continuation = 0;
             position++;
-            bool success = true;
             while (ReferenceToFirstVerseExists() && success)
             {
                 success = EvaluateStack();
@@ -348,6 +356,27 @@ namespace Myriad.CitationHandlers
             citation.Set(firstReference, secondReference);
             citation.LabelType = nameLength;
             results.Add(citation);
+        }
+
+        private bool EvaluateWordStack()
+        {
+            string currentWord = paragraphToParse.StringAt(startPosition, position - 1);
+
+            KeyID start = new KeyID(
+                scriptureReference[Ordinals.first, name],
+                scriptureReference[Ordinals.first, chapter],
+                scriptureReference[Ordinals.first, verse],
+                currentWord);
+            KeyID end = new KeyID(
+                scriptureReference[Ordinals.first, name],
+                scriptureReference[Ordinals.first, chapter],
+                scriptureReference[Ordinals.first, verse],
+                KeyID.DeferredWordIndex);
+            Citation citation = new Citation();
+            citation.CitationType = CitationTypes.Verse;
+            citation.CitationRange = new CitationRange(start, end);
+            results.Add(citation);
+            return true;
         }
 
         private void ResetVerses()
