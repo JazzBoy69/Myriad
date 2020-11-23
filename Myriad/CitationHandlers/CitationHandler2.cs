@@ -170,6 +170,7 @@ namespace Myriad.CitationHandlers
             if (token == ';') return SemiColonToken();
             if ((token == '-') || (token == '–')) return DashToken();
             if (token == ',') return CommaToken();
+            if (token == '!') return BangToken();
             return false;
         }
 
@@ -253,6 +254,14 @@ namespace Myriad.CitationHandlers
                 return true;
             }
             return EvaluateStack();
+        }
+
+        private bool BangToken()
+        {
+            scriptureReference[continuation, mode] = count;
+            ApplyShortCitation();
+            results[results.Count - 1].CitationType = CitationTypes.Verse;
+            return false;
         }
 
         private bool EvaluateStack()
