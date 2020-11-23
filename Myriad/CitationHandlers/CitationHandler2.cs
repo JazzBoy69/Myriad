@@ -293,6 +293,10 @@ namespace Myriad.CitationHandlers
 
         private void ApplyShortCitation()
         {
+            if (Bible.IsShortBook(scriptureReference[Ordinals.first, name]))
+            {
+                scriptureReference[Ordinals.first, chapter] = 1;
+            }
             VerseReference verseReference = new VerseReference(
                 scriptureReference[Ordinals.first, name],
                 scriptureReference[Ordinals.first, chapter],
@@ -307,6 +311,11 @@ namespace Myriad.CitationHandlers
 
         private void ApplyLongCitation()
         {
+            if (Bible.IsShortBook(scriptureReference[Ordinals.first, name]))
+            {
+                scriptureReference[Ordinals.first, chapter] = 1;
+                scriptureReference[Ordinals.second, chapter] = 1;
+            }
             VerseReference firstReference = new VerseReference(
                 scriptureReference[Ordinals.first, name],
                 scriptureReference[Ordinals.first, chapter],
