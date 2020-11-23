@@ -35,7 +35,7 @@ namespace Myriad.CitationHandlers
                 while (position <= rangeToParse.End)
                 {
                     if (mode == start) SkipLeadingSpaces();
-                    startPosition = position;
+                    if (mode != name) startPosition = position;
                     GetCount();
                     GetToken();
                     bool success = EvaluateToken();
@@ -228,6 +228,7 @@ namespace Myriad.CitationHandlers
                 success = EvaluateStack();
             }
             mode = start;
+            nameLength = LabelTypes.Short;
             return success;
         }
 
@@ -329,7 +330,6 @@ namespace Myriad.CitationHandlers
             {
                 ResetVerse(i);
             }
-            nameLength = LabelTypes.Short;
         }
 
         private void MoveVerse(int from, int to)
