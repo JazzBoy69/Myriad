@@ -23,6 +23,13 @@ namespace Myriad.Library
                 return result;
             return Result.error;
         }
+        public static LabelTypes NameLength(string p)
+        {
+            if (AbbreviationsTitleCase.Contains(p)) return LabelTypes.Short;
+            if (NamesTitleCase.Contains(p)) return LabelTypes.Normal;
+            return LabelTypes.Long;
+        }
+
         internal static List<int> ChaptersWithSuperscription = new List<int>
         {
             3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -223,12 +230,12 @@ namespace Myriad.Library
             "HEBREWS", "JAMES", "1 PETER", "2 PETER", "1 JOHN", "2 JOHN",
             "3 JOHN", "JUDE", "REVELATION"
             };
-        public static List<string> NamesTitleCase = new List<string> {
+        public static List<string> PrintNamesTitleCase = new List<string> {
             "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
             "Joshua", "Judges", "Ruth", "1&nbsp;Samuel", "2&nbsp;Samuel", "1&nbsp;Kings",
             "2&nbsp;Kings", "1&nbsp;Chronicles", "2&nbsp;Chronicles", "Ezra", "Nehemiah",
             "Esther", "Job", "Psalm", "Proverbs", "Ecclesiastes",
-            "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations",
+            "Song&nbsp;of Solomon", "Isaiah", "Jeremiah", "Lamentations",
             "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah",
             "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai",
             "Zechariah", "Malachi", "Matthew", "Mark", "Luke", "John",
@@ -238,11 +245,26 @@ namespace Myriad.Library
             "Hebrews", "James", "1&nbsp;Peter", "2&nbsp;Peter", "1&nbsp;John", "2&nbsp;John",
             "3&nbsp;John", "Jude", "Revelation"
             };
+        public static List<string> NamesTitleCase = new List<string> {
+            "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
+            "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings",
+            "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah",
+            "Esther", "Job", "Psalm", "Proverbs", "Ecclesiastes",
+            "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations",
+            "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah",
+            "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai",
+            "Zechariah", "Malachi", "Matthew", "Mark", "Luke", "John",
+            "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians",
+            "Ephesians", "Philippians", "Colossians", "1 Thessalonians",
+            "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon",
+            "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John",
+            "3 John", "Jude", "Revelation"
+            };
         public static List<string> LongNamesTitleCase = new List<string> {
             "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy",
             "Joshua", "Judges", "Ruth", "First Samuel", "Second Samuel", "First Kings",
             "Second Kings", "First Chronicles", "Second Chronicles", "Ezra", "Nehemiah",
-            "Esther", "Job", "Psalm", "Proverbs", "Ecclesiastes",
+            "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes",
             "Song&nbsp;of Solomon", "Isaiah", "Jeremiah", "Lamentations",
             "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah",
             "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai",
@@ -256,7 +278,7 @@ namespace Myriad.Library
         public static Dictionary<LabelTypes, List<string>> Names = new Dictionary<LabelTypes, List<string>>()
         {
             {LabelTypes.Long, LongNamesTitleCase },
-            {LabelTypes.Normal, NamesTitleCase },
+            {LabelTypes.Normal, PrintNamesTitleCase },
             {LabelTypes.Short, AbbreviationsTitleCase }
         };
         internal static List<string> LongAbbreviations = new List<string> {

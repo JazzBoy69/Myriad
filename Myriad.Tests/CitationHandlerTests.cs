@@ -44,11 +44,30 @@ namespace Myriad.Tests
             { "Re 16:14, 16-18", "Re&nbsp;16:14, 16-18" },
             { "Mt 2:12, 22", "Mt&nbsp;2:12, 22" },
             { "Mr 6:1, 4-6", "Mr&nbsp;6:1, 4-6" },
-            { "Jas 1:13, 17", "Jas&nbsp;1:13, 17" }
+            { "Jas 1:13, 17", "Jas&nbsp;1:13, 17" },
+            { "Jude 18-21, 25", "Jude&nbsp;18-21, 25" },
+            {"1 John 5:3", "1&nbsp;John&nbsp;5:3" },
+            {"First John 5:3", "First John&nbsp;5:3" },
+            {"Song of Solomon 2:1", "Song&nbsp;of Solomon&nbsp;2:1" }
         };
         Dictionary<string, string> NewCitations = new Dictionary<string, string>()
         {
-           { "Jude 18-21, 25", "Jude&nbsp;18-21, 25" }
+            {"2Jo 10, 12-14", "2Jo&nbsp;10, 12-14" },
+            {"2 John 10, 12-14", "2&nbsp;John&nbsp;10, 12-14" },
+            {"Second John 10, 12-14", "Second John&nbsp;10, 12-14" },
+            {"2Jo 10, 12", "2Jo&nbsp;10, 12" },
+            {"Mt 28:19, 20", "Mt&nbsp;28:19,&nbsp;20" },
+            {"3Jo 1, 5-8", "3Jo&nbsp;1, 5-8" },
+            {"3 John 1, 5-8", "3&nbsp;John&nbsp;1, 5-8" },
+            {"Third John 1, 5-8", "Third John&nbsp;1, 5-8" },
+            {"Ps 94, 95, 98", "Ps&nbsp;94,&nbsp;95, 98" },
+            {"Psalms 94, 95, 98", "Psalms&nbsp;94,&nbsp;95, 98" },
+            {"Psalm 94", "Psalm&nbsp;94" },
+            {"Ge 36:2, 5-8, 14", "Ge&nbsp;36:2, 5-8, 14" },
+            {"Mt 3:1, 6, 13-17", "Mt&nbsp;3:1, 6, 13-17" },
+            {"Mt 5:3, 10, 19, 20", "Mt&nbsp;5:3, 10, 19,&nbsp;20" },
+            {"Joh 8:26, 28, 38, 42", "Joh&nbsp;8:26, 28, 38, 42" },
+            {"Joh 8:26, 28, 38-42", "Joh&nbsp;8:26, 28, 38-42" }
         };
         [Test]
         public async Task CitationTests()

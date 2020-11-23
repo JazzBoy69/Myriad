@@ -186,7 +186,6 @@ namespace Myriad.CitationHandlers
                     count = Number.nothing;
                     position++;
                     mode = name;
-                    nameLength = LabelTypes.Long;
                     return true;
                 }
                 if ((currentName == "1") || (currentName == "2") ||
@@ -195,7 +194,6 @@ namespace Myriad.CitationHandlers
                     count = Number.nothing;
                     position++;
                     mode = name;
-                    nameLength = LabelTypes.Normal;
                     return true;
                 }
                 return false;
@@ -203,6 +201,7 @@ namespace Myriad.CitationHandlers
             mode = chapter;
             ResetVerses();
             scriptureReference[0, name] = count;
+            nameLength = Bible.NameLength(currentName);
             position++;
             if (Bible.IsShortBook(count)) mode = verse;
             return true;
