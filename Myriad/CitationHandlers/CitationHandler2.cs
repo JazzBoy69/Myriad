@@ -222,6 +222,7 @@ namespace Myriad.CitationHandlers
         }
         private bool SemiColonToken()
         {
+            if (mode == start) return false;
             bool success = true;
             if ((mode == word) && (count == Result.notfound))
             {
