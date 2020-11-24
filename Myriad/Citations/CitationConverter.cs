@@ -6,6 +6,7 @@ using Feliciana.ResponseWriter;
 using Myriad.Library;
 using Myriad.CitationHandlers;
 using Myriad.Data;
+using Myriad.Pages;
 using System;
 using Feliciana.Data;
 
@@ -206,7 +207,25 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndAnchor);
         }
 
-        public static async Task AppendLinks(List<Citation> citations, HTMLWriter writer)
+        public static async Task AppendLinks(HTMLWriter writer, List<Citation> citations, CitationRange targetRange)
+        {
+            for (var i = Ordinals.first; i < citations.Count; i++)
+            {
+                if (i == Ordinals.first)
+                {
+                    await PageFormatter.StartCitationAnchor(writer, citations[i], targetRange);
+                    await Append(writer, citations[i]);
+                    await writer.Append(HTMLTags.EndAnchor);
+                    continue;
+                }
+                await AppendConnectingPunctuation(writer, citations[i - 1], citations[i]);
+                await PageFormatter.StartCitationAnchor(writer, citations[i], targetRange);
+                await AppendNext(writer, citations[i - 1], citations[i]);
+                await writer.Append(HTMLTags.EndAnchor);
+            }
+        }
+
+        public static async Task AppendLinks(HTMLWriter writer, List<Citation> citations)
         {
             for (var i = Ordinals.first; i < citations.Count; i++)
             {

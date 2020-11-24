@@ -427,27 +427,6 @@ namespace Myriad.Parser
             foundEndToken = true;
         }
 
-        public async Task HandleLastDashCitations()
-        {
-            List<Citation> citations =
-                citationHandler.ParseCitations(mainRange, currentParagraph);
-            if (citations.Count > 0)
-            {
-                if (formats.labelExists)
-                {
-                    citations[Ordinals.first].DisplayLabel = labelRange;
-                    await formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
-                    mainRange.MoveStartTo(mainRange.End);
-                    return;
-                }
-                else
-                {
-                    citations.Last().Label.BumpEnd();
-                    await formatter.AppendCitations(currentParagraph, citations);
-                    mainRange.MoveStartTo(citations[Ordinals.last].Label.End+1);
-                }
-            }
-        }
         public async Task HandleCitations()
         {
             var rangeToParse = new StringRange(mainRange.Start, mainRange.End - 1);

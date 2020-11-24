@@ -274,13 +274,13 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndAnchor);
         }
 
-        private static async Task AppendPartialPageLoad(HTMLWriter writer)
+        internal static async Task AppendPartialPageLoad(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.Ampersand +
                 HTMLClasses.partial);
         }
 
-        private static async Task AppendHandleLink(HTMLWriter writer)
+        internal static async Task AppendHandleLink(HTMLWriter writer)
         {
             await writer.Append(HTMLTags.OnClick +
                 JavaScriptFunctions.HandleLink);
@@ -332,7 +332,14 @@ namespace Myriad.Parser
 
         public async Task AppendCitations(IParagraph paragraph, List<Citation> citations)
         {
-            await CitationConverter.AppendLinks(citations, writer);
+            if ((targetRange != null) && targetRange.Valid)
+            {
+                await CitationConverter.AppendLinks(writer, citations, targetRange);
+            }
+            else
+            {
+                await CitationConverter.AppendLinks(writer, citations);
+            }
         }
 
         private async Task AppendText(IParagraph paragraph, Citation citation)
@@ -354,12 +361,33 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndAnchor);
         }
 
-        private async Task StartCitationAnchor(HTMLWriter writer, Citation citation)
+        internal async Task StartCitationAnchor(HTMLWriter writer, Citation citation)
         {
             await writer.Append(HTMLTags.StartAnchor);
             if ((targetRange != null) &&
                 (targetRange.Contains(citation.CitationRange) ||
                 citation.CitationRange.Contains(targetRange)))
+            {
+                await writer.Append(HTMLTags.Class +
+                    HTMLClasses.target +
+                    HTMLTags.CloseQuote +
+                    Symbol.space);
+            }
+            await writer.Append(HTMLTags.HREF);
+            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(HTMLTags.StartQuery);
+            await AppendQuery(writer, citation);
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
+            await writer.Append(HTMLTags.EndTag);
+        }
+
+        internal static async Task StartCitationAnchor(HTMLWriter writer, Citation citation, CitationRange target)
+        {
+            await writer.Append(HTMLTags.StartAnchor);
+            if ((target != null) &&
+                (target.Contains(citation.CitationRange) ||
+                citation.CitationRange.Contains(target)))
             {
                 await writer.Append(HTMLTags.Class +
                     HTMLClasses.target +
