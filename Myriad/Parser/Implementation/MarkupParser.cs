@@ -23,7 +23,7 @@ namespace Myriad.Parser
         internal readonly Formats formats = new Formats();
         protected bool hideDetails = false;
         protected readonly PageFormatter formatter;
-        readonly CitationHandler citationHandler;
+        readonly CitationHandler2 citationHandler;
         readonly StringRange labelRange = new StringRange();
         protected ParagraphInfo paragraphInfo = new ParagraphInfo();
         int headerCount = Number.nothing;
@@ -42,7 +42,7 @@ namespace Myriad.Parser
         {
             this.writer = writer;
             formatter = new PageFormatter(writer);
-            citationHandler = new CitationHandler();
+            citationHandler = new CitationHandler2();
         }
         public void SetTargetRange(CitationRange targetRange)
         {
@@ -342,7 +342,7 @@ namespace Myriad.Parser
             if (token == '~')
             {
                 citationLevel++;
-                await formatter.Append("—");
+                await formatter.Append("\u200D—\u200D");
                 SkipToken();
                 return;
             }

@@ -61,7 +61,7 @@ namespace Myriad.Benchmark
         public void ParseCitation()
         {
             string textOfCitation = "({Mark 2:1|Mr 2:1!})";
-            CitationHandler citationHandler = new CitationHandler();
+            CitationHandler2 citationHandler = new CitationHandler2();
             IParagraph paragraph = new Paragraph()
             {
                 Text = textOfCitation

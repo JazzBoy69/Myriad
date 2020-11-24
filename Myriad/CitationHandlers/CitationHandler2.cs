@@ -162,6 +162,7 @@ namespace Myriad.CitationHandlers
             if (!foundToken)
             {
                 token = ';';
+                position = rangeToParse.End;
             }
         }
 
@@ -333,7 +334,7 @@ namespace Myriad.CitationHandlers
             Citation citation = new Citation();
             citation.Set(verseReference);
             citation.LabelType = nameLength;
-            citation.Label = new StringRange(labelStart, position);
+            citation.Label = new StringRange(labelStart, position-1);
             labelStart = position + 1;
             results.Add(citation);
         }
@@ -359,7 +360,7 @@ namespace Myriad.CitationHandlers
             Citation citation = new Citation();
             citation.Set(firstReference, secondReference);
             citation.LabelType = nameLength;
-            citation.Label = new StringRange(labelStart, position);
+            citation.Label = new StringRange(labelStart, position-1);
             labelStart = position + 1;
             results.Add(citation);
         }
@@ -381,7 +382,7 @@ namespace Myriad.CitationHandlers
             Citation citation = new Citation();
             citation.CitationType = CitationTypes.Verse;
             citation.CitationRange = new CitationRange(start, end);
-            citation.Label = new StringRange(labelStart, position);
+            citation.Label = new StringRange(labelStart, position-1);
             labelStart = position + 1;
             results.Add(citation);
             return true;
