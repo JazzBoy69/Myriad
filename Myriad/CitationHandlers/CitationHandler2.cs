@@ -279,6 +279,7 @@ namespace Myriad.CitationHandlers
 
         private bool DotToken()
         {
+            if (mode != verse) return false;
             scriptureReference[continuation, verse] = count;
             position++;
             mode = word;
