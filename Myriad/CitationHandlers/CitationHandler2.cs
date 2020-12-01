@@ -259,6 +259,7 @@ namespace Myriad.CitationHandlers
 
         private bool CommaToken()
         {
+            if ((mode==start) || (mode == name)) return false;
             scriptureReference[continuation, mode] = count;
             position += 2;
             if (continuation == 0)

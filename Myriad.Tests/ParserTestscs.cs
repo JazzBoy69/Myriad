@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Feliciana.ResponseWriter;
 using Myriad.Parser;
+using Myriad.Pages;
+using Myriad.Library;
 
 namespace Myriad.Tests
 {
@@ -15,6 +17,15 @@ namespace Myriad.Tests
         private HttpResponse DefaultResponse()
         {
             return new DefaultHttpContext().Response;
+        }
+
+        [Test]
+        public async Task RenderVerse()
+        {
+            VersePage page = new VersePage();
+            page.SetResponse(DefaultResponse());
+            page.SetCitation(new Citation(654639872, 654640127));
+            await page.RenderPage();
         }
 
         [Test]
