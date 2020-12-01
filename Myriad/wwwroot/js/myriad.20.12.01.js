@@ -900,7 +900,7 @@ function HandleHiddenDetails()
         details[i].onclick = function (e) {
             e.target.classList.add("showdetail");
             e.target.classList.remove('hiddendetail');
-            var hiddenSiblings = e.target.parent.childNodes.getElementsByClassName("hiddendetail");
+            var hiddenSiblings = e.target.parentNode.parentNode.getElementsByClassName("hiddendetail");
             AddClassToGroup(hiddenSiblings, "showdetail");
             RemoveClassFromGroup(hiddenSiblings, "hiddendetail");
         }
