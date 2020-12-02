@@ -132,7 +132,34 @@ namespace Myriad.Search
                  where sentence.Score < 25
                  orderby sentence.Type, sentence.Score
                  select sentence).ToList();
+            if (!isSynonymQuery && EnglishDictionary.ContainsCommonWords(pageInfo.QueryWords))
+            {
+                filteredOrSentences.InsertRange(Ordinals.first, ExactPhraseSearch(pageInfo, pageInfo.CitationRange));
+            }
             return filteredOrSentences;
+        }
+
+        internal List<SearchSentence> ExactPhraseSearch(SearchPageInfo pageInfo, CitationRange searchRange)
+        {
+            if (pageInfo.QueryWords.Count < 2) return new List<SearchSentence>();
+            var results = ReadSearchResults(ExactPhraseQuery(pageInfo, searchRange));
+            List<SearchSentence> sentences = new List<SearchSentence>();
+            for (int i = Ordinals.first; i < results.Count; i++)
+            {
+                SearchSentence sentence = new SearchSentence(results[i].SentenceID, results[i].Length);
+                for (int j = Ordinals.first; j < results[i].Length; j++)
+                {
+                    var result = new SearchResult(results[i].SentenceID, j, 1, j);
+                    if ((definitionSearchesInSentences != null) &&
+                        (definitionSearchesInSentences.ContainsKey(result.Key)))
+                        result.SetArticleID(definitionSearchesInSentences[result.Key]);
+                    sentence.Add(result);
+                }
+                sentence.SetScore(1);
+                sentence.SetType(0);
+                sentences.Add(sentence);
+            } 
+            return sentences;
         }
 
         private List<SearchSentence> CompletePhraseSearch(string query, CitationRange searchRange)
@@ -360,6 +387,46 @@ namespace Myriad.Search
             result.AddRange(Inflections.RootsOf(word));
             return result.Distinct().ToList();
         }
+
+        private static string ExactPhraseQuery(SearchPageInfo pageInfo, CitationRange searchRange)
+        {
+            var query = new StringBuilder(
+                            "select sw0.sentence, sw0.wordindex, sw");
+            query.Append(pageInfo.QueryWords.Count - 1);
+            query.Append(".last-sw0.start+1, 0, sw0.substitute, '");
+            query.Append(pageInfo.Query);
+            query.Append("' from searchwords as sw0 ");
+            for (int i = Ordinals.second; i < pageInfo.QueryWords.Count; i++)
+            {
+                query.Append(" join searchwords as sw");
+                query.Append(i);
+                query.Append(" on sw");
+                query.Append(i);
+                query.Append(".start=sw");
+                query.Append(i - 1);
+                query.Append(".last+1 ");
+            }
+            query.Append("where ");
+            for (int i = Ordinals.first; i < pageInfo.QueryWords.Count; i++)
+            {
+                if (i > Ordinals.first) query.Append(" and ");
+                query.Append("sw");
+                query.Append(i);
+                query.Append(".text='");
+                query.Append(pageInfo.QueryWords[i]);
+                query.Append("'");
+            }
+            if ((searchRange != null) && (searchRange.Valid))
+            {
+                query.Append(" and (sw0.start>=");
+                query.Append(searchRange.StartID);
+                query.Append(" and sw0.last<=");
+                query.Append(searchRange.EndID);
+                query.Append(") ");
+            }
+            return query.ToString();
+        }
+
 
         private static string PhraseQuery(string phrase, int queryIndex, CitationRange searchRange)
         {

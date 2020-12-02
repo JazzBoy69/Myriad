@@ -152,7 +152,8 @@ namespace Myriad.Pages
             {
                 var searchEvaluator = new SearchEvaluator();
                 searchEvaluator.EvaluateSynonyms(phrases);
-                var results = await searchEvaluator.Search(phrases, pageInfo, false);
+                var results = new List<SearchSentence>();
+                results.AddRange(await searchEvaluator.Search(phrases, pageInfo, false));
                 pageInfo.SetResults(results);
                 pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
                 await SearchFormatter.FormatBody(writer, pageInfo);
@@ -161,6 +162,7 @@ namespace Myriad.Pages
             if (phrases.Count == 0) pageInfo.SetQuery("no results");
             await AddPageTitleData(writer);
         }
+
         public async Task WriteSynonymResults(HTMLWriter writer)
         {
             var phrases = Phrases.GetPhrases(pageInfo.QueryWords);

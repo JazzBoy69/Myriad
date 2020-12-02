@@ -341,13 +341,15 @@ namespace Myriad.Search
             {
                 return;
             }
-            int index = startIndex;
-            while ((index <= endIndex) && (index < searchResults.Count))
+
+            var usedSentences = new List<int>();
+            for (int index = startIndex; (index <= endIndex) && (index < searchResults.Count); index++)
             {
+                if (usedSentences.Contains(searchResults[index].SentenceID)) continue;
                 await writer.Append(HTMLTags.StartParagraph);
                 await FormatSearchResult(writer, searchResults[index]);
                 await writer.Append(HTMLTags.EndParagraph);
-                index++;
+                usedSentences.Add(searchResults[index].SentenceID);
             }
         }
 
