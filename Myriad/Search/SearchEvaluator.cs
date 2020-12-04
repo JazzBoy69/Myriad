@@ -149,7 +149,7 @@ namespace Myriad.Search
                 SearchSentence sentence = new SearchSentence(results[i].SentenceID, results[i].Length);
                 for (int j = Ordinals.first; j < results[i].Length; j++)
                 {
-                    var result = new SearchResult(results[i].SentenceID, j, 1, j);
+                    var result = new SearchResult(results[i].SentenceID, results[i].WordIndex+j, 1, j);
                     if ((definitionSearchesInSentences != null) &&
                         (definitionSearchesInSentences.ContainsKey(result.Key)))
                         result.SetArticleID(definitionSearchesInSentences[result.Key]);
