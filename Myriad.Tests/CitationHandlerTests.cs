@@ -98,5 +98,25 @@ namespace Myriad.Tests
                 Assert.AreEqual(entry.Value, citationText);
             }
         }
+        [Test]
+        public async Task DeferredWordTest()
+        {
+            string testCitation = "Lu 21:5.dedicated";
+            string testResult = "Lu&nbsp;21:5";
+            List<Citation> citations = CitationConverter.FromString(testCitation);
+            var writer = Writer.New();
+            await CitationConverter.ToString(citations, writer);
+            string citationText = writer.Response();
+            Assert.AreEqual(testResult, citationText);
+            Assert.AreEqual("dedicated", citations[Ordinals.first].CitationRange.Word);
+            Assert.IsTrue(citations[Ordinals.first].CitationRange.WordIndexIsDeferred);
+            Citation citation = citations[Ordinals.first].Copy();
+            citation.CitationRange.SetWordIndex(
+                await CitationConverter.ReadDeferredWord(citation.CitationRange.Word,
+                citation.CitationRange.StartID.ID,
+                citation.CitationRange.EndID.ID)
+                );
+            Assert.AreEqual(16, citation.CitationRange.FirstWordIndex);
+        }
     }
 }

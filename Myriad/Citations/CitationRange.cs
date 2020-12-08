@@ -56,7 +56,7 @@ namespace Myriad.Library
             return !((String.IsNullOrEmpty(start)) && (String.IsNullOrEmpty(end)));
         }
 
-        internal void SetWordIndex(int wordIndex)
+        public void SetWordIndex(int wordIndex)
         {
             start.SetWordIndex(wordIndex);
             end.SetWordIndex(wordIndex);

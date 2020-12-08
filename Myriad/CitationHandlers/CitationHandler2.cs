@@ -161,7 +161,7 @@ namespace Myriad.CitationHandlers
             }
             if (!foundToken)
             {
-                token = ';';
+                token = '`';
                 position = rangeToParse.End;
             }
         }
@@ -170,7 +170,7 @@ namespace Myriad.CitationHandlers
         {
             if (token == ' ') return SpaceToken();
             if (token == ':') return ColonToken();
-            if (token == ';') return SemiColonToken();
+            if ((token == ';') || (token=='`')) return SemiColonToken();
             if ((token == '-') || (token == '–')) return DashToken();
             if (token == ',') return CommaToken();
             if (token == '!') return BangToken();
@@ -370,7 +370,8 @@ namespace Myriad.CitationHandlers
 
         private bool EvaluateWordStack()
         {
-            string currentWord = paragraphToParse.StringAt(startPosition, position - 1);
+            string currentWord = (token=='`') ? paragraphToParse.StringAt(startPosition, position) :
+                paragraphToParse.StringAt(startPosition, position - 1);
 
             KeyID start = new KeyID(
                 scriptureReference[Ordinals.first, name],

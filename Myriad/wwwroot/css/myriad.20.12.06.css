@@ -122,7 +122,8 @@ ul, li, ol, dl{list-style:none;padding:0;}
 ul {margin-top:.5rem;}
 p{line-height:1.5em;padding-bottom:.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
 .scripture-text p{line-height:1.4em;}
- p+p.firstpoetic{margin-top:.75rem;}
+.poetic, p.firstpoetic{margin-top:.75rem;}
+p.poetic+p.poetic, p.firstpoetic+p.poetic{margin-top:0}
 .sidenote p{padding-bottom: .5em;}
 .sidenote details p{padding-bottom:.1em;}
 .scripture h3{margin-bottom:0.5em;}

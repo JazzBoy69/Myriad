@@ -13,7 +13,7 @@ namespace Myriad.Pages
     <meta charset='utf-8' />
     <meta name='viewport' content='user-scalable=no,width=device-width, initial-scale=1, maximum-scale=1' />";
         public const string header =
-@"<link rel='stylesheet' href='css/myriad.20.09.15.css' />
+@"<link rel='stylesheet' href='css/myriad.20.12.06.css' />
     <link rel='shortcut icon' href='images/MyriadIcon.png'>
 
 </head>

@@ -73,7 +73,7 @@ namespace Myriad.Library
                 CitationRange.EndID.ID == other.CitationRange.EndID.ID;
         }
 
-        internal Citation Copy()
+        public Citation Copy()
         {
             Citation newCitation = new Citation
             {
