@@ -68,6 +68,7 @@ rt {
 .scripture-header h3{display:none;}
 .scripture-header.visible h3{display:inherit;}
 #ellipsis {max-height: 1.5rem;position: absolute;top: 5rem;right: 20rem;opacity:.5;}
+.spacer::after {content: " ";}
 
 #modal-image-box {position: fixed; z-index: 1100; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%;
 	overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.9); }
@@ -485,6 +486,7 @@ figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:20rem;padding-left:1em;font-size:1rem;}
 .readingverse {display:none;}
 .readingverse.visible{display:inline;position:relative;left:0rem;font-weight:600;}
+.readingverse.visible + .spacer::after {content: "\00a0"}
 .readingverse.versenumber a{vertical-align:baseline;}
 figure.portrait, figure.square, .sidenote{float:none;width:16rem; border-left:none;}
 figure.square{padding-left: 0; }
