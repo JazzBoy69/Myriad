@@ -76,6 +76,7 @@ namespace Myriad.Library
         internal const string right = "right ";
         internal const string left = "left ";
         internal const string column = "col";
+        internal const string spacer = "spacer";
     }
 
 }

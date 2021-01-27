@@ -314,7 +314,8 @@ namespace Myriad.Parser
         {
             if ((keyword.WordIndex == Ordinals.first) && (paragraphIndex != Ordinals.first))
             {
-                await writer.Append(HTMLTags.NonbreakingSpace);
+                await writer.Append(HTMLTags.StartSpanWithClass+HTMLClasses.spacer+HTMLTags.CloseQuoteEndTag+
+                    HTMLTags.EndSpan); 
                 await writer.Append(keyword.LeadingSymbolString.Substring(Ordinals.second));
             }
             else
