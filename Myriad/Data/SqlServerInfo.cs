@@ -292,7 +292,7 @@ namespace Myriad.Data
         {
             return new SqlConnection(ConnectionString);
         }
-        static readonly string ConnectionString = "Server=.\\SQLExpress;Initial Catalog=Myriad;Integrated Security=SSPI;";
+        static readonly string ConnectionString = "Server=Joels-laptop;Initial Catalog=Myriad;Integrated Security=SSPI;";
 
         internal static DataCommand CreateCommandFromQuery(string query)
         {
