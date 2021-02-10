@@ -1120,12 +1120,17 @@ function HandleShortcut(e) {
     if (e.keyCode) code = e.keyCode;
     else if (e.which) code = e.which;
     let key = "";
+    if (code === 113) key = "F2";
     if (code === 121) key = "F10";
     if (code === 123) key = "F12";
     if (code === 131) key = "F20";
     if (key === "") return true;
     if (key === "F20") {
         GoUp();
+        return;
+    }
+    if (key === "F2") {
+        Edit();
         return;
     }
     if (!e.ctrlKey) return true;
@@ -1136,7 +1141,6 @@ function HandleShortcut(e) {
     }
     var editForm = document.getElementById('editFormContainer');
     if (!editForm.classList.contains('hidden')) {
-
         AcceptOrCancelEditForm(!e.shiftKey);
         return false;
     }
