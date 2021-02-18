@@ -41,7 +41,7 @@ namespace Myriad.Data
 
 
 
-            p = p.Replace("—" + '"', "—“");
+            p = p.Replace("—\"", "—“");
             p = p.Replace("—'", "—‘");
 
             p = p.Replace("(\"", "(“");
