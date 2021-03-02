@@ -5,7 +5,7 @@ h1, h2, h3 {font-family:Spectral,'Droid Serif','Roboto Slab',Lato,"Times New Rom
 .sidenote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
 .textquote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
 mark{background-color:#ffc;font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
-.scripture-text {font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;font-size:1.5rem;}
+.scripture-text, .sidebarScripture {font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;font-size:1.5rem;}
 .scripture-text mark{background-color:#ffc;font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;}
 article{font-size:1.35rem;font-feature-settings: "liga" 1;}
 .readingverse a{background-color:white;}
@@ -20,12 +20,9 @@ a.target{background-color:#ff8}
 a.error{color:red;}
 b{font-weight:500;}
 
-/*Container*/
-.container {display: flex;flex-direction: column;height:100vh;}
-
 /*Sidebar*/
-#sidebar{font-size:1.5em; position:fixed;flex-grow: 1;height: 100vh;width:20rem;right:.5rem;padding-top:2.5em;padding-left:1rem;border-left:2px solid #1A237E;z-index:-5;}
-
+#sidebar{position:fixed;height:calc(100vh - 10em);width:20rem;right:.5rem;padding-top:2.5em;padding-left:1rem;padding-bottom:2.5em;padding-right:1rem;border-left:2px solid #1A237E;z-index:-5;overflow-y:auto;}
+.sidebarScripture {font-size:1.05rem; }
 
 /*Timeline*/
 .timeline{height: 13vw;}
@@ -73,7 +70,7 @@ rt {
 .readingverse.versenumber a {font-size:1rem; font-weight:400; vertical-align:super;}
 .scripture-header h3{display:none;}
 .scripture-header.visible h3{display:inherit;}
-#ellipsis {max-height: 1.5rem;position: absolute;top: 5rem;right: 20rem;opacity:.5;}
+#ellipsis {max-height: 1.5rem;position: absolute;top: 3rem;right: 17rem;}
 .spacer::after {content: " ";}
 
 #modal-image-box {position: fixed; z-index: 1100; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%;
@@ -146,7 +143,7 @@ section{display:block;align-items:stretch;}
 .poetic:last-child {padding-bottom:.5rem;}
 /*HORIZONTAL SPACING */
 article{width:60rem;padding-left:10rem;}
-article.withsidebar{width:55rem;padding-left:5rem;}
+article.withsidebar{padding-left:5rem;}
 .withsidebar{animation-name: opensidebar; animation-duration:.2s;}
 @keyframes opensidebar{
     from{padding-left:10rem;}

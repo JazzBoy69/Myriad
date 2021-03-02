@@ -34,7 +34,7 @@ namespace Myriad.Parser
             }
         }
 
-        private async Task StartPoetic(Keyword keyword)
+        internal async Task StartPoetic(Keyword keyword)
         {
             if (poetic != keyword.IsPoetic)
             {
