@@ -93,10 +93,6 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.NonbreakingSpace);
                 return;
             }
-            if (keyword.Verse == 1)
-            {
-                return;
-            }
             await writer.Append(Symbol.space);
             await writer.Append(keyword.Verse);
             await writer.Append(HTMLTags.NonbreakingSpace);

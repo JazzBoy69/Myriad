@@ -48,8 +48,6 @@ namespace Myriad.Pages
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
                     <img src='images/icons8-ellipsis-30.png' id='ellipsis' class='hidden' />
             </div>
-            <div id=sidebar class='hidden'>
-            </div>
             <div id=level class='hidden'>0</div>
             <div id='bibleindex'>
                 <section id='possibilities' class='buttongrid'>
@@ -148,6 +146,8 @@ namespace Myriad.Pages
                 </section>
             </div>
         </header>
+        <div id=sidebar class='hidden'>
+        </div>
         <div id='modal-image-box' class='hidden'>
             <span id='zoomclose' onclick=CloseModalPicture(event)>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
