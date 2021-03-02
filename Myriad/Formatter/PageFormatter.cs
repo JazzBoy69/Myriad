@@ -374,7 +374,7 @@ namespace Myriad.Parser
                     Symbol.space);
             }
             await writer.Append(HTMLTags.HREF);
-            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(SidebarPageReferrer.URLs[citation.CitationType]);
             await writer.Append(HTMLTags.StartQuery);
             await AppendQuery(writer, citation);
             await AppendPartialPageLoad(writer);
@@ -395,7 +395,7 @@ namespace Myriad.Parser
                     Symbol.space);
             }
             await writer.Append(HTMLTags.HREF);
-            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(SidebarPageReferrer.URLs[citation.CitationType]);
             await writer.Append(HTMLTags.StartQuery);
             await AppendQuery(writer, citation);
             await AppendPartialPageLoad(writer);
@@ -416,11 +416,23 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndTag);
         }
 
+        public static async Task StartSidebarCitationLink(HTMLWriter writer, Citation citation)
+        {
+            await writer.Append(HTMLTags.StartAnchor);
+            await writer.Append(HTMLTags.HREF);
+            await writer.Append(SidebarPageReferrer.URLs[citation.CitationType]);
+            await writer.Append(HTMLTags.StartQuery);
+            await AppendQuery(writer, citation);
+            await AppendPartialPageLoad(writer);
+            await AppendHandleLink(writer);
+            await writer.Append(HTMLTags.EndTag);
+        }
+
         public static async Task StartCitationLink(HTMLWriter writer, Citation citation, Citation targetCitation)
         {
             await writer.Append(HTMLTags.StartAnchor);
             await writer.Append(HTMLTags.HREF);
-            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(SidebarPageReferrer.URLs[citation.CitationType]);
             await writer.Append(HTMLTags.StartQuery);
             await AppendQuery(writer, citation, targetCitation);
             await AppendPartialPageLoad(writer);

@@ -231,13 +231,13 @@ namespace Myriad.Parser
             {
                 if (i == Ordinals.first)
                 {
-                    await PageFormatter.StartCitationLink(writer, citations[i]);
+                    await PageFormatter.StartSidebarCitationLink(writer, citations[i]);
                     await Append(writer, citations[i]);
                     await writer.Append(HTMLTags.EndAnchor);
                     continue;
                 }
                 await AppendConnectingPunctuation(writer, citations[i - 1], citations[i]);
-                await PageFormatter.StartCitationLink(writer, citations[i]);
+                await PageFormatter.StartSidebarCitationLink(writer, citations[i]);
                 await AppendNext(writer, citations[i - 1], citations[i]);
                 await writer.Append(HTMLTags.EndAnchor);
             }
