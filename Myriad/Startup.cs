@@ -51,6 +51,11 @@ namespace Myriad
             app.Run(async context =>
             {
                 string path = context.Request.Path;
+                if (path == Sidebar.pageURL)
+                {
+                    await Sidebar.HandleRequest(Writer.New(context.Response), context.Request.Query);
+                    return;
+                }
                 if (path == ArticlePage.addArticleURL)
                 {
                     ArticlePage articlePage = new ArticlePage();

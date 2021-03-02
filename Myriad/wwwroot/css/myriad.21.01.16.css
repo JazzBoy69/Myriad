@@ -20,6 +20,12 @@ a.target{background-color:#ff8}
 a.error{color:red;}
 b{font-weight:500;}
 
+/*Container*/
+.container {display: flex;flex-direction: column;height:100vh;}
+
+/*Sidebar*/
+#sidebar{font-size:1.5em; position:fixed;flex-grow: 1;height: 100vh;width:20rem;right:.5rem;padding-top:2.5em;padding-left:1rem;border-left:2px solid #1A237E;z-index:-5;}
+
 
 /*Timeline*/
 .timeline{height: 13vw;}
@@ -112,7 +118,7 @@ th.center,td.center{text-align: center;}
 th.right,td.right{text-align: right;}
 
 /*VERTICAL SPACING */
-html, body{height:100%;}
+html, body{height:100vh;}
 sup, sub {vertical-align: baseline; position: relative;top:-0.4em;}
 sub {top: 0.4em;}
 
@@ -140,6 +146,13 @@ section{display:block;align-items:stretch;}
 .poetic:last-child {padding-bottom:.5rem;}
 /*HORIZONTAL SPACING */
 article{width:60rem;padding-left:10rem;}
+article.withsidebar{width:55rem;padding-left:5rem;}
+.withsidebar{animation-name: opensidebar; animation-duration:.2s;}
+@keyframes opensidebar{
+    from{padding-left:10rem;}
+    to{padding-left:5rem;
+    }
+}
 .scripture-comment p{margin-left:0;margin-right:0;}
 .readingverse {position:absolute;left:17.5rem;}
 .firstpoetic .readingverse {position:absolute;left:18.5rem;}

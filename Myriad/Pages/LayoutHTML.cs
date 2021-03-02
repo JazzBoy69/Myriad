@@ -48,6 +48,8 @@ namespace Myriad.Pages
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
                     <img src='images/icons8-ellipsis-30.png' id='ellipsis' class='hidden' />
             </div>
+            <div id=sidebar class='hidden'>
+            </div>
             <div id=level class='hidden'>0</div>
             <div id='bibleindex'>
                 <section id='possibilities' class='buttongrid'>
@@ -171,7 +173,7 @@ namespace Myriad.Pages
         public const string close = @"</div></article></div>";
         public const string tocdiv = "<div id=tocdiv class=hidden></div>";
         public const string modalOverlay = "<div id='modal-overlay'></div>";
-        public const string myriadJavaScript = "<script src='js/myriad.20.12.01.js'></script>";
+        public const string myriadJavaScript = "<script src='js/myriad.21.03.02.js'></script>";
         public const string endofBody = "</body></html>";
     }
 }

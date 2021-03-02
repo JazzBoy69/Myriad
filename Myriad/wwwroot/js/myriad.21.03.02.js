@@ -14,8 +14,35 @@ function HandleLink(event) {
 }
 
 function LoadPage(path) {
+    if (path.indexOf('/Sidebar?') !== -1) {
+        LoadSidebar(path);
+        return;
+    }
+    HideSidebar();
     if (path.indexOf('partial') === -1) path = AddQueryToPath(path, 'partial=true');
     LoadMainPane(path);
+}
+
+function LoadSidebar(path) {
+    postAjax(path, {},
+        function (data) {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.innerHTML = data;
+            sidebar.classList.remove('hidden');
+            var article = document.getElementsByTagName('article');
+            if (!article[0].classList.contains('withsidebar')) {
+                article[0].classList.add('withsidebar');
+            }
+        });
+}
+
+function HideSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    if (!sidebar.classList.contains('hidden')) {
+        sidebar.classList.add('hidden');
+    }
+    var article = document.getElementsByTagName('article');
+    article[0].classList.remove('withsidebar');
 }
 
 function LoadCompletePage(path) {
