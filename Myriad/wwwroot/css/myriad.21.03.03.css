@@ -22,6 +22,26 @@ b{font-weight:500;}
 
 /*Sidebar*/
 #sidebar{position:fixed;height:calc(100vh - 10rem);width:20rem;top:4.6rem;right:.5rem;padding-top:2.5em;padding-left:1rem;padding-bottom:5em;padding-right:1rem;border-left:2px solid rgba(26, 35, 126, .9);z-index:5;overflow-y:auto;background-color:white;}
+#sidebar.opening{animation-name:sidebaropening; animation-duration:.2s;}
+@keyframes sidebaropening {
+	from {
+		right:-19.5rem;
+	}
+
+	to {
+		right:.5rem;
+	}
+}
+#sidebar.closing{animation-name:sidebarclosing; animation-duration:.2s;}
+@keyframes sidebarclosing {
+	from {
+		right:.5rem;
+	}
+
+	to {
+		right:-19.5rem;
+	}
+}
 .sidebarScripture {font-size:1.05rem; }
 #sidebar a{font-size:1.5rem;}
 .closeSidebar {position:fixed; top: 5rem;right:1.5rem; z-index:3000;color:#4477a1;font-size: 40px;font-weight: bold;}
@@ -153,6 +173,12 @@ article.withsidebar{padding-left:3rem;}
 @keyframes opensidebar{
     from{padding-left:10rem;}
     to{padding-left:3rem;
+    }
+}
+.withoutsidebar{animation-name: closesidebar; animation-duration:.2s;}
+@keyframes closesidebar{
+    from{padding-left:3rem;}
+    to{padding-left:10rem;
     }
 }
 .scripture-comment p{margin-left:0;margin-right:0;}
@@ -327,11 +353,16 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 /*HORIZONTAL SPACING */
 article{width:55rem;padding-left:5rem;}
 article.withsidebar{width:50rem;padding-left:1rem;}
-article.withsidebar p{margin-left:0;}
 .withsidebar{animation-name: opensidebar; animation-duration:.2s;}
 @keyframes opensidebar{
     from{padding-left:5rem;}
     to{padding-left:1rem;
+    }
+}
+.withoutsidebar{animation-name: closesidebar; animation-duration:.2s;}
+@keyframes closesidebar{
+    from{padding-left:1rem;}
+    to{padding-left:5rem;
     }
 }
 .readingverse {position:absolute;left:9.5rem;}
@@ -350,7 +381,9 @@ table{margin-left:5.25rem;}
 .versenav{margin-left:6rem;}
 .textquote{margin-left:8rem;}
 .withsidebar .textquote{margin-left:3rem;}
-    .menu {margin-left: 12rem;}
+article.withsidebar p{margin-left:.25rem;}
+
+ .menu {margin-left: 12rem;}
 /*Right*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:5rem;}
 .flexTabs .tab li {margin-right:1rem;}
@@ -369,6 +402,7 @@ table{margin-left:5.25rem;}
 /*HORIZONTAL SPACING */
 article{width:50rem;padding-left:3rem;}
 .withsidebar{animation-name: none;}
+.withoutsidebar{animation-name: none;}
 article.withsidebar{padding-left:3rem;}
 .readingverse {position:absolute;left:5rem;}
 .firstpoetic .readingverse  {position:absolute;left:6rem;}
@@ -400,6 +434,7 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 /*HORIZONTAL SPACING */
 article{width:45rem;padding-left:1rem;}
 .withsidebar{animation-name: none;}
+.withoutsidebar{animation-name: none;}
 article.withsidebar{padding-left:1rem;}
 .readingverse {position:absolute;left:3rem;}
 .firstpoetic .readingverse  {position:absolute;left:4rem;}
@@ -439,6 +474,7 @@ ul.tabs{width:38rem;}
 body{text-rendering:optimizeSpeed;}
 #sidebar{top:4.3rem;}
 .withsidebar{animation-name: none;}
+.withoutsidebar{animation-name: none;}
 /*--Menu--*/
 .icon img, #search{zoom: 50%;}
 #searchField{width: 12rem;}
@@ -506,6 +542,7 @@ ul.tabs {display:inline-block;}
 @media only screen and (max-width:480px){
 body{text-rendering:optimizeSpeed;}
 .withsidebar{animation-name: none;}
+.withoutsidebar{animation-name: none;}
 #sidebar{top:4rem;}
 .scripture-text{font-size:1rem;}
 .icon img, #search{zoom: 50%;}

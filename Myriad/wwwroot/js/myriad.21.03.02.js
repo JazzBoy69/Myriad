@@ -29,6 +29,8 @@ function LoadSidebar(path) {
             var sidebar = document.getElementById('sidebar');
             sidebar.innerHTML = data;
             sidebar.classList.remove('hidden');
+            sidebar.classList.remove('closing');
+            sidebar.classList.add('opening');
             var article = document.getElementsByTagName('article');
             if (!article[0].classList.contains('withsidebar')) {
                 article[0].classList.add('withsidebar');
@@ -37,18 +39,30 @@ function LoadSidebar(path) {
             if (!nextButton.classList.contains('nexttosidebar')) {
                 nextButton.classList.add('nexttosidebar');
             }
+            setTimeout(function () {
+                var sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('opening');
+            }, 700);
         });
 }
 
 function HideSidebar() {
     var sidebar = document.getElementById('sidebar');
-    if (!sidebar.classList.contains('hidden')) {
-        sidebar.classList.add('hidden');
+    if (sidebar.classList.contains('hidden')) {
+        return;
     }
+    sidebar.classList.add('closing');
     var article = document.getElementsByTagName('article');
     article[0].classList.remove('withsidebar');
+    article[0].classList.add('withoutsidebar');
     var nextButton = document.getElementById('menuNext');
     nextButton.classList.remove('nexttosidebar');
+    setTimeout(function () {
+        var sidebar = document.getElementById('sidebar');
+        sidebar.classList.add('hidden');
+        var article = document.getElementsByTagName('article');
+        article[0].classList.remove('withoutsidebar');
+    }, 180);
 }
 
 function LoadCompletePage(path) {
