@@ -409,7 +409,7 @@ article.withsidebar{padding-left:3rem;}
 .poetic .readingverse  {position:absolute;left:6rem;}
 figure.portrait, figure.square, .sidenote{width:21rem}
 .searchResults{width:46rem;}
-.indexicon img {right: 5rem;}
+.indexicon img {right: 7rem;}
 #ellipsis{right:5rem;}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:3rem;}
@@ -445,7 +445,7 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 ul.tabs{width:38rem;}
 #menuPrevious {width: 3rem;}
 #menuNext {width: 3rem;}
-.indexicon img {right: 5rem;}
+.indexicon img {right: 7rem;}
 #ellipsis{right:5rem;}
 .indexbutton {
         height:2rem;
@@ -504,7 +504,7 @@ ul.tabs, .searchResults{width:32rem;}
 ul.tabs {display:inline-block;}
 #menuPrevious {width: 2rem;}
 #menuNext {width: 2rem;}
-.indexicon img {right:1rem;}
+.indexicon img {right:3rem;}
 #ellipsis{right:1rem;}
 .flexTabs{display:block;width:32rem;}
 .flexTabsHeader{margin-left:0;width:100%;float:none;}
@@ -571,7 +571,7 @@ figure.portrait{padding-left: 1rem; }
 ul.tabs, .definitionBlock div, .searchResults{width:16rem;}
 #menuPrevious {width: 1rem;}
 #menuNext {width: 1rem;}
-.indexicon img {right: 1rem;}
+.indexicon img {right: 3rem;}
 #ellipsis{right:1rem;}
 .indexbutton {
         height:2rem;
