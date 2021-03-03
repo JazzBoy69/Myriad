@@ -28,13 +28,15 @@ function LoadSidebar(path) {
         function (data) {
             var sidebar = document.getElementById('sidebar');
             sidebar.innerHTML = data;
+            var article = document.getElementsByTagName('article');
+            if (article[0].classList.contains('withsidebar')) {
+                return;
+            }
             sidebar.classList.remove('hidden');
             sidebar.classList.remove('closing');
             sidebar.classList.add('opening');
             var article = document.getElementsByTagName('article');
-            if (!article[0].classList.contains('withsidebar')) {
-                article[0].classList.add('withsidebar');
-            }
+            article[0].classList.add('withsidebar');
             var nextButton = document.getElementById('menuNext');
             if (!nextButton.classList.contains('nexttosidebar')) {
                 nextButton.classList.add('nexttosidebar');

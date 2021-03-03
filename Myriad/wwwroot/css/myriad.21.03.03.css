@@ -238,7 +238,7 @@ p.firstpoetic, p.poetic {
 textarea {
     font-family: monospace;
     font-size: 1.1em;
-    width: 95%;
+    width: 95vw;
     padding: .5em;
 }
 
@@ -421,7 +421,8 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 .nav{margin-left:.5rem;}
 .versenav{margin-left:4rem;}
 .textquote{margin-left:5rem;}
-.flexTabsHeader{margin-left:-1em;}
+.flexTabsHeader{margin-left:0;}
+.flexTabs{width:50rem;}
 /*Right*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:3rem;}
 .flexTabs .tab li {margin-right:1rem;}
@@ -463,6 +464,7 @@ ul.tabs{width:38rem;}
 .versenav{margin-left:4rem;}
 .menu{margin-left: 4rem;}
 .textquote{margin-left:4rem;}
+.flexTabs{width:45rem;}
 .flexTabsHeader{margin-left:0;}
 /*Right*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:3rem;}
@@ -512,9 +514,10 @@ ul.tabs {display:inline-block;}
 .flexTabsHeader ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
 .flexTabsHeader ul.tabs li.active{border-right:1px solid #d3d3d3;}
 .flexTabsHeader ul.tabs li:last-child.active{border-bottom:2px solid #d3d3d3;}
-.flexTabsTabs{width:32.25rem;}
+.flexTabsTabs{width:32.25rem;padding-bottom:0;}
 .flexTabsTabs ul{width:30rem;}
 .definitionnav p{width:30rem;}
+.editcontent{height: calc(100vh - 19rem);}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:1rem;}
     table {
@@ -536,7 +539,8 @@ ul.tabs {display:inline-block;}
 .flexTabs .tab li {margin-right:0rem;}
 .textquote{margin-right:3rem;}
 .sidenote{margin-right:4rem;}
-.flexTabsTabs ul li{width:100%;margin-right:0;}
+.flexTabsTabs ul li{width:90%;margin-right:0;}
+.editcontent{padding-right:0;}
 }
 
 @media only screen and (max-width:480px){
@@ -592,6 +596,7 @@ ul.tabs, .definitionBlock div, .searchResults{width:16rem;}
 .definitionnav p{width:20rem;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;}
+.editcontent{overflow-y:auto;height: calc(100vh - 20rem);}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-left:.5rem;}
 table { margin-left: .6rem;}
@@ -607,7 +612,8 @@ definitionBlock details,.sidenote.crossrefs{margin-left:0}
 /*Right*/
 .comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-right:.5rem;}
 .flexTabs .tab li {margin-right:1rem;}
-.flexTabs.tab ul.li {margin-right:1rem;}
+.flexTabs.tab ul.li {margin-right:1rem;padding-right:1.5rem;}
+.editcontent{padding-right:0;}
 .textquote{margin-right:1rem;}
 .sidenote{margin-right:1rem;}
 .definitionBlock details{margin-right:0;}
