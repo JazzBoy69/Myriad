@@ -78,6 +78,7 @@ namespace Myriad.Library
         internal const string column = "col";
         internal const string spacer = "spacer";
         internal const string sidebarScripture = "sidebarScripture";
+        internal const string closesidebar = "closeSidebar";
     }
 
 }

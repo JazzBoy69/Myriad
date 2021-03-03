@@ -33,6 +33,10 @@ function LoadSidebar(path) {
             if (!article[0].classList.contains('withsidebar')) {
                 article[0].classList.add('withsidebar');
             }
+            var nextButton = document.getElementById('menuNext');
+            if (!nextButton.classList.contains('nexttosidebar')) {
+                nextButton.classList.add('nexttosidebar');
+            }
         });
 }
 
@@ -43,6 +47,8 @@ function HideSidebar() {
     }
     var article = document.getElementsByTagName('article');
     article[0].classList.remove('withsidebar');
+    var nextButton = document.getElementById('menuNext');
+    nextButton.classList.remove('nexttosidebar');
 }
 
 function LoadCompletePage(path) {

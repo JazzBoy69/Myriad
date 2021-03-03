@@ -23,6 +23,10 @@ b{font-weight:500;}
 /*Sidebar*/
 #sidebar{position:fixed;height:calc(100vh - 10rem);width:20rem;top:4.6rem;right:.5rem;padding-top:2.5em;padding-left:1rem;padding-bottom:5em;padding-right:1rem;border-left:2px solid rgba(26, 35, 126, .9);z-index:5;overflow-y:auto;background-color:white;}
 .sidebarScripture {font-size:1.05rem; }
+#sidebar a{font-size:1.5rem;}
+.closeSidebar {position:fixed; top: 5rem;right:1.5rem; z-index:3000;color:#4477a1;font-size: 40px;font-weight: bold;}
+.closeSidebar:hover,
+.closeSidebar:focus {color: #f88;text-decoration: none;cursor: pointer;}
 
 /*Timeline*/
 .timeline{height: 13vw;}
@@ -126,8 +130,9 @@ ul, li, ol, dl{list-style:none;padding:0;}
 ul {margin-top:.5rem;}
 p{line-height:1.5em;padding-bottom:.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
 .scripture-text p{line-height:1.4em;}
+.sidebarScripture p{padding-bottom:.1em;}
 .poetic, p.firstpoetic{margin-top:.75rem;}
-p.poetic+p.poetic, p.firstpoetic+p.poetic{margin-top:0}
+p.poetic+p.poetic, p.firstpoetic+p.poetic, .sidebarScripture p.firstpoetic{margin-top:0}
 .sidenote p{padding-bottom: .5em;}
 .sidenote details p{padding-bottom:.1em;}
 .scripture h3{margin-bottom:0.5em;}
@@ -250,6 +255,7 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 #menuPrevious:hover {background-color: black;opacity: .1;z-index:1010;}
 #menuPrevious img{position: absolute; top:50%;}
 #menuNext {float: right; display:block; opacity: 0; position:  absolute;top: 0; right:0;width: 5rem;height:100vh;}
+#menuNext.nexttosidebar {right:22.5rem;}
 #menuNext:hover {background-color: black;opacity: .1;z-index:1010;}
 #menuNext img{position: absolute; top:50%; right:1rem;}
 #menuNext.hidden {display:none;}
@@ -320,13 +326,21 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 
 /*HORIZONTAL SPACING */
 article{width:55rem;padding-left:5rem;}
+article.withsidebar{width:50rem;padding-left:1rem;}
+article.withsidebar p{margin-left:0;}
+.withsidebar{animation-name: opensidebar; animation-duration:.2s;}
+@keyframes opensidebar{
+    from{padding-left:5rem;}
+    to{padding-left:1rem;
+    }
+}
 .readingverse {position:absolute;left:9.5rem;}
 .firstpoetic .readingverse  {position:absolute;left:10.5rem;}
 .poetic .readingverse  {position:absolute;left:10.5rem;}
 figure.portrait, figure.square, .sidenote{width:26rem}
 .searchResults{width:40rem;}
 .definitionBlock div, ul.tabs{width:50rem;}
-.indexicon img{right: 10rem;}
+.indexicon img{right: 13rem;}
 #ellipsis{right:10rem;}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:5rem;}
@@ -335,6 +349,7 @@ table{margin-left:5.25rem;}
 .nav{margin-left:.5rem;}
 .versenav{margin-left:6rem;}
 .textquote{margin-left:8rem;}
+.withsidebar .textquote{margin-left:3rem;}
     .menu {margin-left: 12rem;}
 /*Right*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:5rem;}
@@ -353,6 +368,8 @@ table{margin-left:5.25rem;}
 
 /*HORIZONTAL SPACING */
 article{width:50rem;padding-left:3rem;}
+.withsidebar{animation-name: none;}
+article.withsidebar{padding-left:3rem;}
 .readingverse {position:absolute;left:5rem;}
 .firstpoetic .readingverse  {position:absolute;left:6rem;}
 .poetic .readingverse  {position:absolute;left:6rem;}
@@ -382,6 +399,8 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 
 /*HORIZONTAL SPACING */
 article{width:45rem;padding-left:1rem;}
+.withsidebar{animation-name: none;}
+article.withsidebar{padding-left:1rem;}
 .readingverse {position:absolute;left:3rem;}
 .firstpoetic .readingverse  {position:absolute;left:4rem;}
 .poetic .readingverse  {position:absolute;left:4rem;}
@@ -418,6 +437,8 @@ ul.tabs{width:38rem;}
 
 @media only screen and (min-width:480px) and (max-width:767px){
 body{text-rendering:optimizeSpeed;}
+#sidebar{top:4.3rem;}
+.withsidebar{animation-name: none;}
 /*--Menu--*/
 .icon img, #search{zoom: 50%;}
 #searchField{width: 12rem;}
@@ -433,6 +454,7 @@ body{text-rendering:optimizeSpeed;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:33rem;padding-left:1rem;font-size:1.15rem;}
+article.withsidebar{padding-left:1rem;}
 .readingverse {position:absolute;left:2rem;}
 .firstpoetic .readingverse  {position:absolute;left:3rem;}
 .poetic .readingverse  {position:absolute;left:3rem;}
@@ -483,6 +505,8 @@ ul.tabs {display:inline-block;}
 
 @media only screen and (max-width:480px){
 body{text-rendering:optimizeSpeed;}
+.withsidebar{animation-name: none;}
+#sidebar{top:4rem;}
 .scripture-text{font-size:1rem;}
 .icon img, #search{zoom: 50%;}
 #searchField{width: 8rem;}
@@ -494,6 +518,7 @@ body{text-rendering:optimizeSpeed;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:20rem;padding-left:1em;font-size:1rem;}
+article.withsidebar{padding-left:1rem;}
 .readingverse {display:none;}
 .readingverse.visible{display:inline;position:relative;left:0rem;font-weight:600;}
 .readingverse.visible + .spacer::after {content: "\00a0"}

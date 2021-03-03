@@ -109,14 +109,19 @@ namespace Myriad.Pages
         {
             await writer.Append(HTMLTags.EndParagraph);
             await writer.Append(HTMLTags.StartParagraphWithClass);
-            await writer.Append(HTMLClasses.poetic2);
+            await writer.Append(HTMLClasses.poetic1);
             await writer.Append(HTMLTags.CloseQuoteEndTag);
         }
         private static async Task WriteHeader(HTMLWriter writer, Citation citation)
         {
+            await writer.Append(HTMLTags.StartDivWithClass + HTMLClasses.closesidebar +
+                HTMLTags.CloseQuote + HTMLTags.OnClick + "HideSidebar()" +
+                HTMLTags.EndTag + "&times;" + HTMLTags.EndDiv);
+            await writer.Append(HTMLTags.StartParagraph);
             await PageFormatter.StartCitationLink(writer, citation);
             await CitationConverter.Append(writer, citation);
             await writer.Append(HTMLTags.EndAnchor);
+            await writer.Append(HTMLTags.EndParagraph);
         }
 
         private static Citation GetCitation(IQueryCollection query)
