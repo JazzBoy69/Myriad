@@ -234,6 +234,11 @@ namespace Myriad.Formatter
         private static async Task WriteOriginalWordLabel(HTMLWriter writer, int index, VersePageInfo info)
         {
             var phrase = info.Phrases[index];
+            if (phrase.Weight == VersePageInfo.originalWordWeight)
+            {
+                await WriteOriginalWordLabel(writer, phrase, info);
+                return;
+            }
             List<(string text, (int start, int end) range)> originalWordsInPhrase = (from w in info.OriginalWords
                                                                                 where w.Start <= phrase.Range.end &&
                                                                                 w.End >= phrase.Range.start
@@ -268,6 +273,21 @@ namespace Myriad.Formatter
                 needSpace = true;
                 i++;
             }
+            await writer.Append(HTMLTags.EndSpan + ")");
+        }
+
+        private static async Task WriteOriginalWordLabel(HTMLWriter writer, VerseWord phrase, VersePageInfo info)
+        {
+            await writer.Append(HTMLTags.StartParagraphWithClass +
+                           HTMLClasses.comment +
+                           HTMLTags.CloseQuoteEndTag +
+                           HTMLTags.StartBold);
+
+            await WriteRangeText(writer, phrase.Range, info);
+            await writer.Append(HTMLTags.EndBold + "(" + HTMLTags.StartSpanWithClass +
+                HTMLClasses.originalword +
+                HTMLTags.CloseQuoteEndTag);
+            await writer.Append(phrase.Text.Replace('_', ' '));
             await writer.Append(HTMLTags.EndSpan + ")");
         }
 
