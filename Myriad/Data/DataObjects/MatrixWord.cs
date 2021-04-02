@@ -16,6 +16,7 @@ namespace Myriad.Data
         public const ushort inflectionWeight = 300;
         public const ushort originalWordWeight = 200;
         public const int notTag = -100;
+        public const int ellipsis = 100;
 
 
         int length = -1;
@@ -102,6 +103,7 @@ namespace Myriad.Data
             if (Weight == originalWordWeight) result.Append("/");
             if (Weight == textLinkWeight) result.Append("/>");
             if (Weight == notTag) result.Append("!#");
+            if (Weight == ellipsis) result.Append("..");
             if (Weight == 0) result.Append("-");
             result.Append(Text);
             if (Substitute) result.Append("]");
@@ -110,11 +112,13 @@ namespace Myriad.Data
 
         private void SetInfo(string inflection)
         {
-            if (((inflection[0] > '1') && (inflection[0] <= '9')) && (inflection.Length > 1) && ((inflection[Ordinals.second] == '!') || (inflection[Ordinals.second] == '#') ||
-                    (inflection[Ordinals.second] == '[') || (inflection[Ordinals.second] == '~') ||
-                    (inflection[Ordinals.second] == '+') || (inflection[Ordinals.second] == '-') || (inflection[Ordinals.second] == '/') || (inflection[Ordinals.second] == '*')))
+            if (((inflection[Ordinals.first] > '1') && (inflection[Ordinals.first] <= '9')) && (inflection.Length > 1) && 
+                ((inflection[Ordinals.second] == '!') || (inflection[Ordinals.second] == '#') ||
+                 (inflection[Ordinals.second] == '[') || (inflection[Ordinals.second] == '~') ||
+                 (inflection[Ordinals.second] == '+') || (inflection[Ordinals.second] == '-') || 
+                 (inflection[Ordinals.second] == '/') || (inflection[Ordinals.second] == '*')))
             {
-                length = inflection[0] - '0';
+                length = inflection[Ordinals.first] - '0';
                 inflection = inflection.Substring(1);
             }
             else length = 1;
@@ -123,7 +127,8 @@ namespace Myriad.Data
                 Substitute = true;
                 inflection = inflection.Substring(Ordinals.second, inflection.Length - 2);
             }
-            if (((inflection[0] >= 'A') && (inflection[0] <= 'Z')) || ((inflection[0] >= 'a') && (inflection[0] <= 'z')))
+            if (((inflection[Ordinals.first] >= 'A') && (inflection[Ordinals.first] <= 'Z')) || 
+                ((inflection[Ordinals.first] >= 'a') && (inflection[Ordinals.first] <= 'z')))
             {
                 Weight = keywordWeight;
             }
@@ -139,40 +144,45 @@ namespace Myriad.Data
                     Weight = notTag;
                     inflection = inflection[Ordinals.third..];
                 }
-                if (inflection[0] == '+')
+                if ((inflection.Length > 1) && (inflection.Substring(Ordinals.first, 2) == ".."))
+                {
+                    Weight = ellipsis;
+                    inflection = inflection[Ordinals.third..];
+                }
+                if (inflection[Ordinals.first] == '+')
                 {
                     Weight = keywordWeight;
-                    inflection = inflection.Substring(1);
+                    inflection = inflection[Ordinals.second..];
                 }
-                if (inflection[0] == '!')
+                if (inflection[Ordinals.first] == '!')
                 {
                     Weight = commonWordWeight;
-                    inflection = inflection.Substring(1);
+                    inflection = inflection[Ordinals.second..];
                 }
-                if (inflection[0] == '*')
+                if (inflection[Ordinals.first] == '*')
                 {
                     Weight = specialWordWeight;
-                    inflection = inflection.Substring(1);
+                    inflection = inflection[Ordinals.second..];
                 }
-                if (inflection[0] == '#')
+                if (inflection[Ordinals.first] == '#')
                 {
                     Weight = tagWeight;
-                    inflection = inflection.Substring(1);
+                    inflection = inflection[Ordinals.second..];
                 }
-                if (inflection[0] == '~')
+                if (inflection[Ordinals.first] == '~')
                 {
                     Weight = inflectionWeight;
-                    inflection = inflection.Substring(1);
+                    inflection = inflection[Ordinals.second..];
                 }
-                if (inflection[0] == '-')
+                if (inflection[Ordinals.first] == '-')
                 {
                     Weight = 0;
-                    inflection = inflection.Substring(1);
+                    inflection = inflection[Ordinals.second..];
                 }
-                if (inflection[0] == '/')
+                if (inflection[Ordinals.first] == '/')
                 {
                     Weight = originalWordWeight;
-                    inflection = inflection.Substring(1);
+                    inflection = inflection[Ordinals.second..];
                 }
             }
             Text = inflection.Replace('\'', '’').Replace('`', '’');
