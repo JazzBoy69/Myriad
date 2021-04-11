@@ -151,7 +151,7 @@ ul {margin-top:.5rem;}
 p{line-height:1.5em;padding-bottom:.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
 .scripture-text p{line-height:1.4em;}
 .sidebarScripture p{padding-bottom:.1em;}
-.poetic, p.firstpoetic{margin-top:.75rem;}
+.firstverse + .poetic, p.firstverse + p.firstpoetic{margin-top:.75rem;}
 p.poetic+p.poetic, p.firstpoetic+p.poetic, .sidebarScripture p.firstpoetic{margin-top:0}
 .sidenote p{padding-bottom: .5em;}
 .sidenote details p{padding-bottom:.1em;}
@@ -326,7 +326,7 @@ header{width:100%;height:auto;position:fixed;top:0px;left:0px;background-color:#
 .scripture-section ul.tabs li:hover{background:lightyellow;}
 .scripture-section ul.tabs li.active{background-color:white;}
 .scripture-section ul.tab{list-style-type:none;margin:0;padding:0;}
-.scripture-quote {padding-left:1.5rem;padding-right:1.5rem;}
+.scripture-quote {padding-left:1.5rem;padding-right:1.5rem;padding-bottom:.5rem;}
 .scripture-section ul.tab li{display:none;}
 .scripture-section ul.tab li.active{display:block;}
 /*FLEX TABS*/

@@ -200,6 +200,11 @@ namespace Myriad.Parser
                 await writer.Append(HTMLTags.CloseQuoteEndTag);
                 return;
             }
+            if (keywords[Ordinals.first].Verse == 1)
+            {
+                await writer.Append(HTMLClasses.StartFirstVerseParagraph);
+                return;
+            }
             await writer.Append(HTMLTags.StartParagraph);
         }
 
