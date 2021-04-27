@@ -342,7 +342,7 @@ namespace Myriad.Parser
             if (token == '~')
             {
                 citationLevel++;
-                await formatter.Append("\u200D—\u200D");
+                await formatter.Append("—\u200D");
                 SkipToken();
                 return;
             }
