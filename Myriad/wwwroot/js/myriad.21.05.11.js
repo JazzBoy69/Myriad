@@ -716,6 +716,7 @@ function EditOriginalWords() {
 }
 
 function ShowEditWindow(data) {
+    HideSidebar();
     var mainPane = document.getElementById('mainPane');
     var menuCancel = document.getElementById('menuCancel');
     var menuEdit = document.getElementById('menuEdit');
