@@ -149,7 +149,6 @@ namespace Myriad.Pages
         <div id=sidebar class='hidden'>
         </div>
         <div id='modal-image-box' class='hidden'>
-            <span id='zoomclose' onclick=CloseModalPicture(event)>&times;</span>
             <img class='modal-content zoom' id='modal-image'>
         </div>
 <div id=top></div><article>

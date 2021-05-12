@@ -841,12 +841,17 @@ function HideEditTabsHeader() {
 
 function CloseEditForm() {
     var editFormContainer = document.getElementById('editFormContainer');
+    var menuCancel = document.getElementById('menuCancel');
+    menuCancel.classList.add('hidden');
+    if (editFormContainer.classList.contains('hidden')) {
+        CloseModalPicture();
+        return;
+    }
     var mainPane = document.getElementById('mainPane'); 
     editFormContainer.classList.add('hidden');
     var editForm = document.getElementById('editForm');
     var scrollPos = editForm.getAttribute('data-pos');
     ResetEditWindow();
-    menuCancel.classList.add('hidden');
     mainPane.classList.remove('hidden');
     SetIcons();
     ResetModal();
@@ -1045,9 +1050,11 @@ function OpenModalPicture(event) {
     document.getElementById('modal-image').src = img.src;
     document.getElementById('modal-image-box').classList.remove('hidden');
     document.getElementById('menuNext').classList.add('hidden');
+    var menuCancel = document.getElementById('menuCancel');
+    menuCancel.classList.remove('hidden');
 }
 
-function CloseModalPicture(event) {
+function CloseModalPicture() {
     document.getElementById('modal-image-box').classList.add('hidden');
     document.getElementById('menuNext').classList.remove('hidden');
 }
