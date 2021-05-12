@@ -8,7 +8,7 @@ mark{background-color:#ffc;font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Ar
 .scripture-text, .sidebarScripture {font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;font-size:1.5rem;}
 .scripture-text mark{background-color:#ffc;font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;}
 article{font-size:1.35rem;font-feature-settings: "liga" 1;}
-.readingverse a{background-color:white;}
+.readingverse a{background-color:white;} 
 .originalword {font-style:italic;}
 /*Hyperlinks*/
 a{text-decoration:none;color:#4477a1;font-family:inherit;}
@@ -620,6 +620,7 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 .readingverse.visible{display:inline;position:relative;left:0rem;font-weight:600;}
 .readingverse.visible + .spacer::after {content: "\00a0"}
 .readingverse.versenumber a{vertical-align:baseline;}
+mark .readingverse.versenumber a{background-color:#ffc;}
 figure.portrait, figure.square, .sidenote{float:none;width:16rem; border-left:none;}
 figure.square{padding-left: 0; }
 figure.portrait{padding-left: 1rem; }
