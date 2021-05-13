@@ -36,6 +36,7 @@ function LoadSidebar(path) {
             sidebar.classList.remove('closing');
             sidebar.classList.add('opening');
             var article = document.getElementsByTagName('article');
+            article[0].classList.add('opening');
             article[0].classList.add('withsidebar');
             var nextButton = document.getElementById('menuNext');
             if (!nextButton.classList.contains('nexttosidebar')) {
@@ -44,6 +45,8 @@ function LoadSidebar(path) {
             setTimeout(function () {
                 var sidebar = document.getElementById('sidebar');
                 sidebar.classList.remove('opening');
+                var article = document.getElementsByTagName('article');
+                article[0].classList.remove('opening');
             }, 700);
         });
 }
