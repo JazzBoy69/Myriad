@@ -169,8 +169,8 @@ namespace Myriad
             if ((path == SearchPage.pageURL) && (query.ContainsKey("q")))
             {
                 string searchQuery = query["q"];
-                Citation citation = CitationConverter.FromString(searchQuery)[Ordinals.first];
-                if (citation.CitationType == CitationTypes.Invalid)
+                var citations = CitationConverter.FromString(searchQuery);
+                if ((citations == null) || (citations[Ordinals.first].CitationType == CitationTypes.Invalid))
                 {
                     CommonPage searchPage = new SearchPage();
                     await searchPage.LoadQueryInfo(query);
@@ -179,7 +179,7 @@ namespace Myriad
                     return searchPage;
                 }
 
-                switch (citation.CitationType)
+                switch (citations[Ordinals.first].CitationType)
                 {
                     case CitationTypes.Chapter:
                         {
@@ -198,12 +198,12 @@ namespace Myriad
                         }
                 }
 
-                if (citation.CitationType == CitationTypes.Chapter)
+                if (citations[Ordinals.first].CitationType == CitationTypes.Chapter)
                 {
                     query = new QueryCollection(new Dictionary<string, StringValues>()
                     {
-                        { "start", citation.CitationRange.StartID.ToString() },
-                        {"end", citation.CitationRange.EndID.ToString() },
+                        { "start", citations[Ordinals.first].CitationRange.StartID.ToString() },
+                        {"end", citations[Ordinals.first].CitationRange.EndID.ToString() },
                         {"navigating", "true" }
                     });
                 }
@@ -211,8 +211,8 @@ namespace Myriad
                 {
                     query = new QueryCollection(new Dictionary<string, StringValues>()
                     {
-                        { "start", citation.CitationRange.StartID.ToString() },
-                        {"end", citation.CitationRange.EndID.ToString() }
+                        { "start", citations[Ordinals.first].CitationRange.StartID.ToString() },
+                        {"end", citations[Ordinals.first].CitationRange.EndID.ToString() }
                     });
                 }
             }
