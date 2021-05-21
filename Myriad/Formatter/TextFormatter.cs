@@ -77,7 +77,7 @@ namespace Myriad.Parser
             else
             {
                 await writer.Append(HTMLTags.EndParagraph +
-                    HTMLTags.StartParagraph);
+                    HTMLClasses.StartVerseParagraph);
             }
         }
 
@@ -205,7 +205,7 @@ namespace Myriad.Parser
                 await writer.Append(HTMLClasses.StartFirstVerseParagraph);
                 return;
             }
-            await writer.Append(HTMLTags.StartParagraph);
+            await writer.Append(HTMLClasses.StartVerseParagraph);
         }
 
         private async Task StartNewPoeticParagraph(List<Keyword> keywords, int index)

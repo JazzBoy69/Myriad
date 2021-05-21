@@ -80,6 +80,7 @@ namespace Myriad.Library
         internal const string sidebarScripture = "sidebarScripture";
         internal const string closesidebar = "closeSidebar";
         internal const string StartFirstVerseParagraph = "<p class='firstverse'>";
+        internal const string StartVerseParagraph = "<p class='verse'>";
     }
 
 }
