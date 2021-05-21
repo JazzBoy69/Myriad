@@ -81,15 +81,24 @@ rt {
 #ellipsis {max-height: 1.5rem;position: absolute;top: 3rem;right: 17rem;}
 .spacer::after {content: " ";}
 
-#modal-image-box {position: fixed; z-index: 1100; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%;
-	overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.9); }
+#modal-image-box {position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%;
+	overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.9); display: flex; justify-content: center;
+  align-items: center;}
+#modal-image-box.hidden {display:none;}
+#modal-image-box.zoomed {display:block;}
 .zoom {animation-name: zoom; animation-duration: 0.2s;}
 
 .modal-content {position: relative;display: -webkit-box;display: -webkit-flex;display: -ms-flexbox;display: flex;
     -webkit-box-orient: vertical; -webkit-box-direction: normal;-webkit-flex-direction: column;-ms-flex-direction: column;
     flex-direction: column; background-color: #fff;-webkit-background-clip: padding-box;background-clip: padding-box;
     border: 1px solid rgba(0, 0, 0, 0.2);border-radius: 0.3rem;outline: 0;}
-#modal-image {margin: auto;margin-top:1.5em;min-width: 75%;max-width: 100%;}
+#modal-image {margin-top: 5rem;display: block;}
+#modal-image.tall {max-height:calc(100% - 5rem);cursor:zoom-in;}
+#modal-image.wide {max-width:100%;cursor:zoom-in;}
+.zoomed #modal-image.tall{max-height:none;cursor:zoom-out;margin-left:auto;margin-right:auto;}
+.zoomed #modal-image.wide {max-width:none;cursor:zoom-out;}
+.enlarge #modal-image.tall{max-height:none;height:calc(100% - 5rem);cursor:zoom-out;margin-left:auto;margin-right:auto;}
+.enlarge #modal-image.wide {max-width:none;width:100%;cursor:zoom-out;}
 @keyframes zoom {from {transform: scale(.5)}to {transform: scale(1)}}
 /* The Close Button */
 #zoomclose {position: fixed;z-index:1200;top: 5rem;right: 4rem;color: #f1f1f1;font-size: 40px;font-weight: bold;transition: 0.3s;}

@@ -69,8 +69,8 @@ namespace Myriad.Search
             for (int i = Ordinals.first; i < phraseDefinitions.Count; i++)
             {
                 if (phraseDefinitions[i].Count == Number.nothing) continue;
-                usedCount++;
                 if (usedCount > Ordinals.first) query.Append(" and ");
+                usedCount++;
                 if (phraseDefinitions[i].Count > Number.single)
                 {
                     AppendOr(query, i, phraseDefinitions[i]);
