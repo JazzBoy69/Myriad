@@ -18,7 +18,7 @@ namespace Myriad.Formatter
         internal static async Task AddText(HTMLWriter writer, Citation citation, bool navigating)
         {
             int paragraphIndex = await ReadParagraphIndex(citation.CitationRange.StartID.ID);
-            await writer.Append(HTMLTags.StartDivWithClass +
+            await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.paragraphText +
                 HTMLTags.CloseQuoteEndTag);
             List<(int start, int end)> paragraphRanges = await ReadParagraghRanges(citation);
@@ -42,7 +42,7 @@ namespace Myriad.Formatter
                 HTMLTags.CloseQuote);
 
             await writer.Append(HTMLTags.OnClick +
-                "ExpandReadingViewText(event)");
+                "ExpandParagraphViewText(event)");
 
             await writer.Append(HTMLTags.EndTag);
             

@@ -1019,6 +1019,10 @@ function ExpandReadingViewText(event) {
         RemoveClassFromGroup(verseNumbers, 'visible');
         var texts = document.getElementsByClassName('scripture-text');
         RemoveClassFromGroup(texts, 'expanded');
+        var paragraphView = document.getElementById('paragraph-text');
+        var expandedView = document.getElementById('expanded-text');
+        expandedView.classList.add('hidden');
+        paragraphView.classList.remove('hidden');
     }
     else {
         var expandedtexts = document.getElementsByClassName('scripture-text');
@@ -1031,6 +1035,23 @@ function ExpandReadingViewText(event) {
         AddClassToGroup(expandedVerseNumbers, 'visible');
         textSection.classList.add('expanded');
     }
+}
+
+function ExpandParagraphViewText(event) {
+    var paragraphView = document.getElementById('paragraph-text');
+    var expandedView = document.getElementById('expanded-text');
+    paragraphView.classList.add('hidden');
+    expandedView.classList.remove('hidden');
+    var header = document.getElementById('header3'); //****
+    var parentheader = header.nextElementSibling.querySelector('.scripture-header');
+    var textSection = header.nextElementSibling.querySelector('.scripture-text');
+    parentheader.classList.add('visible');
+    var expandedVerseNumbers = document.getElementsByClassName('versenumber');
+    AddClassToGroup(expandedVerseNumbers, 'visible');
+    textSection.classList.add('expanded');
+    var targetOffset = header.offsetTop;
+    var h = document.getElementsByTagName('header')[0].offsetHeight;
+    window.scrollTo({ top: targetOffset - h, left: 0 });
 }
 
 function HandleExtraInfo() {

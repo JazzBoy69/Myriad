@@ -60,9 +60,11 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndMainHeader);
             await WriteChapterComment();
             await TextParagraph.AddText(writer, citation, navigating);
-            await writer.Append(HTMLTags.StartDivWithClass +
+            await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.expandedText +
+                HTMLTags.CloseQuote+
                 Symbol.space +
+                HTMLTags.Class +
                 HTMLClasses.hidden +
                 HTMLTags.CloseQuoteEndTag);
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
