@@ -66,10 +66,18 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.StartMainHeader);
                 await WriteTitle(writer);
                 await writer.Append(HTMLTags.EndMainHeader);
+                await TextParagraph.AddText(writer, citation, citation, navigating);
+                await writer.Append(HTMLTags.StartDivWithID +
+                    HTMLClasses.expandedText +
+                    HTMLTags.CloseQuote +
+                    HTMLTags.Class +
+                    HTMLClasses.hidden +
+                    HTMLTags.CloseQuoteEndTag);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
                     await textSection.AddTextSection(commentIDs, i, citation, navigating, readingView);
                 }
+                await writer.Append(HTMLTags.EndDiv);
             }
             else
             {
