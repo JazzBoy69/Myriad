@@ -172,7 +172,7 @@ namespace Myriad.Pages
         public const string close = @"</div></article></div>";
         public const string tocdiv = "<div id=tocdiv class=hidden></div>";
         public const string modalOverlay = "<div id='modal-overlay'></div>";
-        public const string myriadJavaScript = "<script src='js/myriad.21.05.17" +
+        public const string myriadJavaScript = "<script src='js/myriad.21.06.17" +
             ".js'></script>";
         public const string endofBody = "</body></html>";
     }
