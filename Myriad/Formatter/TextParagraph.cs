@@ -15,17 +15,17 @@ namespace Myriad.Formatter
     public class TextParagraph
     {
 
-        internal static async Task AddText(HTMLWriter writer, Citation citation, bool navigating)
+        internal static async Task AddText(HTMLWriter writer, Citation chapterCitation, Citation sourceCitation, bool navigating)
         {
-            int paragraphIndex = await ReadParagraphIndex(citation.CitationRange.StartID.ID);
+            int paragraphIndex = await ReadParagraphIndex(chapterCitation.CitationRange.StartID.ID);
             await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.paragraphText +
                 HTMLTags.CloseQuoteEndTag);
-            List<(int start, int end)> paragraphRanges = await ReadParagraghRanges(citation);
-            List<int> commentIDs = GetCommentIDs(citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+            List<(int start, int end)> paragraphRanges = await ReadParagraghRanges(chapterCitation);
+            List<int> commentIDs = GetCommentIDs(chapterCitation.CitationRange.StartID.ID, chapterCitation.CitationRange.EndID.ID);
             for (int index = Ordinals.first; index<paragraphRanges.Count; index++)
             {
-                await AddScriptureParagraph(writer, paragraphRanges[index], commentIDs, citation, navigating);
+                await AddScriptureParagraph(writer, paragraphRanges[index], commentIDs, sourceCitation, navigating);
             }
 
             await writer.Append(HTMLTags.EndDiv);

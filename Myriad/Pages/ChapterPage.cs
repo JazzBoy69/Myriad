@@ -27,6 +27,7 @@ namespace Myriad.Pages
         int articleID;
         List<string> articleParagraphs;
         string indexPageName;
+        Citation chapterCitation;
 
         internal ChapterPage()
         {
@@ -59,7 +60,7 @@ namespace Myriad.Pages
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndMainHeader);
             await WriteChapterComment();
-            await TextParagraph.AddText(writer, citation, navigating);
+            await TextParagraph.AddText(writer, chapterCitation, citation, navigating);
             await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.expandedText +
                 HTMLTags.CloseQuote+
@@ -92,7 +93,7 @@ namespace Myriad.Pages
 
         private async Task Initialize()
         {
-            Citation chapterCitation = GetChapterCitation();
+            chapterCitation = GetChapterCitation();
             textSection = new TextSectionFormatter(writer);
             parser = new PageParser(writer);
             commentIDs = GetCommentIDs(chapterCitation);
