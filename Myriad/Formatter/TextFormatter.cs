@@ -27,7 +27,10 @@ namespace Myriad.Parser
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 await StartPoetic(keywords[index]);
-                await AddVerseNumber(keywords, index, citation);
+                if (keywords[index].WordIndex == Ordinals.first)
+                {
+                    await AddVerseNumber(keywords, index, citation);
+                }
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;
                 await EndPoetic(keywords, index);
@@ -42,7 +45,10 @@ namespace Myriad.Parser
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 await StartPoetic(keywords[index]);
-                await AddVerseNumber(keywords, index, citation);
+                if (keywords[index].WordIndex == Ordinals.first)
+                {
+                    await AddVerseNumber(keywords, index, citation);
+                }
                 await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;

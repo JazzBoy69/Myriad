@@ -20,7 +20,7 @@ namespace Myriad.Formatter
             int paragraphIndex = await ReadParagraphIndex(citation.CitationRange.StartID.ID);
             await writer.Append(HTMLTags.StartDivWithClass +
                 HTMLClasses.paragraphText +
-                HTMLTags.CloseQuote);
+                HTMLTags.CloseQuoteEndTag);
             List<(int start, int end)> paragraphRanges = await ReadParagraghRanges(citation);
             for (int index = Ordinals.first; index<paragraphRanges.Count; index++)
             {
