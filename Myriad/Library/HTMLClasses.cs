@@ -12,6 +12,8 @@ namespace Myriad.Library
         internal const string scriptureText = "scripture-text";
         internal const string scriptureQuote = "scripture-quote";
         internal const string scriptureComment = "scripture-comment";
+        internal const string paragraphText = "paragraph-text";
+        internal const string expandedText = "expanded-text";
         internal const string scripture = "scripture";
         internal const string scriptureCommentHeader = "scripture-comment-header";
         internal const string readingVerse = "readingverse";

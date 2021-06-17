@@ -19,7 +19,38 @@ namespace Myriad.Parser
         {
             this.writer = writer;
         }
+        public async Task AppendCommentSpanKeywords(List<Keyword> keywords, Citation citation, int spanIndex)
+        {
+            if (spanIndex == Ordinals.first) await StartParagraph(keywords);
+            paragraphIndex = Ordinals.first;
 
+            for (int index = Ordinals.first; index < keywords.Count; index++)
+            {
+                await StartPoetic(keywords[index]);
+                await AddVerseNumber(keywords, index, citation);
+                await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
+                paragraphIndex++;
+                await EndPoetic(keywords, index);
+            }
+        }
+        internal async Task AppendCommentSpanKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation, int spanIndex)
+        {
+            targetCitation = await CitationConverter.ResolveCitation(targetCitation);
+            citation = await CitationConverter.ResolveCitation(citation);
+            if (spanIndex == Ordinals.first) await StartParagraph(keywords);
+            paragraphIndex = Ordinals.first;
+            for (int index = Ordinals.first; index < keywords.Count; index++)
+            {
+                await StartPoetic(keywords[index]);
+                await AddVerseNumber(keywords, index, citation);
+                await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
+                await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
+                paragraphIndex++;
+                await EndHighlight(keywords[index], targetCitation);
+                await EndPoetic(keywords, index, targetCitation);
+            }
+            await EndSectionHighlight(keywords[Ordinals.last], targetCitation);
+        }
         public async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation)
         {
             await StartParagraph(keywords);
@@ -33,7 +64,24 @@ namespace Myriad.Parser
                 await EndPoetic(keywords, index);
             }
         }
-
+        internal async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation)
+        {
+            targetCitation = await CitationConverter.ResolveCitation(targetCitation);
+            citation = await CitationConverter.ResolveCitation(citation);
+            await StartParagraph(keywords);
+            paragraphIndex = Ordinals.first;
+            for (int index = Ordinals.first; index < keywords.Count; index++)
+            {
+                await StartPoetic(keywords[index]);
+                await AddVerseNumber(keywords, index, citation);
+                await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
+                await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
+                paragraphIndex++;
+                await EndHighlight(keywords[index], targetCitation);
+                await EndPoetic(keywords, index, targetCitation);
+            }
+            await EndSectionHighlight(keywords[Ordinals.last], targetCitation);
+        }
         internal async Task StartPoetic(Keyword keyword)
         {
             if (poetic != keyword.IsPoetic)
@@ -79,26 +127,6 @@ namespace Myriad.Parser
                 await writer.Append(HTMLTags.EndParagraph +
                     HTMLClasses.StartVerseParagraph);
             }
-        }
-
-        internal async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation)
-        {
-            targetCitation = await CitationConverter.ResolveCitation(targetCitation);
-            citation = await CitationConverter.ResolveCitation(citation);
-            await StartParagraph(keywords);
-           // await StartReadingViewHighlighting(citation, targetCitation);
-            paragraphIndex = Ordinals.first;
-            for (int index = Ordinals.first; index < keywords.Count; index++)
-            {
-                await StartPoetic(keywords[index]);
-                await AddVerseNumber(keywords, index, citation);
-                await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
-                await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
-                paragraphIndex++;
-                await EndHighlight(keywords[index], targetCitation);
-                await EndPoetic(keywords, index, targetCitation);
-            }
-            await EndSectionHighlight(keywords[Ordinals.last], targetCitation);
         }
 
         private async Task EndSectionHighlight(Keyword lastKeyword, Citation targetCitation)

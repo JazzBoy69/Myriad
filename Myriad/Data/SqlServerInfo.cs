@@ -18,7 +18,7 @@ namespace Myriad.Data
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph, ReadArticleIdentifier,
         ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadPrecedingCommentRange, ReadCommentTitle, ReadRelatedParagraphIndex,
-        ReadKeywords, ReadWordIndex, ReadKeywordSentence,
+        ReadKeywords, ReadWordIndex, ReadKeywordSentence, ReadKeywordsParagraph, ReadParagraphIndex, ReadParagraphRanges,
         ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases, ReadPhrase,
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
         ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences,
@@ -124,6 +124,13 @@ namespace Myriad.Data
             { DataOperation.ReadKeywords,
                  "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                  " where keyid>=@key1 and keyid<=@key2" },
+            { DataOperation.ReadKeywordsParagraph,
+                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
+                 " where keyid>=@key1 and keyid<=@key2 and paragraph=@key3" },
+            { DataOperation.ReadParagraphIndex,
+                "select paragraph from keywords where keyid=@keyq" },
+            { DataOperation.ReadParagraphRanges,
+                "select Min(keyid), Max(keyid) from keywords where keyid>=@key1 and keyid<=@key2 group by paragraph" },
             { DataOperation.ReadWordIndex,
                 "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" },
             {DataOperation.ReadKeywordSentence,
