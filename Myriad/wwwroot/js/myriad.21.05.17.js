@@ -1023,6 +1023,12 @@ function ExpandReadingViewText(event) {
         var expandedView = document.getElementById('expanded-text');
         expandedView.classList.add('hidden');
         paragraphView.classList.remove('hidden');
+        var section = event.target.closest('.scripture-section');
+        var number = section.previousElementSibling.getAttribute('data-comment');
+        var marker = document.getElementById('marker' + number);
+        var targetOffset = marker.offsetTop;
+        var h = document.getElementsByTagName('header')[0].offsetHeight;
+        window.scrollTo({ top: targetOffset - h, left: 0 });
     }
     else {
         var expandedtexts = document.getElementsByClassName('scripture-text');
@@ -1040,15 +1046,17 @@ function ExpandReadingViewText(event) {
 function ExpandParagraphViewText(event) {
     var paragraphView = document.getElementById('paragraph-text');
     var expandedView = document.getElementById('expanded-text');
-    paragraphView.classList.add('hidden');
-    expandedView.classList.remove('hidden');
-    var header = document.getElementById('header3'); //****
+    var marker = event.target.closest('.comment-marker');
+    var number = marker.getAttribute('data-comment');
+    var header = document.getElementById('header' + number);
     var parentheader = header.nextElementSibling.querySelector('.scripture-header');
     var textSection = header.nextElementSibling.querySelector('.scripture-text');
     parentheader.classList.add('visible');
     var expandedVerseNumbers = document.getElementsByClassName('versenumber');
     AddClassToGroup(expandedVerseNumbers, 'visible');
     textSection.classList.add('expanded');
+    paragraphView.classList.add('hidden');
+    expandedView.classList.remove('hidden');
     var targetOffset = header.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
     window.scrollTo({ top: targetOffset - h, left: 0 });

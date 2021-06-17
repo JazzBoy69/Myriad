@@ -23,6 +23,9 @@ namespace Myriad.Library
         internal const string rangeData = " rangedata";
         internal const string dataStart = " data-start=";
         internal const string dataEnd = " data-end=";
+        internal const string dataComment = " data-comment=";
+        internal const string commentMarker = "comment-marker";
+        internal const string markerID = "marker";
         internal const string partial = "partial=true";
         internal const string poetic1 = "firstpoetic";
         internal const string poetic2 = "poetic";

@@ -63,7 +63,6 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.expandedText +
                 HTMLTags.CloseQuote+
-                Symbol.space +
                 HTMLTags.Class +
                 HTMLClasses.hidden +
                 HTMLTags.CloseQuoteEndTag);

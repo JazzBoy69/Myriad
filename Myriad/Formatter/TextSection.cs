@@ -239,8 +239,12 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithID +
                 "header");
             await writer.Append(headerCount);
+            await writer.Append(HTMLTags.CloseQuote +
+                Symbol.space +
+                HTMLClasses.dataComment);
+            await writer.Append(headerCount);
             headerCount++;
-            await writer.Append(HTMLTags.CloseQuote+
+            await writer.Append(Symbol.space+
                 HTMLTags.Class+
                 HTMLClasses.marker +
                 HTMLTags.CloseQuoteEndTag+

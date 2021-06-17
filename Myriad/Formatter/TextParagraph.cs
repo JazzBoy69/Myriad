@@ -22,9 +22,10 @@ namespace Myriad.Formatter
                 HTMLClasses.paragraphText +
                 HTMLTags.CloseQuoteEndTag);
             List<(int start, int end)> paragraphRanges = await ReadParagraghRanges(citation);
+            List<int> commentIDs = GetCommentIDs(citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             for (int index = Ordinals.first; index<paragraphRanges.Count; index++)
             {
-                await AddScriptureParagraph(writer, paragraphRanges[index], citation, navigating);
+                await AddScriptureParagraph(writer, paragraphRanges[index], commentIDs, citation, navigating);
             }
 
             await writer.Append(HTMLTags.EndDiv);
@@ -32,7 +33,7 @@ namespace Myriad.Formatter
 
 
 
-        private static async Task AddScriptureParagraph(HTMLWriter writer, (int start, int end) paragraphRange, Citation sourceCitation, bool navigating)
+        private static async Task AddScriptureParagraph(HTMLWriter writer, (int start, int end) paragraphRange, List<int> commentIDs, Citation sourceCitation, bool navigating)
         {
             await writer.Append(HTMLTags.StartSectionWithClass +
                 HTMLClasses.scriptureSection +
@@ -49,17 +50,26 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithClass +
                 HTMLClasses.scriptureQuote +
                 HTMLTags.CloseQuoteEndTag);
-            await AppendParagraphKeywords(writer, paragraphRange, sourceCitation, navigating);
+            await AppendParagraphKeywords(writer, paragraphRange, commentIDs, sourceCitation, navigating);
             await writer.Append(HTMLTags.EndDiv +
                 HTMLTags.EndSection +
                 HTMLTags.EndSection);
         }
 
-        private static async Task AppendParagraphKeywords(HTMLWriter writer, (int start, int end) paragraphRange, Citation sourceCitation, bool navigating)
+        private static async Task AppendParagraphKeywords(HTMLWriter writer, (int start, int end) paragraphRange, List<int> commentsInParagraph, Citation sourceCitation, bool navigating)
         {
             var commentIDs = GetCommentIDs(paragraphRange.start, paragraphRange.end);
             for (int index = Ordinals.first; index < commentIDs.Count; index++)
             {
+                await writer.Append(HTMLTags.StartSpanWithClass +
+                    HTMLClasses.commentMarker +
+                    HTMLTags.CloseQuote +
+                    HTMLTags.ID +
+                    HTMLClasses.markerID);
+                await writer.Append(commentsInParagraph.IndexOf(commentIDs[index]));
+                await writer.Append(HTMLClasses.dataComment);
+                await writer.Append(commentsInParagraph.IndexOf(commentIDs[index]));
+                await writer.Append(HTMLTags.EndTag);
                 List<(int start, int end)> idRanges = await ReadLinks(commentIDs[index]);
                 for (int i = Ordinals.first; i < idRanges.Count; i++)
                 {
@@ -67,6 +77,7 @@ namespace Myriad.Formatter
                     await AppendSpanKeywords(writer, idRanges[i], index, sourceCitation, navigating);
                     break;
                 }
+                await writer.Append(HTMLTags.EndSpan);
             }
         }
 
