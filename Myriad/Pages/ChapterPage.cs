@@ -67,12 +67,13 @@ namespace Myriad.Pages
                 HTMLTags.Class +
                 HTMLClasses.hidden +
                 HTMLTags.CloseQuoteEndTag);
-            TextSection textSection = new TextSection();
-            textSection.readingView = true;
-            textSection.navigating = navigating;
+            TextSections textSections = new TextSections();
+            textSections.readingView = true;
+            textSections.navigating = navigating;
+            textSections.sourceCitation = citation;
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await textSectionFormatter.AddTextSection(commentIDs, i, citation, textSection);
+                await textSectionFormatter.AddTextSection(commentIDs, i, textSections);
             }
             await writer.Append(HTMLTags.EndDiv);
             await AddPageTitleData(writer);

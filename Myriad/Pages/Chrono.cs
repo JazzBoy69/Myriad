@@ -34,7 +34,7 @@ namespace Myriad.Pages
         internal const string queryKeyTGStart = "tgstart";
         internal const string queryKeyTGEnd = "tgend";
         public const string queryKeyNavigating = "navigating";
-        protected Citation targetCitation;
+        protected Citation sourceCitation;
         protected int id;
         protected bool navigating;
         HTMLWriter writer; 
@@ -50,16 +50,16 @@ namespace Myriad.Pages
                 info.Append(HTMLTags.StartQuery + queryKeyID + Symbol.equal);
                 info.Append(id);
             }
-            if ((targetCitation != null) && (targetCitation.CitationRange.Valid))
+            if ((sourceCitation != null) && (sourceCitation.CitationRange.Valid))
             {
                 if (id > Result.nothing) 
                     info.Append(HTMLTags.Ampersand);
                 else
                     info.Append(HTMLTags.StartQuery);
                 info.Append(queryKeyTGStart + Symbol.equal);
-                info.Append(targetCitation.CitationRange.StartID);
+                info.Append(sourceCitation.CitationRange.StartID);
                 info.Append(HTMLTags.Ampersand + queryKeyTGEnd + Symbol.equal);
-                info.Append(targetCitation.CitationRange.EndID);
+                info.Append(sourceCitation.CitationRange.EndID);
             }
             return (navigating) ?
                 info.Append(HTMLTags.Ampersand + queryKeyNavigating + "=true").ToString() :
@@ -83,16 +83,16 @@ namespace Myriad.Pages
 
         public override bool IsValid()
         {
-            return (id > Number.nothing) || ((targetCitation != null) && targetCitation.CitationRange.Valid);
+            return (id > Number.nothing) || ((sourceCitation != null) && sourceCitation.CitationRange.Valid);
         }
 
         public override async Task LoadQueryInfo(IQueryCollection query)
         {
             if (!int.TryParse(query[queryKeyTGStart], out int start)) start = Result.notfound;
             if (!int.TryParse(query[queryKeyTGEnd], out int end)) end = Result.notfound;
-            targetCitation = new Citation(start, end);
+            sourceCitation = new Citation(start, end);
             int.TryParse(query[queryKeyID], out int id);
-            this.id = (id>Number.nothing) ? id : await GetIDFromCitation(targetCitation);
+            this.id = (id>Number.nothing) ? id : await GetIDFromCitation(sourceCitation);
             navigating = query.ContainsKey(queryKeyNavigating);
         }
 
@@ -130,12 +130,13 @@ namespace Myriad.Pages
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndMainHeader);
             await WriteChapterComment();
-            TextSection textSection = new TextSection();
-            textSection.readingView = true;
-            textSection.navigating = navigating;
+            TextSections textSections = new TextSections();
+            textSections.readingView = true;
+            textSections.navigating = navigating;
+            textSections.sourceCitation = sourceCitation;
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await textSectionFormatter.AddTextSection(commentIDs, i, targetCitation, textSection);
+                await textSectionFormatter.AddTextSection(commentIDs, i, textSections);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);

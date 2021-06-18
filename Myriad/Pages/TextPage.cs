@@ -61,9 +61,10 @@ namespace Myriad.Pages
             this.writer = writer;
             Initialize();
             bool readingView = commentIDs.Count > 1;
-            TextSection textSection = new TextSection();
-            textSection.readingView = readingView;
-            textSection.navigating = navigating;
+            TextSections textSections = new TextSections();
+            textSections.readingView = readingView;
+            textSections.navigating = navigating;
+            textSections.sourceCitation = citation;
             if (readingView)
             {
                 await writer.Append(HTMLTags.StartMainHeader);
@@ -78,13 +79,13 @@ namespace Myriad.Pages
                     HTMLTags.CloseQuoteEndTag);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
-                    await textSectionFormatter.AddTextSection(commentIDs, i, citation, textSection);
+                    await textSectionFormatter.AddTextSection(commentIDs, i, textSections);
                 }
                 await writer.Append(HTMLTags.EndDiv);
             }
             else
             {
-                await textSectionFormatter.AddTextSection(commentIDs, Ordinals.first, citation, textSection);
+                await textSectionFormatter.AddTextSection(commentIDs, Ordinals.first, textSections);
                 await AddEditPageData(writer);
             }
             await AddPageTitleData(writer);
@@ -135,10 +136,11 @@ namespace Myriad.Pages
             ArticleParagraph heading = new ArticleParagraph(id, Ordinals.first, newParagraphs[Ordinals.first]);
             if (newParagraphs[Ordinals.first] != paragraphs[Ordinals.first]) 
                 await EditParagraph.WriteParagraphToDatabase(heading);
-            TextSection textSection = new TextSection();
+            TextSections textSection = new TextSections();
             textSection.readingView = false;
             textSection.navigating = true;
-            await textFormatter.StartTextSection(id, citation, textSection);
+            textSection.sourceCitation = citation;
+            await textFormatter.StartTextSection(id, textSection);
             for (int i = Ordinals.second; i < newParagraphs.Count; i++)
             {
                 ArticleParagraph commentParagraph = new ArticleParagraph(id, i, newParagraphs[i]);
