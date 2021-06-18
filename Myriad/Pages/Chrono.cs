@@ -37,10 +37,10 @@ namespace Myriad.Pages
         protected Citation sourceCitation;
         protected int id;
         protected bool navigating;
+        TextSections textSections = new TextSections();
         HTMLWriter writer; 
         List<int> commentIDs;
         List<string> articleParagraphs;
-        TextSectionFormatter textSectionFormatter;
         PageParser parser;
         public override string GetQueryInfo()
         {
@@ -130,14 +130,7 @@ namespace Myriad.Pages
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndMainHeader);
             await WriteChapterComment();
-            TextSections textSections = new TextSections();
-            textSections.navigating = navigating;
-            textSections.sourceCitation = sourceCitation;
-            textSections.CommentIDs = commentIDs;
-            for (int i = Ordinals.first; i < commentIDs.Count; i++)
-            {
-                await textSectionFormatter.AddTextSection(textSections, i);
-            }
+            await textSections.AddSections(writer);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddTOCButton(writer);
@@ -145,10 +138,12 @@ namespace Myriad.Pages
         }
         private void Initialize()
         {
-            textSectionFormatter = new TextSectionFormatter(writer);
             parser = new PageParser(writer);
             commentIDs = GetCommentIDs();
             GetArticleParagraphs();
+            textSections.navigating = navigating;
+            textSections.sourceCitation = sourceCitation;
+            textSections.CommentIDs = commentIDs;
         }
         private async Task WriteChapterComment()
         {

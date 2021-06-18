@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Myriad.Library;
+using Feliciana.Library;
+using Feliciana.ResponseWriter;
 
 namespace Myriad.Formatter
 {
@@ -11,6 +13,7 @@ namespace Myriad.Formatter
         bool readingView = false;
         internal bool navigating;
         internal Citation sourceCitation;
+        internal Citation targetCitation;
         List<int> commentIDs;
 
         internal bool ReadingView
@@ -33,5 +36,24 @@ namespace Myriad.Formatter
             }
         }
 
+        public void SetTargetCitation(Citation targetCitation)
+        {
+            this.targetCitation = targetCitation;
+        }
+
+        internal async Task AddSections(HTMLWriter writer)
+        {
+            TextSectionFormatter textSectionFormatter = new TextSectionFormatter(writer);
+            for (var i = Ordinals.first; i < commentIDs.Count; i++)
+            {
+                await textSectionFormatter.AddTextSection(this, i);
+            }
+        }
+
+        internal async Task AddTextSection(HTMLWriter writer)
+        {
+            TextSectionFormatter textSectionFormatter = new TextSectionFormatter(writer);
+            await textSectionFormatter.AddTextSection(this, Ordinals.first);
+        }
     }
 }

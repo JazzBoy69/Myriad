@@ -21,7 +21,7 @@ namespace Myriad.Pages
         public const string editURL = "/Edit/Text";
         HTMLWriter writer;
         List<int> commentIDs;
-        TextSectionFormatter textSectionFormatter;
+        TextSections textSections = new TextSections();
         public const string queryKeyID = "ID";
 
         public override string GetURL()
@@ -60,12 +60,7 @@ namespace Myriad.Pages
             }
             this.writer = writer;
             Initialize();
-            bool readingView = commentIDs.Count > 1;
-            TextSections textSections = new TextSections();
-            textSections.navigating = navigating;
-            textSections.sourceCitation = citation;
-            textSections.CommentIDs = commentIDs;
-            if (readingView)
+            if (textSections.ReadingView)
             {
                 await writer.Append(HTMLTags.StartMainHeader);
                 await WriteTitle(writer);
@@ -77,25 +72,18 @@ namespace Myriad.Pages
                     HTMLTags.Class +
                     HTMLClasses.hidden +
                     HTMLTags.CloseQuoteEndTag);
-                for (var i = Ordinals.first; i < commentIDs.Count; i++)
-                {
-                    await textSectionFormatter.AddTextSection(textSections, i);
-                }
+                await textSections.AddSections(writer);
                 await writer.Append(HTMLTags.EndDiv);
             }
             else
             {
-                await textSectionFormatter.AddTextSection(textSections, Ordinals.first);
+                await textSections.AddTextSection(writer);
                 await AddEditPageData(writer);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddPagination(writer);
-            int chronoID = await Chrono.GetIDFromCitation(citation);
-            if (chronoID > Number.nothing)
-            {
-                await AddChronoLink(writer, chronoID);
-            }
+            await AddChronoLink(writer);
         }
 
         private async Task AddTimeLine(HTMLWriter writer, int commentID)
@@ -112,14 +100,18 @@ namespace Myriad.Pages
             return result;
         }
 
-        private async Task AddChronoLink(HTMLWriter writer, int chronoID)
+        private async Task AddChronoLink(HTMLWriter writer)
         {
-            await writer.Append(HTMLTags.StartDivWithID +
+            int chronoID = await Chrono.GetIDFromCitation(citation);
+            if (chronoID > Number.nothing)
+            {
+                await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.chrono + HTMLTags.CloseQuote +
                 HTMLTags.Class + HTMLClasses.hidden +
                 HTMLTags.CloseQuoteEndTag);
-            await writer.Append(chronoID);
-            await writer.Append(HTMLTags.EndDiv);
+                await writer.Append(chronoID);
+                await writer.Append(HTMLTags.EndDiv);
+            }
         }
         internal async Task UpdateComment(HTMLWriter writer, IQueryCollection query, string text)
         {
@@ -167,11 +159,7 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
             await AddPagination(writer);
-            int chronoID = await Chrono.GetIDFromCitation(citation);
-            if (chronoID > Number.nothing)
-            {
-                await AddChronoLink(writer, chronoID);
-            }
+            await AddChronoLink(writer);
         }
 
         internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
@@ -235,9 +223,11 @@ namespace Myriad.Pages
 
         private void Initialize()
         {
-            textSectionFormatter = new TextSectionFormatter(writer);
             commentIDs = GetCommentIDs(citation);
-            if (targetCitation != null) textSectionFormatter.SetTargetCitation(targetCitation);
+            if (targetCitation != null) textSections.SetTargetCitation(targetCitation);
+            textSections.navigating = navigating;
+            textSections.sourceCitation = citation;
+            textSections.CommentIDs = commentIDs;
         }
 
         private List<int> GetCommentIDs(Citation citation)

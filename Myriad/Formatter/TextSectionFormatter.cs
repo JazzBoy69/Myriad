@@ -18,7 +18,6 @@ namespace Myriad.Formatter
         readonly HTMLWriter writer;
         TextFormatter formatter;
         readonly FigureFormatter figureFormatter;
-        Citation targetCitation;
         int headerCount = Ordinals.first;
 
         internal PageParser Parser { get; }
@@ -29,25 +28,20 @@ namespace Myriad.Formatter
             figureFormatter = new FigureFormatter(writer);
         }
 
-        public void SetTargetCitation(Citation targetCitation)
+        public async Task AddTextSection(TextSections textSections, int sectionIndex)
         {
-            this.targetCitation = targetCitation;
-        }
+            List<(int start, int end)> idRanges = await ReadLinks(textSections.CommentIDs[sectionIndex]);
 
-        public async Task AddTextSection(TextSections textSections, int index)
-        {
-            List<(int start, int end)> idRanges = await ReadLinks(textSections.CommentIDs[index]);
-
-            Parser.SetParagraphInfo(ParagraphType.Comment, textSections.CommentIDs[index]);
-            paragraphs = ReadParagraphs(textSections.CommentIDs[index]);
+            Parser.SetParagraphInfo(ParagraphType.Comment, textSections.CommentIDs[sectionIndex]);
+            paragraphs = ReadParagraphs(textSections.CommentIDs[sectionIndex]);
             if (idRanges.Count > 1)
             {
                 await AppendTextHeader(textSections);
                 await writer.Append(HTMLTags.EndHeader);
                 await AppendFigures(textSections);
-                await AddTextTabs(idRanges, index, textSections);
+                await AddTextTabs(idRanges, sectionIndex, textSections);
                 await writer.Append(HTMLTags.EndDiv);
-                await AddScriptureTextToTabs(idRanges, index, textSections);
+                await AddScriptureTextToTabs(idRanges, sectionIndex, textSections);
             }
             else
             {
@@ -193,13 +187,13 @@ namespace Myriad.Formatter
             return results;
         }
 
-        private async Task AddTextTabs(List<(int start, int end)> idRanges, int index, TextSections textSections)
+        private async Task AddTextTabs(List<(int start, int end)> idRanges, int sectionIndex, TextSections textSections)
         {
             await writer.Append(
                 HTMLTags.StartList +
                 HTMLTags.ID +
                 HTMLClasses.tabs);
-            await writer.Append(index);
+            await writer.Append(sectionIndex);
             await writer.Append(HTMLTags.Class +
                 HTMLClasses.tabs+
                 HTMLTags.CloseQuoteEndTag);
@@ -210,7 +204,7 @@ namespace Myriad.Formatter
                 await writer.Append(HTMLTags.StartListItem +
                     HTMLTags.ID +
                     HTMLClasses.tabs);
-                await writer.Append(index);
+                await writer.Append(sectionIndex);
                 await writer.Append('-');
                 await writer.Append(i);
                 if (i==activeIndex)
@@ -269,21 +263,21 @@ namespace Myriad.Formatter
             await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
         }
 
-        private async Task AddScriptureTextToTabs(List<(int start, int end)> idRanges, int index, TextSections textSections)
+        private async Task AddScriptureTextToTabs(List<(int start, int end)> idRanges, int sectionIndex, TextSections textSections)
         {
             await writer.Append(HTMLTags.StartList +
                 HTMLTags.ID +
                 HTMLClasses.tabs);
-            await writer.Append(index);
+            await writer.Append(sectionIndex);
             await writer.Append(HTMLClasses.tabSuffix +
                 HTMLTags.Class +
                 HTMLClasses.tab +
                 HTMLTags.CloseQuoteEndTag);
-            await AddScriptureTabs(idRanges, index, textSections);
+            await AddScriptureTabs(idRanges, sectionIndex, textSections);
             await writer.Append(HTMLTags.EndList);
         }
 
-        private async Task AddScriptureTabs(List<(int start, int end)> idRanges, int index, TextSections textSections)
+        private async Task AddScriptureTabs(List<(int start, int end)> idRanges, int sectionIndex, TextSections textSections)
         {
             int activeIndex = GetActiveIndex(idRanges, textSections);
             for (int i = Ordinals.first; i < idRanges.Count; i++)
@@ -291,7 +285,7 @@ namespace Myriad.Formatter
                 await writer.Append(HTMLTags.StartListItem +
                     HTMLTags.ID +
                     HTMLClasses.tabs);
-                await writer.Append(index);
+                await writer.Append(sectionIndex);
                 await writer.Append('-');
                 await writer.Append(i);
                 await writer.Append(HTMLClasses.tabSuffix);
@@ -354,7 +348,7 @@ namespace Myriad.Formatter
         private async Task AddComment(TextSections textSections)
         {
             await StartCommentSection(textSections);
-            if (targetCitation != null) Parser.SetTargetRange(targetCitation.CitationRange);
+            if (textSections.targetCitation != null) Parser.SetTargetRange(textSections.targetCitation.CitationRange);
             for (int i = Ordinals.second; i < paragraphs.Count; i++)
             {
                 await Parser.ParseParagraph(paragraphs[i], i);
@@ -362,9 +356,9 @@ namespace Myriad.Formatter
             await EndCommentSection();
         }
 
-        public async Task ParseParagraph(string paragraph, int index)
+        public async Task ParseParagraph(string paragraph, int paragraphIndex)
         {
-            await Parser.ParseParagraph(paragraph, index);
+            await Parser.ParseParagraph(paragraph, paragraphIndex);
         }
 
         public async Task EndCommentSection()
