@@ -8,8 +8,30 @@ namespace Myriad.Formatter
 {
     public class TextSections
     {
-        internal bool readingView;
+        bool readingView = false;
         internal bool navigating;
         internal Citation sourceCitation;
+        List<int> commentIDs;
+
+        internal bool ReadingView
+        {
+            get
+            {
+                return readingView;
+            }
+        }
+        internal List<int> CommentIDs
+        {
+            get
+            {
+                return commentIDs;
+            }
+            set
+            {
+                commentIDs = value;
+                readingView = commentIDs.Count > 1;
+            }
+        }
+
     }
 }

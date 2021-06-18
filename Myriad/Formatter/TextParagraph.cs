@@ -14,7 +14,6 @@ namespace Myriad.Formatter
 {
     public class TextParagraph
     {
-
         internal static async Task AddText(HTMLWriter writer, Citation chapterCitation, Citation sourceCitation, bool navigating)
         {
             int paragraphIndex = await ReadParagraphIndex(chapterCitation.CitationRange.StartID.ID);

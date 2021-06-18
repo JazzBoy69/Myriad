@@ -131,12 +131,12 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.EndMainHeader);
             await WriteChapterComment();
             TextSections textSections = new TextSections();
-            textSections.readingView = true;
             textSections.navigating = navigating;
             textSections.sourceCitation = sourceCitation;
+            textSections.CommentIDs = commentIDs;
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await textSectionFormatter.AddTextSection(commentIDs, i, textSections);
+                await textSectionFormatter.AddTextSection(textSections, i);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
