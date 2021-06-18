@@ -77,6 +77,8 @@ namespace Myriad.Formatter
             await writer.Append(textSections.CommentIDs.IndexOf(commentID));
             await writer.Append(HTMLTags.EndTag);
             (int start, int end) idRange = await ReadLink(commentID, paragraphRange.start, paragraphRange.end);
+            if (idRange.start < paragraphRange.start) idRange.start = paragraphRange.start;
+            if (idRange.end > paragraphRange.end) idRange.end = paragraphRange.end;
             await AppendSpanKeywords(writer, idRange, spanIndex, textSections);
             await writer.Append(HTMLTags.EndSpan);
         }
