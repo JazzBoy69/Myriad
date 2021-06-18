@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Myriad.Library;
 using Feliciana.Library;
 using Feliciana.ResponseWriter;
+using Myriad.Data;
+using Feliciana.Data;
 
 namespace Myriad.Formatter
 {
@@ -54,6 +56,15 @@ namespace Myriad.Formatter
         {
             TextSectionFormatter textSectionFormatter = new TextSectionFormatter(writer);
             await textSectionFormatter.AddTextSection(this, Ordinals.first);
+        }
+
+        internal void GetCommentIDs()
+        {
+            var reader = new DataReaderProvider<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
+                sourceCitation.CitationRange.StartID.ID, sourceCitation.CitationRange.EndID.ID);
+            var results = reader.GetData<int>();
+            reader.Close();
         }
     }
 }

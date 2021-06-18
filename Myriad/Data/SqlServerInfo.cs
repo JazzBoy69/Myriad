@@ -16,7 +16,7 @@ namespace Myriad.Data
         ReadChapterNavigation, ReadFirstIndexParagraph, ReadNavigationParagraphIndex,
         ReadNavigationHeadingIndex, ReadNavigationParagraphUsingName,
         ReadArticleTitle, ReadArticleID, ReadArticle, ReadArticleParagraph, ReadArticleIdentifier,
-        ReadCommentIDs, ReadCommentLinks, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
+        ReadCommentIDs, ReadCommentLinks, ReadCommentLink, ReadComment, ReadCommentParagraph, ReadNextCommentRange,
         ReadPrecedingCommentRange, ReadCommentTitle, ReadRelatedParagraphIndex,
         ReadKeywords, ReadWordIndex, ReadKeywordSentence, ReadKeywordsParagraph, ReadParagraphIndex, ReadParagraphRanges,
         ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases, ReadPhrase,
@@ -121,6 +121,8 @@ namespace Myriad.Data
                  "update comments set text=@key3 where id=@key1 and paragraphindex=@key2"},
             { DataOperation.ReadCommentLinks,
                  "select start, last from commentlinks where id=@key1" },
+            { DataOperation.ReadCommentLink,
+                "select start, last from commentlinks where id=@key1 and start>=@key2 and last<=@key3" },
             { DataOperation.ReadKeywords,
                  "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                  " where keyid>=@key1 and keyid<=@key2" },

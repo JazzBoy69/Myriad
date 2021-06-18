@@ -65,7 +65,7 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.StartMainHeader);
                 await WriteTitle(writer);
                 await writer.Append(HTMLTags.EndMainHeader);
-                await TextParagraph.AddText(writer, citation, citation, navigating);
+                await TextParagraph.AddText(writer, textSections);
                 await writer.Append(HTMLTags.StartDivWithID +
                     HTMLClasses.expandedText +
                     HTMLTags.CloseQuote +
