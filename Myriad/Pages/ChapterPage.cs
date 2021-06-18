@@ -60,7 +60,7 @@ namespace Myriad.Pages
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndMainHeader);
             await WriteChapterComment();
-            textSections.SetTargetCitation(citation);
+            textSections.SetHighlightRange(citation);
             await TextParagraph.AddText(writer, textSections);
             await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.expandedText +
@@ -97,7 +97,7 @@ namespace Myriad.Pages
             await GetArticleParagraphs();
             textSections.navigating = navigating;
             textSections.sourceCitation = chapterCitation;
-            textSections.SetTargetCitation(citation);
+            textSections.SetHighlightRange(citation);
             textSections.CommentIDs = commentIDs;
         }
 

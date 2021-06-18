@@ -15,7 +15,7 @@ namespace Myriad.Formatter
         bool readingView = false;
         internal bool navigating;
         internal Citation sourceCitation;
-        internal Citation targetCitation;
+        internal Citation highlightCitation;
         List<int> commentIDs;
 
         internal bool ReadingView
@@ -38,9 +38,9 @@ namespace Myriad.Formatter
             }
         }
 
-        public void SetTargetCitation(Citation targetCitation)
+        public void SetHighlightRange(Citation highlightCitation)
         {
-            this.targetCitation = targetCitation;
+            this.highlightCitation = highlightCitation;
         }
 
         internal async Task AddSections(HTMLWriter writer)

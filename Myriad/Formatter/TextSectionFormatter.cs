@@ -138,7 +138,7 @@ namespace Myriad.Formatter
                 await formatter.AppendReadingViewKeywords(keywords, citation);
                 return;
             }
-            await formatter.AppendReadingViewKeywords(keywords, citation, textSections.sourceCitation); 
+            await formatter.AppendReadingViewKeywords(keywords, citation, textSections.highlightCitation); 
         }
 
         private async Task AppendKeywords(List<Keyword> keywords, Citation citation, TextSections textSection)
@@ -148,7 +148,7 @@ namespace Myriad.Formatter
                 await formatter.AppendKeywords(keywords, citation);
                 return;
             }
-            await formatter.AppendKeywords(keywords, citation, textSection.sourceCitation);
+            await formatter.AppendKeywords(keywords, citation, textSection.highlightCitation);
         }
 
         public static async Task<List<(int start, int end)>> ReadLinks(int commentID)
@@ -348,7 +348,7 @@ namespace Myriad.Formatter
         private async Task AddComment(TextSections textSections)
         {
             await StartCommentSection(textSections);
-            if (textSections.targetCitation != null) Parser.SetTargetRange(textSections.targetCitation.CitationRange);
+            if (textSections.highlightCitation != null) Parser.SetTargetRange(textSections.highlightCitation.CitationRange);
             for (int i = Ordinals.second; i < paragraphs.Count; i++)
             {
                 await Parser.ParseParagraph(paragraphs[i], i);

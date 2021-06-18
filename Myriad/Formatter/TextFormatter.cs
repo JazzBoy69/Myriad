@@ -186,7 +186,7 @@ namespace Myriad.Parser
         {
             targetCitation = await CitationConverter.ResolveCitation(targetCitation);
             citation = await CitationConverter.ResolveCitation(citation);
-            if (citation.Equals(targetCitation))
+            if (citation.Equals(targetCitation) || !targetCitation.CitationRange.Valid)
             {
                 await AppendKeywords(keywords, citation);
                 return;

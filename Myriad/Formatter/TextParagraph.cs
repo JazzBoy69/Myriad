@@ -92,7 +92,7 @@ namespace Myriad.Formatter
                 await formatter.AppendCommentSpanKeywords(keywords, citation, index);
                 return;
             }
-            await formatter.AppendCommentSpanKeywords(keywords, citation, textSections.targetCitation, index);
+            await formatter.AppendCommentSpanKeywords(keywords, citation, textSections.highlightCitation, index);
         }
 
         private static List<Keyword> ReadKeywords(Citation citation)

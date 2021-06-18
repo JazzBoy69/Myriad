@@ -224,7 +224,7 @@ namespace Myriad.Pages
         private void Initialize()
         {
             commentIDs = GetCommentIDs(citation);
-            if (targetCitation != null) textSections.SetTargetCitation(targetCitation);
+            textSections.SetHighlightRange(citation);
             textSections.navigating = navigating;
             textSections.sourceCitation = citation;
             textSections.CommentIDs = commentIDs;
