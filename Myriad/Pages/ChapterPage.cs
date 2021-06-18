@@ -21,7 +21,7 @@ namespace Myriad.Pages
         public const string editURL = "/Edit/Article";
         HTMLWriter writer;
         List<int> commentIDs;
-        TextSectionFormatter textSection;
+        TextSectionFormatter textSectionFormatter;
         PageParser parser;
         List<string> headings;
         int articleID;
@@ -67,9 +67,11 @@ namespace Myriad.Pages
                 HTMLTags.Class +
                 HTMLClasses.hidden +
                 HTMLTags.CloseQuoteEndTag);
+            TextSection textSection = new TextSection();
+            textSection.readingView = true;
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await textSection.AddTextSection(commentIDs, i, citation, navigating, true);
+                await textSectionFormatter.AddTextSection(commentIDs, i, citation, navigating, textSection);
             }
             await writer.Append(HTMLTags.EndDiv);
             await AddPageTitleData(writer);
@@ -94,7 +96,7 @@ namespace Myriad.Pages
         private async Task Initialize()
         {
             chapterCitation = GetChapterCitation();
-            textSection = new TextSectionFormatter(writer);
+            textSectionFormatter = new TextSectionFormatter(writer);
             parser = new PageParser(writer);
             commentIDs = GetCommentIDs(chapterCitation);
             await GetArticleParagraphs();

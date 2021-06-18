@@ -40,7 +40,7 @@ namespace Myriad.Pages
         HTMLWriter writer; 
         List<int> commentIDs;
         List<string> articleParagraphs;
-        TextSectionFormatter textSection;
+        TextSectionFormatter textSectionFormatter;
         PageParser parser;
         public override string GetQueryInfo()
         {
@@ -130,9 +130,11 @@ namespace Myriad.Pages
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndMainHeader);
             await WriteChapterComment();
+            TextSection textSection = new TextSection();
+            textSection.readingView = true;
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await textSection.AddTextSection(commentIDs, i, targetCitation, navigating, true);
+                await textSectionFormatter.AddTextSection(commentIDs, i, targetCitation, navigating, textSection);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
@@ -141,7 +143,7 @@ namespace Myriad.Pages
         }
         private void Initialize()
         {
-            textSection = new TextSectionFormatter(writer);
+            textSectionFormatter = new TextSectionFormatter(writer);
             parser = new PageParser(writer);
             commentIDs = GetCommentIDs();
             GetArticleParagraphs();

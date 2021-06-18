@@ -21,7 +21,7 @@ namespace Myriad.Pages
         public const string editURL = "/Edit/Text";
         HTMLWriter writer;
         List<int> commentIDs;
-        TextSectionFormatter textSection;
+        TextSectionFormatter textSectionFormatter;
         public const string queryKeyID = "ID";
 
         public override string GetURL()
@@ -61,6 +61,8 @@ namespace Myriad.Pages
             this.writer = writer;
             Initialize();
             bool readingView = commentIDs.Count > 1;
+            TextSection textSection = new TextSection();
+            textSection.readingView = readingView;
             if (readingView)
             {
                 await writer.Append(HTMLTags.StartMainHeader);
@@ -75,13 +77,13 @@ namespace Myriad.Pages
                     HTMLTags.CloseQuoteEndTag);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
-                    await textSection.AddTextSection(commentIDs, i, citation, navigating, readingView);
+                    await textSectionFormatter.AddTextSection(commentIDs, i, citation, navigating, textSection);
                 }
                 await writer.Append(HTMLTags.EndDiv);
             }
             else
             {
-                await textSection.AddTextSection(commentIDs, Ordinals.first, citation, navigating, readingView);
+                await textSectionFormatter.AddTextSection(commentIDs, Ordinals.first, citation, navigating, textSection);
                 await AddEditPageData(writer);
             }
             await AddPageTitleData(writer);
@@ -132,7 +134,9 @@ namespace Myriad.Pages
             ArticleParagraph heading = new ArticleParagraph(id, Ordinals.first, newParagraphs[Ordinals.first]);
             if (newParagraphs[Ordinals.first] != paragraphs[Ordinals.first]) 
                 await EditParagraph.WriteParagraphToDatabase(heading);
-            await textFormatter.StartTextSection(id, citation, true, false);
+            TextSection textSection = new TextSection();
+            textSection.readingView = false;
+            await textFormatter.StartTextSection(id, citation, true, textSection);
             for (int i = Ordinals.second; i < newParagraphs.Count; i++)
             {
                 ArticleParagraph commentParagraph = new ArticleParagraph(id, i, newParagraphs[i]);
@@ -228,9 +232,9 @@ namespace Myriad.Pages
 
         private void Initialize()
         {
-            textSection = new TextSectionFormatter(writer);
+            textSectionFormatter = new TextSectionFormatter(writer);
             commentIDs = GetCommentIDs(citation);
-            if (targetCitation != null) textSection.SetTargetCitation(targetCitation);
+            if (targetCitation != null) textSectionFormatter.SetTargetCitation(targetCitation);
         }
 
         private List<int> GetCommentIDs(Citation citation)
