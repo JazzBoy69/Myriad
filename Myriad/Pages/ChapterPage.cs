@@ -69,9 +69,10 @@ namespace Myriad.Pages
                 HTMLTags.CloseQuoteEndTag);
             TextSection textSection = new TextSection();
             textSection.readingView = true;
+            textSection.navigating = navigating;
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await textSectionFormatter.AddTextSection(commentIDs, i, citation, navigating, textSection);
+                await textSectionFormatter.AddTextSection(commentIDs, i, citation, textSection);
             }
             await writer.Append(HTMLTags.EndDiv);
             await AddPageTitleData(writer);

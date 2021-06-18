@@ -8,5 +8,6 @@ namespace Myriad.Formatter
     public class TextSection
     {
         internal bool readingView;
+        internal bool navigating;
     }
 }

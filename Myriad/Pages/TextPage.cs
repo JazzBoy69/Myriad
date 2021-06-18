@@ -63,6 +63,7 @@ namespace Myriad.Pages
             bool readingView = commentIDs.Count > 1;
             TextSection textSection = new TextSection();
             textSection.readingView = readingView;
+            textSection.navigating = navigating;
             if (readingView)
             {
                 await writer.Append(HTMLTags.StartMainHeader);
@@ -77,13 +78,13 @@ namespace Myriad.Pages
                     HTMLTags.CloseQuoteEndTag);
                 for (var i = Ordinals.first; i < commentIDs.Count; i++)
                 {
-                    await textSectionFormatter.AddTextSection(commentIDs, i, citation, navigating, textSection);
+                    await textSectionFormatter.AddTextSection(commentIDs, i, citation, textSection);
                 }
                 await writer.Append(HTMLTags.EndDiv);
             }
             else
             {
-                await textSectionFormatter.AddTextSection(commentIDs, Ordinals.first, citation, navigating, textSection);
+                await textSectionFormatter.AddTextSection(commentIDs, Ordinals.first, citation, textSection);
                 await AddEditPageData(writer);
             }
             await AddPageTitleData(writer);
@@ -136,7 +137,8 @@ namespace Myriad.Pages
                 await EditParagraph.WriteParagraphToDatabase(heading);
             TextSection textSection = new TextSection();
             textSection.readingView = false;
-            await textFormatter.StartTextSection(id, citation, true, textSection);
+            textSection.navigating = true;
+            await textFormatter.StartTextSection(id, citation, textSection);
             for (int i = Ordinals.second; i < newParagraphs.Count; i++)
             {
                 ArticleParagraph commentParagraph = new ArticleParagraph(id, i, newParagraphs[i]);

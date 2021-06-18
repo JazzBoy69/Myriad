@@ -132,9 +132,10 @@ namespace Myriad.Pages
             await WriteChapterComment();
             TextSection textSection = new TextSection();
             textSection.readingView = true;
+            textSection.navigating = navigating;
             for (int i = Ordinals.first; i < commentIDs.Count; i++)
             {
-                await textSectionFormatter.AddTextSection(commentIDs, i, targetCitation, navigating, textSection);
+                await textSectionFormatter.AddTextSection(commentIDs, i, targetCitation, textSection);
             }
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
