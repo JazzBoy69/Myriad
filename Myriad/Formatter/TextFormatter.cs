@@ -72,7 +72,9 @@ namespace Myriad.Parser
         }
         internal async Task AppendReadingViewKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation)
         {
-            targetCitation = await CitationConverter.ResolveCitation(targetCitation);
+          targetCitation = (targetCitation == null) 
+                ? Citation.InvalidCitation 
+                : await CitationConverter.ResolveCitation(targetCitation);
             citation = await CitationConverter.ResolveCitation(citation);
             await StartParagraph(keywords);
             paragraphIndex = Ordinals.first;
