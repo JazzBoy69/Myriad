@@ -1050,7 +1050,16 @@ function ExpandParagraphViewText(event) {
     var number = marker.getAttribute('data-comment');
     var header = document.getElementById('header' + number);
     var parentheader = header.nextElementSibling.querySelector('.scripture-header');
-    var textSection = header.nextElementSibling.querySelector('.scripture-text');
+    var sibling = parentheader.nextElementSibling;
+    var textSection = sibling.querySelector('.scripture-text');
+    if (textSection === null) {
+        sibling = header.nextElementSibling;
+        textSection = sibling.querySelector('.scripture-text');
+    }
+    if (sibling.classList.contains('tab')) {
+        var active = sibling.querySelector('.active');
+        textSection = active.querySelector('.scripture-text');
+    }
     parentheader.classList.add('visible');
     var expandedVerseNumbers = document.getElementsByClassName('versenumber');
     AddClassToGroup(expandedVerseNumbers, 'visible');
