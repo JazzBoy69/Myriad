@@ -148,7 +148,9 @@ div+section.scripture{margin-top:1.5rem;}
 div.crossrefs details summary+p{margin-top:.4em;}
 section{display:block;align-items:stretch;}
 .fixedposition {position: fixed;}
-.editcontent{overflow-y:auto;height: calc(100vh - 15rem);padding-left:4rem;padding-right:4rem;padding-bottom:4rem;white-space: pre-wrap;font-family: monospace;font-size: 1.25rem;line-height: 1.5rem;}
+.editcontent{white-space: pre-wrap;font-family: monospace;font-size: 1.25rem;line-height: 1.5rem;}
+#editTabList li {height: calc(100vh - 12rem); overflow-y: scroll;}
+#editTabs{padding-bottom:0;}
 *:focus {outline: none;}
 .poetic:last-child {padding-bottom:.5rem;}
 /*HORIZONTAL SPACING */
@@ -193,6 +195,7 @@ div.textquote table {margin-left:1.5rem;}
 .flexTabs .tab li {
     margin-left: 2rem;
 }
+#editTabs li {margin-left: 5rem; padding-right: 5rem;}
 .nav{margin-left:.5rem;}
 .versenav{margin-left:9rem;}
 .textquote {margin-left:10rem;}
@@ -498,7 +501,6 @@ body{text-rendering:optimizeSpeed;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;margin-top:2px;}
 /*HORIZONTAL SPACING */
 #menuHome{display:none;}
-.editcontent{padding-left:2rem;}
 .scripture-text{font-size:1.15rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
@@ -520,6 +522,7 @@ figure.portrait{padding-left: 1rem; }
 .sidenote{float:none;width:28rem;}
 ul.tabs, .searchResults{width:32rem;}
 ul.tabs {display:inline-block;}
+#editTabs li{padding-left: 1rem;margin-left:0;}
 #menuPrevious {width: 2rem;}
 #menuNext {width: 2rem;}
 .indexicon img {right:3rem;}
@@ -536,7 +539,7 @@ ul.tabs {display:inline-block;}
 .flexTabsTabs{width:32.25rem;padding-bottom:0;}
 .flexTabsTabs ul{width:30rem;}
 .definitionnav p{width:30rem;}
-.editcontent{height: calc(100vh - 19rem);}
+#editTabs li {height: calc(100vh - 15rem);}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:1rem;}
     table {
@@ -559,7 +562,7 @@ ul.tabs {display:inline-block;}
 .textquote{margin-right:3rem;}
 .sidenote{margin-right:4rem;}
 .flexTabsTabs ul li{width:90%;margin-right:0;}
-.editcontent{padding-right:0;}
+#editTabs li{padding-right:0;}
 }
 
 @media only screen and (max-width:480px){
@@ -574,7 +577,6 @@ body{text-rendering:optimizeSpeed;}
 .menu li{width: 2.5rem;margin:0 0 .7rem 0;}
 .buttongrid {padding-bottom: 1rem;}
 /*HORIZONTAL SPACING */
-.editcontent{padding-left:1rem;padding-right:1rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 article{width:20rem;padding-left:1em;font-size:1rem;}
@@ -632,7 +634,7 @@ ul.tabs{width: 19rem;}
 .definitionnav p{width:20rem;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;}
-.editcontent{overflow-y:auto;height: calc(100vh - 20rem);}
+#editTabs li{height: calc(100vh - 15rem);padding-left: .5rem;padding-right:1rem; margin-left:0;}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-left:.5rem;}
 table { margin-left: .6rem;}
@@ -649,7 +651,7 @@ definitionBlock details,.sidenote.crossrefs{margin-left:0}
 .comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-right:.5rem;}
 .flexTabs .tab li {margin-right:1rem;}
 .flexTabs.tab ul.li {margin-right:1rem;padding-right:1.5rem;}
-.editcontent{padding-right:0;}
+#editTabs li{padding-right:0;}
 .textquote{margin-right:1rem;}
 .sidenote{margin-right:1rem;}
 .definitionBlock details{margin-right:0;}
