@@ -149,7 +149,7 @@ div.crossrefs details summary+p{margin-top:.4em;}
 section{display:block;align-items:stretch;}
 .fixedposition {position: fixed;}
 .editcontent{white-space: pre-wrap;font-family: monospace;font-size: 1.25rem;line-height: 1.5rem;}
-#editTabList li {height: calc(100vh - 12rem); overflow-y: scroll;}
+#editTabList li {height: calc(100vh - 12rem); overflow-y: auto;}
 #editTabs{padding-bottom:0;}
 *:focus {outline: none;}
 .poetic:last-child {padding-bottom:.5rem;}

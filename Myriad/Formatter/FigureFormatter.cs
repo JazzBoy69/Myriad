@@ -57,6 +57,7 @@ namespace Myriad.Formatter
         private static ImageElement GetImageElement(string p)
         {
             int index = p.IndexOf("]]");
+            if (index == Result.notfound) index = p.Length;
             string filename = p.Substring(Ordinals.third, index - 2);
             ImageElement result = new ImageElement(filename);
             return (result.Valid) ?
