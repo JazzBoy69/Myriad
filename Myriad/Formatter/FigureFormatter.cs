@@ -31,7 +31,12 @@ namespace Myriad.Formatter
             int k = Ordinals.first;
             while (k < elements.Count)
             {
-                if ((elements.Count - k) >= 4)
+                if ((elements.Count - k) > 4)
+                {
+                    await WriteFigureElement(elements[k], elements[k + 1]);
+                    k += 2;
+                }
+                if ((elements.Count - k) == 4)
                 {
                     await WriteFigureElement(elements[k], elements[k + 1], elements[k + 2], elements[k + 3]);
                     k += 4;
@@ -138,13 +143,18 @@ namespace Myriad.Formatter
                 await WriteFigurePSPS(imageElement1, imageElement2, imageElement3, imageElement4);
                 return;
             }
+            if (pattern == "slll")
+            {
+                await WriteFigureSLLL(imageElement1, imageElement2, imageElement3, imageElement4);
+                return;
+            }
             if (pattern == "llll")
             {
                 await WriteFigureLLLL(imageElement1, imageElement2, imageElement3, imageElement4);
                 return;
             }
             await writer.Append(HTMLTags.StartFigure + HTMLTags.StartParagraph +
-                "Error pattern" + HTMLTags.EndParagraph + HTMLTags.EndFigure);
+                "Error " + pattern + HTMLTags.EndParagraph + HTMLTags.EndFigure);
         }
 
         private async Task WriteFigureLLLL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
@@ -174,6 +184,19 @@ namespace Myriad.Formatter
             await writer.Append(imageElement4.RightSiblingString);
             await writer.Append(HTMLTags.EndFigure);
         }
+        private async Task WriteFigureSLLL(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
+        {
+            AdjustProportions(imageElement1, imageElement2);
+            AdjustProportions(imageElement3, imageElement4);
+            await writer.Append(HTMLTags.StartFigureWithClass +
+                HTMLClasses.landscape +
+                HTMLTags.CloseQuoteEndTag);
+            await writer.Append(imageElement1.LeftSiblingString);
+            await writer.Append(imageElement2.RightSiblingString);
+            await writer.Append(imageElement3.LeftSiblingString);
+            await writer.Append(imageElement4.RightSiblingString);
+            await writer.Append(HTMLTags.EndFigure);
+        }
 
         private async Task WriteFigureSPSS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3, ImageElement imageElement4)
         {
@@ -196,7 +219,12 @@ namespace Myriad.Formatter
                 await WriteFigurePPL(imageElement1, imageElement2, imageElement3);
                 return;
             }
-            if ((pattern == "plp") || (pattern == "psp") || (pattern == "sls") || (pattern == "sll"))
+            if (pattern == "sls")
+            {
+                await WriteFigureSLS(imageElement1, imageElement3, imageElement2);
+                return;
+            }
+            if ((pattern == "plp") || (pattern == "psp") || (pattern == "sll"))
             {
                 await WriteFigurePPL(imageElement1, imageElement3, imageElement2);
                 return;
@@ -222,14 +250,14 @@ namespace Myriad.Formatter
                 return;
             }
             await writer.Append(HTMLTags.StartFigure+HTMLTags.StartParagraph+
-                "Error pattern"+HTMLTags.EndParagraph+HTMLTags.EndFigure);
+                "Error " + pattern+HTMLTags.EndParagraph+HTMLTags.EndFigure);
         }
 
         private async Task WriteFigureSPS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
         {
             AdjustProportions(imageElement3, imageElement2);
             await writer.Append(HTMLTags.StartFigureWithClass +
-                HTMLClasses.portrait +
+                HTMLClasses.square +
                 HTMLTags.CloseQuoteEndTag);
             await writer.Append(imageElement1.SiblingString);
             await writer.Append(imageElement2.LeftSiblingString);
@@ -280,6 +308,18 @@ namespace Myriad.Formatter
             AdjustProportions(imageElement1, imageElement2);
             await writer.Append(HTMLTags.StartFigureWithClass +
                 HTMLClasses.portrait +
+                HTMLTags.CloseQuoteEndTag);
+            await writer.Append(imageElement1.LeftSiblingString);
+            await writer.Append(imageElement2.RightSiblingString);
+            await writer.Append(imageElement3.SiblingString);
+            await writer.Append(HTMLTags.EndFigure);
+        }
+
+        private async Task WriteFigureSLS(ImageElement imageElement1, ImageElement imageElement2, ImageElement imageElement3)
+        {
+            AdjustProportions(imageElement1, imageElement2);
+            await writer.Append(HTMLTags.StartFigureWithClass +
+                HTMLClasses.square +
                 HTMLTags.CloseQuoteEndTag);
             await writer.Append(imageElement1.LeftSiblingString);
             await writer.Append(imageElement2.RightSiblingString);

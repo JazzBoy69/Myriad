@@ -36,7 +36,7 @@ namespace Myriad.Formatter
 
         private async static Task AppendFigures(HTMLWriter writer, (int start, int end) range)
         {
-            List<int> ids = GetCommentIDs(range.start, range.end);
+            List<int> ids = GetCommentIDsInParagraph(range.start, range.end);
             List<string> paragraphs = new List<string>();
             for (int i = Ordinals.first; i < ids.Count; i++)
             {
@@ -144,6 +144,16 @@ namespace Myriad.Formatter
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
+                start, end);
+            var results = reader.GetData<int>();
+            reader.Close();
+            return results;
+        }
+
+        internal static List<int> GetCommentIDsInParagraph(int start, int end)
+        {
+            var reader = new DataReaderProvider<int, int>(
+                SqlServerInfo.GetCommand(DataOperation.ReadCommentIDsInParagraph),
                 start, end);
             var results = reader.GetData<int>();
             reader.Close();
