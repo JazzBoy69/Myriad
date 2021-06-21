@@ -406,6 +406,11 @@ function LoadSynonymSearchResults() {
 }
 
 function ScrollToTarget() {
+    var main = document.getElementById('mainPane');
+    if (main.clientHeight < window.innerHeight - 5 * parseFloat(getComputedStyle(document.documentElement).fontSize)) {
+        ScrollToTop();
+        return;
+    }
     var path = CurrentPath();
     if (path.indexOf('/Verse') > -1) {
         ScrollToTop();
@@ -1069,6 +1074,7 @@ function ExpandParagraphViewText(event) {
     var targetOffset = header.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
     window.scrollTo({ top: targetOffset - h, left: 0 });
+    event.preventDefault();
 }
 
 function HandleExtraInfo() {

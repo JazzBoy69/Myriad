@@ -41,8 +41,7 @@ namespace Myriad.Formatter
                 HTMLClasses.scriptureText +
                 HTMLTags.CloseQuote);
 
-            await writer.Append(HTMLTags.OnClick +
-                "ExpandParagraphViewText(event)");
+            await PageFormatter.AppendHandleParagraphClick(writer);
 
             await writer.Append(HTMLTags.EndTag);
             
@@ -126,7 +125,7 @@ namespace Myriad.Formatter
             return result;
         }
 
-        private static List<int> GetCommentIDs(int start, int end)
+        internal static List<int> GetCommentIDs(int start, int end)
         {
             var reader = new DataReaderProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),

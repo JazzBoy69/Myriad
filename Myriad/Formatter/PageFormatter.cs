@@ -7,6 +7,7 @@ using Feliciana.ResponseWriter;
 using Myriad.Pages;
 using Myriad.Library;
 using Myriad.Parser.Helpers;
+using Myriad.Formatter;
 
 namespace Myriad.Parser
 {
@@ -286,6 +287,12 @@ namespace Myriad.Parser
                 JavaScriptFunctions.HandleLink);
         }
 
+        internal static async Task AppendHandleParagraphClick(HTMLWriter writer)
+        {
+            await writer.Append(HTMLTags.OnClick +
+                JavaScriptFunctions.HandleParagraphTextClick);
+        }
+
         internal async Task Append(string stringToAppend)
         {
             await writer.Append(stringToAppend);
@@ -413,6 +420,25 @@ namespace Myriad.Parser
             await AppendQuery(writer, citation);
             await AppendPartialPageLoad(writer);
             await AppendHandleLink(writer);
+            await writer.Append(HTMLTags.EndTag);
+        }
+        public static async Task StartSpanCitationLink(HTMLWriter writer, Citation citation)
+        {
+            await writer.Append(HTMLTags.StartAnchor);
+            await writer.Append(HTMLTags.HREF);
+            await writer.Append(PageReferrer.URLs[citation.CitationType]);
+            await writer.Append(HTMLTags.StartQuery);
+            await AppendQuery(writer, citation);
+            await AppendPartialPageLoad(writer);
+            List<int> ids = TextParagraph.GetCommentIDs(citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+            if (ids.Count > 1)
+            {
+                await AppendHandleParagraphClick(writer);
+            }
+            else
+            {
+                await AppendHandleLink(writer);
+            }
             await writer.Append(HTMLTags.EndTag);
         }
 

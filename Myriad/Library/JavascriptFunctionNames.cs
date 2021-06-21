@@ -13,5 +13,6 @@ namespace Myriad.Library
         internal const string HandleTOCClick = "HandleTOCClick(event)";
         internal const string HandleLink = "HandleLink(event)";
         internal const string HandleDefinitionClick = "DefinitionTabClick(this)";
+        internal const string HandleParagraphTextClick = "ExpandParagraphViewText(event)";
     }
 }

@@ -464,7 +464,7 @@ namespace Myriad.Parser
             var thisVerse = GetSpanVerse(keyword);
             thisVerse.CitationType = CitationTypes.Text;
             await writer.Append(HTMLTags.StartBold);
-            await PageFormatter.StartCitationLink(writer, thisVerse);
+            await PageFormatter.StartSpanCitationLink(writer, thisVerse);
             await AppendReadingNumber(keyword);
             await EndVerseSpan(keyword);
         }
