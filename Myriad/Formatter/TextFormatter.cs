@@ -27,10 +27,7 @@ namespace Myriad.Parser
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 await StartPoetic(keywords[index]);
-                if (keywords[index].WordIndex == Ordinals.first)
-                {
-                    await AddVerseNumber(keywords, index, citation);
-                }
+                    await AddSpanVerseNumber(keywords, index);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;
                 await EndPoetic(keywords, index);
@@ -45,10 +42,7 @@ namespace Myriad.Parser
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 await StartPoetic(keywords[index]);
-                if (keywords[index].WordIndex == Ordinals.first)
-                {
-                    await AddVerseNumber(keywords, index, citation);
-                }
+                await AddSpanVerseNumber(keywords, index);
                 await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;
@@ -120,6 +114,12 @@ namespace Myriad.Parser
         {
             if ((keywords[index].WordIndex == Ordinals.first) || (index == Ordinals.first))
                 await AppendReadingViewVerseNumber(keywords[index], citation);
+        }
+
+        private async Task AddSpanVerseNumber(List<Keyword> keywords, int index)
+        {
+            if (keywords[index].WordIndex == Ordinals.first) 
+                await AppendSpanVerseNumber(keywords[index]);
         }
 
         private async Task EndPoetic(List<Keyword> keywords, int index, Citation targetCitation)
@@ -458,6 +458,17 @@ namespace Myriad.Parser
             await EndVerseSpan(keyword);
         }
 
+        private async Task AppendSpanVerseNumber(Keyword keyword)
+        {
+            await StartReadingVerseSpan(keyword);
+            var thisVerse = GetSpanVerse(keyword);
+            thisVerse.CitationType = CitationTypes.Text;
+            await writer.Append(HTMLTags.StartBold);
+            await PageFormatter.StartCitationLink(writer, thisVerse);
+            await AppendReadingNumber(keyword);
+            await EndVerseSpan(keyword);
+        }
+
         private async Task AppendReadingNumber(Keyword keyword)
         {
             if (keyword.WordIndex > Ordinals.first)
@@ -556,6 +567,12 @@ namespace Myriad.Parser
             {
                 thisVerse.CitationRange.SetLastWordIndex(citation.CitationRange.LastWordIndex);
             }
+            return thisVerse;
+        }
+
+        private Citation GetSpanVerse(Keyword keyword)
+        {
+            Citation thisVerse = new Citation(keyword.Book, keyword.Chapter, keyword.Verse);
             return thisVerse;
         }
 
