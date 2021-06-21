@@ -63,7 +63,7 @@ namespace Myriad.Parser
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartPoetic(keywords[index]);
+                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
                 await AddVerseNumber(keywords, index, citation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;
@@ -83,7 +83,7 @@ namespace Myriad.Parser
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartPoetic(keywords[index]);
+                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
                 await AddVerseNumber(keywords, index, citation);
                 await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
@@ -93,6 +93,21 @@ namespace Myriad.Parser
             }
             await EndSectionHighlight(keywords[Ordinals.last], targetCitation);
         }
+        internal async Task StartNewParagraph(Keyword keyword)
+        {
+            if (poetic != keyword.IsPoetic)
+            {
+                paragraphIndex = Ordinals.first;
+                await TogglePoetic(keyword);
+            }
+            if (keyword.ParagraphWordIndex == Ordinals.first)
+            {
+                paragraphIndex = Ordinals.first;
+                await writer.Append(HTMLTags.EndParagraph +
+                    HTMLClasses.StartVerseParagraph);
+            }
+        }
+
         internal async Task StartPoetic(Keyword keyword)
         {
             if (poetic != keyword.IsPoetic)
@@ -101,7 +116,6 @@ namespace Myriad.Parser
                 await TogglePoetic(keyword);
             }
         }
-
         private async Task AddVerseNumber(List<Keyword> keywords, int index, Citation citation)
         {
             if ((keywords[index].WordIndex == Ordinals.first) || (index == Ordinals.first))
@@ -181,7 +195,7 @@ namespace Myriad.Parser
             await StartParagraph(keywords);
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartPoetic(keywords[index]);
+                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
                 await AppendVerseNumber(keywords, index, citation);
                 await AppendTextOfKeyword(writer, keywords[index]);
                 await EndPoetic(keywords, index);
@@ -200,7 +214,7 @@ namespace Myriad.Parser
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartPoetic(keywords[index]);
+                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
                 await AppendVerseNumber(keywords, index, citation);
                 await StartHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfKeyword(writer, keywords[index]);
