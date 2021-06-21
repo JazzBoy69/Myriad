@@ -23,13 +23,28 @@ namespace Myriad.Formatter
             textSections.GetCommentIDs();
             for (int paragraphIndex = Ordinals.first; paragraphIndex<paragraphRanges.Count; paragraphIndex++)
             {
+                await AppendFigures(writer, paragraphRanges[paragraphIndex]);
                 await AddScriptureParagraph(writer, paragraphRanges[paragraphIndex], textSections);
+                await writer.Append(HTMLTags.StartDivWithClass +
+                    HTMLClasses.clear +
+                    HTMLTags.CloseQuoteEndTag
+                    + HTMLTags.EndDiv);
             }
 
             await writer.Append(HTMLTags.EndDiv);
         }
 
-
+        private async static Task AppendFigures(HTMLWriter writer, (int start, int end) range)
+        {
+            List<int> ids = GetCommentIDs(range.start, range.end);
+            List<string> paragraphs = new List<string>();
+            for (int i = Ordinals.first; i < ids.Count; i++)
+            {
+                paragraphs.AddRange(TextSectionFormatter.ReadParagraphs(ids[i]));
+            }
+            FigureFormatter figureFormatter = new FigureFormatter(writer);
+            await figureFormatter.GroupPictures(paragraphs);
+        }
 
         private static async Task AddScriptureParagraph(HTMLWriter writer, (int start, int end) paragraphRange, 
             TextSections textSections)
