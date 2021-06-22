@@ -26,7 +26,7 @@ namespace Myriad.Data
         public int QueryIndex => queryIndex;
         public string Text => text;
         public int ArticleID => articleID;
-        public int Length { get { return length; } }
+        internal int Length { get { return length; } set { length = value; } }
         public bool Substitute { get { return substitute == 1; } }
         public (int, int) Key { get { return (sentenceID, wordIndex); } }
         public int ParameterCount => 7;

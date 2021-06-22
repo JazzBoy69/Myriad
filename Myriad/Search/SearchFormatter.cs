@@ -384,6 +384,8 @@ namespace Myriad.Search
                 if (highlight >= searchresultwords.Count) highlight = searchresultwords.Count - 1;
                 if (searchSentence.Words[i].ArticleID != -1)
                 {
+                    highlight = await ReadDefinitionSearchLength(sentenceID, searchSentence.Words[i].WordIndex,
+                        searchSentence.Words[i].ArticleID);
                     if (links.ContainsKey(searchSentence.Words[i].WordIndex))
                     {
                         if (highlight > links[searchSentence.Words[i].WordIndex].Item2)
@@ -401,7 +403,7 @@ namespace Myriad.Search
                 }
                 if (searchSentence.Words[i].Substitute)
                 {
-                    //if (word.Length > 1) await FormatPhraseText(writer, word);
+                    searchSentence.Words[i].Length = await ReadSubtituteLength(sentenceID, searchSentence.Words[i].WordIndex);
                     if (searchSentence.Words[i].Length > 1) searchresultwords[searchSentence.Words[i].WordIndex].Length = 
                             searchSentence.Words[i].Length;
                     highlight = searchSentence.Words[i].WordIndex;
@@ -466,9 +468,13 @@ namespace Myriad.Search
                 }
                 if (searchresultwords[idx].Erased) continue;
                 ellipsis = false;
+                await writer.Append(sentenceKeywords[idx].LeadingSymbolString);
+                if (links.ContainsKey(idx))
+                {
+                    await AppendSearchArticle(writer, startID, endID, links[idx].Item1);
+                }
                 if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
                     await writer.Append(HTMLTags.StartBold);
-                await writer.Append(sentenceKeywords[idx].LeadingSymbolString);
                 if (searchresultwords[idx].Substituted)
                 {
                     if (searchresultwords[idx].IsMainText)
@@ -476,13 +482,7 @@ namespace Myriad.Search
                     else
                         await writer.Append("(");
                 }
-                if (links.ContainsKey(idx))
-                {
-                    await AppendSearchArticle(writer, startID, endID, links[idx].Item1);
-                }
                 await AppendSearchResultWord(writer, searchresultwords[idx], sentenceKeywords[idx]);
-                if (endLinks.Contains(idx+searchresultwords[idx].Length-1)) 
-                    await writer.Append(HTMLTags.EndAnchor);
                 if (searchresultwords[idx].Substituted)
                 {
                     if (searchresultwords[idx].IsMainText)
@@ -490,10 +490,30 @@ namespace Myriad.Search
                     else
                         await writer.Append(")");
                 }
+                if (endLinks.Contains(idx + searchresultwords[idx].Length - 1))
+                    await writer.Append(HTMLTags.EndAnchor);
                 await writer.Append(sentenceKeywords[idx].TrailingSymbolString);
                 if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
                     await writer.Append(HTMLTags.EndBold);
             }
+        }
+
+        private static async Task<int> ReadSubtituteLength(int sentenceID, int wordIndex)
+        {
+            DataReaderProvider<int, int> reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
+                DataOperation.ReadSubstituteLength), sentenceID, wordIndex);
+            int result = await reader.GetDatum<int>();
+            reader.Close();
+            return result;
+        }
+
+        private static async Task<int> ReadDefinitionSearchLength(int sentenceID, int wordIndex, int articleID)
+        {
+            DataReaderProvider<int, int, int> reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(
+                DataOperation.ReadDefinitionSearchLength), sentenceID, wordIndex, articleID);
+            int result = await reader.GetDatum<int>();
+            reader.Close();
+            return result;
         }
 
         internal static async Task AppendSearchArticle(HTMLWriter writer, int startID, int endID, int id)
