@@ -3,6 +3,7 @@ body{font-size:87.5%;font-size:14px;font-weight:300;line-height:1.5em;color:#3a3
 h1, h2, h3 {font-family:Spectral,'Droid Serif','Roboto Slab',Lato,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
 .sidenote h3{font-family:"Calibri", Roboto, Lato, Arial, sans-serif;}
 .sidenote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
+.sidenote .emphasized {font-style:normal; font-weight:500;color:#777;}
 .textquote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
 mark{background-color:#ffc;font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;}
 .scripture-text, .sidebarScripture {font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;font-size:1.5rem;}

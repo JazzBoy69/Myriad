@@ -20,7 +20,8 @@ namespace Myriad.Parser
         protected StringRange mainRange = new StringRange();
         protected bool foundEndToken;
         protected int lastDash;
-        internal readonly Formats formats = new Formats();
+        internal Formats formats = new Formats();
+        internal bool sidenote = false;
         protected bool hideDetails = false;
         protected readonly PageFormatter formatter;
         readonly CitationHandler2 citationHandler;
@@ -211,7 +212,7 @@ namespace Myriad.Parser
             if (token == Tokens.startSidenote)
             {
                 formats.editable = false;
-                formats.sidenote = true;
+                sidenote = true;
                 if (currentParagraph.Length > 2)
                     await formatter.StartSidenoteWithHeading(formats);
                 else
@@ -303,7 +304,7 @@ namespace Myriad.Parser
             }
             if (longToken == Tokens.italic)
             {
-                formats.italic = await formatter.ToggleItalic(formats.italic);
+                formats.italic = await formatter.ToggleItalic(formats.italic, sidenote);
                 SkipLongToken();
                 return;
             }
@@ -317,6 +318,7 @@ namespace Myriad.Parser
                 await formatter.EndSidenote(formats);
                 await HandleEndToken();
                 SkipLongToken();
+                sidenote = false;
                 return;
             }
 

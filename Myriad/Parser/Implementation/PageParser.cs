@@ -145,7 +145,7 @@ namespace Myriad.Parser
                 await formatter.Append(HTMLTags.EndHeader);
                 return;
             }
-            if (!formats.sidenote)
+            if (!sidenote)
             {
                 await formatter.Append(endHTML);
                 await formatter.AppendClearDiv();

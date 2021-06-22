@@ -16,7 +16,6 @@ namespace Myriad.Parser.Helpers
         internal bool figure = false;
         internal bool labelExists = false;
         internal bool hideDetails = false;
-        internal bool sidenote = false;
         internal void Reset()
         {
             detail = false;
@@ -28,7 +27,6 @@ namespace Myriad.Parser.Helpers
             figure = false;
             labelExists = false;
             hideDetails = false;
-            sidenote = false;
         }
     }
 }

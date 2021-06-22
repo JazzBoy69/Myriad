@@ -54,8 +54,24 @@ namespace Myriad.Parser
         }
 
 
-        internal async Task<bool> ToggleItalic(bool italic)
+        internal async Task<bool> ToggleItalic(bool italic, bool sidenote)
         {
+            if (sidenote)
+            {
+                if (italic)
+                {
+                    await writer.Append(HTMLTags.EndSpan);
+                    italic = false;
+                }
+                else
+                {
+                    await writer.Append(HTMLTags.StartSpanWithClass+
+                        HTMLClasses.emphasize+
+                        HTMLTags.CloseQuoteEndTag);
+                    italic = true;
+                }
+                return italic;
+            }
             if (italic)
             {
                 await writer.Append(HTMLTags.EndItalic);
