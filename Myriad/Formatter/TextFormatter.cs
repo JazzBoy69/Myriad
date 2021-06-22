@@ -197,6 +197,7 @@ namespace Myriad.Parser
             {
                 await StartNewParagraph(keywords[index]); //Todo add paragraph handling
                 await AppendVerseNumber(keywords, index, citation);
+                await AppendLeadingSymbols(writer, keywords[index]);
                 await AppendTextOfKeyword(writer, keywords[index]);
                 await EndPoetic(keywords, index);
             }
@@ -216,6 +217,7 @@ namespace Myriad.Parser
             {
                 await StartNewParagraph(keywords[index]); //Todo add paragraph handling
                 await AppendVerseNumber(keywords, index, citation);
+                await AppendLeadingSymbols(writer, keywords[index]);
                 await StartHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfKeyword(writer, keywords[index]);
                 paragraphIndex++;
@@ -389,8 +391,7 @@ namespace Myriad.Parser
         }
 
         public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
-        {
-            await AppendLeadingSymbols(writer, keyword);
+        {    
             await AppendText(writer, keyword);
             await writer.Append(keyword.TrailingSymbols.ToString());
         }
@@ -410,7 +411,7 @@ namespace Myriad.Parser
             }
         }
 
-        private static async Task AppendLeadingSymbols(HTMLWriter writer, Keyword keyword)
+        internal static async Task AppendLeadingSymbols(HTMLWriter writer, Keyword keyword)
         {
             if (keyword.WordIndex == Ordinals.first)
             {

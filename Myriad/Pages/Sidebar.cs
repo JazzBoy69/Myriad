@@ -46,6 +46,7 @@ namespace Myriad.Pages
                 {
                     await AppendVerseNumber(writer, keywords[index]);
                 }
+                await TextFormatter.AppendLeadingSymbols(writer, keywords[index]);
                 await TextFormatter.AppendTextOfKeyword(writer, keywords[index]);
                 if (index < keywords.Count - 1)
                 {
