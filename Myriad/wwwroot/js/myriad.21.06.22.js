@@ -1019,9 +1019,7 @@ function ExpandReadingViewText(event) {
     var textSection = event.target.closest('.scripture-text');
     if (textSection.classList.contains('expanded')) {
         var headers = document.getElementsByClassName('scripture-header');
-        var verseNumbers = document.getElementsByClassName('versenumber');
         RemoveClassFromGroup(headers, 'visible');
-        RemoveClassFromGroup(verseNumbers, 'visible');
         var texts = document.getElementsByClassName('scripture-text');
         RemoveClassFromGroup(texts, 'expanded');
         var paragraphView = document.getElementById('paragraph-text');
@@ -1049,6 +1047,20 @@ function ExpandReadingViewText(event) {
 }
 
 function ExpandParagraphViewText(event) {
+    var expandedVerseNumbers = document.getElementsByClassName('versenumber');
+    if (expandedVerseNumbers[0].classList.contains('visible')) {
+        ExpandText();
+    }
+    else {
+        AddClassToGroup(expandedVerseNumbers, 'visible');
+        if (window.innerWidth > 480) {
+            ExpandText();
+        }
+    }
+    event.preventDefault();
+}
+
+function ExpandText() {
     var paragraphView = document.getElementById('paragraph-text');
     var expandedView = document.getElementById('expanded-text');
     var marker = event.target.closest('.comment-marker');
@@ -1066,15 +1078,12 @@ function ExpandParagraphViewText(event) {
         textSection = active.querySelector('.scripture-text');
     }
     parentheader.classList.add('visible');
-    var expandedVerseNumbers = document.getElementsByClassName('versenumber');
-    AddClassToGroup(expandedVerseNumbers, 'visible');
     textSection.classList.add('expanded');
     paragraphView.classList.add('hidden');
     expandedView.classList.remove('hidden');
     var targetOffset = header.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
     window.scrollTo({ top: targetOffset - h, left: 0 });
-    event.preventDefault();
 }
 
 function HandleExtraInfo() {
