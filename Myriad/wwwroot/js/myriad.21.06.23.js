@@ -416,13 +416,47 @@ function ScrollToTarget() {
         ScrollToTop();
         return;
     }
-    var targets = document.getElementsByClassName('target');
-    var target = (targets === null) || (targets.length === 0) ?
-        document.getElementById('top') :
-        targets[0].closest('p');
+    var target = ResolveTarget();
+    
     var targetOffset = target.offsetTop;
     var h = document.getElementsByTagName('header')[0].offsetHeight;
     window.scrollTo({ top: (targetOffset - h), left: 0, behavior: 'smooth' });
+}
+
+function ResolveTarget() {
+    var targets = document.getElementsByClassName('target');
+    if ((targets === null) || (targets.length === 0)) {
+        return document.getElementById('top');
+    }
+    else {
+        return FindClosestTarget(targets);
+    }
+}
+
+function FindClosestTarget(targets) {
+    var path = CurrentPath();
+    if (path.indexOf('/Article') > -1) {
+        return targets[0].closest('p');
+    }
+    else {
+        return FindTargetSpan(targets);
+    }
+}
+
+function FindTargetSpan(targets) {
+    var found = -1;
+    for (var i = 0; i < targets.length; i++) {
+        if (targets[i].tagName == "SPAN") {
+            found = i;
+            break;
+        }
+    }
+    if (found == -1) {
+        return document.getElementById('top');
+    }
+    else {
+        return targets[found].closest('p');
+    }
 }
 
 function ScrollWhenReady() {
