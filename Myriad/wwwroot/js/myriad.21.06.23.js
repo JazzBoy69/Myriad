@@ -79,6 +79,14 @@ function LoadCompletePage(path) {
 function HandleTOCClick(event) {
     event.preventDefault();
     showHideMenu();
+    var expandedText = document.getElementById('expanded-text');
+    if ((expandedText !== null) && (expandedText.classList.contains('hidden'))) {
+        var paragraphText = document.getElementById('paragraph-text');
+        if ((paragraphText !== null) && (!paragraphText.classList.contains('hidden'))) {
+            paragraphText.classList.add('hidden');
+            expandedText.classList.remove('hidden');
+        }
+    }
     var path = event.target.href;
     var hash = path.indexOf('#');
     if (hash !== -1) {
