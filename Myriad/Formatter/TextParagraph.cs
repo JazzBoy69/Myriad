@@ -23,12 +23,16 @@ namespace Myriad.Formatter
             textSections.GetCommentIDs();
             for (int paragraphIndex = Ordinals.first; paragraphIndex<paragraphRanges.Count; paragraphIndex++)
             {
-                await AppendFigures(writer, paragraphRanges[paragraphIndex]);
-                await AddScriptureParagraph(writer, paragraphRanges[paragraphIndex], textSections);
-                await writer.Append(HTMLTags.StartDivWithClass +
+                await writer.Append(HTMLTags.StartSectionWithClass +
+                HTMLClasses.scriptureSection +
+                HTMLTags.CloseQuoteEndTag +
+                    HTMLTags.StartDivWithClass +
                     HTMLClasses.clear +
                     HTMLTags.CloseQuoteEndTag
                     + HTMLTags.EndDiv);
+                await AppendFigures(writer, paragraphRanges[paragraphIndex]);
+                await AddScriptureParagraph(writer, paragraphRanges[paragraphIndex], textSections);
+                await writer.Append(HTMLTags.EndSection);
             }
 
             await writer.Append(HTMLTags.EndDiv);
@@ -49,9 +53,7 @@ namespace Myriad.Formatter
         private static async Task AddScriptureParagraph(HTMLWriter writer, (int start, int end) paragraphRange, 
             TextSections textSections)
         {
-            await writer.Append(HTMLTags.StartSectionWithClass +
-                HTMLClasses.scriptureSection +
-                HTMLTags.CloseQuoteEndTag + 
+            await writer.Append(
                 HTMLTags.StartSectionWithClass +
                 HTMLClasses.scriptureText +
                 HTMLTags.CloseQuote);
@@ -65,7 +67,6 @@ namespace Myriad.Formatter
                 HTMLTags.CloseQuoteEndTag);
             await AppendParagraphKeywords(writer, paragraphRange, textSections);
             await writer.Append(HTMLTags.EndDiv +
-                HTMLTags.EndSection +
                 HTMLTags.EndSection);
         }
 
