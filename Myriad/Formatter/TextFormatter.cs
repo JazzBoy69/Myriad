@@ -57,7 +57,7 @@ namespace Myriad.Parser
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
+                if (index > Ordinals.first) await StartNewParagraph(keywords[index]);
                 await AddVerseNumber(keywords, index, citation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;
@@ -77,7 +77,7 @@ namespace Myriad.Parser
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
+                if (index > Ordinals.first) await StartNewParagraph(keywords[index]); 
                 await AddVerseNumber(keywords, index, citation);
                 await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
@@ -195,7 +195,7 @@ namespace Myriad.Parser
             await StartParagraph(keywords);
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
+                if (index > Ordinals.first) await StartNewParagraph(keywords[index]);
                 await AppendVerseNumber(keywords, index, citation);
                 await AppendLeadingSymbols(writer, keywords[index]);
                 await AppendTextOfKeyword(writer, keywords[index]);
@@ -215,7 +215,7 @@ namespace Myriad.Parser
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
-                await StartNewParagraph(keywords[index]); //Todo add paragraph handling
+                if (index > Ordinals.first) await StartNewParagraph(keywords[index]);
                 await AppendVerseNumber(keywords, index, citation);
                 await AppendLeadingSymbols(writer, keywords[index]);
                 await StartHighlighting(keywords[index], citation, targetCitation);
