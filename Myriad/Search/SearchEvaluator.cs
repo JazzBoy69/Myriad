@@ -123,13 +123,14 @@ namespace Myriad.Search
                         filteredOrSentences.Add(completePhraseSentences[index]);
                 }
             }
+            int limit = (filteredOrSentences.Count > 50) ? 25 : 100;
             filteredOrSentences = (isSynonymQuery) ?
                 (from sentence in filteredOrSentences
-                 where sentence.Score < 25 && sentence.Type > 1
+                 where sentence.Score < limit && sentence.Type > 1
                  orderby sentence.Type, sentence.Score
                  select sentence).ToList() :
                 (from sentence in filteredOrSentences.Distinct()
-                 where sentence.Score < 25
+                 where sentence.Score < limit
                  orderby sentence.Type, sentence.Score
                  select sentence).ToList();
             if (!isSynonymQuery && EnglishDictionary.ContainsCommonWords(pageInfo.QueryWords))
