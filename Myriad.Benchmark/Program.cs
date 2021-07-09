@@ -41,7 +41,7 @@ namespace Myriad.Benchmark
             await page.RenderPage();
         }
 
-        [Benchmark]
+        //[Benchmark]
         async public Task RenderText()
         {
             TextPage page = new TextPage();
@@ -49,7 +49,7 @@ namespace Myriad.Benchmark
             page.SetCitation(new Citation(319422720, 319422739));
             await page.RenderPage();
         }
-        //[Benchmark]
+        [Benchmark]
         async public Task RenderVerse()
         {
             VersePage page = new VersePage();
