@@ -59,11 +59,7 @@ namespace Myriad.Data
             {
                 return EnglishRootsOfPhrase(word);
             }
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadRoots),
-                word);
-            var results = reader.GetData<string>();
-            reader.Close();
+            List<string> results = ReadRootFromDB(word);
             for (int index = Ordinals.first; index < results.Count; index++)
             {
                 results[index] = RemoveDiacritics(results[index]);
@@ -72,6 +68,15 @@ namespace Myriad.Data
             return results.Distinct().ToList();
         }
 
+        internal static List<string> ReadRootFromDB(string word)
+        {
+            var reader = new DataReaderProvider<string>(
+                SqlServerInfo.GetCommand(DataOperation.ReadRoots),
+                word);
+            var results = reader.GetData<string>();
+            reader.Close();
+            return results;
+        }
         private static List<string> EnglishRootsOfPhrase(string phrase)
         {
             var phraseReader = new DataReaderProvider<string>(

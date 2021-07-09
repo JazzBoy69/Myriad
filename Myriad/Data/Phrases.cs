@@ -86,7 +86,9 @@ namespace Myriad.Data
 
         internal static List<string> RootsOf(string words)
         {
-            List<string> result = Inflections.EnglishRootsOf(words);
+            List<string> result = Inflections.ReadRootFromDB(words);
+            if (result.Count > 0) return result;
+            result = Inflections.EnglishRootsOf(words);
             if (result.Count > 0) return result;
             StringBuilder phrase = new StringBuilder();
             string[] wordList = words.Split(new char[] { ' ', '_' });
