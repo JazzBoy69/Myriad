@@ -229,7 +229,7 @@ namespace Myriad.Formatter
             for (int i=Ordinals.first; i<originalWordsInPhrase.Count; i++)
             {
                 if (i > Ordinals.first) sb.Append(' ');
-                sb.Append(originalWordsInPhrase[i].Replace('_', ' '));
+                sb.Append(originalWordsInPhrase[i]);
             }
             return sb.ToString();
         }

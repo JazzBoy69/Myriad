@@ -105,7 +105,7 @@ namespace Myriad.Data
             if (Weight == notTag) result.Append("!#");
             if (Weight == ellipsis) result.Append("..");
             if (Weight == 0) result.Append("-");
-            result.Append(Text);
+            result.Append(Text.Replace(' ', '_'));
             if (Substitute) result.Append("]");
             return result.ToString();
         }
@@ -185,7 +185,7 @@ namespace Myriad.Data
                     inflection = inflection[Ordinals.second..];
                 }
             }
-            Text = inflection.Replace('\'', '’').Replace('`', '’');
+            Text = inflection.Replace('\'', '’').Replace('`', '’').Replace('_', ' ');
         }
 
     }

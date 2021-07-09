@@ -170,7 +170,7 @@ namespace Myriad.Data
 
         private static async Task AddSearchPhrase(string phrase, (int start, int sentenceID, int wordIndex) searchResult, int length)
         {
-            SearchResult searchword = new SearchResult(searchResult.sentenceID, searchResult.wordIndex, phrase.Replace(' ', '_'),
+            SearchResult searchword = new SearchResult(searchResult.sentenceID, searchResult.wordIndex, phrase,
                 0, 500, searchResult.start, searchResult.start + length, 0);
             await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
                 searchword);

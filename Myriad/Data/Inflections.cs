@@ -68,6 +68,7 @@ namespace Myriad.Data
             {
                 results[index] = RemoveDiacritics(results[index]);
             }
+            if (results.Count == 0) results.Add(RemoveDiacritics(word));
             return results.Distinct().ToList();
         }
 

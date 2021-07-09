@@ -436,7 +436,7 @@ namespace Myriad.Search
             query.Append(queryIndex);
             query.Append(", sw.substitute, RTrim(sw.text) from searchwords as sw where ");
             query.Append("sw.text='");
-            query.Append(phrase.Replace(' ', '_'));
+            query.Append(phrase);
             query.Append("'");
             if ((searchRange != null) && (searchRange.Valid))
             {
@@ -505,7 +505,7 @@ namespace Myriad.Search
             {
                 if (i > Ordinals.first) builder.Append(", ");
                 builder.Append("'");
-                builder.Append(list[i].Replace(' ', '_'));
+                builder.Append(list[i]);
                 builder.Append("'");
             }
             builder.Append(") ");
@@ -516,7 +516,7 @@ namespace Myriad.Search
             for (int i=Ordinals.first; i<phrases.Count; i++)
             {
                 if (EnglishDictionary.IsCommonWord(phrases[i])) continue;
-                var roots = Inflections.HardRootsOf(phrases[i].Replace('_', ' '));
+                var roots = Inflections.HardRootsOf(phrases[i]);
                 //get definition ids for phrase
                 List<int> definitionIDs = GetDefinitionIDs(roots);
                 phraseDefinitions.Add(definitionIDs);

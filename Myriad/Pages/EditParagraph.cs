@@ -193,7 +193,7 @@ namespace Myriad.Pages
             var searchWords = new List<SearchWord>();
             for (int index = Ordinals.first; index < synonyms.Count; index++)
             {
-                reader.SetParameter(synonyms[index].Replace(' ', '_'));
+                reader.SetParameter(synonyms[index]);
                 searchWords.AddRange(reader.GetClassData<SearchWord>());
             }
             reader.Close();
