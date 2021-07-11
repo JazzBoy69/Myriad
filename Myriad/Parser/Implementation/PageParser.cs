@@ -113,7 +113,7 @@ namespace Myriad.Parser
                 }
                 else
                 {
-                    await formatter.Append("td class='left'>");
+                    await formatter.Append("<td class='left'>");
                 }
                 await ParseString(cells[i].Trim());
                 await formatter.Append("</td>");
