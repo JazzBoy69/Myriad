@@ -20,6 +20,7 @@ namespace Myriad.Parser
         protected StringRange mainRange = new StringRange();
         protected bool foundEndToken;
         protected int lastDash;
+        protected int startLabel;
         internal Formats formats = new Formats();
         internal bool sidenote = false;
         protected bool hideDetails = false;
@@ -280,6 +281,11 @@ namespace Myriad.Parser
             }
             if (citationLevel > Number.nothing)
             {
+                if (token == '_')
+                {
+                    SkipToken();
+                    return;
+                }
                 await HandleCitations();
             }
             await AppendTextUpToToken();
@@ -339,6 +345,7 @@ namespace Myriad.Parser
             {
                 citationLevel++;
                 SkipToken();
+                startLabel = mainRange.Start;
                 return;
             }
             if (token == '~')
@@ -398,6 +405,7 @@ namespace Myriad.Parser
         internal void SetLabel()
         {
             labelRange.Copy(mainRange);
+            labelRange.MoveStartTo(startLabel);
             labelRange.PullEnd();
             mainRange.GoToNextStartPosition();
             formats.labelExists = true;
@@ -439,7 +447,10 @@ namespace Myriad.Parser
             if (formats.labelExists)
             {
                 citations[Ordinals.first].DisplayLabel = labelRange;
-                await formatter.AppendCitationWithLabel(currentParagraph, citations[Ordinals.first]);
+                await formatter.StartCitationAnchor(writer, citations[Ordinals.first]);
+                MarkupParser labelParser = new MarkupParser(writer);
+                await labelParser.ParseString(currentParagraph.SpanAt(citations[Ordinals.first].DisplayLabel).ToString());
+                await writer.Append(HTMLTags.EndAnchor);
                 mainRange.MoveStartTo(mainRange.End);
                 formats.labelExists = false;
                 return;

@@ -380,6 +380,7 @@ namespace Myriad.Parser
         internal async Task AppendCitationWithLabel(IParagraph paragraph, Citation citation)
         {
             await StartCitationAnchor(writer, citation);
+
             await writer.Append(paragraph.SpanAt(citation.DisplayLabel).ToString());
             await writer.Append(HTMLTags.EndAnchor);
         }
