@@ -55,6 +55,12 @@ namespace Myriad.Pages
             await UpdateArticleParagraphInDatabase(paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
+            if (paragraph.Text.Length > 1)
+            {
+                string token = paragraph.Text.Substring(Ordinals.first, 2);
+                if ((token == "[|") || (token == "|-") || (token == "||")) 
+                    citations = new List<Citation>();
+            }
             await AddDefinitionSearches(paragraph, citations);
             var oldCitations = await ReadRelatedArticleLinks(paragraph.ID, paragraph.ParagraphIndex);
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
@@ -282,6 +288,11 @@ namespace Myriad.Pages
             await WriteParagraphToDatabase(paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
+            if (paragraph.Text.Length > 1)
+            {
+                string token = paragraph.Text.Substring(Ordinals.first, 2);
+                if ((token == "[|") || (token == "|-") || (token == "||")) citations = new List<Citation>();
+            }
             var oldCitations = await ReadCrossReferences(paragraph.ID, paragraph.ParagraphIndex);
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 await CompareCitationLists(citations, oldCitations);
@@ -307,6 +318,11 @@ namespace Myriad.Pages
                 paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
+            if (paragraph.Text.Length > 1)
+            {
+                string token = paragraph.Text.Substring(Ordinals.first, 2);
+                if ((token == "[|") || (token == "|-") || (token == "||")) citations = new List<Citation>();
+            }
             var tags = parser.Tags;
             List<CrossReference> crossReferencesToAdd =
                 CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
@@ -331,6 +347,12 @@ namespace Myriad.Pages
                 paragraph);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
+            if (paragraph.Text.Length > 1)
+            {
+                string token = paragraph.Text.Substring(Ordinals.first, 2);
+                if ((token == "[|") || (token == "|-") || (token == "||"))
+                    citations = new List<Citation>();
+            }
             var tags = parser.Tags;
             List<CrossReference> crossReferencesToAdd =
                 CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);

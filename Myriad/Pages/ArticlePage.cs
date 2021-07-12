@@ -142,6 +142,11 @@ namespace Myriad.Pages
                     continue;
                 }
                 await parser.ParseParagraph(paragraphs[i], i);
+                if (paragraphs[i].Length > 1)
+                {
+                    string token = paragraphs[i].Substring(Ordinals.first, 2);
+                    if ((token == "[|") || (token == "|-") || (token == "||")) parser.Citations.Clear();
+                }
                 await EditParagraph.AddDefinitionSearches(articleParagraph, parser.Citations);
             }
             await parser.EndComments();
