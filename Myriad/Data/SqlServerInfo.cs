@@ -129,10 +129,10 @@ namespace Myriad.Data
             { DataOperation.ReadCommentLink,
                 "select start, last from commentlinks where id=@key1 and last>=@key2 and start<=@key3" }, //Jas 1:1 changed to >= and <=
             { DataOperation.ReadKeywords,
-                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
+                 "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                  " where keyid>=@key1 and keyid<=@key2" },
             { DataOperation.ReadKeywordsParagraph,
-                 "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
+                 "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                  " where keyid>=@key1 and keyid<=@key2 and paragraph=@key3" },
             { DataOperation.ReadParagraphIndex,
                 "select paragraph from keywords where keyid=@keyq" },
@@ -141,7 +141,7 @@ namespace Myriad.Data
             { DataOperation.ReadWordIndex,
                 "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" },
             {DataOperation.ReadKeywordSentence,
-                "select keyid, RTrim(leadingsymbols), RTrim(text), RTrim(trailingsymbols), iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
+                "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                 " where sentenceID=@key1 order by keyid" },
             {DataOperation.ReadLastWordIndex,
                 "select Max(versewordindex) from keywords where book=@key1 and chapter=@key2 and verse=@key3" },
@@ -179,7 +179,7 @@ namespace Myriad.Data
             {DataOperation.DefinitionSearchesInRange,
                 "select start, last from definitionsearch where start>=@key1 and start<=@key2 and id=@key3" },
             {DataOperation.ReadSearchPhrase,
-                    "select RTrim(text) from keywords where keyid>=@key1 and keyid<=@key2" },
+                    "select text from keywords where keyid>=@key1 and keyid<=@key2" },
             {DataOperation.ReadSubstituteLength,
                 "select last-start+1 from searchwords where sentence=@key1 and wordindex=@key2 and substitute=1" },
             {DataOperation.ReadCrossReferences,
@@ -243,7 +243,7 @@ namespace Myriad.Data
             {DataOperation.ReadOriginalWordCommentLink,
                 "select id from commentlinks where start>=@key1 and last<=@key2" },
             {DataOperation.ReadOriginalWordKeywords,
-                "select RTrim(text), iscapitalized from keywords where keyid>=@key1 and keyid<=@key2" },
+                "select text, iscapitalized from keywords where keyid>=@key1 and keyid<=@key2" },
             { DataOperation.ReadMaxCommentID,
                 "select max(id) from comments" },
             { DataOperation.CreateCommentParagraph,

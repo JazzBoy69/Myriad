@@ -69,7 +69,7 @@ namespace Myriad.Data
 
         public string TrailingSymbolString => trailingSymbols;
 
-        public string LeadingSymbolString => leadingSymbols.Replace('_', ' ');
+        public string LeadingSymbolString => leadingSymbols;
 
         public string TextString => text;
 
