@@ -1,5 +1,6 @@
 /*FONTS AND COLORS*/
-body{font-size:87.5%;font-size:14px;font-weight:300;line-height:1.5em;color:#3a3838;text-rendering:optimizeLegibility;font-family:'Fira Sans','Segoe UI', Roboto, Lato, 'Helvetica Neue', Arial, sans-serif;}
+html{font-size:16px;}
+body{font-weight:300;line-height:1.5em;color:#3a3838;text-rendering:optimizeLegibility;font-family:'Fira Sans','Segoe UI', Roboto, Lato, 'Helvetica Neue', Arial, sans-serif;}
 h1, h2, h3 {font-family:Spectral,'Droid Serif','Roboto Slab',Lato,"Times New Roman",serif;text-align:center;text-transform:uppercase;color:#999;}
 .sidenote h3{font-family:"Calibri", Roboto, Lato, Arial, sans-serif;}
 .sidenote p{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;font-style:italic;}
@@ -22,14 +23,14 @@ a.error{color:red;}
 b{font-weight:500;}
 
 /*Sidebar*/
-#sidebar{position:fixed;height:calc(100vh - 10rem);width:20rem;top:4.6rem;right:.5rem;padding-top:2.5em;padding-left:1rem;padding-bottom:5em;padding-right:1rem;border-left:2px solid rgba(26, 35, 126, .9);z-index:5;overflow-y:auto;background-color:white;}
+#sidebar{position:fixed;height:calc(100vh - 10rem);width:20rem;top:4.6rem;right:.5rem;padding-top:2.5rem;padding-left:1rem;padding-bottom:5rem;padding-right:1rem;border-left:2px solid rgba(26, 35, 126, .9);z-index:5;overflow-y:auto;background-color:white;}
 #sidebar.opening{animation-name:sidebaropening; animation-duration:.2s;}
 @keyframes sidebaropening {from{right:-19.5rem;}to{right:.5rem;}}
 #sidebar.closing{animation-name:sidebarclosing; animation-duration:.2s;}
 @keyframes sidebarclosing {from{right:.5rem;}to{right:-19.5rem;}}
-.sidebarScripture {font-size:1.05rem; }
+.sidebarScripture {font-size:1.25rem; }
 #sidebar a{font-size:1.5rem;}
-.closeSidebar {position:fixed; top: 5rem;right:1.5rem; z-index:3000;color:#4477a1;font-size: 40px;font-weight: bold;}
+.closeSidebar {position:fixed; top: 5rem;right:1.5rem; z-index:3000;color:#4477a1;font-size: 2.5rem;font-weight: bold;}
 .closeSidebar:hover,
 .closeSidebar:focus {color: #f88;text-decoration: none;cursor: pointer;}
 
@@ -64,9 +65,9 @@ b{font-weight:500;}
 /*Ruby*/
 ruby{font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Arial", sans-serif;white-space:pre;line-height:1.5em;}
 rt {
-    font-size: .65em;
+    font-size: .64em;
     text-align: center;
-    margin-right: .25em;
+    margin-right: .25rem;
 }
 
 .versetext p {
@@ -102,18 +103,18 @@ rt {
 .enlarge #modal-image.wide {max-width:none;width:100%;cursor:zoom-out;}
 @keyframes zoom {from {transform: scale(.5)}to {transform: scale(1)}}
 /* The Close Button */
-#zoomclose {position: fixed;z-index:1200;top: 5rem;right: 4rem;color: #f1f1f1;font-size: 40px;font-weight: bold;transition: 0.3s;}
+#zoomclose {position: fixed;z-index:1200;top: 5rem;right: 4rem;color: #f1f1f1;font-size: 2.5rem;font-weight: bold;transition: 0.3s;}
 #zoomclose:hover,
 #zoomclose:focus {color: #f88;text-decoration: none;cursor: pointer;}
 .clear{clear:both;}
-p.suppressed, .suppressed p {padding-left: .5em; padding-top: .25em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color:#eee;}
+p.suppressed, .suppressed p {padding-left: .5rem; padding-top: .25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color:#eee;}
 .hidden{display:none;}
 .marker{}
 .hiddendetail span{display: none;}
 .hiddendetail::before {content: "...";color: #4477a1;background-color: whiteSmoke;}
 .hiddendetail + .hiddendetail::before{content:"";}
-.editparagraph {color:#4477a1; font-size:small;cursor: pointer;   vertical-align: baseline;position: relative;top: -0.4em;}
-.dropcap {position: relative; z-index:900;float: left;font-size: 3em;line-height: 0.5;margin: 0.205em 0 0 0;padding-bottom: .25rem;padding-right:.5rem;}
+.editparagraph {color:#4477a1; font-size:small;cursor: pointer;   vertical-align: baseline;position: relative;top: -0.4rem;}
+.dropcap {position: relative; z-index:900;float: left;font-size: 3.815rem;line-height: 0.5em;margin: 0.8rem 0 0 0;padding-bottom: .25rem;padding-right:.5rem;}
 .firstpoetic .dropcap {margin-right: 1rem;}
 
 /* Tables */
@@ -126,30 +127,30 @@ th.right,td.right{text-align: right;}
 
 /*VERTICAL SPACING */
 html, body{height:100vh;}
-sup, sub {vertical-align: baseline; position: relative;top:-0.4em;}
-sub {top: 0.4em;}
+sup, sub {vertical-align: baseline; position: relative;top:-0.4rem;}
+sub {top: 0.4rem;}
 
-div.sidenote{margin-bottom:.75em;}
-h2{font-size:1.75em;line-height: 2rem;margin-bottom:1rem;}
-h3{font-size:1.4em;margin-bottom:1rem;margin-top:.4rem;line-height:2rem;}
+div.sidenote{margin-bottom:.75rem;}
+h2{font-size:2.441rem;line-height: 1.5em;margin-bottom:1rem;}
+h3{font-size:1.953rem;margin-bottom:1rem;margin-top:.4rem;line-height:1.25em;}
 ul, li, ol, dl{list-style:none;padding:0;}
 ul {margin-top:.5rem;}
-p{line-height:1.5em;padding-bottom:.5em;-webkit-margin-before:0em;-webkit-margin-after:0em;margin-top:0;margin-bottom:0;}
+p{line-height:1.5em;padding-bottom:.5rem;-webkit-margin-before:0;-webkit-margin-after:0;margin-top:0;margin-bottom:0;}
 .scripture-text p{line-height:1.4em;}
-.sidebarScripture p{padding-bottom:.1em;}
+.sidebarScripture p{padding-bottom:.1rem;}
 .firstverse + .poetic, p.firstverse + p.firstpoetic, .poetic + .verse, .firstpoetic + .verse {margin-top:.75rem;}
 p.poetic+p.poetic, p.firstpoetic+p.poetic, .sidebarScripture p.firstpoetic{margin-top:0}
-.sidenote p{padding-bottom: .5em;}
-.sidenote details p{padding-bottom:.1em;}
-.scripture h3{margin-bottom:0.5em;}
-article{padding-top:5em;padding-bottom:3em;min-height:40rem;}
+.sidenote p{padding-bottom: .5rem;}
+.sidenote details p{padding-bottom:.1rem;}
+.scripture h3{margin-bottom:0.5rem;}
+article{padding-top:5rem;padding-bottom:3rem;min-height:40rem;}
 .sidenote{margin-top:.7rem;}
-.introduction{border-bottom:2px solid grey;margin-bottom:2em;}
+.introduction{border-bottom:2px solid grey;margin-bottom:2rem;}
 div+section.scripture{margin-top:1.5rem;}
-div.crossrefs details summary+p{margin-top:.4em;}
+div.crossrefs details summary+p{margin-top:.4rem;}
 section{display:block;align-items:stretch;}
 .fixedposition {position: fixed;}
-.editcontent{white-space: pre-wrap;font-family: monospace;font-size: 1.25rem;line-height: 1.5rem;}
+.editcontent{white-space: pre-wrap;font-family: monospace;font-size: 1.25rem;line-height: 1.5em;}
 #editTabList li {height: calc(100vh - 12rem); overflow-y: auto;}
 #editTabs{padding-bottom:0;}
 *:focus {outline: none;}
@@ -228,17 +229,17 @@ p.firstpoetic, p.poetic {
     text-indent: -1rem;
 }
 /*EDIT FORM*/
-.editText{margin-bottom:-.5em;margin-top:-1em;}
+.editText{margin-bottom:-.5rem;margin-top:-1rem;}
 textarea {
     font-family: monospace;
-    font-size: 1.1em;
+    font-size: 1.1rem;
     width: 95vw;
-    padding: .5em;
+    padding: .5rem;
 }
 
 .editbutton{display:block;padding-right:0px;}
-.scrollBox {height:8em;overflow-y:scroll;margin-bottom:.5em; padding:.2em; border:1px solid black;}
-#Heading{margin-top:-1em;}
+.scrollBox {height:8rem;overflow-y:scroll;margin-bottom:.5rm; padding:.2rem; border:1px solid black;}
+#Heading{margin-top:-1rem;}
 .info {
     float: right;
     margin: -13rem;
@@ -268,7 +269,7 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 .menu ul{margin:0;display: inline-block;margin-top:.5rem;margin-left:.5rem;}
 .menu li{float:left;position: relative;width: 3rem;margin:0 0 1rem 0;padding: 0;border-bottom: 1px solid #1A237E;}
 .menu li:hover{border-bottom: 1px solid #d3d3d3;top: -1px}
-.menu li ul{display:none;width:12em;border-top:0px;overflow:auto;overflow-x:hidden;position:absolute;margin:0;padding:0;}
+.menu li ul{display:none;width:12rem;border-top:0px;overflow:auto;overflow-x:hidden;position:absolute;margin:0;padding:0;}
 .menu li:hover li{float:none;}
 #menuPrevious {display:block; opacity: 0; position:  absolute;top: 5rem;left: 0;width: 5rem;height: calc(100vh - 5rem);}
 #menuPrevious.hidden {display:none;}
@@ -303,7 +304,7 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 
 /*SCRIPTURE TABS*/
 .scripture ul.tabs{background:none;vertical-align:top;border-bottom:1px solid #d3d3d3;display:inline-block;}
-.scripture ul.tabs li{padding:.4em 5px 0;background:none;font-size:.75em;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #d3d3d3;border-right:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;margin:.1em 0 0;height:28px;float:left;cursor:pointer;}
+.scripture ul.tabs li{padding:.4rem 5px 0;background:none;font-size:.8rem;letter-spacing:.1rem;text-transform:uppercase;border-top:1px solid #d3d3d3;border-right:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;margin:.1rem 0 0;height:28px;float:left;cursor:pointer;}
 .scripture ul.tabs li + li{border-left:0px;}
 .scripture ul.tabs li:last-child{border-bottom:0;}
 .scripture ul.tabs li:hover{background:lightyellow;}
@@ -314,7 +315,7 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 /*SCRIPTURE SECTION TABS*/
 .scripture-section .scripture-header ul.tabs{display:none;}
 .scripture-section .scripture-header.visible ul.tabs{background:none;vertical-align:top;border-bottom:1px solid #d3d3d3;display:inline-block;}
-.scripture-section ul.tabs li{padding:.4em 5px 0;background:none;background-color:whiteSmoke;font-size:.75em;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #d3d3d3;border-right:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;margin:.1em 0 0;height:28px;float:left;cursor:pointer;}
+.scripture-section ul.tabs li{padding:.4rem 5px 0;background:none;background-color:whiteSmoke;font-size:.8rem;letter-spacing:.1rem;text-transform:uppercase;border-top:1px solid #d3d3d3;border-right:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;margin:.1rem 0 0;height:28px;float:left;cursor:pointer;}
 .scripture-section ul.tabs li + li{border-left:0px;}
 .scripture-section ul.tabs li:last-child{border-bottom:0;}
 .scripture-section ul.tabs li:hover{background:lightyellow;}
@@ -327,9 +328,9 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 .flexTabs{display:flex;margin-bottom:1rem;z-index:0;}
 .flexTabs.hidden{display:none;}
 .flexTabsHeader{float:left;width:10rem;position:relative;}
-.flexTabsHeader {margin-left:-3em;border-right:1px solid #d3d3d3;}
+.flexTabsHeader {margin-left:-3rem;border-right:1px solid #d3d3d3;}
 .flexTabsHeader ul.tabs {width:100%;margin-top:0;position:relative;z-index:0}
-.flexTabsHeader ul.tabs li {width:9.55rem;height:auto;padding:.2rem;background-color:whiteSmoke;font-size:.75em;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;cursor:pointer;}
+.flexTabsHeader ul.tabs li {width:9.55rem;height:auto;padding:.2rem;background-color:whiteSmoke;font-size:.8rem;letter-spacing:.1rem;text-transform:uppercase;border-top:1px solid #d3d3d3;border-left:1px solid #d3d3d3;border-radius:2px;-moz-border-radius:2px;cursor:pointer;}
 .flexTabsHeader ul.tabs li:hover{background:lightyellow;}
 .flexTabsHeader ul.tabs li.active{width:100%;border-right:0;z-index:5;border-left:2px solid #d3d3d3;border-bottom:2px solid #d3d3d3;background-color:white;font-weight:bold;margin-bottom:1px;margin-top:-3px;}
 .flexTabsHeader ul.tabs li{border-bottom:0;}
@@ -502,10 +503,10 @@ body{text-rendering:optimizeSpeed;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;margin-top:2px;}
 /*HORIZONTAL SPACING */
 #menuHome{display:none;}
-.scripture-text{font-size:1.15rem;}
+.scripture-text{font-size:1.25rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
-article{width:33rem;padding-left:1rem;font-size:1.15rem;}
+article{width:33rem;padding-left:1rem;font-size:1.25rem;}
 .readingverse {position:absolute;left:2rem;}
 .firstpoetic .readingverse  {position:absolute;left:3rem;}
 .poetic .readingverse  {position:absolute;left:3rem;}
@@ -580,7 +581,7 @@ body{text-rendering:optimizeSpeed;}
 /*HORIZONTAL SPACING */
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
-article{width:20rem;padding-left:1em;font-size:1rem;}
+article{width:20rem;padding-left:1rem;font-size:1rem;}
 article.withsidebar{padding-left:1rem;animation:none;}
 article.withsidebar .readingverse {animation:none;}
 article.withsidebar p.firstpoetic .readingverse  {animation:none;}
