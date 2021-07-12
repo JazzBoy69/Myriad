@@ -468,13 +468,13 @@ namespace Myriad.Search
                 }
                 if (searchresultwords[idx].Erased) continue;
                 ellipsis = false;
+                if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
+                    await writer.Append(HTMLTags.StartBold);
                 await writer.Append(sentenceKeywords[idx].LeadingSymbolString);
                 if (links.ContainsKey(idx))
                 {
                     await AppendSearchArticle(writer, startID, endID, links[idx].Item1);
                 }
-                if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
-                    await writer.Append(HTMLTags.StartBold);
                 if (searchresultwords[idx].Substituted)
                 {
                     if (searchresultwords[idx].IsMainText)
