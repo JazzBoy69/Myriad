@@ -448,7 +448,7 @@ namespace Myriad.Search
             await CitationConverter.AppendLink(writer, citation);
             await writer.Append(": ");
             bool ellipsis = false;
-
+            bool link = false;
             for (int idx = Ordinals.first; idx<searchresultwords.Count; idx++)
             {
                 if (searchresultwords[idx].Erased)
@@ -468,12 +468,13 @@ namespace Myriad.Search
                 }
                 if (searchresultwords[idx].Erased) continue;
                 ellipsis = false;
-                if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
+                if (!link && ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted)))
                     await writer.Append(HTMLTags.StartBold);
                 await writer.Append(sentenceKeywords[idx].LeadingSymbolString);
                 if (links.ContainsKey(idx))
                 {
                     await AppendSearchArticle(writer, startID, endID, links[idx].Item1);
+                    link = true;
                 }
                 if (searchresultwords[idx].Substituted)
                 {
@@ -491,9 +492,12 @@ namespace Myriad.Search
                         await writer.Append(")");
                 }
                 if (endLinks.Contains(idx + searchresultwords[idx].Length - 1))
+                {
                     await writer.Append(HTMLTags.EndAnchor);
+                    link = false;
+                }
                 await writer.Append(sentenceKeywords[idx].TrailingSymbolString);
-                if ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted))
+                if (!link && ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted)))
                     await writer.Append(HTMLTags.EndBold);
             }
         }
