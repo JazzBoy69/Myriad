@@ -774,7 +774,7 @@ function ShowEditWindow(data) {
     var menuOriginalWord = document.getElementById('menuOriginalWord');
     var menuChrono = document.getElementById('menuChrono');
     var editForm = document.getElementById('editForm');
-    editForm.innerText = data;
+    editForm.innerHTML = data;
     var scrollPos = document.documentElement.scrollTop;
     editForm.setAttribute('data-pos', scrollPos);
     mainPane.classList.add('hidden');

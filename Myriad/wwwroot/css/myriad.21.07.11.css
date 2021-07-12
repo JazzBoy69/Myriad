@@ -198,6 +198,7 @@ div.textquote table {margin-left:1.5rem;}
     margin-left: 2rem;
 }
 #editTabs li {margin-left: 5rem; padding-right: 5rem;}
+.hidden + #editTabs {margin-left:8rem;}
 .nav{margin-left:.5rem;}
 .versenav{margin-left:9rem;}
 .textquote {margin-left:10rem;}
@@ -238,7 +239,7 @@ textarea {
 }
 
 .editbutton{display:block;padding-right:0px;}
-.scrollBox {height:8rem;overflow-y:scroll;margin-bottom:.5rm; padding:.2rem; border:1px solid black;}
+.scrollBox {height:8rem;overflow-y:scroll;margin-bottom:.5rem; padding:.2rem; border:1px solid black;}
 #Heading{margin-top:-1rem;}
 .info {
     float: right;
@@ -347,6 +348,7 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 
 /*HORIZONTAL SPACING */
 article{width:53rem;padding-left:5rem;}
+.hidden + #editTabs {margin-left:5rem;}
 article.withsidebar{padding-left:0;}
 .withsidebar{animation: none;}
 .opening{animation-name: opensidebar; animation-duration:.2s;}
@@ -404,6 +406,7 @@ article.withsidebar .sidenote p{margin-left: 2rem;}
 
 /*HORIZONTAL SPACING */
 article{width:50rem;padding-left:3rem;}
+.hidden + #editTabs {margin-left:3rem;}
 .withsidebar{animation: none;}
 .withoutsidebar{animation: none;}
 .readingverse {position:absolute;left:5rem;}
@@ -443,6 +446,7 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 
 /*HORIZONTAL SPACING */
 article{width:45rem;padding-left:1rem;}
+.hidden + #editTabs {margin-left:1rem;}
 .withsidebar{animation: none;}
 .withoutsidebar{animation: none;}
 .readingverse {position:absolute;left:3rem;}
@@ -541,6 +545,7 @@ ul.tabs {display:inline-block;}
 .flexTabsTabs{width:32.25rem;padding-bottom:0;}
 .flexTabsTabs ul{width:30rem;}
 .definitionnav p{width:30rem;}
+.hidden + #editTabs {margin-left:0;}
 #editTabs li {height: calc(100vh - 15rem);}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-left:1rem;}
@@ -636,6 +641,7 @@ ul.tabs{width: 19rem;}
 .definitionnav p{width:20rem;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;}
+.hidden + #editTabs {margin-left:0;}
 #editTabs li{height: calc(100vh - 15rem);padding-left: .5rem;padding-right:1rem; margin-left:0;}
 /*Left*/
 .comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-left:.5rem;}

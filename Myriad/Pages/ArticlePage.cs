@@ -270,8 +270,9 @@ namespace Myriad.Pages
             var paragraphs = GetPageParagraphs(id);
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
+                await writer.Append(HTMLTags.StartParagraph);
                 await writer.Append(paragraphs[i]);
-                await writer.Append(Symbol.lineFeed);
+                await writer.Append(HTMLTags.EndParagraph);
             }
             await EditParagraph.CheckDefinitionSearchesForParagraphIndices(id);
         }
