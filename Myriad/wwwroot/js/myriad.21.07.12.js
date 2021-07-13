@@ -195,11 +195,17 @@ function WriteMainPane(data) {
 }
 
 function SetIcons() {
+    SetSearchField();
+    SetOtherIcons();
+}
+
+function SetOtherIcons() {
     SetTOCButton();
     SetPaginationButtons();
     SetEditButton();
     SetOriginalWordButton();
     SetChronoButton();
+    SetHomeButton();
 }
 
 function SetModal() {
@@ -217,10 +223,48 @@ function ResetModal() {
     home.href = '/Index?name=home';
 }
 
+function SetSearchField() {
+    var searchField = document.getElementById('searchField');
+    console.log(searchField.value.length);
+    if ((window.innerWidth > 767) || (searchField.value.length > 0)) {
+        ShowSearchField();
+    }
+    else {
+        HideSearchField();
+    }
+}
+
+function HideSearchField() {
+    var searchField = document.getElementById('searchField');
+    if (!searchField.classList.contains('hidden')) {
+        searchField.classList.add('hidden');
+    }
+    searchField.classList.remove('visible');
+}
+
+function ShowSearchField() {
+    var searchField = document.getElementById('searchField');
+    var cancel = document.getElementById('menuCancel');
+    searchField.classList.remove('hidden');
+    if (window.innerWidth < 768) {
+        if (!searchField.classList.contains('visible')) {
+            searchField.classList.add('visible');
+        }
+        cancel.classList.remove('hidden');
+    }
+    else {
+        searchField.classList.remove('visible');
+        if (!cancel.classList.contains('hidden')) {
+            cancel.classList.add('hidden');
+        }
+    }
+}
+
 function SetTOCButton() {
     var hasTOC = document.getElementById('hastoc');
     var tocButton = document.getElementById('menuTOC');
-    if (hasTOC === null) {
+    var searchField = document.getElementById('searchField');
+    if ((hasTOC === null) || (searchField.classList.contains('visible'))) {
         if (!tocButton.classList.contains('hidden')) {
             tocButton.classList.add('hidden');
         }
@@ -244,15 +288,17 @@ function ShowPaginationButtons() {
     var upButton = document.getElementById('menuUp');
     var nextButton = document.getElementById('menuNext');
     var previousButton = document.getElementById('menuPrevious');
-    if (upButton.classList.contains('hidden')) {
+    var searchField = document.getElementById('searchField');
+    if (searchField.classList.contains('visible')) {
+        if (!upButton.classList.contains('hidden')) {
+            upButton.classList.add('hidden');
+        }
+    }
+    else {
         upButton.classList.remove('hidden');
     }
-    if (nextButton.classList.contains('hidden')) {
-        nextButton.classList.remove('hidden');
-    }
-    if (previousButton.classList.contains('hidden')) {
-        previousButton.classList.remove('hidden');
-    }
+    nextButton.classList.remove('hidden');
+    previousButton.classList.remove('hidden');
 }
 
 function HidePaginationButtons() {
@@ -273,40 +319,46 @@ function HidePaginationButtons() {
 function SetEditButton() {
     var editdata = document.getElementById('editdata');
     var editButton = document.getElementById('menuEdit');
-    if (editdata === null) {
+    var searchField = document.getElementById('searchField');
+    if ((searchField.classList.contains('visible')) || (editdata === null)) {
         if (!editButton.classList.contains('hidden'))
             editButton.classList.add('hidden');
         return;
     }
-    if (editButton.classList.contains('hidden'))
-        editButton.classList.remove('hidden');
+    editButton.classList.remove('hidden');
 }
 
 function SetOriginalWordButton() {
     var originalWords = document.getElementsByClassName('originalword');
     var originalWordButton = document.getElementById('menuOriginalWord');
-    if ((originalWords === null) || (originalWords.length === 0)) {
+    var searchField = document.getElementById('searchField');
+    if ((searchField.classList.contains('visible')) || (originalWords === null) || (originalWords.length === 0)) {
         if (!originalWordButton.classList.contains('hidden')) {
             originalWordButton.classList.add('hidden');
         }
         return;
     }
-    if (originalWordButton.classList.contains('hidden')) {
-        originalWordButton.classList.remove('hidden');
-    }
+    originalWordButton.classList.remove('hidden');
 }
 
 function SetChronoButton() {
     var chrono = document.getElementById('chrono');
     var chronoButton = document.getElementById('menuChrono');
-    if ((chrono === null) || (chrono === 'undefined')) {
+    var searchField = document.getElementById('searchField');
+    if ((searchField.classList.contains('visible')) || (chrono === null) || (chrono === 'undefined')) {
         if (!chronoButton.classList.contains('hidden')) {
             chronoButton.classList.add('hidden');
         }
         return;
     }
-    if (chronoButton.classList.contains('hidden')) {
-        chronoButton.classList.remove('hidden');
+    chronoButton.classList.remove('hidden');
+}
+
+function SetHomeButton() {
+    var homeButton = document.getElementById('menuHome');
+    var searchField = document.getElementById('searchField');
+    if ((searchField.classList.contains('visible')) && (!homeButton.classList.contains('hidden'))) {
+        homeButton.classList.add('hidden');
     }
 }
 
@@ -388,6 +440,11 @@ function DefinitionTabClick(target) {
 
 function HandleSearch() {
     var searchField = document.getElementById('searchField');
+    if (searchField.classList.contains('hidden')) {
+        ShowSearchField();
+        SetOtherIcons();
+        return;
+    }
     var path = AddQueryToPath('/Search', 'q=' + searchField.value.trim());
     HideIndex();
     LoadPage(path);

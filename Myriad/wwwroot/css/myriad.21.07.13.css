@@ -131,7 +131,7 @@ sup, sub {vertical-align: baseline; position: relative;top:-0.4rem;}
 sub {top: 0.4rem;}
 
 div.sidenote{margin-bottom:.75rem;}
-h2{font-size:2.441rem;line-height: 1.5em;margin-bottom:1rem;}
+h2{font-size:2.441rem;line-height: 1em;margin-bottom:1rem;}
 h3{font-size:1.953rem;margin-bottom:1rem;margin-top:.4rem;line-height:1.25em;}
 ul, li, ol, dl{list-style:none;padding:0;}
 ul {margin-top:.5rem;}
@@ -265,7 +265,7 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 #toolbarSearchField{float:left;padding-right: 1rem;}
 #toolbarSearchButton{float:left;padding-right: .5rem;margin-top:.5rem;}
 #toolbarSearchButton button{background-color: #1A237E;border:0;height:3rem;}
-#search{color:transparent;padding:0;background-position:center center;background-repeat:no-repeat;background-image:url(../Images/search.png);border-bottom: 1px solid #555;}
+#search{}
 .menu{display: block;padding-top:.5rem;z-index:2000}
 .menu ul{margin:0;display: inline-block;margin-top:.5rem;margin-left:.5rem;}
 .menu li{float:left;position: relative;width: 3rem;margin:0 0 1rem 0;padding: 0;border-bottom: 1px solid #1A237E;}
@@ -498,19 +498,15 @@ body{text-rendering:optimizeSpeed;}
 .withsidebar{animation: none;}
 .withoutsidebar{animation: none;}
 /*--Menu--*/
-.icon img, #search{zoom: 50%;}
-#searchField{width: 12rem;}
-.indexbutton {font-size: 1.5rem;height:2.5rem;}
+.indexbutton {height:2.5rem;}
 #possibilities {height: 15rem;}
 .flexTabsHeader ul{margin-bottom:0;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;margin-top:2px;}
 /*HORIZONTAL SPACING */
-#menuHome{display:none;}
-.scripture-text{font-size:1.25rem;}
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
-article{width:33rem;padding-left:1rem;font-size:1.25rem;}
+article{width:33rem;padding-left:1rem;}
 .readingverse {position:absolute;left:2rem;}
 .firstpoetic .readingverse  {position:absolute;left:3rem;}
 .poetic .readingverse  {position:absolute;left:3rem;}
@@ -573,20 +569,18 @@ ul.tabs {display:inline-block;}
 }
 
 @media only screen and (max-width:480px){
+html{font-size:14px;}
 body{text-rendering:optimizeSpeed;}
 .withsidebar{animation-name: none;}
 .withoutsidebar{animation-name: none;}
 #sidebar{top:4rem;}
-.scripture-text{font-size:1rem;}
 .icon img, #search{zoom: 50%;}
-#searchField{width: 8rem;}
-#menuHome{display:none;}
 .menu li{width: 2.5rem;margin:0 0 .7rem 0;}
 .buttongrid {padding-bottom: 1rem;}
 /*HORIZONTAL SPACING */
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
-article{width:20rem;padding-left:1rem;font-size:1rem;}
+article{width:20rem;padding-left:1rem;}
 article.withsidebar{padding-left:1rem;animation:none;}
 article.withsidebar .readingverse {animation:none;}
 article.withsidebar p.firstpoetic .readingverse  {animation:none;}
@@ -619,7 +613,6 @@ ul.tabs{width: 19rem;}
 #ellipsis{right:1rem;}
 .indexbutton {
         height:2rem;
-        font-size: 1rem;
     }
     #possibilities {
         height: 15rem;

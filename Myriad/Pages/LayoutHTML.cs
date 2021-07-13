@@ -13,7 +13,7 @@ namespace Myriad.Pages
     <meta charset='utf-8' />
     <meta name='viewport' content='user-scalable=no,width=device-width, initial-scale=1, maximum-scale=1' />";
         public const string header =
-@"<link rel='stylesheet' href='css/myriad.21.07.12.css' />
+@"<link rel='stylesheet' href='css/myriad.21.07.13.css' />
     <link rel='shortcut icon' href='images/MyriadIcon.png'>
 
 </head>
@@ -23,11 +23,11 @@ namespace Myriad.Pages
             <div class='menu'>
                 <!--SEARCHBAR-->
                 <div id='searchbar'> 
-                    <form id='searchForm' class='section' onsubmit='event.preventDefault(); HandleSearch();'>
+                    <form id='searchForm' class='section'>
                         <div id='toolbarSearchField' >
                             <input id='searchField' name='q' type='search' autocomplete='off' autocapitalize='off' maxlength='256' />
                         </div>
-                        <div id='toolbarSearchButton'><button id='search' type='submit'>Search</button></div>
+                        <div id='toolbarSearchButton'><img src='images/search.png' id='search' onclick=HandleSearch()></img></div>
                     </form>
                 </div>
                 <!--Navigation Controls-->
@@ -46,7 +46,7 @@ namespace Myriad.Pages
                     <li id='menuAccept' class='hidden'><a id='acceptButton'><span class='icon'><img src='images/icons8-checkmark-52.png' /></span></a></li>
                 </ul>
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
-                    <img src='images/icons8-ellipsis-30.png' id='ellipsis' class='hidden' />
+                <img src='images/icons8-ellipsis-30.png' id='ellipsis' class='hidden' />
             </div>
             <div id=level class='hidden'>0</div>
             <div id='bibleindex'>
