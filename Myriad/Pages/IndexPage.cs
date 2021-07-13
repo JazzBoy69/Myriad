@@ -19,7 +19,9 @@ namespace Myriad.Pages
         public const string IndexScripts = @"
 <script>
    window.onload = function () {
+HandleResize();
     AddShortcut();
+SetIcons();
     SetupIndex();
 SetupPartialPageLoad();
 ScrollToTop();

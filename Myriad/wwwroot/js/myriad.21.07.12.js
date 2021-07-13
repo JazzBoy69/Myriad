@@ -1,3 +1,9 @@
+function HandleResize() {
+    window.onresize = function () {
+        SetIcons();
+    };
+}
+
 function SetupPartialPageLoad() {
     var pageURL = document.getElementById('pageUrlData');
     if (pageURL !== null) {
@@ -225,7 +231,6 @@ function ResetModal() {
 
 function SetSearchField() {
     var searchField = document.getElementById('searchField');
-    console.log(searchField.value.length);
     if ((window.innerWidth > 767) || (searchField.value.length > 0)) {
         ShowSearchField();
     }
@@ -235,7 +240,8 @@ function SetSearchField() {
 }
 
 function HideSearchField() {
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
+    document.getElementById('searchField').value = '';
     if (!searchField.classList.contains('hidden')) {
         searchField.classList.add('hidden');
     }
@@ -243,7 +249,7 @@ function HideSearchField() {
 }
 
 function ShowSearchField() {
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
     var cancel = document.getElementById('menuCancel');
     searchField.classList.remove('hidden');
     if (window.innerWidth < 768) {
@@ -263,7 +269,7 @@ function ShowSearchField() {
 function SetTOCButton() {
     var hasTOC = document.getElementById('hastoc');
     var tocButton = document.getElementById('menuTOC');
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
     if ((hasTOC === null) || (searchField.classList.contains('visible'))) {
         if (!tocButton.classList.contains('hidden')) {
             tocButton.classList.add('hidden');
@@ -288,7 +294,7 @@ function ShowPaginationButtons() {
     var upButton = document.getElementById('menuUp');
     var nextButton = document.getElementById('menuNext');
     var previousButton = document.getElementById('menuPrevious');
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
     if (searchField.classList.contains('visible')) {
         if (!upButton.classList.contains('hidden')) {
             upButton.classList.add('hidden');
@@ -319,7 +325,7 @@ function HidePaginationButtons() {
 function SetEditButton() {
     var editdata = document.getElementById('editdata');
     var editButton = document.getElementById('menuEdit');
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
     if ((searchField.classList.contains('visible')) || (editdata === null)) {
         if (!editButton.classList.contains('hidden'))
             editButton.classList.add('hidden');
@@ -331,7 +337,7 @@ function SetEditButton() {
 function SetOriginalWordButton() {
     var originalWords = document.getElementsByClassName('originalword');
     var originalWordButton = document.getElementById('menuOriginalWord');
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
     if ((searchField.classList.contains('visible')) || (originalWords === null) || (originalWords.length === 0)) {
         if (!originalWordButton.classList.contains('hidden')) {
             originalWordButton.classList.add('hidden');
@@ -344,7 +350,7 @@ function SetOriginalWordButton() {
 function SetChronoButton() {
     var chrono = document.getElementById('chrono');
     var chronoButton = document.getElementById('menuChrono');
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
     if ((searchField.classList.contains('visible')) || (chrono === null) || (chrono === 'undefined')) {
         if (!chronoButton.classList.contains('hidden')) {
             chronoButton.classList.add('hidden');
@@ -356,10 +362,21 @@ function SetChronoButton() {
 
 function SetHomeButton() {
     var homeButton = document.getElementById('menuHome');
-    var searchField = document.getElementById('searchField');
-    if ((searchField.classList.contains('visible')) && (!homeButton.classList.contains('hidden'))) {
-        homeButton.classList.add('hidden');
+    var searchField = document.getElementById('toolbarSearchField');
+    if (searchField.classList.contains('visible')) {
+        if (!homeButton.classList.contains('hidden')) {
+            homeButton.classList.add('hidden');
+        }
+        return;
     }
+    var path = CurrentPath();
+    if (path === '/Index?name=home') {
+        if (!homeButton.classList.contains('hidden')) {
+            homeButton.classList.add('hidden');
+        }
+        return;
+    }
+    homeButton.classList.remove('hidden');
 }
 
 function AddQueryToPath(path, query) {
@@ -439,13 +456,15 @@ function DefinitionTabClick(target) {
 }
 
 function HandleSearch() {
-    var searchField = document.getElementById('searchField');
+    var searchField = document.getElementById('toolbarSearchField');
     if (searchField.classList.contains('hidden')) {
         ShowSearchField();
         SetOtherIcons();
+        searchField.focus();
         return;
     }
-    var path = AddQueryToPath('/Search', 'q=' + searchField.value.trim());
+
+    var path = AddQueryToPath('/Search', 'q=' + document.getElementById('searchField').value.trim());
     HideIndex();
     LoadPage(path);
     return false;
@@ -456,8 +475,7 @@ function SetSearchFieldText() {
     var queryElement = document.getElementById('querystring');
     if (queryElement === null) return;
     var query = queryElement.innerText;
-    var searchField = document.getElementById('searchField');
-    searchField.value = query;
+    document.getElementById('searchField').searchField.value = query;
 }
 
 function LoadSynonymSearchResults() {
@@ -946,14 +964,24 @@ function HideEditTabsHeader() {
     }
 }
 
-function CloseEditForm() {
+function HandleCancel() {
     var editFormContainer = document.getElementById('editFormContainer');
     var menuCancel = document.getElementById('menuCancel');
     menuCancel.classList.add('hidden');
     if (editFormContainer.classList.contains('hidden')) {
+        var container = document.getElementById('modal-image-box');
+        if (container.classList.contains('hidden')) {
+            SetIcons();
+            return;
+        }
         CloseModalPicture();
         return;
     }
+    CloseEditForm();
+}
+
+function CloseEditForm() {
+    var editFormContainer = document.getElementById('editFormContainer');
     var mainPane = document.getElementById('mainPane'); 
     editFormContainer.classList.add('hidden');
     var editForm = document.getElementById('editForm');
@@ -1369,6 +1397,7 @@ function HandleShortcut(e) {
     if (e.keyCode) code = e.keyCode;
     else if (e.which) code = e.which;
     let key = "";
+    if (code === 27) key = "Esc";
     if (code === 113) key = "F2";
     if (code === 121) key = "F10";
     if (code === 123) key = "F12";
@@ -1378,6 +1407,10 @@ function HandleShortcut(e) {
         GoUp();
         return;
     }
+    if (key === "Esc") {
+        HandleCancel();
+        return;
+    }
     if (key === "F2") {
         Edit();
         return;
@@ -1385,6 +1418,11 @@ function HandleShortcut(e) {
     if (!e.ctrlKey) return true;
     e.preventDefault();
     if (key === "F10") {
+        var searchField = document.getElementById('toolbarSearchField');
+        if (searchField.classList.contains('hidden')) {
+            ShowSearchField();
+            SetOtherIcons();
+        }
         document.getElementById('searchField').focus();
         return false;
     }

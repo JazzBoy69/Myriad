@@ -23,7 +23,7 @@ namespace Myriad.Pages
             <div class='menu'>
                 <!--SEARCHBAR-->
                 <div id='searchbar'> 
-                    <form id='searchForm' class='section'>
+                    <form id='searchForm' class='section' onsubmit='event.preventDefault(); HandleSearch();'>
                         <div id='toolbarSearchField' >
                             <input id='searchField' name='q' type='search' autocomplete='off' autocapitalize='off' maxlength='256' />
                         </div>
@@ -32,7 +32,7 @@ namespace Myriad.Pages
                 </div>
                 <!--Navigation Controls-->
                 <ul>
-                    <li id='menuHome'><a href='/Index?name=home'><span class='icon'><img src='images/home.png' /></span></a></li>
+                    <li id='menuHome' class='hidden'><a href='/Index?name=home'><span class='icon'><img src='images/home.png' /></span></a></li>
                     <li id='menuPrevious' class='hidden' onclick=GoToPreceding()><span id='previousLink'><span class='icon'><img src='images/left.png' /></span></a></li>
                     <li id='menuUp' class='hidden' onclick=GoUp()><a id='upLink'><span class='icon'><img src='images/up.png' /></span></a></li>
                     <li id='menuNext' class='hidden' onclick=GoToNext()><a id='nextLink'><span class='icon'><img src='images/right.png' /></span></a></li>
@@ -42,7 +42,7 @@ namespace Myriad.Pages
                     <li id='menuEdit'><a id='editButton' onclick=Edit()><span class='icon'><img src='images/icons8-edit-48.png' /></span></a></li>
                     <li id='menuOriginalWord' class='hidden'><a id='originalWordButton' onclick=EditOriginalWords()><span class='icon'><img src='images/Aleph.png' /></span></a></li>
                     <li id='menuChrono' class='hidden'><a id='chronoButton' onclick=ShowChrono()><span class='icon'><img src='images/calendar.png' /></span></a></li>
-                    <li id='menuCancel' class='hidden'><a id='cancelEdit' onclick=CloseEditForm()><span class='icon'><img src='images/icons8-unavailable.png' /></span></a></li>
+                    <li id='menuCancel' class='hidden'><a id='cancelEdit' onclick=HandleCancel()><span class='icon'><img src='images/icons8-unavailable.png' /></span></a></li>
                     <li id='menuAccept' class='hidden'><a id='acceptButton'><span class='icon'><img src='images/icons8-checkmark-52.png' /></span></a></li>
                 </ul>
                 <a onclick='showHideIndex()'><span class='indexicon'><img src='images/downarrow.png' /></span></a>
