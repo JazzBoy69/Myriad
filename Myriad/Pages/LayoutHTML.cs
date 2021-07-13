@@ -31,6 +31,7 @@ namespace Myriad.Pages
                     </form>
                 </div>
                 <!--Navigation Controls-->
+                <div id='menuSpacer' class='hidden'></div>
                 <ul>
                     <li id='menuHome' class='hidden'><a href='/Index?name=home'><span class='icon'><img src='images/home.png' /></span></a></li>
                     <li id='menuPrevious' class='hidden' onclick=GoToPreceding()><span id='previousLink'><span class='icon'><img src='images/left.png' /></span></a></li>

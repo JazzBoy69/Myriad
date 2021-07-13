@@ -1,5 +1,9 @@
 function HandleResize() {
     window.onresize = function () {
+        var editForm = document.getElementById('editFormContainer');
+        if (!editForm.classList.contains('hidden')) return;
+        var imageBox = document.getElementById('modal-image-box');
+        if (!imageBox.classList.contains('hidden')) return;
         SetIcons();
     };
 }
@@ -201,8 +205,16 @@ function WriteMainPane(data) {
 }
 
 function SetIcons() {
+    HideSpacer();
     SetSearchField();
     SetOtherIcons();
+}
+
+function HideSpacer() {
+    var spacer = document.getElementById('menuSpacer');
+    if (!spacer.classList.contains('hidden')) {
+        spacer.classList.add('hidden');
+   }
 }
 
 function SetOtherIcons() {
@@ -215,18 +227,20 @@ function SetOtherIcons() {
 }
 
 function SetModal() {
-    var search = document.getElementById('search');
-    search.disabled = true;
-    var home = document.querySelector('#menuHome a');
-    home.removeAttribute('href');
+    HideSearchField();
+    HideSearchButton();
+    HideHomeButton();
     HidePaginationButtons();
+    HideChronoButton();
+    HideEditButton();
+    HideOriginalWordButton();
+    document.getElementById('menuSpacer').classList.remove('hidden');
 }
 
 function ResetModal() {
-    var search = document.getElementById('search');
-    search.disabled = false;
-    var home = document.querySelector('#menuHome a');
-    home.href = '/Index?name=home';
+    SetIcons();
+    HideSpacer();
+    ShowSearchButton();
 }
 
 function SetSearchField() {
@@ -236,6 +250,7 @@ function SetSearchField() {
     }
     else {
         HideSearchField();
+        HideCancelButton();
     }
 }
 
@@ -246,6 +261,13 @@ function HideSearchField() {
         searchField.classList.add('hidden');
     }
     searchField.classList.remove('visible');
+}
+
+function HideCancelButton() {
+    var cancel = document.getElementById('menuCancel');
+    if (!cancel.classList.contains('hidden')) {
+        cancel.classList.add('hidden');
+    }
 }
 
 function ShowSearchField() {
@@ -324,59 +346,87 @@ function HidePaginationButtons() {
 
 function SetEditButton() {
     var editdata = document.getElementById('editdata');
-    var editButton = document.getElementById('menuEdit');
     var searchField = document.getElementById('toolbarSearchField');
     if ((searchField.classList.contains('visible')) || (editdata === null)) {
-        if (!editButton.classList.contains('hidden'))
-            editButton.classList.add('hidden');
+        HideEditButton();
         return;
     }
+    var editButton = document.getElementById('menuEdit');
     editButton.classList.remove('hidden');
+}
+
+function HideEditButton() {
+    var editButton = document.getElementById('menuEdit');
+    if (!editButton.classList.contains('hidden'))
+        editButton.classList.add('hidden');
 }
 
 function SetOriginalWordButton() {
     var originalWords = document.getElementsByClassName('originalword');
-    var originalWordButton = document.getElementById('menuOriginalWord');
     var searchField = document.getElementById('toolbarSearchField');
     if ((searchField.classList.contains('visible')) || (originalWords === null) || (originalWords.length === 0)) {
-        if (!originalWordButton.classList.contains('hidden')) {
-            originalWordButton.classList.add('hidden');
-        }
+        HideOriginalWordButton();
         return;
     }
-    originalWordButton.classList.remove('hidden');
+    document.getElementById('menuOriginalWord').classList.remove('hidden');
+}
+
+function HideOriginalWordButton() {
+    var originalWordButton = document.getElementById('menuOriginalWord');
+    if (!originalWordButton.classList.contains('hidden')) {
+        originalWordButton.classList.add('hidden');
+    }
 }
 
 function SetChronoButton() {
     var chrono = document.getElementById('chrono');
-    var chronoButton = document.getElementById('menuChrono');
     var searchField = document.getElementById('toolbarSearchField');
     if ((searchField.classList.contains('visible')) || (chrono === null) || (chrono === 'undefined')) {
-        if (!chronoButton.classList.contains('hidden')) {
-            chronoButton.classList.add('hidden');
-        }
+        HideChronoButton();
         return;
     }
+    var chronoButton = document.getElementById('menuChrono');
     chronoButton.classList.remove('hidden');
 }
 
+function HideChronoButton() {
+    var chronoButton = document.getElementById('menuChrono');
+    if (!chronoButton.classList.contains('hidden')) {
+        chronoButton.classList.add('hidden');
+    }
+}
+
 function SetHomeButton() {
-    var homeButton = document.getElementById('menuHome');
     var searchField = document.getElementById('toolbarSearchField');
     if (searchField.classList.contains('visible')) {
-        if (!homeButton.classList.contains('hidden')) {
-            homeButton.classList.add('hidden');
-        }
+        HideHomeButton();
         return;
     }
     var path = CurrentPath();
     if (path === '/Index?name=home') {
-        if (!homeButton.classList.contains('hidden')) {
-            homeButton.classList.add('hidden');
-        }
+        HideHomeButton();
         return;
     }
+    var homeButton = document.getElementById('menuHome');
     homeButton.classList.remove('hidden');
+}
+
+function HideHomeButton() {
+    var homeButton = document.getElementById('menuHome');
+    if (!homeButton.classList.contains('hidden')) {
+        homeButton.classList.add('hidden');
+    }
+}
+
+function HideSearchButton() {
+    var searchButton = document.getElementById('toolbarSearchButton');
+    if (!searchButton.classList.contains('hidden')) {
+        searchButton.classList.add('hidden');
+    }
+}
+
+function ShowSearchButton() {
+    document.getElementById('toolbarSearchButton').classList.remove('hidden');
 }
 
 function AddQueryToPath(path, query) {
@@ -1247,7 +1297,7 @@ function OpenModalPicture(event) {
         modalImage.classList.add('zoomed');
     }
     container.classList.remove('hidden');
-    document.getElementById('menuNext').classList.add('hidden');
+    SetModal();
     var menuCancel = document.getElementById('menuCancel');
     menuCancel.classList.remove('hidden');
 }
@@ -1276,7 +1326,7 @@ function CloseModalPicture() {
     container.classList.remove('zoomed');
     container.classList.remove('enlarge');
     container.classList.add('hidden');
-    document.getElementById('menuNext').classList.remove('hidden');
+    ResetModal();
 }
 
 function SetupSuppressedParagraphs() {
