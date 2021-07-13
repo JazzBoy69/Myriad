@@ -525,7 +525,9 @@ function SetSearchFieldText() {
     var queryElement = document.getElementById('querystring');
     if (queryElement === null) return;
     var query = queryElement.innerText;
-    document.getElementById('searchField').searchField.value = query;
+    var searchField = document.getElementById('searchField');
+    if (searchField === null) return;
+    searchField.value = query;
 }
 
 function LoadSynonymSearchResults() {
