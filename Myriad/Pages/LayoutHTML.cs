@@ -153,7 +153,7 @@ namespace Myriad.Pages
             <img class='zoom' id='modal-image'>
         </div>
 <div id=top></div><article>
-<div id=editFormContainer class='flexTabs hidden fixedposition'>
+<div id=editFormContainer class='flexTabs hidden fixedposition fillHeight'>
     <div id='editTabsHeader' class=flexTabsHeader>
         <ul class='tabs'>
             <li class='active'>Header 1</li>

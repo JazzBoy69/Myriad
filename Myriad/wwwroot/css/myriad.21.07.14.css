@@ -151,10 +151,11 @@ div.crossrefs details summary+p{margin-top:.4rem;}
 section{display:block;align-items:stretch;}
 .fixedposition {position: fixed;}
 .editcontent{white-space: pre-wrap;font-family: monospace;font-size: 1.25rem;line-height: 1.5em;}
-#editTabList li {height: calc(100vh - 12rem); overflow-y: auto;}
-#editTabs{padding-bottom:0;}
+#editTabList li {height: calc(100vh - 8rem); overflow: auto;}
+#editTabs{padding-bottom:0;min-height:0;}
 *:focus {outline: none;}
 .poetic:last-child {padding-bottom:.5rem;}
+.fillHeight{height:calc(100vh - 7rem);}
 /*HORIZONTAL SPACING */
 article{width:60rem;padding-left:10rem;}
 article.withsidebar{animation: none;padding-left:3rem;}
@@ -337,12 +338,12 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 .flexTabsHeader ul.tabs li:hover{background:lightyellow;}
 .flexTabsHeader ul.tabs li.active{width:100%;border-right:0;z-index:5;border-left:2px solid #d3d3d3;border-bottom:2px solid #d3d3d3;background-color:white;font-weight:bold;margin-bottom:1px;margin-top:-3px;}
 .flexTabsHeader ul.tabs li{border-bottom:0;}
-.flexTabsHeader ul li:last-child {border-bottom:1px solid #d3d3d3;}
+.flexTabsHeader ul li:last-child {border-bottom:1px solid #ds3d3d3;}
 .flexTabsHeader ul{border-bottom:0;background:none;vertical-align:top;}
 
 .flexTabsTabs{background:white; position:relative;z-index:2;width:50rem;margin-top:-3px; border-top:1px solid #d3d3d3;border-bottom:1px solid #d3d3d3;border-right:1px solid #d3d3d3;padding-bottom:1rem;}
-.flexTabsTabs.complete{border-left:1px solid #d3d3d3;}
-.flexTabsTabs ul.tab{position:relative;z-index:1;}
+.flexTabsTabs.complete{border-left:1px solid #d3d3d3;height:100%}
+.flexTabsTabs ul.tab{position:relative;z-index:1;height:99%}
 .flexTabsTabs ul.tab li{display:none;}
 .flexTabsTabs ul.tab li.active{display:block;margin-bottom:2rem;}
 
@@ -453,6 +454,7 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 article{width:45rem;padding-left:.5rem;}
 #menuSpacer{width:25rem;}
 .hidden + #editTabs {margin-left:1rem;}
+#editTabs li {margin-left: .5rem; padding-right:.5rem;}
 .withsidebar{animation: none;}
 .withoutsidebar{animation: none;}
 .readingverse {position:absolute;left:3rem;}
@@ -490,7 +492,8 @@ ul.tabs{width:38rem;}
 .versenav{margin-left:4rem;}
 .menu{margin-left: 4rem;}
 .textquote{margin-left:4rem;}
-.flexTabs{width:45rem;}
+.flexTabs{width:calc(100vw - 2rem);}
+.fillHeight{height:calc(100vh - 6rem);}
 .flexTabsHeader{margin-left:0;}
 /*Right*/
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, .scripture ul.tabs, .scripture-section{margin-right:3rem;}
@@ -588,7 +591,7 @@ body{text-rendering:optimizeSpeed;}
 /*HORIZONTAL SPACING */
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
-article{width:20rem;padding-left:.25rem;}
+article{width:calc(100vw - 0.5rem);padding-left:0;}
 article.withsidebar{padding-left:.25rem;animation:none;}
 article.withsidebar .readingverse {animation:none;}
 article.withsidebar p.firstpoetic .readingverse  {animation:none;}
@@ -625,16 +628,17 @@ ul.tabs{width: 19rem;}
     #possibilities {
         height: 15rem;
     }
-.scripture-section ul.tabs li {width:100%;height:1.5rem;border-left:1px solid #d3d3d3;border-bottom:1px solid #d3d3d3;}
-.scripture-section ul.tabs li + li {width:100%;height:1.5rem;border-left:1px solid #d3d3d3;}
+.scripture-section ul.tabs li {width:calc(100vw - 2rem);height:1.5rem;border-left:1px solid #d3d3d3;border-bottom:1px solid #d3d3d3;}
+.scripture-section ul.tabs li + li {width:calc(100vw - 2rem);height:1.5rem;border-left:1px solid #d3d3d3;}
 .scripture-section ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
 .scripture-section ul.tabs{border-bottom:0;display:inline-block;}
 .scripture-section .scripture-header.visible ul.tabs{border-bottom:none;}
-.flexTabs{display:block;width:18rem;}
+.flexTabs{flex-direction:column;width:calc(100vw - 2rem);}
+.fillHeight{height:calc(100vh - 7rem);}
 .flexTabsHeader{margin-left:0;width:100%;float:none;}
 .flexTabsHeader ul{width:100%;margin-bottom:0;}
-.flexTabsTabs{width:18.25rem;margin-left:0;margin-top:1px;}
-.flexTabsTabs ul{width:18rem;}
+.flexTabsTabs{width:calc(100vw - 1.5rem);flex:1;flex-shrink:1;margin-left:0;margin-top:1px;}
+.flexTabsTabs ul{width:calc(100vw - 2rem);}
 .flexTabsHeader ul.tabs li{width:100%;border-right:1px solid #d3d3d3;}
 .flexTabsHeader ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
 .flexTabsHeader ul.tabs li.active{border-right:1px solid #d3d3d3;}
@@ -643,9 +647,9 @@ ul.tabs{width: 19rem;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;}
 .hidden + #editTabs {margin-left:0;}
-#editTabs li{height: calc(100vh - 15rem);padding-left: .5rem;padding-right:1rem; margin-left:0;}
+#editTabs li{padding-left: .5rem;padding-right:1rem; margin-left:0;height:100%;}
 /*Left*/
-.comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-left:.5rem;}
+.comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-left:0;}
 table { margin-left: .6rem;}
 div.textquote table {margin-left: .25rem;}
 .flexTabs .tab li {margin-left:0;}
@@ -656,7 +660,8 @@ div.textquote table {margin-left: .25rem;}
 .sidenote{margin-left:2rem;}
 definitionBlock details,.sidenote.crossrefs{margin-left:0}
 .flexTabsTabs ul{margin-left:.4rem;}
-/*Right*/
+#editForm{height:90%;}
+/*Right*/s
 .comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-right:.5rem;}
 .flexTabs .tab li {margin-right:1rem;}
 .flexTabs.tab ul.li {margin-right:1rem;padding-right:1.5rem;}
