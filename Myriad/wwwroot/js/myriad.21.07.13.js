@@ -1024,6 +1024,7 @@ function HandleCancel() {
     if (editFormContainer.classList.contains('hidden')) {
         var container = document.getElementById('modal-image-box');
         if (container.classList.contains('hidden')) {
+            document.getElementById('searchField').value = '';
             SetIcons();
             return;
         }
