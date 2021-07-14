@@ -245,7 +245,8 @@ function ResetModal() {
 
 function SetSearchField() {
     var searchField = document.getElementById('searchField');
-    if ((window.innerWidth > 767) || (searchField.value.length > 0)) {
+    if ((searchField === document.activeElement) ||
+     (window.innerWidth > 767) || (searchField.value.length > 0)) {
         ShowSearchField();
     }
     else {
