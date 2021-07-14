@@ -387,7 +387,7 @@ table{margin-left:5.25rem;}
 .Tabs .tab li {margin-left:1rem;}
 .nav{margin-left:.5rem;}
 .versenav{margin-left:6rem;}
-.textquote{margin-left:8rem;}
+.textquote{margin-left:5rem;}
 
 article.withsidebar .sidenote p{margin-left: 2rem;}
 
@@ -396,7 +396,7 @@ article.withsidebar .sidenote p{margin-left: 2rem;}
 .comment, #chaptertext p, #comments p, searchResults p, definitionBlock details, 
 .scripture ul.tabs, .scripture-section{margin-right:2rem;}
 .flexTabs .tab li {margin-right:1rem;}
-.textquote{margin-right:8rem;}
+.textquote{margin-right:5rem;}
 
     #possibilities {
         height: 12rem;
