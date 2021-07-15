@@ -612,6 +612,7 @@ figure.portrait, figure.square, .sidenote{width:85vw;float:none;border-left:none
 .sidenote p{margin-left:0;}
 .sidenote p, .sidenote h3{margin-right:1rem;}
 .sidenote {padding-right:1rem;}
+.scripture-quote{padding-left:0;padding-right:0;}
 .readingverse {display:none;}
 .readingverse.visible{display:inline;position:relative;left:0rem;font-weight:600;}
 .readingverse.visible + .spacer::after {content: "\00a0"}
