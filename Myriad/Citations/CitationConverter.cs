@@ -78,7 +78,9 @@ namespace Myriad.Parser
                 (citation.CitationRange.Book >= Bible.Abbreviations.Count)) return;
 
             await writer.Append(Bible.Names[citation.LabelType][citation.CitationRange.Book]);
-            await writer.Append(HTMLTags.NonbreakingSpace);
+            if (citation.LabelType == LabelTypes.Short)
+                await writer.Append(HTMLTags.NonbreakingSpace);
+            else await writer.Append(' ');
             if (!Bible.IsShortBook(citation.CitationRange.Book))
             {
                 await writer.Append(citation.CitationRange.FirstChapter);
