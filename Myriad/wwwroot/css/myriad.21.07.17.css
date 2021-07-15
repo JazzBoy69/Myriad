@@ -10,7 +10,7 @@ mark{background-color:#ffc;font-family:'Fira Sans',"Segoe UI", Roboto, Lato, "Ar
 .scripture-text, .sidebarScripture {font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;font-size:1.5rem;}
 .scripture-text mark{background-color:#ffc;font-family:Spectral,'Droid Serif','Roboto Slab',Lato, serif;}
 article{font-size:1.35rem;font-feature-settings: "liga" 1;}
-.readingverse a{background-color:white;} 
+.readingverse a{background-color:white;position:relative;top:-.3rem;} 
 .originalword {font-style:italic;}
 /*Hyperlinks*/
 a{text-decoration:none;color:#4477a1;font-family:inherit;}
@@ -77,7 +77,7 @@ rt {
 /* SPECIAL CLASSES */
 .invalid {color:red;}
 .versenumber a{font-weight :600;}
-.readingverse.versenumber a {font-size:1rem; font-weight:400; vertical-align:super;}
+.readingverse.versenumber a {font-size:1rem; font-weight:400;}
 .scripture-header h3{display:none;}
 .scripture-header.visible h3{display:inherit;}
 #ellipsis {max-height: 1.5rem;position: absolute;top: 3rem;right: 17rem;}
@@ -415,16 +415,16 @@ article{width:50rem;padding-left:1rem;}
 .hidden + #editTabs {margin-left:3rem;}
 .withsidebar{animation: none;}
 .withoutsidebar{animation: none;}
-.readingverse {position:absolute;left:5rem;}
-.firstpoetic .readingverse  {position:absolute;left:6rem;}
-.poetic .readingverse  {position:absolute;left:6rem;}
+.readingverse {position:absolute;left:3.5rem;}
+.firstpoetic .readingverse  {position:absolute;left:4.5rem;}
+.poetic .readingverse  {position:absolute;left:4.5rem;}
 article.withsidebar{padding-left:1rem;animation:none;}
-article.withsidebar .readingverse {position:absolute;left:5rem;animation:none;}
-article.withsidebar p.firstpoetic .readingverse  {position:absolute;left:6rem;animation:none;}
-article.withsidebar p.poetic .readingverse  {position:absolute;left:6rem;animation:none;}
-article.withoutsidebar .readingverse {position:absolute;left:5rem;animation:none;}
-article.withoutsidebar p.firstpoetic .readingverse  {position:absolute;left:6rem;animation:none;}
-article.withoutsidebar p.poetic .readingverse  {position:absolute;left:6rem;animation:none;}
+article.withsidebar .readingverse {position:absolute;left:3.5rem;animation:none;}
+article.withsidebar p.firstpoetic .readingverse  {position:absolute;left:4.5rem;animation:none;}
+article.withsidebar p.poetic .readingverse  {position:absolute;left:4.5rem;animation:none;}
+article.withoutsidebar .readingverse {position:absolute;left:3.5rem;animation:none;}
+article.withoutsidebar p.firstpoetic .readingverse  {position:absolute;left:4.5rem;animation:none;}
+article.withoutsidebar p.poetic .readingverse  {position:absolute;left:4.5rem;animation:none;}
 figure.portrait, figure.square, .sidenote{width:21rem}
 .searchResults{width:46rem;}
 .indexicon img {right: 7rem;}
@@ -612,7 +612,6 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 .readingverse {display:none;}
 .readingverse.visible{display:inline;position:relative;left:0rem;font-weight:600;}
 .readingverse.visible + .spacer::after {content: "\00a0"}
-.readingverse.versenumber a{vertical-align:baseline;}
 mark .readingverse.versenumber a{background-color:#ffc;}
 figure.portrait, figure.square, .sidenote{float:none;width:16rem; border-left:none;}
 figure.square{padding-left: 0; }

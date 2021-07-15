@@ -453,7 +453,6 @@ namespace Myriad.Parser
             await StartReadingVerseSpan(keyword);
             var thisVerse = GetCurrentVerse(keyword, citation);
             thisVerse.CitationType = CitationTypes.Text;
-            await writer.Append(HTMLTags.StartBold);
             await PageFormatter.StartCitationLink(writer, thisVerse);
             await AppendReadingNumber(keyword);
             await EndVerseSpan(keyword);
@@ -464,7 +463,6 @@ namespace Myriad.Parser
             await StartReadingVerseSpan(keyword);
             var thisVerse = GetSpanVerse(keyword);
             thisVerse.CitationType = CitationTypes.Text;
-            await writer.Append(HTMLTags.StartBold);
             await PageFormatter.StartSpanCitationLink(writer, thisVerse);
             await AppendReadingNumber(keyword);
             await EndVerseSpan(keyword);
@@ -514,7 +512,6 @@ namespace Myriad.Parser
             await StartVerseSpan(keyword);
             var thisVerse = GetCurrentVerse(keyword, citation);
             thisVerse.CitationType = CitationTypes.Verse;
-            await writer.Append(HTMLTags.StartBold);
             await PageFormatter.StartCitationLink(writer, thisVerse);
             await AppendVerseNumber(keyword);
             await EndVerseSpan(keyword);
@@ -523,7 +520,6 @@ namespace Myriad.Parser
         private async Task EndVerseSpan(Keyword keyword)
         {
             await writer.Append(HTMLTags.EndAnchor +
-                HTMLTags.EndBold +
                 HTMLTags.EndSpan);
             if (keyword.Verse == 1)
             {
