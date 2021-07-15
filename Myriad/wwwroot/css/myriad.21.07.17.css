@@ -608,12 +608,14 @@ article.withsidebar p.poetic .readingverse.visible {display:inline;position:rela
 article.withsidebar p.firstpoetic .readingverse.visible {display:inline;position:relative;left:0rem;font-weight:600;}
 article.withsidebar .readingverse.visible {display:inline;position:relative;left:0rem;font-weight:600;}
 
-figure.portrait, figure.square, .sidenote{width:21rem}
+figure.portrait, figure.square, .sidenote{width:85vw;float:none;border-left:none;}
+.sidenote p{margin-left:0;}
+.sidenote p, .sidenote h3{margin-right:1rem;}
+.sidenote {padding-right:1rem;}
 .readingverse {display:none;}
 .readingverse.visible{display:inline;position:relative;left:0rem;font-weight:600;}
 .readingverse.visible + .spacer::after {content: "\00a0"}
 mark .readingverse.versenumber a{background-color:#ffc;}
-figure.portrait, figure.square, .sidenote{float:none;width:16rem; border-left:none;}
 figure.square{padding-left: 0; }
 figure.portrait{padding-left: 1rem; }
 .sidenote.crossrefs{width:18rem;}
