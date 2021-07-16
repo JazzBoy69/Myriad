@@ -390,7 +390,7 @@ namespace Myriad.Pages
             id = await idReader.GetDatum<int>();
             idReader.Close();
             if (id > 0) return id;
-            var synonymID = new DataReaderProvider<string>(
+            var synonymID = new StoredProcedureProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), queryTitle);
             id = await synonymID.GetDatum<int>();
             if (id > 0)

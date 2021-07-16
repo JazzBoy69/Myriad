@@ -268,7 +268,7 @@ namespace Myriad.Data
             { DataOperation.ReadCorrectSpelling,
                 "select correct from Misspelled where incorrect=@key1" },
             { DataOperation.ReadIDFromSynonym,
-                "select id from synonyms where text=@key1 order by synIndex" },
+                "uspReadIDFromSynonym" },
             { DataOperation.ParagraphsThatContainVerse,
                 "uspParagraphsThatContainVerse" },
             {DataOperation.CreateIdentifier,
