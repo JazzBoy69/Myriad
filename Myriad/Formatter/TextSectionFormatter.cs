@@ -179,7 +179,7 @@ namespace Myriad.Formatter
 
         public static List<string> ReadParagraphs(int commentID)
         {
-            var reader = new DataReaderProvider<int>(
+            var reader = new StoredProcedureProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadComment),
                 commentID);
             var results = reader.GetData<string>();

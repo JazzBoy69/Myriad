@@ -251,7 +251,7 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.Class);
             await writer.Append(HTMLClasses.visible);
             await writer.Append(HTMLTags.CloseQuoteEndTag);
-            var reader = new DataReaderProvider<int>(
+            var reader = new StoredProcedureProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentTitle),
                 -1);
 
