@@ -180,7 +180,7 @@ namespace Myriad.Data
             {DataOperation.ReadSearchPhrase,
                     "select text from keywords where keyid>=@key1 and keyid<=@key2" },
             {DataOperation.ReadSubstituteLength,
-                "select last-start+1 from searchwords where sentence=@key1 and wordindex=@key2 and substitute=1" },
+                "uspReadSubstituteLength" },
             {DataOperation.ReadCrossReferences,
                 "select start, last from crossreferences where commentid=@key1 and paragraphindex=@key2" },
             {DataOperation.CreateCrossReferences,

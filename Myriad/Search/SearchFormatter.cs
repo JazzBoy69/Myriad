@@ -504,7 +504,7 @@ namespace Myriad.Search
 
         private static async Task<int> ReadSubtituteLength(int sentenceID, int wordIndex)
         {
-            DataReaderProvider<int, int> reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
+            StoredProcedureProvider<int, int> reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(
                 DataOperation.ReadSubstituteLength), sentenceID, wordIndex);
             int result = await reader.GetDatum<int>();
             reader.Close();
