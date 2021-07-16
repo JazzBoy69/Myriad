@@ -105,7 +105,7 @@ namespace Myriad.Data
             { DataOperation.ReadArticleParagraph,
                  "uspReadArticleParagraph"},
             { DataOperation.ReadArticle,
-                "select text from glossary where id=@key1 order by paragraphindex" },
+                "uspReadArticle" },
             { DataOperation.UpdateArticleParagraph,
                  "update glossary set text=@key3 where id=@key1 and paragraphindex=@key2"},
             { DataOperation.ReadCommentIDs,

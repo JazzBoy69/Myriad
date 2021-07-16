@@ -113,7 +113,7 @@ namespace Myriad.Pages
                 articleParagraphs = new List<string>();
                 return;
             }
-            var paragraphReader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadArticle),
+            var paragraphReader = new StoredProcedureProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadArticle),
                 articleID);
             articleParagraphs = paragraphReader.GetData<string>();
             paragraphReader.Close();

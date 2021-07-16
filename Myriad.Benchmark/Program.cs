@@ -50,6 +50,15 @@ namespace Myriad.Benchmark
             await page.RenderPage();
         }
         [Benchmark]
+        async public Task RenderArticle()
+        {
+            ArticlePage page = new ArticlePage();
+            page.SetResponse(DefaultResponse());
+            page.SetPageInfo("Jehovah", 11);
+            await page.RenderPage();
+        }
+
+        [Benchmark]
         async public Task RenderVerse()
         {
             VersePage page = new VersePage();

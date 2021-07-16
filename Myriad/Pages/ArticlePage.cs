@@ -318,11 +318,16 @@ namespace Myriad.Pages
 
         public static List<string> GetPageParagraphs(int id)
         {
-            var reader = new DataReaderProvider<int>(
+            var reader = new StoredProcedureProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticle), id);
             var results = reader.GetData<string>();
             reader.Close();
             return results;
+        }
+
+        public void SetPageInfo(string title, int id)
+        {
+            pageInfo = (title, id);
         }
         public override async Task LoadQueryInfo(IQueryCollection query)
         {
