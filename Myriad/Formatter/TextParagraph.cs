@@ -154,7 +154,7 @@ namespace Myriad.Formatter
 
         public static async Task<(int start, int end)> ReadLink(int commentID, int start, int end)
         {
-            var reader = new DataReaderProvider<int, int, int>(
+            var reader = new StoredProcedureProvider<int, int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentLink),
                 commentID, start, end);
             (int start, int end) results = await reader.GetDatum<int, int>();

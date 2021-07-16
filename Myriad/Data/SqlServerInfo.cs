@@ -127,7 +127,7 @@ namespace Myriad.Data
             { DataOperation.ReadCommentLinks,
                  "select start, last from commentlinks where id=@key1" },
             { DataOperation.ReadCommentLink,
-                "select start, last from commentlinks where id=@key1 and last>=@key2 and start<=@key3" }, //Jas 1:1 changed to >= and <=
+                "uspReadCommentLink" }, //Jas 1:1 changed to >= and <=
             { DataOperation.ReadKeywords,
                  "uspReadKeywords" },
             { DataOperation.ReadKeywordsParagraph,
