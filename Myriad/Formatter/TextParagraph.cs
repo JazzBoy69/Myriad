@@ -121,19 +121,10 @@ namespace Myriad.Formatter
             reader.Close();
             return result;
         }
-        private static async Task<int> ReadParagraphIndex(int start)
-        {
-            var reader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadParagraphIndex),
-                start);
-            int result = await reader.GetDatum<int>();
-            reader.Close();
-            return result;
-        }
 
         private static async Task<List<(int start, int end)>> ReadParagraghRanges(Citation citation)
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadParagraphRanges),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             List<(int, int)> result = await reader.GetData<int, int>();

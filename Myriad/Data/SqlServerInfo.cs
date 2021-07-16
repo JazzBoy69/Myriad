@@ -136,7 +136,7 @@ namespace Myriad.Data
             { DataOperation.ReadParagraphIndex,
                 "select paragraph from keywords where keyid=@keyq" },
             { DataOperation.ReadParagraphRanges,
-                "select Min(keyid), Max(keyid) from keywords where keyid>=@key1 and keyid<=@key2 group by paragraph" },
+                "uspReadParagraphRanges" },
             { DataOperation.ReadWordIndex,
                 "select versewordindex from keywords where keyid>=@key2 and keyid<=@key3 and text=@key1" },
             {DataOperation.ReadKeywordSentence,
