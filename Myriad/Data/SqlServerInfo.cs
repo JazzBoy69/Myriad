@@ -270,7 +270,7 @@ namespace Myriad.Data
             { DataOperation.ReadIDFromSynonym,
                 "select id from synonyms where text=@key1 order by synIndex" },
             { DataOperation.ParagraphsThatContainVerse,
-                "select distinct paragraphindex from RelatedArticles where articleid=@key1 and last>=@key2 and start<=@key3 order by paragraphindex" },
+                "uspParagraphsThatContainVerse" },
             {DataOperation.CreateIdentifier,
                 "insert into definitionIDs (id, text) values (@key1, @key2)" },
             { DataOperation.UpdateIdentifier,

@@ -83,7 +83,7 @@ namespace Myriad.Pages
         private List<int> ReadParagraphIndices()
         {
             if (targetCitation == null) return new List<int>();
-            var reader = new DataReaderProvider<int, int, int>(
+            var reader = new StoredProcedureProvider<int, int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ParagraphsThatContainVerse),
                 pageInfo.ID, targetCitation.CitationRange.StartID.ID, targetCitation.CitationRange.EndID.ID);
             var result = reader.GetData<int>();
