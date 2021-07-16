@@ -35,7 +35,7 @@ namespace Myriad.Pages
 
         private static async Task SendPlainTextParagraph(ParagraphInfo info, HttpResponse response)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(info.ReadOperation), 
+            var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(info.ReadOperation), 
                 info.ID, info.index);
             await response.WriteAsync(await reader.GetDatum<string>());
             reader.Close();

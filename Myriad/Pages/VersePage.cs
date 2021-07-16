@@ -82,7 +82,7 @@ namespace Myriad.Pages
             string[] originalParagraphs, string[] newParagraphs)
         {
             MarkupParser parser = new MarkupParser(Writer.New());
-            var linkReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
+            var linkReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
                -1, -1);
             for (int index = Ordinals.first; index < originalWords.Count; index++)
             {
@@ -138,11 +138,11 @@ namespace Myriad.Pages
 
         private static async Task WriteOriginalWordCommentPlainText(HTMLWriter writer, List<(string text, int start, int end)> originalWords)
         {
-            var keywordReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordKeywords),
+            var keywordReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordKeywords),
                 -1, -1);
-            var linkReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
+            var linkReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
                 -1, -1);
-            var commentReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
+            var commentReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
                 -1, Ordinals.first);
             for (int index = Ordinals.first; index < originalWords.Count; index++)
             {
@@ -174,7 +174,7 @@ namespace Myriad.Pages
             linkReader.Close();
         }
 
-        private static async Task<int> GetOriginalWordCommentID(int start, int end, DataReaderProvider<int, int> linkReader)
+        private static async Task<int> GetOriginalWordCommentID(int start, int end, StoredProcedureProvider<int, int> linkReader)
         {
             linkReader.SetParameter(start, end);
             int commentID = await linkReader.GetDatum<int>();
@@ -183,7 +183,7 @@ namespace Myriad.Pages
 
         private async Task<List<(string text, int start, int end)>> ReadOriginalWords()
         {
-            var originalWordReader = new DataReaderProvider<int, int>(
+            var originalWordReader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadOriginalWords),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             List<(string text, int start, int end)> originalWords =

@@ -22,7 +22,7 @@ namespace Myriad.Data
         ReadKeywords, ReadWordIndex, ReadKeywordSentence, ReadKeywordsParagraph, ReadParagraphIndex, ReadParagraphRanges,
         ReadImageSize, ReadFromAllWords, ReadRoots, ReadPhrases, ReadPhrase,
         ReadSynonymsFromID, ReadDefinitionIDs, ReadSynonyms,
-        ReadSubtituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences, ReadRelatedDefinitionSearches,
+        ReadSubstituteWords, ReadRelatedArticles, ReadDefinitionSearchesInVerse, ReadVerseCrossReferences, ReadRelatedDefinitionSearches,
         ReadVerseWords, ReadLinkedParagraphs, DefinitionSearchesInRange, ReadSearchPhrase,
         ReadSubstituteLength,
         ReadCrossReferences, ReadRelatedArticleLinks, ReadLastWordIndex, ReadExistingRelatedIDs,
@@ -65,9 +65,9 @@ namespace Myriad.Data
             { DataOperation.ReadNavigationPage,
                  "select text from navigationparagraphs where name=@key1 order by paragraphindex" },
             { DataOperation.ReadNavigationParagraph,
-                 "select text from navigationparagraphs where articleid=@key1 and paragraphindex=@key2" },
+                 "uspReadNavigationParagraph" },
             { DataOperation.ReadChronoParagraph,
-                "select text from commentchapterparagraphs where chapterid=@key1 and paragraphindex=@key2" },
+                "uspReadChronoParagraph" },
             { DataOperation.ReadNavigationParagraphUsingName,
                  "select text from navigationparagraphs where name=@key1 and paragraphindex=@key2" },
             { DataOperation.CreateNavigationParagraph,
@@ -103,13 +103,13 @@ namespace Myriad.Data
             { DataOperation.ReadArticleIdentifier,
                 "select text from definitionIDs where id=@key1" },
             { DataOperation.ReadArticleParagraph,
-                 "select text from glossary where id=@key1 and paragraphindex=@key2"},
+                 "uspReadArticleParagraph"},
             { DataOperation.ReadArticle,
                 "select text from glossary where id=@key1 order by paragraphindex" },
             { DataOperation.UpdateArticleParagraph,
                  "update glossary set text=@key3 where id=@key1 and paragraphindex=@key2"},
             { DataOperation.ReadCommentIDs,
-                 "select id from commentlinks where originalword = 0 and last>=@key1 and start<=@key2 order by start"},
+                 "uspReadCommentIDs"},
             { DataOperation.ReadCommentIDsInParagraph,
                 "select id from commentlinks where originalword = 0 and start>=@key1 and start<=@key2 order by start"},
             {DataOperation.ReadNextCommentRange,
@@ -119,7 +119,7 @@ namespace Myriad.Data
             { DataOperation.ReadComment,
                  "select RTrim(text) from comments where id=@key1" },
             { DataOperation.ReadCommentParagraph,
-                 "select RTrim(text) from comments where id=@key1 and paragraphindex=@key2"},
+                 "uspReadCommentParagraph"},
             { DataOperation.ReadCommentTitle,
                 "select RTrim(text) from comments where id=@key1 and paragraphindex=0" },
             { DataOperation.UpdateCommentParagraph,
@@ -160,7 +160,7 @@ namespace Myriad.Data
                 "select id from synonyms where text=@key1" },
             {DataOperation.ReadSynonyms,
                 "select text from synonyms where id=@key1 and text!=@key2 order by synIndex" },
-            {DataOperation.ReadSubtituteWords,
+            {DataOperation.ReadSubstituteWords,
                 "select text, last from searchwords where substitute=1 and start=@key1" },
             {DataOperation.ReadRelatedArticles,
                 "select start, last, articleid, paragraphindex from RelatedArticles where last>=@key1 and start<=@key2 order by articleid, paragraphindex, last-start" },
@@ -238,11 +238,11 @@ namespace Myriad.Data
             {DataOperation.AddParagraphIndexToDefinitionSearch,
                 "update definitionsearch set paragraphindex=@key2 where id=@key1 and start=@key3 and last=@key4" },
             {DataOperation.ReadOriginalWords,
-                "select text, start, last from searchwords where start>=@key1 and last<=@key2 and weight=200" },
+                "uspReadOriginalWords" },
             {DataOperation.ReadOriginalWordCommentLink,
-                "select id from commentlinks where start>=@key1 and last<=@key2" },
+                "uspReadOriginalWordCommentLink" },
             {DataOperation.ReadOriginalWordKeywords,
-                "select text, iscapitalized from keywords where keyid>=@key1 and keyid<=@key2" },
+                "uspReadOriginalWordKeywords" },
             { DataOperation.ReadMaxCommentID,
                 "select max(id) from comments" },
             { DataOperation.CreateCommentParagraph,
@@ -305,6 +305,7 @@ namespace Myriad.Data
 
         public static DataCommand GetCommand(DataOperation operation)
         {
+            var command = Commands[operation];
             return new DataCommand(Commands[operation], Connection());
         }
         private static SqlConnection Connection()
@@ -315,7 +316,7 @@ namespace Myriad.Data
 
         internal static DataCommand CreateCommandFromQuery(string query)
         {
-            return new DataCommand(query, Connection()); 
+            return new DataCommand(query, Connection());
         }
     }
 }

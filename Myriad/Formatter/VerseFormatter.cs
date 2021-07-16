@@ -114,9 +114,9 @@ namespace Myriad.Formatter
             parser.SetTargetRange(page.citation.CitationRange);
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);
-            var articleReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
+            var articleReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
                 -1, -1);
-            var commentReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
+            var commentReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
                 -1, -1);
             for (int i = Ordinals.first; i < page.info.AdditionalArticles.Count; i++)
             {
@@ -319,7 +319,7 @@ namespace Myriad.Formatter
                 parser.SetTargetRange(page.citation.CitationRange);
                 parser.SetStartHTML("");
                 parser.SetEndHTML(HTMLTags.EndParagraph);
-                var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
+                var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
                     -1, -1);
                 for (int i = Ordinals.first; i < page.info.PhraseArticles[index].Count; i++)
                 {
@@ -402,7 +402,7 @@ namespace Myriad.Formatter
             PageParser parser = new PageParser(writer);
             parser.SetTargetRange(page.citation.CitationRange);
             parser.HideDetails();
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
+            var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
                 -1, -1);
             for (int i = Ordinals.first; i < page.info.OriginalWordCrossReferences[index].Count; i++)
             {
@@ -518,7 +518,7 @@ namespace Myriad.Formatter
         {
             (int start, int end) range = page.info.PhraseArticles[index].First().Value.range;
             if ((range.end - range.start) > 8) return (needFullLabel, Result.notfound);
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
+            var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
                 -1, -1);
             int resultIndex = Result.notfound;
             string offsetLabel = ReadRangeText(range, page.info).Trim();

@@ -143,7 +143,7 @@ namespace Myriad.Formatter
 
         internal static List<int> GetCommentIDs(int start, int end)
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
                 start, end);
             var results = reader.GetData<int>();

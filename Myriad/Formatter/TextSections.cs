@@ -60,7 +60,7 @@ namespace Myriad.Formatter
 
         internal void GetCommentIDs()
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
                 sourceCitation.CitationRange.StartID.ID, sourceCitation.CitationRange.EndID.ID);
             var results = reader.GetData<int>();

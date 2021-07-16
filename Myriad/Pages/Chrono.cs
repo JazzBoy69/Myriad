@@ -109,7 +109,7 @@ namespace Myriad.Pages
 
         private static List<int> GetCommentIDs(Citation citation)
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             var results = reader.GetData<int>();

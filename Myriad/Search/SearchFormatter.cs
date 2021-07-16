@@ -194,7 +194,7 @@ namespace Myriad.Search
 
         private static async Task<string> GetArticleParagraph(int id, int index)
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                     SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
                     id, index);
 
