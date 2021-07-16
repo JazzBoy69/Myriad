@@ -99,7 +99,7 @@ namespace Myriad.Data
             { DataOperation.ReadArticleTitle,
                  "uspReadArticleTitle"},
             { DataOperation.ReadArticleID,
-                 "select id from tags where title=@key1"},
+                 "uspReadArticleID"},
             { DataOperation.ReadArticleIdentifier,
                 "select text from definitionIDs where id=@key1" },
             { DataOperation.ReadArticleParagraph,

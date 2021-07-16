@@ -385,7 +385,7 @@ namespace Myriad.Pages
             }
             queryTitle = queryTitle.Replace('_', ' ');
             string title = Inflections.RootsOf(queryTitle).First();
-            var idReader = new DataReaderProvider<string>(
+            var idReader = new StoredProcedureProvider<string>(
                 SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
             id = await idReader.GetDatum<int>();
             idReader.Close();

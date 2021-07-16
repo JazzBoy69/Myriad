@@ -271,7 +271,7 @@ namespace Myriad.Pages
 
         private static async Task<List<int>> GetRelatedIDs(List<string> tags)
         {
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadArticleID),
+            var reader = new StoredProcedureProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadArticleID),
                 "");
             List<int> result = new List<int>();
             for (int index = Ordinals.first; index < tags.Count; index++)

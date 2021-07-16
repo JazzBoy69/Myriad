@@ -104,7 +104,7 @@ namespace Myriad.Pages
         private async Task GetArticleParagraphs()
         {
             string label = ChapterLabel();
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadArticleID),
+            var reader = new StoredProcedureProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadArticleID),
                 label);
             articleID = await reader.GetDatum<int>();
             reader.Close();
