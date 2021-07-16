@@ -29,7 +29,7 @@ namespace Myriad.Pages
         string indexPageName;
         Citation chapterCitation;
 
-        internal ChapterPage()
+        public ChapterPage()
         {
         }
 

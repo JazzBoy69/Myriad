@@ -57,6 +57,14 @@ namespace Myriad.Benchmark
             page.SetCitation(new Citation(654639872, 654640127));
             await page.RenderPage();
         }
+        [Benchmark]
+        async public Task RenderChapter()
+        {
+            ChapterPage page = new ChapterPage();
+            page.SetResponse(DefaultResponse());
+            page.SetCitation(new Citation(309788928, 309833728));
+            await page.RenderPage();
+        }
         //[Benchmark]
         public void ParseCitation()
         {
