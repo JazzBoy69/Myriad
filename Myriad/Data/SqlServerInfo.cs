@@ -97,7 +97,7 @@ namespace Myriad.Data
             { DataOperation.ReadNavigationHeadingIndex,
                 "select paragraphindex from navigationparagraphs where name=@key1 and text like '==%'" },
             { DataOperation.ReadArticleTitle,
-                 "select title from tags where id=@key1"},
+                 "uspReadArticleTitle"},
             { DataOperation.ReadArticleID,
                  "select id from tags where title=@key1"},
             { DataOperation.ReadArticleIdentifier,
