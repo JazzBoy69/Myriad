@@ -21,7 +21,7 @@ namespace Myriad.Data
         }
         public static List<Keyword> ReadKeywords(Citation citation)
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
             var result = reader.GetClassData<Keyword>();

@@ -168,7 +168,7 @@ namespace Myriad.Formatter
 
         public static List<Keyword> ReadKeywords(int start, int end)
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
                 start, end);
             var result = reader.GetClassData<Keyword>();

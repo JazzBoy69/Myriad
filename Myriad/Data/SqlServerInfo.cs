@@ -129,8 +129,7 @@ namespace Myriad.Data
             { DataOperation.ReadCommentLink,
                 "select start, last from commentlinks where id=@key1 and last>=@key2 and start<=@key3" }, //Jas 1:1 changed to >= and <=
             { DataOperation.ReadKeywords,
-                 "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
-                 " where keyid>=@key1 and keyid<=@key2" },
+                 "uspReadKeywords" },
             { DataOperation.ReadKeywordsParagraph,
                  "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
                  " where keyid>=@key1 and keyid<=@key2 and paragraph=@key3" },
