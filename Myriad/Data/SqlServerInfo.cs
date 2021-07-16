@@ -161,7 +161,7 @@ namespace Myriad.Data
             {DataOperation.ReadSynonyms,
                 "select text from synonyms where id=@key1 and text!=@key2 order by synIndex" },
             {DataOperation.ReadSubstituteWords,
-                "select text, last from searchwords where substitute=1 and start=@key1" },
+                "uspReadSubstituteWords" },
             {DataOperation.ReadRelatedArticles,
                 "select start, last, articleid, paragraphindex from RelatedArticles where last>=@key1 and start<=@key2 order by articleid, paragraphindex, last-start" },
             {DataOperation.ReadRelatedDefinitionSearches,

@@ -31,7 +31,7 @@ namespace Myriad.Data
 
         public static List<RubyInfo> ReadSustituteText(int id)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSubstituteWords),
+            var reader = new StoredProcedureProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSubstituteWords),
                 id);
             List<RubyInfo> substituteWords = reader.GetClassData<RubyInfo>();
             reader.Close();
@@ -40,7 +40,7 @@ namespace Myriad.Data
 
         public static async Task<string> ReadSustituteWord(int id)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSubstituteWords),
+            var reader = new StoredProcedureProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSubstituteWords),
                 id);
             List<(string, int)> substituteWords = await reader.GetData<string, int>();
             reader.Close();
