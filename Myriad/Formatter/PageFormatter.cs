@@ -439,7 +439,7 @@ namespace Myriad.Parser
             await AppendHandleLink(writer);
             await writer.Append(HTMLTags.EndTag);
         }
-        public static async Task StartSpanCitationLink(HTMLWriter writer, Citation citation)
+        public static async Task StartSpanCitationLink(HTMLWriter writer, Citation citation, bool multi)
         {
             await writer.Append(HTMLTags.StartAnchor);
             await writer.Append(HTMLTags.HREF);
@@ -447,8 +447,7 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.StartQuery);
             await AppendQuery(writer, citation);
             await AppendPartialPageLoad(writer);
-            List<int> ids = TextParagraph.GetCommentIDs(citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            if (ids.Count > 1)
+            if (multi)
             {
                 await AppendHandleParagraphClick(writer);
             }

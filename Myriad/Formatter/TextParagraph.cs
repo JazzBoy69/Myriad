@@ -76,11 +76,12 @@ namespace Myriad.Formatter
             var commentIDs = GetCommentIDs(paragraphRange.start, paragraphRange.end);
             for (int spanIndex = Ordinals.first; spanIndex < commentIDs.Count; spanIndex++)
             {
-                await AppendSpan(writer, paragraphRange, textSections, commentIDs[spanIndex], spanIndex);
+                await AppendSpan(writer, paragraphRange, textSections, commentIDs[spanIndex], spanIndex, commentIDs.Count>1);
             }
         }
 
-        private static async Task AppendSpan(HTMLWriter writer, (int start, int end) paragraphRange, TextSections textSections, int commentID, int spanIndex)
+        private static async Task AppendSpan(HTMLWriter writer, (int start, int end) paragraphRange, 
+            TextSections textSections, int commentID, int spanIndex, bool multi)
         {
             await writer.Append(HTMLTags.StartSpanWithClass +
                 HTMLClasses.commentMarker +
@@ -94,22 +95,22 @@ namespace Myriad.Formatter
             (int start, int end) idRange = await ReadLink(commentID, paragraphRange.start, paragraphRange.end);
             if (idRange.start < paragraphRange.start) idRange.start = paragraphRange.start;
             if (idRange.end > paragraphRange.end) idRange.end = paragraphRange.end;
-            await AppendSpanKeywords(writer, idRange, spanIndex, textSections);
+            await AppendSpanKeywords(writer, idRange, spanIndex, textSections, multi);
             await writer.Append(HTMLTags.EndSpan);
         }
 
         private static async Task AppendSpanKeywords(HTMLWriter writer, (int start, int end) range, int index, 
-            TextSections textSections) 
+            TextSections textSections, bool multi) 
         {
             Citation citation = new Citation(range.start, range.end);
             TextFormatter formatter = new TextFormatter(writer);
             List<Keyword> keywords = ReadKeywords(citation);
             if (textSections.navigating)
             {
-                await formatter.AppendCommentSpanKeywords(keywords, citation, index);
+                await formatter.AppendCommentSpanKeywords(keywords, citation, index, multi);
                 return;
             }
-            await formatter.AppendCommentSpanKeywords(keywords, citation, textSections.highlightCitation, index);
+            await formatter.AppendCommentSpanKeywords(keywords, citation, textSections.highlightCitation, index, multi);
         }
 
         private static List<Keyword> ReadKeywords(Citation citation)
@@ -144,7 +145,7 @@ namespace Myriad.Formatter
 
         internal static List<int> GetCommentIDsInParagraph(int start, int end)
         {
-            var reader = new DataReaderProvider<int, int>(
+            var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDsInParagraph),
                 start, end);
             var results = reader.GetData<int>();

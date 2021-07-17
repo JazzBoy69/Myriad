@@ -16,8 +16,8 @@ namespace Myriad.Data
         string text;
         string trailingSymbols;
         private bool isCapitalized;
-        private bool isMainText;
-        private bool isPoetic;
+        private int mainText;
+        private int poetic;
 
         public async Task Read(DbDataReader reader)
         {
@@ -26,8 +26,8 @@ namespace Myriad.Data
             text = await reader.GetFieldValueAsync<string>(Ordinals.third);
             trailingSymbols = await reader.GetFieldValueAsync<string>(Ordinals.fourth);
             isCapitalized = await reader.GetFieldValueAsync<int>(Ordinals.fifth) != 0;
-            isMainText = await reader.GetFieldValueAsync<int>(Ordinals.sixth) != 0;
-            isPoetic = await reader.GetFieldValueAsync<int>(Ordinals.seventh) != 0;
+            mainText = await reader.GetFieldValueAsync<int>(Ordinals.sixth);
+            poetic = await reader.GetFieldValueAsync<int>(Ordinals.seventh);
             paragraphWordIndex = await reader.GetFieldValueAsync<int>(Ordinals.eighth);
         }
 
@@ -44,8 +44,8 @@ namespace Myriad.Data
             text =  reader.GetFieldValue<string>(Ordinals.third);
             trailingSymbols =  reader.GetFieldValue<string>(Ordinals.fourth);
             isCapitalized =  reader.GetFieldValue<int>(Ordinals.fifth) != 0;
-            isMainText = reader.GetFieldValue<int>(Ordinals.sixth) != 0;
-            isPoetic = reader.GetFieldValue<int>(Ordinals.seventh) != 0;
+            mainText = reader.GetFieldValue<int>(Ordinals.sixth);
+            poetic = reader.GetFieldValue<int>(Ordinals.seventh);
             paragraphWordIndex = reader.GetFieldValue<int>(Ordinals.eighth);
         }
 
@@ -80,12 +80,27 @@ namespace Myriad.Data
 
         public bool IsPoetic
         {
-            get { return isPoetic; }
+            get { return poetic > 0; }
+        }
+
+        public bool PoeticBreak
+        {
+            get { return poetic == 2; }
         }
 
         public bool IsMainText
         {
-            get { return isMainText; }
+            get { return mainText == 1; }
+        }
+
+        public bool StartFootnote
+        {
+            get { return (mainText == 2) || (mainText == 4) ; }
+        }
+
+        public bool EndFootnote
+        {
+            get { return mainText > 2; }
         }
 
         public int Chapter

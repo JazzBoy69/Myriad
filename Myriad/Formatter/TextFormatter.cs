@@ -19,7 +19,7 @@ namespace Myriad.Parser
         {
             this.writer = writer;
         }
-        public async Task AppendCommentSpanKeywords(List<Keyword> keywords, Citation citation, int spanIndex)
+        public async Task AppendCommentSpanKeywords(List<Keyword> keywords, Citation citation, int spanIndex, bool multi)
         {
             if (spanIndex == Ordinals.first) await StartParagraph(keywords);
             paragraphIndex = Ordinals.first;
@@ -27,22 +27,20 @@ namespace Myriad.Parser
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 await StartPoetic(keywords[index]);
-                    await AddSpanVerseNumber(keywords, index);
+                await AddSpanVerseNumber(keywords, index, multi);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;
                 await EndPoetic(keywords, index);
             }
         }
-        internal async Task AppendCommentSpanKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation, int spanIndex)
+        internal async Task AppendCommentSpanKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation, int spanIndex, bool multi)
         {
-            targetCitation = await CitationConverter.ResolveCitation(targetCitation);
-            citation = await CitationConverter.ResolveCitation(citation);
             if (spanIndex == Ordinals.first) await StartParagraph(keywords);
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
                 await StartPoetic(keywords[index]);
-                await AddSpanVerseNumber(keywords, index);
+                await AddSpanVerseNumber(keywords, index, multi);
                 await StartReadingViewHighlighting(keywords[index], citation, targetCitation);
                 await AppendTextOfReadingViewKeyword(writer, keywords[index], paragraphIndex);
                 paragraphIndex++;
@@ -116,10 +114,10 @@ namespace Myriad.Parser
                 await AppendReadingViewVerseNumber(keywords[index], citation);
         }
 
-        private async Task AddSpanVerseNumber(List<Keyword> keywords, int index)
+        private async Task AddSpanVerseNumber(List<Keyword> keywords, int index, bool multi)
         {
             if (keywords[index].WordIndex == Ordinals.first) 
-                await AppendSpanVerseNumber(keywords[index]);
+                await AppendSpanVerseNumber(keywords[index], multi);
         }
 
         private async Task EndPoetic(List<Keyword> keywords, int index, Citation targetCitation)
@@ -133,7 +131,7 @@ namespace Myriad.Parser
 
         private async Task EndPoetic(List<Keyword> keywords, int index)
         {
-            if (poetic && (keywords[index].TrailingSymbols.IndexOf("<br>") > Result.notfound))
+            if (poetic && keywords[index].PoeticBreak)
             {
                 paragraphIndex = Ordinals.first;
                 await StartNewPoeticParagraph(keywords, index);
@@ -322,7 +320,7 @@ namespace Myriad.Parser
 
         public static async Task AppendTextOfReadingViewKeyword(HTMLWriter writer, Keyword keyword, int paragraphIndex)
         {
-            if (!keyword.IsMainText)
+            if (keyword.StartFootnote) 
             {
                 await writer.Append(HTMLClasses.startExtraInfo);
             }
@@ -333,23 +331,14 @@ namespace Myriad.Parser
 
         private static async Task AppendReadingTrailingSymbols(HTMLWriter writer, Keyword keyword)
         {
-            string trailing = keyword.TrailingSymbolString;
-            if ((trailing.Length > 0) && !keyword.IsMainText && (trailing[Ordinals.first] == ']'))
+            if (keyword.EndFootnote)
             {
-                await writer.Append(trailing[Ordinals.first]);
-                if (!keyword.IsMainText)
-                {
-                    await writer.Append(HTMLTags.EndSpan);
-                }
-                if (trailing.Length > 1) await writer.Append(trailing.Substring(Ordinals.second));
+                await writer.Append(']'+ HTMLTags.EndSpan);
+                await writer.Append(keyword.TrailingSymbolString[Ordinals.second..]);
             }
             else
             {
-                await writer.Append(keyword.TrailingSymbols.ToString());
-                if (!keyword.IsMainText)
-                {
-                    await writer.Append(HTMLTags.EndSpan);
-                }
+                await writer.Append(keyword.TrailingSymbolString);
             }
         }
 
@@ -357,14 +346,14 @@ namespace Myriad.Parser
         {
             if (keyword.IsCapitalized)
             {
-                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
+                await writer.Append((char)(keyword.TextString[Ordinals.first] & (255-32)));
+                string text = keyword.TextString[Ordinals.second..];
                 text = HideDiacritics(text);
                 await writer.Append(text);
             }
             else
             {
-                string text = keyword.Text.ToString().Replace('`', '’');
+                string text = keyword.TextString;
                 text = HideDiacritics(text);
                 await writer.Append(text);
             }
@@ -458,12 +447,12 @@ namespace Myriad.Parser
             await EndVerseSpan(keyword);
         }
 
-        private async Task AppendSpanVerseNumber(Keyword keyword)
+        private async Task AppendSpanVerseNumber(Keyword keyword, bool multi)
         {
             await StartReadingVerseSpan(keyword);
             var thisVerse = GetSpanVerse(keyword);
             thisVerse.CitationType = CitationTypes.Text;
-            await PageFormatter.StartSpanCitationLink(writer, thisVerse);
+            await PageFormatter.StartSpanCitationLink(writer, thisVerse, multi);
             await AppendReadingNumber(keyword);
             await EndVerseSpan(keyword);
         }
