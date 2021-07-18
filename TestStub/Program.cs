@@ -25,14 +25,10 @@ namespace TestStub
         }
         async private void RunTest()
         {
-            string citationText;
-            var citations = CitationConverter.FromString("lit., “bread”"); //2Jo 10, 12, 14; Ex 32:6, 8, 17-19
-            Paragraph paragraph = new Paragraph();
-           /* paragraph.Text = "1Jo 2:3";
-            string first = paragraph.StringAt(citations[Ordinals.first].Label);
-            string second = paragraph.StringAt(citations[Ordinals.second].Label); */
-            citationText = await CitationConverter.ToString(citations);
-            Console.WriteLine(citationText);
+                Chrono page = new Chrono();
+                page.SetResponse(DefaultResponse());
+                await page.SetCitation(new Citation(309002496, 309002508));
+                await page.RenderPage();
         }
 
         async private void RunTest2()

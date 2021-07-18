@@ -5,25 +5,22 @@ using Myriad.Library;
 
 namespace Myriad.CitationHandlers
 {
+    enum Modes { name = 0, chapter = 1, verse = 2, word = 3, start = 4 }
     public class CitationHandler2
     {
-        const int name = 0;
-        const int chapter = 1;
-        const int verse = 2;
-        const int word = 3;
-        const int start = 4;
+
         StringRange rangeToParse;
-        int[,] scriptureReference = new int[3, 4]
-            { {-1,-1,-1,-1 },
-              {-1,-1,-1,-1 },
-              {-1,-1,-1,-1 }
+        int[,] scriptureReference = new int[3, 5]
+            { {-1,-1,-1,-1,-1 },
+              {-1,-1,-1,-1,-1 },
+              {-1,-1,-1,-1,-1 }
             };
         LabelTypes nameLength;
         int labelStart;
         int position;
         int startPosition;
         int continuation = 0;
-        int mode;
+        Modes mode;
         List<Citation> results;
         IParagraph paragraphToParse;
         int count;
@@ -35,8 +32,8 @@ namespace Myriad.CitationHandlers
                 InitializeParser(givenRange, givenParagraph);
                 while (position <= rangeToParse.End)
                 {
-                    if (mode == start) SkipLeadingSpaces();
-                    if (mode != name) startPosition = position;
+                    if (mode == Modes.start) SkipLeadingSpaces();
+                    if (mode != Modes.name) startPosition = position;
                     GetCount();
                     GetToken();
                     bool success = EvaluateToken();
@@ -61,7 +58,7 @@ namespace Myriad.CitationHandlers
             position = rangeToParse.Start;
             labelStart = rangeToParse.Start;
             count = Number.nothing;
-            mode = start;
+            mode = Modes.start;
             nameLength = LabelTypes.Short;
         }
 
@@ -190,7 +187,7 @@ namespace Myriad.CitationHandlers
                 {
                     count = Number.nothing;
                     position++;
-                    mode = name;
+                    mode = Modes.name;
                     return true;
                 }
                 if ((currentName == "1") || (currentName == "2") ||
@@ -198,49 +195,49 @@ namespace Myriad.CitationHandlers
                 {
                     count = Number.nothing;
                     position++;
-                    mode = name;
+                    mode = Modes.name;
                     return true;
                 }
                 return false;
             }
-            mode = chapter;
+            mode = Modes.chapter;
             ResetVerses();
-            scriptureReference[0, name] = count;
+            scriptureReference[0, (int)Modes.name] = count;
             nameLength = Bible.NameLength(currentName);
             position++;
-            if (Bible.IsShortBook(count)) mode = verse;
+            if (Bible.IsShortBook(count)) mode = Modes.verse;
             return true;
         }
 
         private bool ColonToken()
         {
             if (count == Result.notfound) return false;
-            scriptureReference[continuation, chapter] = count;
-            mode = verse;
+            scriptureReference[continuation, (int)Modes.chapter] = count;
+            mode = Modes.verse;
             position++;
             return true;
         }
         private bool SemiColonToken()
         {
-            if (mode == start) return false;
+            if (mode == Modes.start) return false;
             bool success = true;
-            if ((mode == word) && (count == Result.notfound))
+            if ((mode == Modes.word) && (count == Result.notfound))
             {
                 success = EvaluateWordStack();
                 continuation = 0;
                 position++;
-                mode = start;
+                mode = Modes.start;
                 nameLength = LabelTypes.Short;
                 return success;
             }
-            scriptureReference[continuation, mode] = count;
+            scriptureReference[continuation, (int)mode] = count;
             continuation = 0;
             position++;
             while (ReferenceToFirstVerseExists() && success)
             {
                 success = EvaluateStack();
             }
-            mode = start;
+            mode = Modes.start;
             nameLength = LabelTypes.Short;
             return success;
         }
@@ -251,7 +248,7 @@ namespace Myriad.CitationHandlers
             {
                 ApplyShortCitation();
             }
-            scriptureReference[Ordinals.first, mode] = count;
+            scriptureReference[Ordinals.first, (int)mode] = count;
             continuation = 1;
             position++;
             return true;
@@ -259,8 +256,8 @@ namespace Myriad.CitationHandlers
 
         private bool CommaToken()
         {
-            if ((mode==start) || (mode == name)) return false;
-            scriptureReference[continuation, mode] = count;
+            if ((mode== Modes.start) || (mode == Modes.name)) return false;
+            scriptureReference[continuation, (int)mode] = count;
             position += 2;
             if (continuation == 0)
             {
@@ -272,7 +269,7 @@ namespace Myriad.CitationHandlers
 
         private bool BangToken()
         {
-            scriptureReference[continuation, mode] = count;
+            scriptureReference[continuation, (int)mode] = count;
             ApplyShortCitation();
             results[results.Count - 1].CitationType = CitationTypes.Verse;
             return false;
@@ -280,10 +277,10 @@ namespace Myriad.CitationHandlers
 
         private bool DotToken()
         {
-            if (mode != verse) return false;
-            scriptureReference[continuation, verse] = count;
+            if (mode != Modes.verse) return false;
+            scriptureReference[continuation, (int)Modes.verse] = count;
             position++;
-            mode = word;
+            mode = Modes.word;
             return true;
         }
 
@@ -297,7 +294,7 @@ namespace Myriad.CitationHandlers
 
         private void EvaluateSecondVerse()
         {
-            if (scriptureReference[Ordinals.second, mode] == Result.notfound)
+            if (scriptureReference[Ordinals.second, (int)mode] == Result.notfound)
             {
                 ApplyShortCitation();
                 ResetVerse(Ordinals.first);
@@ -309,14 +306,15 @@ namespace Myriad.CitationHandlers
             continuation = 0;
             ResetVerse(Ordinals.first);
             ResetVerse(Ordinals.second);
-            if (scriptureReference[Ordinals.second, chapter] != Result.notfound)
+            if (scriptureReference[Ordinals.second, (int)Modes.chapter] != Result.notfound)
             {
-                scriptureReference[Ordinals.first, chapter] = scriptureReference[Ordinals.second, chapter];
+                scriptureReference[Ordinals.first, (int)Modes.chapter] = 
+                    scriptureReference[Ordinals.second, (int)Modes.chapter];
                 ResetVerse(Ordinals.second);
-                scriptureReference[Ordinals.second, chapter] = Result.notfound;
+                scriptureReference[Ordinals.second, (int)Modes.chapter] = Result.notfound;
             }
-            if (mode == word) mode = verse;
-            if (scriptureReference[Ordinals.third, verse] != Result.notfound)
+            if (mode == Modes.word) mode = Modes.verse;
+            if (scriptureReference[Ordinals.third, (int)Modes.verse] != Result.notfound)
             {
                 MoveVerse(Ordinals.third, Ordinals.first);
             }
@@ -324,15 +322,15 @@ namespace Myriad.CitationHandlers
 
         private void ApplyShortCitation()
         {
-            if (Bible.IsShortBook(scriptureReference[Ordinals.first, name]))
+            if (Bible.IsShortBook(scriptureReference[Ordinals.first, (int)Modes.name]))
             {
-                scriptureReference[Ordinals.first, chapter] = 1;
+                scriptureReference[Ordinals.first, (int)Modes.chapter] = 1;
             }
             VerseReference verseReference = new VerseReference(
-                scriptureReference[Ordinals.first, name],
-                scriptureReference[Ordinals.first, chapter],
-                scriptureReference[Ordinals.first, verse],
-                scriptureReference[Ordinals.first, word]);
+                scriptureReference[Ordinals.first, (int)Modes.name],
+                scriptureReference[Ordinals.first, (int)Modes.chapter],
+                scriptureReference[Ordinals.first, (int)Modes.verse],
+                scriptureReference[Ordinals.first, (int)Modes.word]);
 
             Citation citation = new Citation();
             citation.Set(verseReference);
@@ -344,21 +342,21 @@ namespace Myriad.CitationHandlers
 
         private void ApplyLongCitation()
         {
-            if (Bible.IsShortBook(scriptureReference[Ordinals.first, name]))
+            if (Bible.IsShortBook(scriptureReference[Ordinals.first, (int)Modes.name]))
             {
-                scriptureReference[Ordinals.first, chapter] = 1;
-                scriptureReference[Ordinals.second, chapter] = 1;
+                scriptureReference[Ordinals.first, (int)Modes.chapter] = 1;
+                scriptureReference[Ordinals.second, (int)Modes.chapter] = 1;
             }
             VerseReference firstReference = new VerseReference(
-                scriptureReference[Ordinals.first, name],
-                scriptureReference[Ordinals.first, chapter],
-                scriptureReference[Ordinals.first, verse],
-                scriptureReference[Ordinals.first, word]);
+                scriptureReference[Ordinals.first, (int)Modes.name],
+                scriptureReference[Ordinals.first, (int)Modes.chapter],
+                scriptureReference[Ordinals.first, (int)Modes.verse],
+                scriptureReference[Ordinals.first, (int)Modes.word]);
             VerseReference secondReference = new VerseReference(
-                scriptureReference[Ordinals.second, name],
-                scriptureReference[Ordinals.second, chapter],
-                scriptureReference[Ordinals.second, verse],
-                scriptureReference[Ordinals.second, word]);
+                scriptureReference[Ordinals.second, (int)Modes.name],
+                scriptureReference[Ordinals.second, (int)Modes.chapter],
+                scriptureReference[Ordinals.second, (int)Modes.verse],
+                scriptureReference[Ordinals.second, (int)Modes.word]);
 
             Citation citation = new Citation();
             citation.Set(firstReference, secondReference);
@@ -374,14 +372,14 @@ namespace Myriad.CitationHandlers
                 paragraphToParse.StringAt(startPosition, position - 1);
 
             KeyID start = new KeyID(
-                scriptureReference[Ordinals.first, name],
-                scriptureReference[Ordinals.first, chapter],
-                scriptureReference[Ordinals.first, verse],
+                scriptureReference[Ordinals.first, (int)Modes.name],
+                scriptureReference[Ordinals.first, (int)Modes.chapter],
+                scriptureReference[Ordinals.first, (int)Modes.verse],
                 currentWord);
             KeyID end = new KeyID(
-                scriptureReference[Ordinals.first, name],
-                scriptureReference[Ordinals.first, chapter],
-                scriptureReference[Ordinals.first, verse],
+                scriptureReference[Ordinals.first, (int)Modes.name],
+                scriptureReference[Ordinals.first, (int)Modes.chapter],
+                scriptureReference[Ordinals.first, (int)Modes.verse],
                 KeyID.DeferredWordIndex);
             Citation citation = new Citation();
             citation.CitationType = CitationTypes.Verse;
@@ -402,22 +400,23 @@ namespace Myriad.CitationHandlers
 
         private void MoveVerse(int from, int to)
         {
-            if (mode == chapter) scriptureReference[to, chapter] = scriptureReference[from, chapter];
-            scriptureReference[to, verse] = scriptureReference[from, verse];
-            scriptureReference[to, word] = scriptureReference[from, word];
+            if (mode == Modes.chapter) 
+                scriptureReference[to, (int)Modes.chapter] = scriptureReference[from, (int)Modes.chapter];
+            scriptureReference[to, (int)Modes.verse] = scriptureReference[from, (int)Modes.verse];
+            scriptureReference[to, (int)Modes.word] = scriptureReference[from, (int)Modes.word];
             ResetVerse(from); 
         }
 
         private void ResetVerse(int ordinal)
         {
-            if (mode==chapter) scriptureReference[ordinal, chapter] = Result.notfound;
-            scriptureReference[ordinal, verse] = Result.notfound;
-            scriptureReference[ordinal, word] = Result.notfound;
+            if (mode==Modes.chapter) scriptureReference[ordinal, (int)Modes.chapter] = Result.notfound;
+            scriptureReference[ordinal, (int)Modes.verse] = Result.notfound;
+            scriptureReference[ordinal, (int)Modes.word] = Result.notfound;
         }
 
         private void EvaluateThirdVerse()
         {
-            if (scriptureReference[Ordinals.third, mode] == scriptureReference[Ordinals.first, mode] + 1)
+            if (scriptureReference[Ordinals.third, (int)mode] == scriptureReference[Ordinals.first, (int)mode] + 1)
             {
                 MoveVerse(Ordinals.third, Ordinals.second);
             }  
@@ -426,7 +425,7 @@ namespace Myriad.CitationHandlers
 
         private bool ReferenceToFirstVerseExists()
         {
-            return scriptureReference[Ordinals.first, mode] != Result.notfound;
+            return scriptureReference[Ordinals.first, (int)mode] != Result.notfound;
         }
 
         protected virtual int IndexOfBook(string book)

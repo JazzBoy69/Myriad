@@ -3,6 +3,7 @@ using BenchmarkDotNet.Running;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Feliciana.Library;
+using Feliciana.ResponseWriter;
 using Feliciana.HTML;
 using Myriad.Pages;
 using Myriad.Library;
@@ -49,7 +50,7 @@ namespace Myriad.Benchmark
             page.SetCitation(new Citation(319422720, 319422739));
             await page.RenderPage();
         }
-        [Benchmark]
+        //[Benchmark]
         async public Task RenderArticle()
         {
             ArticlePage page = new ArticlePage();
@@ -59,11 +60,21 @@ namespace Myriad.Benchmark
         }
 
         [Benchmark]
+        async public Task RenderChrono()
+        {
+            Chrono page = new Chrono();
+            page.SetResponse(DefaultResponse());
+            await page.SetCitation(new Citation(309002496, 309002508));
+            await page.RenderPage();
+        }
+
+        //[Benchmark]
         async public Task RenderVerse()
         {
             VersePage page = new VersePage();
             page.SetResponse(DefaultResponse());
             page.SetCitation(new Citation(654639872, 654640127));
+            var writer = Writer.New(DefaultResponse());
             await page.RenderPage();
         }
         [Benchmark]

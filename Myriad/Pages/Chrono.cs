@@ -95,7 +95,11 @@ namespace Myriad.Pages
             this.id = (id>Number.nothing) ? id : await GetIDFromCitation(highlightCitation);
             navigating = query.ContainsKey(queryKeyNavigating);
         }
-
+        public async Task SetCitation(Citation highlightCitation)
+        {
+            this.highlightCitation = highlightCitation;
+            id = await GetIDFromCitation(highlightCitation);
+        }
         internal static async Task<int> GetIDFromCitation(Citation citation)
         {
             var commentIDs = GetCommentIDs(citation);
