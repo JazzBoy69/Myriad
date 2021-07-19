@@ -290,12 +290,26 @@ function ShowSearchField() {
     }
 }
 
+function ShowSearchFieldWithoutCancel() {
+    var searchField = document.getElementById('toolbarSearchField');
+    searchField.classList.remove('hidden');
+    if (window.innerWidth < 768) {
+        if (!searchField.classList.contains('visible')) {
+            searchField.classList.add('visible');
+        }
+    }
+    else {
+        searchField.classList.remove('visible');
+    }
+}
+
 function SetTOCButton() {
     var hasTOC = document.getElementById('hastoc');
     var tocButton = document.getElementById('menuTOC');
     var searchField = document.getElementById('toolbarSearchField');
     if ((hasTOC === null) || (searchField.classList.contains('visible'))) {
         HideToc();
+        return;
     }
     if (tocButton.classList.contains('hidden')) {
         tocButton.classList.remove('hidden');
@@ -812,6 +826,8 @@ function showHideIndex() {
                 ellipsis.classList.add('hidden');
         }
         ResetIndex();
+        SetModal();
+        ShowSearchFieldWithoutCancel();
     }
 }
 
@@ -822,6 +838,8 @@ function HideIndex() {
     var ellipsis = document.getElementById('ellipsis');
     overlay.classList.remove('show');
     article.classList.remove('blur');
+    ResetModal();
+    HideSearchField();
     if ((ellipsis !== null) && (ellipsis.classList !== null)) {
         var suppressedParagraphs = document.getElementsByClassName('suppressed');
         for (var i = 0; i < suppressedParagraphs.length; i++) {
