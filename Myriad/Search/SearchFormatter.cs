@@ -341,7 +341,6 @@ namespace Myriad.Search
             {
                 return;
             }
-
             var usedSentences = new List<int>();
             for (int index = startIndex; (index <= endIndex) && (index < searchResults.Count); index++)
             {
@@ -448,12 +447,22 @@ namespace Myriad.Search
             await CitationConverter.AppendLink(writer, citation);
             await writer.Append(": ");
             bool ellipsis = false;
+            bool bold = false;
             bool link = false;
             for (int idx = Ordinals.first; idx<searchresultwords.Count; idx++)
             {
                 if (searchresultwords[idx].Erased)
                 {
-                    //if (endLinks.Contains(idx)) await writer.Append(HTMLTags.EndAnchor);
+                    if (endLinks.Contains(idx + searchresultwords[idx].Length - 1))
+                    {
+                        await writer.Append(HTMLTags.EndAnchor);
+                        link = false;
+                    }
+                    if (bold)
+                    {
+                        await writer.Append(HTMLTags.EndBold);
+                        bold = false;
+                    }
                     continue;
                 }
                 if (!searchresultwords[idx].Used)
@@ -469,7 +478,10 @@ namespace Myriad.Search
                 if (searchresultwords[idx].Erased) continue;
                 ellipsis = false;
                 if (!link && ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted)))
+                { 
                     await writer.Append(HTMLTags.StartBold);
+                    bold = true;
+                }
                 await writer.Append(sentenceKeywords[idx].LeadingSymbolString);
                 if (links.ContainsKey(idx))
                 {
