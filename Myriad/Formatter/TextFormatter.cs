@@ -35,7 +35,9 @@ namespace Myriad.Parser
         }
         internal async Task AppendCommentSpanKeywords(List<Keyword> keywords, Citation citation, Citation targetCitation, int spanIndex, bool multi)
         {
-            if (spanIndex == Ordinals.first) await StartParagraph(keywords);
+            if (spanIndex == Ordinals.first) {
+                await StartParagraph(keywords);
+            }
             paragraphIndex = Ordinals.first;
             for (int index = Ordinals.first; index < keywords.Count; index++)
             {
@@ -174,7 +176,7 @@ namespace Myriad.Parser
             if ((targetCitation.CitationRange.StartID.ID == keyword.ID) ||
                 ((paragraphIndex == Ordinals.first) &&
                 (targetCitation.CitationRange.StartID.ID < keyword.ID) &&
-                (targetCitation.CitationRange.EndID.ID > keyword.ID)))
+                (targetCitation.CitationRange.EndID.ID >= keyword.ID)))
             {
                 await AppendReadingViewHighlightFormatting();
             }
