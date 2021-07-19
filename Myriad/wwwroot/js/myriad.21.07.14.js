@@ -234,6 +234,7 @@ function SetModal() {
     HideChronoButton();
     HideEditButton();
     HideOriginalWordButton();
+    HideToc();
     document.getElementById('menuSpacer').classList.remove('hidden');
 }
 
@@ -294,14 +295,19 @@ function SetTOCButton() {
     var tocButton = document.getElementById('menuTOC');
     var searchField = document.getElementById('toolbarSearchField');
     if ((hasTOC === null) || (searchField.classList.contains('visible'))) {
-        if (!tocButton.classList.contains('hidden')) {
-            tocButton.classList.add('hidden');
-        }
-        return;
+        HideToc();
     }
     if (tocButton.classList.contains('hidden')) {
         tocButton.classList.remove('hidden');
     }
+}
+
+function HideToc() {
+    var tocButton = document.getElementById('menuTOC');
+    if (!tocButton.classList.contains('hidden')) {
+        tocButton.classList.add('hidden');
+    }
+    return;
 }
 
 function SetPaginationButtons() {
