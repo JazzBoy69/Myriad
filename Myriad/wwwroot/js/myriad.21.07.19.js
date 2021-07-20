@@ -36,7 +36,7 @@ function HandleGestures() {
 function HandleSwipe(event) {
     if (pointerStart === 0) return;
     var pointerEnd = event.pageX;
-    if (Math.abs(pointerStart - pointerEnd) > 7) {
+    if (Math.abs(pointerStart - pointerEnd) > 20) {
         if (pointerStart > pointerEnd) {
             TurnPage('next');
             pointerStart = 0;
@@ -571,7 +571,7 @@ function HandleSearch() {
     if (searchField.classList.contains('hidden')) {
         ShowSearchField();
         SetOtherIcons();
-        searchField.focus();
+        document.getElementById('searchField').focus();
         return;
     }
 
