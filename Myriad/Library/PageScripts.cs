@@ -10,8 +10,9 @@ namespace Myriad.Library
             public const string Text = @"
 <script>
    window.onload = function () {
-    AddShortcut();
-    SetupIndex();
+AddShortcut();
+HandleGestures();
+SetupIndex();
 SetupPartialPageLoad();
 HandleHiddenDetails();
 SetIcons();
@@ -22,8 +23,9 @@ ScrollToTop();
         public const string Verse = @"
 <script>
    window.onload = function () {
-    AddShortcut();
-    SetupIndex();
+AddShortcut();
+HandleGestures();
+SetupIndex();
 SetupPartialPageLoad();
 HandleHiddenDetails();
 SetupSuppressedParagraphs();
@@ -43,8 +45,9 @@ ScrollToTop();
         public const string Search = @"
 <script>
    window.onload = function () {
-    AddShortcut();
-    SetupIndex();
+AddShortcut();
+HandleGestures();
+SetupIndex();
 SetSearchFieldText();
 SetupPartialPageLoad();
 ScrollToTop();

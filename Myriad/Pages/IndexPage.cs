@@ -20,9 +20,10 @@ namespace Myriad.Pages
 <script>
    window.onload = function () {
 HandleResize();
-    AddShortcut();
+HandleGestures();
+AddShortcut();
 SetIcons();
-    SetupIndex();
+SetupIndex();
 SetupPartialPageLoad();
 ScrollToTop();
 };

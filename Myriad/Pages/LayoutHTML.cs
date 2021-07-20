@@ -13,7 +13,7 @@ namespace Myriad.Pages
     <meta charset='utf-8' />
     <meta name='viewport' content='user-scalable=no,width=device-width, initial-scale=1, maximum-scale=1' />";
         public const string header =
-@"<link rel='stylesheet' href='css/myriad.21.07.20.css' />
+@"<link rel='stylesheet' href='css/myriad.21.07.22.css' />
     <link rel='shortcut icon' href='images/MyriadIcon.png'>
 
 </head>
@@ -152,7 +152,7 @@ namespace Myriad.Pages
         <div id='modal-image-box' class='hidden'>
             <img class='zoom' id='modal-image'>
         </div>
-<div id=top></div><article>
+<div id=top></div>
 <div id=editFormContainer class='flexTabs hidden fixedposition fillHeight'>
     <div id='editTabsHeader' class=flexTabsHeader>
         <ul class='tabs'>
@@ -168,12 +168,13 @@ namespace Myriad.Pages
         </ul>
     </div>
 </div>
+<article>
 <div id='mainPane'>
 ";
         public const string close = @"</div></article></div>";
         public const string tocdiv = "<div id=tocdiv class=hidden></div>";
         public const string modalOverlay = "<div id='modal-overlay'></div>";
-        public const string myriadJavaScript = "<script src='js/myriad.21.07.15" +
+        public const string myriadJavaScript = "<script src='js/myriad.21.07.19" +
             ".js'></script>";
         public const string endofBody = "</body></html>";
     }

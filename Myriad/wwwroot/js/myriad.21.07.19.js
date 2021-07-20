@@ -1,11 +1,51 @@
+var windowWidth;
+
 function HandleResize() {
+    windowWidth = window.innerWidth;
     window.onresize = function () {
-        var editForm = document.getElementById('editFormContainer');
-        if (!editForm.classList.contains('hidden')) return;
+        if (window.innerWidth === windowWidth) return;
+        windowWidth = window.innerWidth;
+        var editContainer = document.getElementById('editFormContainer');
+        if (!editContainer.classList.contains('hidden')) {
+            var editForm = document.getElementById('editForm');
+            editForm.blur();
+            editForm.focus();
+            return;
+        }
         var imageBox = document.getElementById('modal-image-box');
         if (!imageBox.classList.contains('hidden')) return;
         SetIcons();
     };
+}
+
+var pointerStart = 0;
+function HandleGestures() {
+    document.onpointerdown = function (event) {
+        var paginate = document.getElementById('paginate');
+        if (paginate === null) {
+            return;
+        }
+        if (event.pointerType !== 'touch') return;
+        pointerStart = event.pageX;
+    };
+    document.onpointermove = function (event) {
+        HandleSwipe(event);
+    };
+}
+
+function HandleSwipe(event) {
+    if (pointerStart === 0) return;
+    var pointerEnd = event.pageX;
+    if (Math.abs(pointerStart - pointerEnd) > 7) {
+        if (pointerStart > pointerEnd) {
+            TurnPage('next');
+            pointerStart = 0;
+        }
+        else {
+            TurnPage('preceding');
+            pointerStart = 0;
+        }
+    }
 }
 
 function SetupPartialPageLoad() {

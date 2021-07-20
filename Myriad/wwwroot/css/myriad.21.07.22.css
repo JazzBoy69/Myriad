@@ -143,7 +143,7 @@ p.poetic+p.poetic, p.firstpoetic+p.poetic, .sidebarScripture p.firstpoetic{margi
 .sidenote p{padding-bottom: .5rem;}
 .sidenote details p{padding-bottom:.1rem;}
 .scripture h3{margin-bottom:0.5rem;}
-article{padding-top:5rem;padding-bottom:3rem;min-height:40rem;}
+article, #editFormContainer{padding-top:5rem;padding-bottom:3rem;min-height:40rem;}
 .sidenote{margin-top:.7rem;}
 .introduction{border-bottom:2px solid grey;margin-bottom:2rem;}
 div+section.scripture{margin-top:1.5rem;}
@@ -157,7 +157,7 @@ section{display:block;align-items:stretch;}
 .poetic:last-child {padding-bottom:.5rem;}
 .fillHeight{height:calc(100vh - 7rem);}
 /*HORIZONTAL SPACING */
-article{width:60rem;padding-left:10rem;}
+article, #editFormContainer{width:60rem;padding-left:10rem;}
 article.withsidebar{animation: none;padding-left:3rem;}
 article.opening{animation-name: opensidebar; animation-duration:.2s;}
 @keyframes opensidebar{from{padding-left:10rem;}to{padding-left:3rem;}}
@@ -350,7 +350,7 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 @media only screen and (min-width:1025px) and (max-width:1280px){
 
 /*HORIZONTAL SPACING */
-article{width:47rem;padding-left:5rem;}
+article, #editFormContainer{width:47rem;padding-left:5rem;}
 #menuSpacer{width:35rem;}
 .hidden + #editTabs {margin-left:5rem;}
 article.withsidebar{padding-left:0;}
@@ -410,7 +410,7 @@ article.withsidebar .sidenote p{margin-left: 2rem;}
 @media only screen and (min-width:900px) and (max-width:1024px){
 
 /*HORIZONTAL SPACING */
-article{width:50rem;padding-left:1rem;}
+article, #editFormContainer{width:50rem;padding-left:1rem;}
 #menuSpacer{width:30rem;}
 .hidden + #editTabs {margin-left:3rem;}
 .withsidebar{animation: none;}
@@ -451,7 +451,7 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 @media only screen and (min-width:768px) and (max-width:899px){
 
 /*HORIZONTAL SPACING */
-article{width:45rem;padding-left:.5rem;}
+article, #editFormContainer{width:45rem;padding-left:.5rem;}
 #menuSpacer{width:25rem;}
 .hidden + #editTabs {margin-left:1rem;}
 #editTabs li {margin-left: .5rem; padding-right:.5rem;}
@@ -471,8 +471,7 @@ figure.portrait, figure.square, .sidenote{width:21rem}
 figure.portrait, figure.square, .sidenote{width:21rem}
 .definitionBlock div, .searchResults{width:38rem;}
 ul.tabs{width:38rem;}
-#menuPrevious {width: 3rem;}
-#menuNext {width: 3rem;}
+#menuNext, #menuPrevious{display:none;}
 .indexicon img {right: 7rem;}
 #ellipsis{right:5rem;}
 .indexbutton {
@@ -492,7 +491,7 @@ ul.tabs{width:38rem;}
 .versenav{margin-left:4rem;}
 .menu{margin-left: 4rem;}
 .textquote{margin-left:4rem;}
-.flexTabs{width:calc(100vw - 2rem);}
+.flexTabs{width:calc(100vw - 4rem);}
 .fillHeight{height:calc(100vh - 6rem);}
 .flexTabsHeader{margin-left:0;}
 /*Right*/
@@ -513,10 +512,11 @@ body{text-rendering:optimizeSpeed;}
 .flexTabsHeader ul{margin-bottom:0;}
 .flexTabsHeader{border-right:0;}
 .flexTabsTabs{border-left:1px solid #d3d3d3;margin-top:2px;}
+#menuNext, #menuPrevious{display:none;}
 /*HORIZONTAL SPACING */
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
-article{width:33rem;padding-left:.5rem;}
+article, #editFormContainer{width:33rem;padding-left:.5rem;}
 .readingverse {position:absolute;left:2rem;}
 .firstpoetic .readingverse  {position:absolute;left:3rem;}
 .poetic .readingverse  {position:absolute;left:3rem;}
@@ -535,13 +535,11 @@ figure.portrait{padding-left: 1rem; }
 ul.tabs, .searchResults{width:32rem;}
 ul.tabs {display:inline-block;}
 #editTabs li{padding-left: 1rem;margin-left:0;}
-#menuPrevious {width: 2rem;}
-#menuNext {width: 2rem;}
 .indexicon img {right:3rem;}
 #ellipsis{right:1rem;}
 
 .flexTabs{display:block;width:32rem;}
-.flexTabsHeader{margin-left:0;width:100%;float:none;}
+.flexTabsHeader{margin-left:0;width:96.5%;float:none;}
 .flexTabsHeader ul{width:100%;}
 .flexTabsHeader ul.tabs li{width:100%;border-right:1px solid #d3d3d3;}
 .flexTabsHeader ul.tabs li{border-bottom:0;}
@@ -588,12 +586,13 @@ body{text-rendering:optimizeSpeed;}
 .menu li{width: 2.5rem;margin:0 0 .7rem 0;}
 .buttongrid {padding-bottom: 1rem;}
 #searchField, #menuSpacer{width:14rem;}
+#menuNext, #menuPrevious{display:none;}
 /*HORIZONTAL SPACING */
 img.portrait {float:none;}
 figure, figure.portrait, figure.square {margin-left:auto;margin-right:auto;}
 h2{margin-right:.3rem;}
 h3{margin-right:.5rem;}
-article{width:calc(100vw - 1rem);padding-left:0;}
+article, #editFormContainer{width:calc(100vw - 1rem);padding-left:0;}
 article.withsidebar{padding-left:.25rem;animation:none;}
 article.withsidebar .readingverse {animation:none;}
 article.withsidebar p.firstpoetic .readingverse  {animation:none;}
@@ -644,8 +643,6 @@ figure.portrait{padding-left: 1rem; }
 .sidenote.crossrefs{width:18rem;}
 .definitionBlock div, .searchResults{width:16rem;}
 ul.tabs{width: 19rem;}
-#menuPrevious {width: 1rem;}
-#menuNext {width: 1rem;}
 .indexicon img {right: 3rem;}
 #ellipsis{right:1rem;}
 .indexbutton {
@@ -659,11 +656,11 @@ ul.tabs{width: 19rem;}
 .scripture-section ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
 .scripture-section ul.tabs{border-bottom:0;display:inline-block;}
 .scripture-section .scripture-header.visible ul.tabs{border-bottom:none;}
-.flexTabs{flex-direction:column;width:calc(100vw - 2rem);}
+.flexTabs{flex-direction:column;width:calc(100vw - 4rem);}
 .fillHeight{height:calc(100vh - 7rem);}
-.flexTabsHeader{margin-left:0;width:100%;float:none;}
+.flexTabsHeader{margin-left:0;width:calc(100vw - 2.75rem);float:none;}
 .flexTabsHeader ul{width:100%;margin-bottom:0;}
-.flexTabsTabs{width:calc(100vw - 1.5rem);flex:1;flex-shrink:1;margin-left:0;margin-top:1px;}
+.flexTabsTabs{width:calc(100vw - 2.5rem);flex:1;margin-left:0;margin-top:1px;}
 .flexTabsTabs ul{width:calc(100vw - 2rem);}
 .flexTabsHeader ul.tabs li{width:100%;border-right:1px solid #d3d3d3;}
 .flexTabsHeader ul.tabs li:last-child{border-bottom:1px solid #d3d3d3;}
@@ -686,7 +683,6 @@ div.textquote table {margin-left: .25rem;}
 .sidenote{margin-left:2rem;}
 definitionBlock details,.sidenote.crossrefs{margin-left:0}
 .flexTabsTabs ul{margin-left:.4rem;}
-#editForm{height:90%;}
 /*Right*/
 .comment, #chaptertext p, #comments p, searchResults p, .scripture ul.tabs, .scripture-section{margin-right:.7rem;}
 .flexTabs .tab li {margin-right:1rem;}
