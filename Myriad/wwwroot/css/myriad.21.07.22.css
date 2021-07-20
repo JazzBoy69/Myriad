@@ -298,6 +298,7 @@ header{width:100%;height:5rem;position:fixed;top:0px;left:0px;background-color:#
 #modal-overlay.show {visibility:visible;background-color: black;opacity: .4;z-index:2;}
 #bibleindex.show {visibility: visible;background-color: black;opacity: .7;transition: display .2s;z-index: 2;transition: visibility 0s, opacity 0.2s linear;}
 .blur {opacity: .7;filter: blur(3px);}
+.turning{opacity: .2;}
 
 #indexscripture {font-size: 1rem;}
 .buttongrid {display: grid;grid-template-columns: 1fr 1fr 1fr;grid-row-gap: .25rem;grid-column-gap: .25rem;padding-bottom: 1.5rem;padding-left:2rem;padding-right:2rem;padding-top:.5rem;}
