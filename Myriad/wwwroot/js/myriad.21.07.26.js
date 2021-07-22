@@ -19,6 +19,7 @@ function HandleResize() {
 }
 
 var pointerStart = 0;
+var pointerStartY = 0;
 function HandleGestures() {
     document.onpointerdown = function (event) {
         var paginate = document.getElementById('paginate');
@@ -27,6 +28,7 @@ function HandleGestures() {
         }
         if (event.pointerType !== 'touch') return;
         pointerStart = event.pageX;
+        pointerStartY = event.pageY;
     };
     document.onpointermove = function (event) {
         HandleSwipe(event);
@@ -35,9 +37,10 @@ function HandleGestures() {
 
 function HandleSwipe(event) {
     if (pointerStart === 0) return;
-    var pointerEnd = event.pageX;
-    if (Math.abs(pointerStart - pointerEnd) > 20) {
-        if (pointerStart > pointerEnd) {
+    var swipe = Math.abs(pointerStart - event.pageX);
+    var scroll = Math.abs(pointerStartY - event.pageY);
+    if ((swipe > scroll) && (swipe > 7)) {
+        if (pointerStart > event.pageX) {
             TurnPage('next');
             pointerStart = 0;
         }
@@ -223,7 +226,6 @@ function HandleAdditionalSearchTasks() {
 }
 
 function LoadMainPane(path) {
-    window.scrollTo({ top: 500, left: 0, behavior: 'smooth' })
     postAjax(path, {},
         function (data) {
             WriteMainPane(data);
