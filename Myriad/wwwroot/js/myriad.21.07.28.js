@@ -39,7 +39,7 @@ function HandleSwipe(event) {
     if (pointerStart === 0) return;
     var swipe = Math.abs(pointerStart - event.pageX);
     var scroll = Math.abs(pointerStartY - event.pageY);
-    if ((swipe > scroll) && (swipe > 7)) {
+    if ((swipe > scroll) && (swipe > 9)) {
         if (pointerStart > event.pageX) {
             TurnPage('next');
             pointerStart = 0;
