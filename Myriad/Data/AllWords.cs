@@ -36,7 +36,7 @@ namespace Myriad.Data
                     result.Append(newWord);
                     continue;
                 }
-                newWord = await GetCorrectSpelling(words[index]);
+                newWord = await DataRepository.CorrectSpellingOf(words[index]);
                 if (newWord != null)
                 {
                     result.Append(newWord);
@@ -49,15 +49,6 @@ namespace Myriad.Data
             return result.ToString();
         }
 
-        private static async Task<string> GetCorrectSpelling(string misspelled)
-        {
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadCorrectSpelling),
-                misspelled);
-            string correct = await reader.GetDatum<string>();
-            reader.Close();
-            return correct;
-        }
-
         internal static async Task<string> GetClosestMatch(string word)
         {
             if (word == null) return null;
@@ -65,10 +56,7 @@ namespace Myriad.Data
             int distance = 2000;
             if (word.Length > 1)
             {
-                var reader = new DataReaderProvider(
-                    SqlServerInfo.CreateCommandFromQuery("select RTrim(text) from synonyms"));
-                var words = reader.GetData<string>();
-                reader.Close();
+                var words = await DataRepository.TextOfAllSynonyms();
                 for (int i=Ordinals.first; i<words.Count; i++)
                 {
                     int d = DistanceBetween(word, words[i]);

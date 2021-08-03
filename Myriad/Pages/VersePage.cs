@@ -138,16 +138,9 @@ namespace Myriad.Pages
 
         private static async Task WriteOriginalWordCommentPlainText(HTMLWriter writer, List<(string text, int start, int end)> originalWords)
         {
-            var keywordReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordKeywords),
-                -1, -1);
-            var linkReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
-                -1, -1);
-            var commentReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
-                -1, Ordinals.first);
             for (int index = Ordinals.first; index < originalWords.Count; index++)
             {
-                keywordReader.SetParameter(originalWords[index].start, originalWords[index].end);
-                List<(string text, int capitalized)> keywords = await keywordReader.GetData<string, int>();
+                List<(string text, int capitalized)> keywords = await DataRepository.KeywordsPlainText(originalWords[index].start, originalWords[index].end);
                 await writer.Append("**");
                 for (int keywordIndex = Ordinals.first; keywordIndex < keywords.Count; keywordIndex++)
                 {
@@ -159,26 +152,10 @@ namespace Myriad.Pages
                 await writer.Append("** (//");
                 await writer.Append(originalWords[index].text);
                 await writer.Append("//): ");
-                int commentID = await GetOriginalWordCommentID(originalWords[index].start, originalWords[index].end, 
-                    linkReader);
-                if (commentID > Number.nothing)
-                {
-                    commentReader.SetParameter(commentID, Ordinals.first);
-                    string comment = await commentReader.GetDatum<string>();
-                    if (comment != null) await writer.Append(comment);
-                }
+                string comment = await DataRepository.OriginalWordComment(originalWords[index].start, originalWords[index].end);
+                if (comment != null) await writer.Append(comment);
                 await writer.Append(Symbol.lineFeed);
             }
-            commentReader.Close();
-            keywordReader.Close();
-            linkReader.Close();
-        }
-
-        private static async Task<int> GetOriginalWordCommentID(int start, int end, StoredProcedureProvider<int, int> linkReader)
-        {
-            linkReader.SetParameter(start, end);
-            int commentID = await linkReader.GetDatum<int>();
-            return commentID;
         }
 
         private async Task<List<(string text, int start, int end)>> ReadOriginalWords()
