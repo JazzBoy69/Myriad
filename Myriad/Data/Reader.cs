@@ -11,14 +11,6 @@ namespace Myriad.Data
 {
     public class Reader
     {
-        public static async Task<string> ReadTitle(int id)
-        {
-            var titleReader = new StoredProcedureProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadArticleTitle), id);
-            string title = await titleReader.GetDatum<string>();
-            titleReader.Close();
-            return title;
-        }
         public static List<Keyword> ReadKeywords(Citation citation)
         {
             var reader = new StoredProcedureProvider<int, int>(

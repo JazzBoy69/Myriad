@@ -121,7 +121,7 @@ namespace Myriad.Pages
             var newParagraphs = lines[Ordinals.third..].ToList();
             parser = new PageParser(writer);
             pageInfo.ID = id;
-            pageInfo.Title = await Reader.ReadTitle(id);
+            pageInfo.Title = await DataRepository.Title(id);
             await AddMainHeading(writer);
             parser.SetParagraphInfo(ParagraphType.Article, pageInfo.ID);
             parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
@@ -377,7 +377,7 @@ namespace Myriad.Pages
                 await CreateNewArticle(title, id);
                 return (title.Replace('_', ' '), id);
             }
-            title = await Reader.ReadTitle(id);
+            title = await DataRepository.Title(id);
             return (title, id);
         }
 
@@ -430,7 +430,7 @@ namespace Myriad.Pages
             if (query.ContainsKey(queryKeyTitle)) return await GetID(query);
             string idstring = query[queryKeyID];
             int id = Numbers.Convert(idstring);
-            string title = await Reader.ReadTitle(id);
+            string title = await DataRepository.Title(id);
             return (title, id);
         }
 

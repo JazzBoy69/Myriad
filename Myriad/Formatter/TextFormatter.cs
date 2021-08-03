@@ -336,29 +336,19 @@ namespace Myriad.Parser
             if (keyword.EndFootnote)
             {
                 await writer.Append(']'+ HTMLTags.EndSpan);
-                await writer.Append(keyword.TrailingSymbolString[Ordinals.second..]);
+                await writer.Append(keyword.TrailingSymbols[Ordinals.second..]);
             }
             else
             {
-                await writer.Append(keyword.TrailingSymbolString);
+                await writer.Append(keyword.TrailingSymbols);
             }
         }
 
         private static async Task AppendReadingText(HTMLWriter writer, Keyword keyword)
         {
-            if (keyword.IsCapitalized)
-            {
-                await writer.Append((char)(keyword.TextString[Ordinals.first] & (255-32)));
-                string text = keyword.TextString[Ordinals.second..];
-                text = HideDiacritics(text);
-                await writer.Append(text);
-            }
-            else
-            {
-                string text = keyword.TextString;
-                text = HideDiacritics(text);
-                await writer.Append(text);
-            }
+            string text = keyword.CapitalizedText;
+            text = HideDiacritics(text);
+            await writer.Append(text);
         }
 
         private async static Task AppendReadingLeadingSymbols(HTMLWriter writer, Keyword keyword, int paragraphIndex)
@@ -367,11 +357,11 @@ namespace Myriad.Parser
             {
                 await writer.Append(HTMLTags.StartSpanWithClass+HTMLClasses.spacer+HTMLTags.CloseQuoteEndTag+
                     HTMLTags.EndSpan); 
-                await writer.Append(keyword.LeadingSymbolString.Substring(Ordinals.second));
+                await writer.Append(keyword.LeadingSymbols.Substring(Ordinals.second));
             }
             else
             {
-                await writer.Append(keyword.LeadingSymbolsString);
+                await writer.Append(keyword.LeadingSymbols);
             }
         }
 
@@ -389,54 +379,35 @@ namespace Myriad.Parser
 
         private static async Task AppendText(HTMLWriter writer, Keyword keyword)
         {
-            if (keyword.IsCapitalized)
-            {
-                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
-                await writer.Append(text);
-            }
-            else
-            {
-                string text = keyword.Text.ToString().Replace('`', '’');
-                await writer.Append(text);
-            }
+            string text = keyword.CapitalizedText.Replace('`', '’');
+            await writer.Append(text);
         }
 
         internal static async Task AppendLeadingSymbols(HTMLWriter writer, Keyword keyword)
         {
             if (keyword.WordIndex == Ordinals.first)
             {
-                await writer.Append(keyword.LeadingSymbolsString.Substring(Ordinals.second));
+                await writer.Append(keyword.LeadingSymbols.Substring(Ordinals.second));
             }
             else
             {
-                await writer.Append(keyword.LeadingSymbolsString);
+                await writer.Append(keyword.LeadingSymbols);
             }
         }
 
         public async static Task AppendCleanTextOfKeyword(HTMLWriter writer, Keyword keyword, bool hideFootnotes, bool hideDiacritics)
         {
             if (hideFootnotes && !keyword.IsMainText) return;
-            await writer.Append(keyword.LeadingSymbolsString);
+            await writer.Append(keyword.LeadingSymbols);
             await AppendCleanText(writer, keyword, hideDiacritics);
             await writer.Append(keyword.TrailingSymbols.ToString());
         }
 
         private static async Task AppendCleanText(HTMLWriter writer, Keyword keyword, bool hideDiacritics)
         {
-            if (keyword.IsCapitalized)
-            {
-                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
-                if (hideDiacritics) text = text.Replace("΄", "").Replace("·", "");
-                await writer.Append(text);
-            }
-            else
-            {
-                string text = keyword.Text.ToString().Replace('`', '’');
-                if (hideDiacritics) text = text.Replace("΄", "").Replace("·", "");
-                await writer.Append(text);
-            }
+            string text = keyword.CapitalizedText.Replace('`', '’');
+            if (hideDiacritics) text = text.Replace("΄", "").Replace("·", "");
+            await writer.Append(text);
         }
 
         private async Task AppendReadingViewVerseNumber(Keyword keyword, Citation citation)

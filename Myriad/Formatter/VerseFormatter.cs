@@ -33,14 +33,15 @@ namespace Myriad.Formatter
         private static async Task WriteRubyText(HTMLWriter writer, VersePage page)
         {
             await StartRubySection(writer, page);
-            page.info.keywords = Reader.ReadKeywords(page.citation);
+            page.info.keywords = await DataRepository.RangeKeywords(page.citation.CitationRange.StartID.ID, 
+                page.citation.CitationRange.EndID.ID);
             if (page.info.keywords != null)
             {
                 int lastWordOnTop = -1;
                 List<RubyInfo> wordsOnTop = new List<RubyInfo>();
                 for (int i = Ordinals.first; i < page.info.keywords.Count; i++)
                 {
-                    await writer.Append(page.info.keywords[i].LeadingSymbolsString);
+                    await writer.Append(page.info.keywords[i].LeadingSymbols);
                     if (lastWordOnTop == Result.notfound)
                     {
                         wordsOnTop = Reader.ReadSustituteText(page.info.keywords[i].ID);
@@ -58,7 +59,7 @@ namespace Myriad.Formatter
                         await writer.Append("</rt></ruby>");
                         lastWordOnTop = Result.notfound;
                     }
-                    await writer.Append(page.info.keywords[i].TrailingSymbols.ToString().Replace("<br>", "").Replace("— ", "—"));
+                    await writer.Append(page.info.keywords[i].TrailingSymbols.Replace("<br>", "").Replace("— ", "—"));
                 }
             }
             await EndRubySection(writer);

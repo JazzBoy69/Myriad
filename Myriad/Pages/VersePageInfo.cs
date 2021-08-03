@@ -488,7 +488,7 @@ namespace Myriad.Formatter
         private static async Task<string> ArticleTitle(int articleID)
         {
             if (articleID == Number.nothing) return "";
-            string title = await Reader.ReadTitle(articleID);
+            string title = await DataRepository.Title(articleID);
             return title.Replace(' ', '_').Replace('\u0a00', '_');
         }
 
