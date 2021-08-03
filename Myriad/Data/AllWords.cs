@@ -19,19 +19,19 @@ namespace Myriad.Data
             {
                 if (string.IsNullOrEmpty(words[index])) return query;
                 if (index > Ordinals.first) result.Append(' ');
-                if (await WordExists(words[index]))
+                if (await DataRepository.WordExists(words[index]))
                 {
                     result.Append(words[index]);
                     continue;
                 }
                 string newWord = Symbols.Capitalize(words[index]);
-                if (await WordExists(newWord))
+                if (await DataRepository.WordExists(newWord))
                 {
                     result.Append(newWord);
                     continue;
                 }
                 newWord = words[index].ToLower();
-                if (await WordExists(newWord))
+                if (await DataRepository.WordExists(newWord))
                 {
                     result.Append(newWord);
                     continue;
@@ -58,16 +58,7 @@ namespace Myriad.Data
             return correct;
         }
 
-        internal static async Task<bool> WordExists(string word)
-        {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadFromAllWords), word);
-            string result = await reader.GetDatum<string>();
-            reader.Close();
-            return result != null;
-        }
-
-        internal static string GetClosestMatch(string word)
+        internal static async Task<string> GetClosestMatch(string word)
         {
             if (word == null) return null;
             string posibleResult = word;
@@ -90,10 +81,7 @@ namespace Myriad.Data
                 }
             }
             if (distance < 3) return posibleResult;
-            var allreader = new DataReaderProvider(
-                SqlServerInfo.CreateCommandFromQuery("select RTrim(text) from allwords"));
-            var allwords = allreader.GetData<string>();
-            allreader.Close();
+            var allwords = await DataRepository.ReadAllWords();
             for (int i=Ordinals.first; i<allwords.Count; i++)
             {
                 int d = DistanceBetween(word, allwords[i]);

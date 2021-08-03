@@ -15,11 +15,12 @@ namespace Myriad.Formatter
     {
         internal static async Task Write(HTMLWriter writer, int chronoID)
         {
-            var currentEvent = ReadEvent(chronoID);
-            var precedingEvent = ReadPrecedingEvent(currentEvent);
-            var precedingMajorEvents = ReadPrecedingMajorEvents(currentEvent);
-            var nextEvent = ReadNextEvent(currentEvent);
-            var nextMajorEvents = ReadNextMajorEvents(currentEvent);
+            int currentIndex = await DataRepository.EventIndex(chronoID);
+            var currentEvent = await DataRepository.Event(currentIndex);
+            var precedingEvent = await DataRepository.Event(currentIndex - 1);
+            var precedingMajorEvents = await DataRepository.MajorEventsBefore(currentIndex);
+            var nextEvent = await DataRepository.Event(currentIndex + 1);
+            var nextMajorEvents = await DataRepository.MajorEventsAfter(currentIndex);
             int maxNumPrecedingEvents = 7 - Math.Min(2, nextMajorEvents.Count);
             if ((precedingMajorEvents.Count>1) && ((precedingMajorEvents[precedingMajorEvents.Count - 1].Picture == currentEvent.Picture) || 
                 (precedingMajorEvents[precedingMajorEvents.Count - 1].Picture == precedingEvent.Picture)))
@@ -28,8 +29,8 @@ namespace Myriad.Formatter
             }
             if (nextMajorEvents.Count > Number.nothing)
             {
-                if ((nextMajorEvents[Ordinals.first].ID == currentEvent.ID) ||
-                    (nextMajorEvents[Ordinals.first].ID == nextEvent.ID))
+                if ((nextMajorEvents[Ordinals.first].Chapter == currentEvent.Chapter) ||
+                    (nextMajorEvents[Ordinals.first].Chapter == nextEvent.Chapter))
                 {
                     nextMajorEvents.RemoveAt(Ordinals.first);
                 }
@@ -45,11 +46,11 @@ namespace Myriad.Formatter
             await EndTimeline(writer);
         }
 
-        private static async Task WriteNextEvent(HTMLWriter writer, Event nextEvent, int column)
+        private static async Task WriteNextEvent(HTMLWriter writer, TimelineEvent nextEvent, int column)
         {
             if (nextEvent == null) return;
             await writer.Append(HTMLTags.StartImg);
-            await writer.Append(nextEvent.PictureFile);
+            await writer.Append(nextEvent.Picture);
             await writer.Append(HTMLTags.CloseQuote);
             await writer.Append(nextEvent.Offset);
             await writer.Append(HTMLTags.Class +
@@ -65,13 +66,13 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.EndDiv);
         }
 
-        private static async Task WriteNextMajorEvents(HTMLWriter writer, List<Event> nextMajorEvents, int column)
+        private static async Task WriteNextMajorEvents(HTMLWriter writer, List<TimelineEvent> nextMajorEvents, int column)
         {
             int index = Ordinals.first;
             while ((index < nextMajorEvents.Count) && (column + index < 11))
             {
                 await writer.Append(HTMLTags.StartImg);
-                await writer.Append(nextMajorEvents[index].PictureFile);
+                await writer.Append(nextMajorEvents[index].Picture);
                 await writer.Append(HTMLTags.CloseQuote);
                 await writer.Append(nextMajorEvents[index].Offset);
                 await writer.Append(HTMLTags.Class +
@@ -84,10 +85,10 @@ namespace Myriad.Formatter
             }
         }
 
-        private static async Task WriteCurrentEvent(HTMLWriter writer, Event currentEvent, int column)
+        private static async Task WriteCurrentEvent(HTMLWriter writer, TimelineEvent currentEvent, int column)
         {
             await writer.Append(HTMLTags.StartImg);
-            await writer.Append(currentEvent.PictureFile);
+            await writer.Append(currentEvent.Picture);
             await writer.Append(HTMLTags.CloseQuote);
             await writer.Append(currentEvent.Offset);
             await writer.Append(HTMLTags.Class +
@@ -98,11 +99,11 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.CloseQuote + HTMLTags.EndSingleTag);
         }
 
-        private static async Task WritePrecedingEvent(HTMLWriter writer, Event precedingEvent, int column)
+        private static async Task WritePrecedingEvent(HTMLWriter writer, TimelineEvent precedingEvent, int column)
         {
             if (precedingEvent == null) return;
             await writer.Append(HTMLTags.StartImg);
-            await writer.Append(precedingEvent.PictureFile);
+            await writer.Append(precedingEvent.Picture);
             await writer.Append(HTMLTags.CloseQuote);
             await writer.Append(precedingEvent.Offset);
             await writer.Append(HTMLTags.Class+
@@ -113,12 +114,12 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.CloseQuote + HTMLTags.EndSingleTag);
         }
 
-        private static async Task WritePrecedingMajorEvents(HTMLWriter writer, List<Event> precedingMajorEvents)
+        private static async Task WritePrecedingMajorEvents(HTMLWriter writer, List<TimelineEvent> precedingMajorEvents)
         {
             for (int index = Ordinals.first; index < precedingMajorEvents.Count; index++)
             {
                 await writer.Append(HTMLTags.StartImg);
-                await writer.Append(precedingMajorEvents[index].PictureFile);
+                await writer.Append(precedingMajorEvents[index].Picture);
                 await writer.Append(HTMLTags.CloseQuote);
                 await writer.Append(precedingMajorEvents[index].Offset);
                 await writer.Append(HTMLTags.Class +
@@ -136,47 +137,5 @@ namespace Myriad.Formatter
                 HTMLClasses.timeline + Symbol.space+
                 HTMLTags.CloseQuoteEndTag);
         }
-
-        private static List<Event> ReadNextMajorEvents(Event currentEvent)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadNextMajorEvents), currentEvent.Index);
-            var results = reader.GetClassData<Event>();
-            reader.Close();
-            return results;
-        }
-
-        private static Event ReadNextEvent(Event currentEvent)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadNextEvent), currentEvent.Index);
-            var results = reader.GetClassDatum<Event>();
-            reader.Close();
-            return results;
-        }
-
-        private static List<Event> ReadPrecedingMajorEvents(Event currentEvent)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadPrecedingMajorEvents), currentEvent.Index);
-            var results = reader.GetClassData<Event>();
-            reader.Close();
-            return results;
-        }
-
-        private static Event ReadPrecedingEvent(Event currentEvent)
-        {
-            var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadPrecedingEvent), 
-                currentEvent.Index, currentEvent.Picture);
-            var results = reader.GetClassDatum<Event>();
-            reader.Close();
-            return results;
-        }
-
-        private static Event ReadEvent(int chronoID)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadEvent), chronoID);
-            var result = reader.GetClassDatum<Event>();
-            reader.Close();
-            return result;
-        }
-
     }
 }

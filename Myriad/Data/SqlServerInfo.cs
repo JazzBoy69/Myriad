@@ -130,11 +130,6 @@ namespace Myriad.Data
                 "uspReadCommentLink" }, //Jas 1:1 changed to >= and <=
             { DataOperation.ReadKeywords,
                  "uspReadKeywords" },
-            { DataOperation.ReadKeywordsParagraph,
-                 "select keyid, leadingsymbols, text, trailingsymbols, iscapitalized, ismaintext, poetic, sentence*256+sentencewordindex from keywords"+
-                 " where keyid>=@key1 and keyid<=@key2 and paragraph=@key3" },
-            { DataOperation.ReadParagraphIndex,
-                "select paragraph from keywords where keyid=@keyq" },
             { DataOperation.ReadParagraphRanges,
                 "uspReadParagraphRanges" },
             { DataOperation.ReadWordIndex,
@@ -303,20 +298,5 @@ namespace Myriad.Data
                 "select chronoID, chronoIndex, picture, xoffset, yoffset from timeline where importance<3 and chronoIndex>@key1 order by chronoIndex" }
         };
 
-        public static DataCommand GetCommand(DataOperation operation)
-        {
-            var command = Commands[operation];
-            return new DataCommand(Commands[operation], Connection());
-        }
-        private static SqlConnection Connection()
-        {
-            return new SqlConnection(ConnectionString);
-        }
-        static readonly string ConnectionString = "Server=Joels-laptop;Initial Catalog=Myriad;Integrated Security=SSPI;";
-
-        internal static DataCommand CreateCommandFromQuery(string query)
-        {
-            return new DataCommand(query, Connection());
-        }
     }
 }
