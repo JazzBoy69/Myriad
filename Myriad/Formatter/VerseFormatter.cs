@@ -38,20 +38,20 @@ namespace Myriad.Formatter
             if (page.info.keywords != null)
             {
                 int lastWordOnTop = -1;
-                List<RubyInfo> wordsOnTop = new List<RubyInfo>();
+                var wordsOnTop = new List<(string text, int last)>();
                 for (int i = Ordinals.first; i < page.info.keywords.Count; i++)
                 {
                     await writer.Append(page.info.keywords[i].LeadingSymbols);
                     if (lastWordOnTop == Result.notfound)
                     {
-                        wordsOnTop = Reader.ReadSustituteText(page.info.keywords[i].ID);
+                        wordsOnTop = await DataRepository.SubstituteWords(page.info.keywords[i].ID);
                         if (wordsOnTop.Count > Number.nothing)
                         {
                             await writer.Append("<ruby>");
-                            lastWordOnTop = wordsOnTop[Ordinals.last].EndID;
+                            lastWordOnTop = wordsOnTop[Ordinals.last].last;
                         }
                     }
-                    await AppendTextOfKeyword(writer, page.info.keywords[i]);
+                    await writer.Append(page.info.keywords[i].CapitalizedText.Replace('`', '’'));
                     if (page.info.keywords[i].ID == lastWordOnTop)
                     {
                         await writer.Append("<rt>");
@@ -65,26 +65,13 @@ namespace Myriad.Formatter
             await EndRubySection(writer);
         }
 
-        public async static Task AppendTextOfKeyword(HTMLWriter writer, Keyword keyword)
-        {
-            if (keyword.IsCapitalized)
-            {
-                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                await writer.Append(keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’'));
-            }
-            else
-            {
-                await writer.Append(keyword.Text.ToString().Replace('`', '’'));
-            }
-        }
-
-        private static async Task WriteSubstituteText(HTMLWriter writer, List<RubyInfo> wordsOnTop)
+        private static async Task WriteSubstituteText(HTMLWriter writer, List<(string text, int last)> wordsOnTop)
         {
             for (int i = Ordinals.first; i < wordsOnTop.Count; i++)
             {
                 if (i > Ordinals.first)
                     await writer.Append(Symbol.space);
-                await writer.Append(wordsOnTop[i].Text.Replace('_', ' '));
+                await writer.Append(wordsOnTop[i].text.Replace('_', ' '));
             }
         }
         private static async Task EndRubySection(HTMLWriter writer)
@@ -115,10 +102,7 @@ namespace Myriad.Formatter
             parser.SetTargetRange(page.citation.CitationRange);
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);
-            var articleReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
-                -1, -1);
-            var commentReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
-                -1, -1);
+         
             for (int i = Ordinals.first; i < page.info.AdditionalArticles.Count; i++)
             {
                 string title = page.info.AdditionalArticles.Keys.ElementAt(i);
@@ -147,8 +131,7 @@ namespace Myriad.Formatter
                     {
                         await StartParagraph(writer, entry[j].suppressed);
                     }
-                    articleReader.SetParameter(entry[j].articleID, entry[j].paragraphIndex);
-                    string paragraph = await articleReader.GetDatum<string>();
+                    string paragraph = await DataRepository.GlossaryParagraph(entry[j].articleID, entry[j].paragraphIndex);
                     await parser.ParseParagraph(paragraph, entry[j].paragraphIndex);
                 }
             }
@@ -188,14 +171,11 @@ namespace Myriad.Formatter
                         await StartParagraph(writer, suppressed);
                     }
                     parser.SetParagraphInfo(ParagraphType.Comment, articleID);
-                    commentReader.SetParameter(articleID, paragraphIndex);
-                    string paragraph = await commentReader.GetDatum<string>();
+                    string paragraph = await DataRepository.CommentParagraph(articleID, paragraphIndex);
                     if (paragraph == null) continue;
                     await parser.ParseParagraph(paragraph, paragraphIndex);
                 }
             }
-            articleReader.Close();
-            commentReader.Close();
         }
 
         private static async Task StartRubySection(HTMLWriter writer, VersePage page)
@@ -320,8 +300,6 @@ namespace Myriad.Formatter
                 parser.SetTargetRange(page.citation.CitationRange);
                 parser.SetStartHTML("");
                 parser.SetEndHTML(HTMLTags.EndParagraph);
-                var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
-                    -1, -1);
                 for (int i = Ordinals.first; i < page.info.PhraseArticles[index].Count; i++)
                 {
                     string title = page.info.PhraseArticles[index].Keys.ElementAt(i);
@@ -361,13 +339,11 @@ namespace Myriad.Formatter
                             await writer.Append(": ");
                             needLabel = false;
                         }
-                        reader.SetParameter(entry.articleID, entry.paragraphIndices[j]);
-                        string paragraph = await reader.GetDatum<string>();
+                        string paragraph = await DataRepository.GlossaryParagraph(entry.articleID, entry.paragraphIndices[j]);
                         await parser.ParseParagraph(paragraph, entry.paragraphIndices[j]);
                     }
                     currentIndex++;
                 }
-                reader.Close();
             }
         }
         private static async Task<bool> WriteOriginalWordComments(HTMLWriter writer, VersePage page, int index)
@@ -403,8 +379,6 @@ namespace Myriad.Formatter
             PageParser parser = new PageParser(writer);
             parser.SetTargetRange(page.citation.CitationRange);
             parser.HideDetails();
-            var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentParagraph),
-                -1, -1);
             for (int i = Ordinals.first; i < page.info.OriginalWordCrossReferences[index].Count; i++)
             {
                 int articleID = page.info.OriginalWordCrossReferences[index][i].articleID;
@@ -425,11 +399,9 @@ namespace Myriad.Formatter
                 parser.SetParagraphInfo(ParagraphType.Comment, articleID);
                 parser.SetStartHTML("");
                 parser.SetEndHTML(HTMLTags.EndParagraph);
-                reader.SetParameter(articleID, paragraphIndex);
-                string paragraph = await reader.GetDatum<string>();
+                string paragraph = await DataRepository.CommentParagraph(articleID, paragraphIndex);
                 await parser.ParseParagraph(paragraph, paragraphIndex);
             }
-            reader.Close();
             return needFullLabel;
         }
 
@@ -465,10 +437,7 @@ namespace Myriad.Formatter
         }
         private static async Task WriteVerseLabel(HTMLWriter writer, int commentID)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadCommentLinks),
-                commentID);
-            (int start, int end) range = await reader.GetDatum<int, int>();
-            reader.Close();
+            (int start, int end) range = (await DataRepository.CommentLinks(commentID)).First();
             Citation crossreference = new Citation(range.start, range.end);
             crossreference.CitationType = (crossreference.CitationRange.Length < 10) ?
                  CitationTypes.Verse :
@@ -519,8 +488,6 @@ namespace Myriad.Formatter
         {
             (int start, int end) range = page.info.PhraseArticles[index].First().Value.range;
             if ((range.end - range.start) > 8) return (needFullLabel, Result.notfound);
-            var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
-                -1, -1);
             int resultIndex = Result.notfound;
             string offsetLabel = ReadRangeText(range, page.info).Trim();
             List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
@@ -554,8 +521,7 @@ namespace Myriad.Formatter
                                 HTMLClasses.comment +
                                 HTMLTags.CloseQuoteEndTag);
                         }
-                        reader.SetParameter(entry.articleID, entry.paragraphIndices[i]);
-                        string paragraph = await reader.GetDatum<string>();
+                        string paragraph = await DataRepository.GlossaryParagraph(entry.articleID, entry.paragraphIndices[i]);
                         await parser.ParseParagraph(paragraph, entry.paragraphIndices[i]);
                     }
                     needFullLabel = false;
@@ -588,8 +554,7 @@ namespace Myriad.Formatter
                                     HTMLClasses.comment +
                                     HTMLTags.CloseQuoteEndTag);
                             }
-                            reader.SetParameter(entry.articleID, entry.paragraphIndices[i]);
-                            string paragraph = await reader.GetDatum<string>();
+                            string paragraph = await DataRepository.GlossaryParagraph(entry.articleID, entry.paragraphIndices[i]);
                             await parser.ParseParagraph(paragraph, entry.paragraphIndices[i]);
                         }
                         needFullLabel = false;
@@ -598,7 +563,6 @@ namespace Myriad.Formatter
                     }
                 }
             }
-            reader.Close();
             return (needFullLabel, resultIndex);
         }
 
@@ -612,7 +576,7 @@ namespace Myriad.Formatter
             string root = ((roots.Count > Number.nothing) && (!string.IsNullOrEmpty(roots[Ordinals.first]))) ?
                 roots[Ordinals.first] :
                 label;
-            string searchRoot = SearchPhrase(phraseRange);
+            string searchRoot = await SearchPhrase(phraseRange);
             bool substitute = !(synonyms.Contains(root) || synonyms.Contains(searchRoot) ||
                 synonyms.Contains(await AllWords.Conform(label)));
             bool part = false;
@@ -621,7 +585,7 @@ namespace Myriad.Formatter
             {
                 if (!wordRange.Equals(phraseRange))
                 {
-                    string offsetLabel = SearchPhrase(wordRange).Replace('_', ' ').TrimEnd();
+                    string offsetLabel = (await SearchPhrase(wordRange)).Replace('_', ' ').TrimEnd();
                     List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
                     string offsetRoot = ((offsetRoots.Count > Number.nothing) &&
                         (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
@@ -737,25 +701,17 @@ namespace Myriad.Formatter
         internal static string TextWithoutSymbols(Keyword word)
         {
             StringBuilder result = new StringBuilder();
-            result.Append(Capitalize(word).Replace('`', '’'));
+            result.Append(word.CapitalizedText.Replace('`', '’'));
             result.Append(' ');
             result.Replace("<br>", "");
             return result.ToString();
         }
 
-        private static string Capitalize(Keyword word)
-        {
-            return (word.IsCapitalized) ?
-                Symbols.Capitalize(word.TextString) :
-                word.TextString;
-        }
-
-
         internal static string FormattedTextWithBrackets(Keyword word)
         {
             StringBuilder result = new StringBuilder();
             if (word.LeadingSymbols.IndexOf('[') != Result.notfound) result.Append('[');
-            result.Append(Capitalize(word).Replace('`', '’'));
+            result.Append(word.CapitalizedText.Replace('`', '’'));
             if (word.TrailingSymbols.IndexOf(']') != Result.notfound) result.Append(']');
             result.Append(' ');
             result.Replace("<br>", "");
@@ -808,12 +764,9 @@ namespace Myriad.Formatter
             if (opened) await writer.Append(']');
         }
 
-        private static string SearchPhrase((int start, int end) wordRange)
+        private static async Task<string> SearchPhrase((int start, int end) wordRange)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadSearchPhrase),
-                wordRange.start, wordRange.end);
-            List<string> words = reader.GetData<string>();
-            reader.Close();
+            List<string> words = await DataRepository.SearchPhrase(wordRange.start, wordRange.end);
             StringBuilder result = new StringBuilder();
             for (int i = Ordinals.first; i < words.Count; i++)
             {
