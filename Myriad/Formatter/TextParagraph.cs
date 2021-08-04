@@ -19,7 +19,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.paragraphText +
                 HTMLTags.CloseQuoteEndTag);
-            List<(int start, int end)> paragraphRanges = await ReadParagraghRanges(textSections.sourceCitation);
+            List<(int start, int end)> paragraphRanges = await DataRepository.ParagraphRanges(textSections.sourceCitation.CitationRange.StartID.ID, textSections.sourceCitation.CitationRange.EndID.ID);
             textSections.GetCommentIDs();
             for (int paragraphIndex = Ordinals.first; paragraphIndex<paragraphRanges.Count; paragraphIndex++)
             {
@@ -40,7 +40,7 @@ namespace Myriad.Formatter
 
         private async static Task AppendFigures(HTMLWriter writer, (int start, int end) range)
         {
-            List<int> ids = GetCommentIDsInParagraph(range.start, range.end);
+            List<int> ids = await DataRepository.CommentIDsInRange(range.start, range.end);
             List<string> paragraphs = new List<string>();
             for (int i = Ordinals.first; i < ids.Count; i++)
             {
@@ -73,7 +73,7 @@ namespace Myriad.Formatter
         private static async Task AppendParagraphKeywords(HTMLWriter writer, (int start, int end) paragraphRange, 
             TextSections textSections)
         {
-            var commentIDs = GetCommentIDs(paragraphRange.start, paragraphRange.end);
+            var commentIDs = await DataRepository .CommentIDsInRange(paragraphRange.start, paragraphRange.end);
             for (int spanIndex = Ordinals.first; spanIndex < commentIDs.Count; spanIndex++)
             {
                 await AppendSpan(writer, paragraphRange, textSections, commentIDs[spanIndex], spanIndex, commentIDs.Count>1);
@@ -92,7 +92,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLClasses.dataComment);
             await writer.Append(textSections.CommentIDs.IndexOf(commentID));
             await writer.Append(HTMLTags.EndTag);
-            (int start, int end) idRange = await ReadLink(commentID, paragraphRange.start, paragraphRange.end);
+            (int start, int end) idRange = await DataRepository.CommentLink(commentID, paragraphRange.start, paragraphRange.end);
             if (idRange.start < paragraphRange.start) idRange.start = paragraphRange.start;
             if (idRange.end > paragraphRange.end) idRange.end = paragraphRange.end;
             await AppendSpanKeywords(writer, idRange, spanIndex, textSections, multi);
@@ -104,63 +104,14 @@ namespace Myriad.Formatter
         {
             Citation citation = new Citation(range.start, range.end);
             TextFormatter formatter = new TextFormatter(writer);
-            List<Keyword> keywords = ReadKeywords(citation);
+            List<Keyword> keywords = await DataRepository.RangeKeywords(citation.CitationRange.StartID.ID,
+                citation.CitationRange.EndID.ID);
             if (textSections.navigating)
             {
                 await formatter.AppendCommentSpanKeywords(keywords, citation, index, multi);
                 return;
             }
             await formatter.AppendCommentSpanKeywords(keywords, citation, textSections.highlightCitation, index, multi);
-        }
-
-        private static List<Keyword> ReadKeywords(Citation citation)
-        {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            var result = reader.GetClassData<Keyword>();
-            reader.Close();
-            return result;
-        }
-
-        private static async Task<List<(int start, int end)>> ReadParagraghRanges(Citation citation)
-        {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadParagraphRanges),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            List<(int, int)> result = await reader.GetData<int, int>();
-            reader.Close();
-            return result;
-        }
-
-        internal static List<int> GetCommentIDs(int start, int end)
-        {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
-                start, end);
-            var results = reader.GetData<int>();
-            reader.Close();
-            return results;
-        }
-
-        internal static List<int> GetCommentIDsInParagraph(int start, int end)
-        {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadCommentIDsInParagraph),
-                start, end);
-            var results = reader.GetData<int>();
-            reader.Close();
-            return results;
-        }
-
-        public static async Task<(int start, int end)> ReadLink(int commentID, int start, int end)
-        {
-            var reader = new StoredProcedureProvider<int, int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadCommentLink),
-                commentID, start, end);
-            (int start, int end) results = await reader.GetDatum<int, int>();
-            reader.Close();
-            return results;
         }
     }
 }
