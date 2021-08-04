@@ -11,16 +11,6 @@ namespace Myriad.Data
 {
     public class Reader
     {
-        public static List<Keyword> ReadKeywords(Citation citation)
-        {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
-            var result = reader.GetClassData<Keyword>();
-            reader.Close();
-            return result;
-        }
-
         public static List<RubyInfo> ReadSustituteText(int id)
         {
             var reader = new StoredProcedureProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSubstituteWords),
@@ -29,17 +19,5 @@ namespace Myriad.Data
             reader.Close();
             return substituteWords;
         }
-
-        public static async Task<string> ReadSustituteWord(int id)
-        {
-            var reader = new StoredProcedureProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSubstituteWords),
-                id);
-            List<(string, int)> substituteWords = await reader.GetData<string, int>();
-            reader.Close();
-            return (substituteWords.Count > Number.nothing) ?
-                substituteWords[Ordinals.first].Item1 :
-                "";
-        }
-
     }
 }

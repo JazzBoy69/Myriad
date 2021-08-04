@@ -663,7 +663,7 @@ namespace Myriad.Formatter
             {
                 if (substitute)
                 {
-                    string substituteWord = await Reader.ReadSustituteWord(phraseRange.start);
+                    string substituteWord = await DataRepository.SubstituteWord(phraseRange.start);
                     if (synonyms.Contains(substituteWord)) articleTitle = substituteWord;
                     await writer.Append(HTMLTags.EndBold + " (");
                     await VerseFormatter.WriteTagAnchor(writer, articleTitle, articleID, page.citation);
@@ -686,7 +686,7 @@ namespace Myriad.Formatter
                     await writer.Append(HTMLTags.EndSpan + "): ");
                     return;
                 }
-                string substituteWord = await Reader.ReadSustituteWord(phraseRange.start);
+                string substituteWord = await DataRepository.SubstituteWord(phraseRange.start);
                 if (synonyms.Contains(substituteWord)) articleTitle = substituteWord;
                 await writer.Append(HTMLTags.EndBold + " (");
                 await VerseFormatter.WriteTagAnchor(writer,
