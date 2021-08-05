@@ -62,14 +62,15 @@ namespace Myriad.Pages
 
         public async override Task RenderBody(HTMLWriter writer)
         {
-            var paragraphs = GetPageParagraphs();
+            var paragraphs = await DataRepository.Article(pageInfo.ID);
             parser = new PageParser(writer);
             if ((targetCitation != null) && (targetCitation.CitationRange.Valid))
             {
                 parser.SetTargetRange(targetCitation.CitationRange);
             }
             await AddMainHeading(writer);
-            var paragraphIndices = ReadParagraphIndices();
+            var paragraphIndices = await DataRepository.ParagraphsThatContainRange(pageInfo.ID,
+                targetCitation.CitationRange.StartID.ID, targetCitation.CitationRange.EndID.ID);
             if (paragraphIndices.Count > 1)
                 await Parse(paragraphs, paragraphIndices);
             else
@@ -78,17 +79,6 @@ namespace Myriad.Pages
             await AddPageHistory(writer);
             await AddEditPageData(writer);
             await AddTOCButton(writer);
-        }
-
-        private List<int> ReadParagraphIndices()
-        {
-            if (targetCitation == null) return new List<int>();
-            var reader = new StoredProcedureProvider<int, int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ParagraphsThatContainVerse),
-                pageInfo.ID, targetCitation.CitationRange.StartID.ID, targetCitation.CitationRange.EndID.ID);
-            var result = reader.GetData<int>();
-            reader.Close();
-            return result;
         }
 
         internal async Task AddArticle(HTMLWriter writer, IQueryCollection query)
@@ -105,16 +95,14 @@ namespace Myriad.Pages
 
         private async Task<int> GetNewArticleID()
         {
-            var reader = new DataReaderProvider(SqlServerInfo.GetCommand(DataOperation.ReadMaxArticleID));
-            int id = await reader.GetDatum<int>();
-            reader.Close();
+            int id = await DataRepository.MaxArticleID();
             return id + 1;
         }
 
         internal async Task UpdateArticle(HTMLWriter writer, IQueryCollection query, string text)
         {
             (string title, int id) = await GetTitle(query);
-            var paragraphs = GetPageParagraphs(id);
+            var paragraphs = await DataRepository.Article(id);
             var lines = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries);
             await UpdateArticleTitle(id, title, lines[Ordinals.first].Replace("==", ""));
             await UpdateSynonyms(id, lines[Ordinals.second]);
@@ -127,7 +115,7 @@ namespace Myriad.Pages
             parser.SetStartHTML(HTMLTags.StartParagraphWithClass + HTMLClasses.comment +
                 HTMLTags.CloseQuoteEndTag);
             parser.SetEndHTML(HTMLTags.EndParagraph);
-            await DeleteDefinitionSearches(id);
+            await DataRepository.DeleteDefinitionSearches(id);
             for (int i = Ordinals.first; i < newParagraphs.Count; i++)
             {
                 ArticleParagraph articleParagraph = new ArticleParagraph(id, i, newParagraphs[i]);
@@ -161,22 +149,16 @@ namespace Myriad.Pages
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
         }
-
-        private async Task DeleteDefinitionSearches(int id)
-        {
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteDefinitionSearches), id);
-        }
-
         private async Task UpdateSynonyms(int id, string newSynonymLine)
         {
-            var oldSynonyms = GetSynonyms(id);
+            var oldSynonyms = await DataRepository.Synonyms(id);
             var synonyms = newSynonymLine.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
             var newSynonyms = new List<string>();
             for (int i = Ordinals.first; i < synonyms.Count; i++)
             {
                 if (synonyms[i].Contains('_') || synonyms[i].Contains('+'))
                 {
-                    newSynonyms.Add(synonyms[i]);
+                    newSynonyms.Add(synonyms[i].Replace('_', ' '));
                     continue;
                 }
                 newSynonyms.Add(Inflections.RootsOf(synonyms[i]).First());
@@ -187,34 +169,20 @@ namespace Myriad.Pages
                 await UpdateIdentifier(id, newSynonyms[identifierIndex].Substring(Ordinals.second));
                 newSynonyms.RemoveAt(identifierIndex);
             }
-            for (int i = Ordinals.first; i < newSynonyms.Count; i++)
-            {
-                if (i >= oldSynonyms.Count)
-                {
-                    await AddSynonym(id, i, newSynonyms[i].Replace('_', ' '));
-                    continue;
-                }
-                await UpdateSynonym(id, i, newSynonyms[i].Replace('_', ' '));
-            }
-            if (oldSynonyms.Count > newSynonyms.Count)
-            {
-                await DeleteSynonyms(id, newSynonyms.Count);
-            }
-
+            await DataRepository.DeleteSynonyms(id);
+            await DataRepository.WriteSynonyms(id, newSynonyms);
         }
 
         private async Task UpdateIdentifier(int id, string identifier)
         {
-            string oldIdentifier = await GetIdentifier(id);
+            string oldIdentifier = await DataRepository.DefinitionID(id);
             if (string.IsNullOrEmpty(oldIdentifier))
             {
-                await DataWriterProvider.Write<int, string>(
-                    SqlServerInfo.GetCommand(DataOperation.CreateIdentifier), id, identifier);
+                await DataRepository.WriteDefinitionID(id, identifier);
                 return;
             }
             if (oldIdentifier == identifier) return;
-            await DataWriterProvider.Write<int, string>(
-                SqlServerInfo.GetCommand(DataOperation.UpdateIdentifier), id, identifier);
+            await DataRepository.UpdateDefinitionID(id, identifier);
         }
 
         private int GetIdentifierIndex(List<string> synonyms)
@@ -226,30 +194,16 @@ namespace Myriad.Pages
             return Result.notfound;
         }
 
-        private async Task DeleteSynonyms(int id, int startIndex)
-        {
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteSynonyms),
-                id, startIndex);
-        }
-
-        private async Task UpdateSynonym(int id, int index, string synonym)
+        private async Task AddSynonym(int id, string synonym)
         {
             if (synonym.Contains(' ')) await Phrases.Add(synonym);
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.UpdateSynonym),
-                id, index, synonym);
-        }
-
-        private async Task AddSynonym(int id, int index, string synonym)
-        {
-            if (synonym.Contains(' ')) await Phrases.Add(synonym);
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateSynonym),
-                id, index, synonym);
+            await DataRepository.WriteSynonyms(id, new List<string>() { synonym });
         }
 
         private async Task UpdateArticleTitle(int id, string originalTitle, string newTitle)
         {
             if (originalTitle == newTitle) return;
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.UpdateArticleTitle), id, newTitle);
+            await DataRepository.UpdateTag(id, newTitle);
         }
 
         internal async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
@@ -258,21 +212,21 @@ namespace Myriad.Pages
             await writer.Append("==");
             await writer.Append(title);
             await writer.Append("==" + Symbol.lineFeed);
-            var articleIdentifier = await GetIdentifier(id);
+            string articleIdentifier = await DataRepository.DefinitionID(id);
             if (!string.IsNullOrEmpty(articleIdentifier))
             {
                 await writer.Append("+");
                 await writer.Append(articleIdentifier);
                 await writer.Append(" ");
             }
-            var synonyms = GetSynonyms(id);
+            var synonyms = await DataRepository.Synonyms(id);
             for (int i = Ordinals.first; i < synonyms.Count; i++)
             {
                 if (i > Ordinals.first) await writer.Append(" ");
                 await writer.Append(synonyms[i].Replace(' ', '_'));
             }
             await writer.Append(Symbol.lineFeed);
-            var paragraphs = GetPageParagraphs(id);
+            var paragraphs = await DataRepository.Article(id);
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
                 await writer.Append(HTMLTags.StartParagraph);
@@ -280,15 +234,6 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.EndParagraph);
             }
             await EditParagraph.CheckDefinitionSearchesForParagraphIndices(id);
-        }
-
-        private async Task<string> GetIdentifier(int id)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadArticleIdentifier),
-                id);
-            string identifier = await reader.GetDatum<string>();
-            reader.Close();
-            return identifier;
         }
 
         private async Task AddEditPageData(HTMLWriter writer)
@@ -310,21 +255,6 @@ namespace Myriad.Pages
             await WriteTitle(writer);
             await writer.Append(HTMLTags.EndMainHeader);
         }
-
-        public List<string> GetPageParagraphs()
-        {
-            return GetPageParagraphs(pageInfo.ID);
-        }
-
-        public static List<string> GetPageParagraphs(int id)
-        {
-            var reader = new StoredProcedureProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadArticle), id);
-            var results = reader.GetData<string>();
-            reader.Close();
-            return results;
-        }
-
         public void SetPageInfo(string title, int id)
         {
             pageInfo = (title, id);
@@ -383,46 +313,28 @@ namespace Myriad.Pages
 
         private async Task<int> GetSimilarID(string queryTitle)
         {
-            int id = await GetIdFromIdentifier(queryTitle);
+            int id = await DataRepository.ArticleIDFromIdentifier(queryTitle);
             if (id > 0)
             {
                 return id;
             }
             queryTitle = queryTitle.Replace('_', ' ');
             string title = Inflections.RootsOf(queryTitle).First();
-            var idReader = new StoredProcedureProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadArticleID), title);
-            id = await idReader.GetDatum<int>();
-            idReader.Close();
+            id = await DataRepository.ArticleID(title);
             if (id > 0) return id;
-            var synonymID = new StoredProcedureProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadIDFromSynonym), queryTitle);
-            id = await synonymID.GetDatum<int>();
+            id = await DataRepository.ArticleIDFromSynonym(queryTitle);
             if (id > 0)
             {
-                synonymID.Close();
                 return id;
             }
-            synonymID.SetParameter(title);
-            id = await synonymID.GetDatum<int>();
-            synonymID.Close();
+            id = await DataRepository.ArticleIDFromSynonym(title);
             return id;
         }
 
         private async Task CreateNewArticle(string title, int id)
         {
-            await AddSynonym(id, Ordinals.first, title);
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateTag),
-                id, title.Replace('_', ' '));
-        }
-
-        private async Task<int> GetIdFromIdentifier(string identifier)
-        {
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadIDFromIdentifier),
-                identifier);
-            int id = await reader.GetDatum<int>();
-            reader.Close();
-            return id;
+            await AddSynonym(id, title);
+            await DataRepository.WriteTag(id, title.Replace('_', ' '));
         }
 
         private async Task<(string title, int id)> GetTitle(IQueryCollection query)
@@ -501,7 +413,7 @@ namespace Myriad.Pages
 
         public override async Task LoadTOCInfo(HttpContext context)
         {
-            var paragraphs = GetPageParagraphs();
+            var paragraphs = await DataRepository.Article(pageInfo.ID);
             headings = new List<string>();
             for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {
@@ -516,15 +428,6 @@ namespace Myriad.Pages
         public override string GetQueryInfo()
         {
             return HTMLTags.StartQuery + queryKeyID + '=' + pageInfo.ID;
-        }
-
-        internal static List<string> GetSynonyms(int articleID)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSynonymsFromID),
-                articleID);
-            List<string> result = reader.GetData<string>();
-            reader.Close();
-            return result;
         }
 
         public override async Task HandleEditRequest(HttpContext context)

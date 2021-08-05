@@ -259,7 +259,7 @@ namespace Myriad.Pages
             relatedReader.Close();
             for (int index = Ordinals.first; index < relatedArticles.Count; index++)
             {
-                List<string> synonyms = ArticlePage.GetSynonyms(relatedArticles[index].ArticleID);
+                List<string> synonyms = await DataRepository.Synonyms(relatedArticles[index].ArticleID);
                 if (synonyms.Contains(matrixWord.Text))
                 {
                     DefinitionSearch searchword = new DefinitionSearch(matrixWord, 

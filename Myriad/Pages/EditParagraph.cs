@@ -78,7 +78,7 @@ namespace Myriad.Pages
             reader.Close();
             if ((searches.Count == Number.nothing) || (searches[Ordinals.first].paragraphIndex > -1)) return;
             MarkupParser parser = new MarkupParser(Writer.New());
-            List<string> paragraphs = ArticlePage.GetPageParagraphs(articleID);
+            List<string> paragraphs = await DataRepository.Article(articleID);
             searches = await AddParagraphIndicesToSearches(searches, parser, paragraphs);
             await UpdateDefinitionSearches(articleID, searches);
         }
@@ -172,7 +172,7 @@ namespace Myriad.Pages
 
         internal static async Task AddDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToAdd)
         {
-            List<string> synonyms = ArticlePage.GetSynonyms(paragraph.ID);
+            List<string> synonyms = await DataRepository.Synonyms(paragraph.ID);
             for (int index = Ordinals.first; index < citationsToAdd.Count; index++)
             {
                 List<SearchWord> searchWords = ReadSearchWords(synonyms, citationsToAdd[index].CitationRange);

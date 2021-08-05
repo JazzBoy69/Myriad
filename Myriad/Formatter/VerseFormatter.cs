@@ -537,7 +537,7 @@ namespace Myriad.Formatter
                     string title = page.info.PhraseArticles[index].Keys.ElementAt(usedIndex);
                     ((int start, int end) range,
                     int articleID, List<int> paragraphIndices) entry = page.info.PhraseArticles[index][title];
-                    List<string> synonyms = ArticlePage.GetSynonyms(entry.articleID);
+                    List<string> synonyms = await DataRepository.Synonyms(entry.articleID);
                     if (synonyms.Contains(offsetRoot) ||
                         synonyms.Contains(await AllWords.Conform(offsetLabel)))
                     {
@@ -571,7 +571,7 @@ namespace Myriad.Formatter
             (int start, int end) phraseRange = page.info.Phrases[index].Range;
             string label = ReadRangeText(phraseRange, page.info);
             label = label.Trim();
-            List<string> synonyms = ArticlePage.GetSynonyms(articleID);
+            List<string> synonyms = await DataRepository.Synonyms(articleID);
             List<string> roots = Inflections.RootsOf(label);
             string root = ((roots.Count > Number.nothing) && (!string.IsNullOrEmpty(roots[Ordinals.first]))) ?
                 roots[Ordinals.first] :
