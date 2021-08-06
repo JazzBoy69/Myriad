@@ -85,7 +85,7 @@ namespace Myriad.Pages
                 HTMLTags.CloseQuoteEndTag +
                 editURL + HTMLTags.StartQuery +
                 ArticlePage.queryKeyTitle + Symbol.equal);
-            await CitationConverter.AppendChapterTitle(writer, citation.CitationRange);
+            await CitationConverter.AppendChapterTitle(writer, citation.citationRange);
             await writer.Append(HTMLTags.EndDiv);
         }
 
@@ -121,29 +121,29 @@ namespace Myriad.Pages
 
         internal string ChapterLabel()
         {
-            StringBuilder result = new StringBuilder(Bible.AbbreviationsTitleCase[citation.CitationRange.Book]);
+            StringBuilder result = new StringBuilder(Bible.AbbreviationsTitleCase[citation.Book]);
             result.Append(' ');
-            if (TextReference.IsShortBook(citation.CitationRange.Book))
+            if (TextReference.IsShortBook(citation.Book))
             {
                 result.Append(" (Bible book)");
                 return result.ToString();
             }
-            result.Append(citation.CitationRange.FirstChapter);
+            result.Append(citation.FirstChapter);
             return result.ToString();
         }
 
         private Citation GetChapterCitation()
         {
-            KeyID start = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter, 0);
-            KeyID end = new KeyID(citation.CitationRange.Book, citation.CitationRange.FirstChapter,
-                Bible.Chapters[citation.CitationRange.Book][citation.CitationRange.FirstChapter], KeyID.MaxWordIndex);
+            KeyID start = new KeyID(citation.Book, citation.FirstChapter, 0);
+            KeyID end = new KeyID(citation.Book, citation.FirstChapter,
+                Bible.Chapters[citation.Book][citation.FirstChapter], KeyID.MaxWordIndex);
             return new Citation(start, end);
         }
         private List<int> GetCommentIDs(Citation citation)
         {
             var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+                citation.Start, citation.End);
             var results = reader.GetData<int>();
             reader.Close();
             return results;
@@ -185,7 +185,7 @@ namespace Myriad.Pages
             var chapterCitation = GetChapterCitation();
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadNextCommentRange),
-                chapterCitation.CitationRange.EndID.ID);
+                chapterCitation.End);
             (int start, int end) = await reader.GetDatum<int, int>();
             reader.Close();
             citation = new Citation(start, end);
@@ -197,7 +197,7 @@ namespace Myriad.Pages
             var chapterCitation = GetChapterCitation();
             var reader = new DataReaderProvider<int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadPrecedingCommentRange),
-                chapterCitation.CitationRange.StartID.ID);
+                chapterCitation.Start);
             (int start, int end) = await reader.GetDatum<int, int>();
             citation = new Citation(start, end);
             citation.CitationType = CitationTypes.Chapter;
@@ -242,14 +242,14 @@ namespace Myriad.Pages
         public override async Task LoadTOCInfo(HttpContext context)
         {
             await LoadQueryInfo(context.Request.Query);
-            citation = new Citation(citation.CitationRange.Book, citation.CitationRange.FirstChapter, 
+            citation = new Citation(citation.Book, citation.FirstChapter, 
                 CitationRange.AllVerses);
         }
 
         public override async Task SetupParentPage()
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadChapterNavigation),
-                citation.CitationRange.Book, citation.CitationRange.FirstChapter);
+                citation.Book, citation.FirstChapter);
             indexPageName = await reader.GetDatum<string>();
             reader.Close();
         }

@@ -64,13 +64,13 @@ namespace Myriad.Pages
         {
             var paragraphs = await DataRepository.Article(pageInfo.ID);
             parser = new PageParser(writer);
-            if ((targetCitation != null) && (targetCitation.CitationRange.Valid))
+            if ((targetCitation != null) && (targetCitation.Valid))
             {
-                parser.SetTargetRange(targetCitation.CitationRange);
+                parser.SetTargetRange(targetCitation.citationRange);
             }
             await AddMainHeading(writer);
             var paragraphIndices = await DataRepository.ParagraphsThatContainRange(pageInfo.ID,
-                targetCitation.CitationRange.StartID.ID, targetCitation.CitationRange.EndID.ID);
+                targetCitation.Start, targetCitation.End);
             if (paragraphIndices.Count > 1)
                 await Parse(paragraphs, paragraphIndices);
             else

@@ -19,7 +19,7 @@ namespace Myriad.Formatter
             await writer.Append(HTMLTags.StartDivWithID +
                 HTMLClasses.paragraphText +
                 HTMLTags.CloseQuoteEndTag);
-            List<(int start, int end)> paragraphRanges = await DataRepository.ParagraphRanges(textSections.sourceCitation.CitationRange.StartID.ID, textSections.sourceCitation.CitationRange.EndID.ID);
+            List<(int start, int end)> paragraphRanges = await DataRepository.ParagraphRanges(textSections.sourceCitation.Start, textSections.sourceCitation.End);
             textSections.GetCommentIDs();
             for (int paragraphIndex = Ordinals.first; paragraphIndex<paragraphRanges.Count; paragraphIndex++)
             {
@@ -104,8 +104,8 @@ namespace Myriad.Formatter
         {
             Citation citation = new Citation(range.start, range.end);
             TextFormatter formatter = new TextFormatter(writer);
-            List<Keyword> keywords = await DataRepository.RangeKeywords(citation.CitationRange.StartID.ID,
-                citation.CitationRange.EndID.ID);
+            List<Keyword> keywords = await DataRepository.RangeKeywords(citation.Start,
+                citation.End);
             if (textSections.navigating)
             {
                 await formatter.AppendCommentSpanKeywords(keywords, citation, index, multi);

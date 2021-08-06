@@ -27,14 +27,14 @@ namespace Myriad.Formatter
         }
         private static async Task ArrangePhraseComments(VersePage page)
         {
-            await page.info.LoadInfo(page.citation.CitationRange);
+            await page.info.LoadInfo(page.citation.citationRange);
         }
 
         private static async Task WriteRubyText(HTMLWriter writer, VersePage page)
         {
             await StartRubySection(writer, page);
             page.info.keywords = await DataRepository.RangeKeywords(page.citation.Start, 
-                page.citation.CitationRange.EndID.ID);
+                page.citation.End);
             if (page.info.keywords != null)
             {
                 int lastWordOnTop = -1;
@@ -99,7 +99,7 @@ namespace Myriad.Formatter
             bool first = true;
             PageParser parser = new PageParser(writer);
             parser.HideDetails();
-            parser.SetTargetRange(page.citation.CitationRange);
+            parser.SetTargetRange(page.citation.citationRange);
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);
          
@@ -288,7 +288,7 @@ namespace Myriad.Formatter
 
         internal static async Task WriteTagAnchor(HTMLWriter writer, string label, int articleID, Citation citation)
         {
-            await PageFormatter.WriteTagAnchor(writer, label, articleID, citation.CitationRange);
+            await PageFormatter.WriteTagAnchor(writer, label, articleID, citation.citationRange);
         }
         private static async Task WritePhraseArticles(HTMLWriter writer, VersePage page, int index, bool needFullLabel, int usedIndex)
         {
@@ -297,7 +297,7 @@ namespace Myriad.Formatter
             {
                 PageParser parser = new PageParser(writer);
                 parser.HideDetails();
-                parser.SetTargetRange(page.citation.CitationRange);
+                parser.SetTargetRange(page.citation.citationRange);
                 parser.SetStartHTML("");
                 parser.SetEndHTML(HTMLTags.EndParagraph);
                 for (int i = Ordinals.first; i < page.info.PhraseArticles[index].Count; i++)
@@ -350,7 +350,7 @@ namespace Myriad.Formatter
         {
             PageParser parser = new PageParser(writer);
             parser.HideDetails();
-            parser.SetTargetRange(page.citation.CitationRange);
+            parser.SetTargetRange(page.citation.citationRange);
             bool needFullLabel = true;
             await WriteFullOriginalWordLabel(writer, page.info, index);
             await writer.Append(": ");
@@ -377,7 +377,7 @@ namespace Myriad.Formatter
         private static async Task<bool> WriteOriginalWordCrossreferences(HTMLWriter writer, VersePage page, int index, bool needFullLabel)
         {
             PageParser parser = new PageParser(writer);
-            parser.SetTargetRange(page.citation.CitationRange);
+            parser.SetTargetRange(page.citation.citationRange);
             parser.HideDetails();
             for (int i = Ordinals.first; i < page.info.OriginalWordCrossReferences[index].Count; i++)
             {
@@ -439,7 +439,7 @@ namespace Myriad.Formatter
         {
             (int start, int end) range = (await DataRepository.CommentLinks(commentID)).First();
             Citation crossreference = new Citation(range.start, range.end);
-            crossreference.CitationType = (crossreference.CitationRange.Length < 10) ?
+            crossreference.CitationType = (crossreference.Length < 10) ?
                  CitationTypes.Verse :
                  CitationTypes.Text;
             crossreference.Navigating = true;
@@ -495,7 +495,7 @@ namespace Myriad.Formatter
                 offsetRoots[Ordinals.first] :
                 offsetLabel;
             PageParser parser = new PageParser(writer);
-            parser.SetTargetRange(page.citation.CitationRange);
+            parser.SetTargetRange(page.citation.citationRange);
             parser.HideDetails();
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);

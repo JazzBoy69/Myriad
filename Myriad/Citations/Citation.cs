@@ -17,7 +17,7 @@ namespace Myriad.Library
         public CitationTypes CitationType = CitationTypes.Invalid;
         public LabelTypes LabelType = LabelTypes.Short;
         public bool Navigating = false;
-
+        public CitationRange citationRange => CitationRange;
         public Citation()
         {
             DisplayLabel.Invalidate();
@@ -54,6 +54,7 @@ namespace Myriad.Library
         public bool OneChapter => CitationRange.OneChapter;
         public bool WordIndexIsDeferred => CitationRange.WordIndexIsDeferred;
         public bool Valid => CitationRange.Valid;
+        public int Length => CitationRange.Length;
 
         public static Citation InvalidCitation
         {
@@ -191,6 +192,10 @@ namespace Myriad.Library
         public void SetLastWordIndex(int index)
         {
             CitationRange.SetLastWordIndex(index);
+        }
+        public void SetFirstWordIndex(int index)
+        {
+            CitationRange.SetFirstWordIndex(index);
         }
         public bool Contains(int id)
         {
