@@ -20,7 +20,6 @@
     <Compile Include="..\..\MyriadData\MyriadData\DataObjects.cs" Link="Data\DataObjects.cs" />
     <Compile Include="..\..\MyriadData\MyriadData\DataRepository.cs" Link="Data\DataRepository.cs" />
     <Compile Include="..\..\MyriadData\MyriadData\IDataRepository.cs" Link="Data\IDataRepository.cs" />
-    <Compile Include="..\..\MyriadData\MyriadData\SQLDataProvider.cs" Link="Data\SQLDataProvider.cs" />
     <Compile Include="..\..\MyriadData\MyriadData\SQLRepository.cs" Link="Data\SQLRepository.cs" />
   </ItemGroup>
 
