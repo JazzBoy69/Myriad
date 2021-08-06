@@ -7,10 +7,6 @@ namespace Myriad.Library
     {
         ChapterRange, Chapter, Text, Verse, Invalid
     }
-    public enum LabelTypes
-    {
-        Long, Short, Normal
-    }
     public class Citation
     {
         public StringRange DisplayLabel = new StringRange();

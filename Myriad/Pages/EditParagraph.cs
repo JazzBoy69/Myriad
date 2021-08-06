@@ -210,7 +210,7 @@ namespace Myriad.Pages
         {
             List<int> relatedIDs = await GetRelatedIDs(tags);
             List<int> oldRelatedIDs = ReadExistingRelatedIDs(paragraph);
-            (List<RelatedTag> tagsToAdd, List<RelatedTag> tagsToDelete) = CompareIDLists(relatedIDs, oldRelatedIDs, paragraph);
+            (List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToAdd, List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToDelete) = CompareIDLists(relatedIDs, oldRelatedIDs, paragraph);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
                 tagsToAdd);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedTags),
@@ -239,22 +239,22 @@ namespace Myriad.Pages
                 paragraph);
         }
 
-        private static (List<RelatedTag> tagsToAdd, List<RelatedTag> tagsToDelete) CompareIDLists(List<int> newIDs, List<int> oldIDs, ArticleParagraph paragraph)
+        private static (List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToAdd, List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToDelete) CompareIDLists(List<int> newIDs, List<int> oldIDs, ArticleParagraph paragraph)
         {
-            List<RelatedTag> tagsToAdd = new List<RelatedTag>();
+            var tagsToAdd = new List<(int ArticleID, int ParagraphIndex, int RelatedID)>();
             for (int index = Ordinals.first; index < newIDs.Count; index++)
             {
                 if (!oldIDs.Contains(newIDs[index]))
                 {
-                    tagsToAdd.Add(new RelatedTag(paragraph.ID, paragraph.ParagraphIndex, newIDs[index]));
+                    tagsToAdd.Add((paragraph.ID, paragraph.ParagraphIndex, newIDs[index]));
                 }
             }
-            List<RelatedTag> tagsToDelete = new List<RelatedTag>();
+            var tagsToDelete = new List<(int ArticleID, int ParagraphIndex, int RelatedID)>();
             for (int index = Ordinals.first; index < oldIDs.Count; index++)
             {
                 if (!newIDs.Contains(oldIDs[index]))
                 {
-                    tagsToDelete.Add(new RelatedTag(paragraph.ID, paragraph.ParagraphIndex, oldIDs[index]));
+                    tagsToDelete.Add((paragraph.ID, paragraph.ParagraphIndex, oldIDs[index]));
                 }
             }
             return (tagsToAdd, tagsToDelete);
@@ -360,10 +360,10 @@ namespace Myriad.Pages
                 crossReferencesToAdd);
             await AddDefinitionSearches(paragraph, citations);
             List<int> relatedIDs = await GetRelatedIDs(parser.Tags);
-            List<RelatedTag> tagsToAdd = new List<RelatedTag>();
+            var tagsToAdd = new List<(int ArticleID, int ParagraphIndex, int RelatedID)>();
             for (int index = Ordinals.first; index < relatedIDs.Count; index++)
             {
-                tagsToAdd.Add(new RelatedTag(paragraph.ID, paragraph.ParagraphIndex, relatedIDs[index]));
+                tagsToAdd.Add((paragraph.ID, paragraph.ParagraphIndex, relatedIDs[index]));
             }
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
                 tagsToAdd);

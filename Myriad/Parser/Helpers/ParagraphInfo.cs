@@ -3,6 +3,7 @@ using Feliciana.Library;
 using Microsoft.AspNetCore.Http;
 using Myriad.Data;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Myriad.Parser
 {
@@ -17,6 +18,15 @@ namespace Myriad.Parser
         public ParagraphType type;
         public int ID;
         public int index;
+
+        static readonly Dictionary<ParagraphType, Func<int, int, Task<string>>> readMethods =
+        new Dictionary<ParagraphType, Func<int, int, Task>>()
+        {
+                {ParagraphType.Article, DataRepository.GlossaryParagraph },
+                {ParagraphType.Comment, DataRepository.CommentParagraph },
+                {ParagraphType.Navigation, DataRepository.NavigationParagraph },
+                {ParagraphType.Chrono, DataRepository.CommentChapterParagraph }
+        };
 
         public ParagraphInfo()
         {
@@ -34,19 +44,9 @@ namespace Myriad.Parser
             context.Request.Form.TryGetValue("paragraphIndex", out var i);
             index = Convert.ToInt32(i);
         }
-
-        public static Dictionary<ParagraphType, DataOperation> ReadOperations = new Dictionary<ParagraphType, DataOperation>()
-        {
-            { ParagraphType.Article, DataOperation.ReadArticleParagraph },
-            { ParagraphType.Comment, DataOperation.ReadCommentParagraph },
-            { ParagraphType.Navigation, DataOperation.ReadNavigationParagraph },
-            { ParagraphType.Chrono, DataOperation.ReadChronoParagraph }
-        };
         public static bool Valid(int paragraphType)
         {
             return (paragraphType >= Ordinals.first) && (paragraphType <= Ordinals.fourth);
         }
-
-        public DataOperation ReadOperation { get { return ReadOperations[type]; } }
     }
 }
