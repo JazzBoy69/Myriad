@@ -13,7 +13,7 @@ namespace Myriad.Library
         public StringRange Label = new StringRange();
         public StringRange LeadingSymbols = new StringRange();
         public StringRange TrailingSymbols = new StringRange();
-        public CitationRange CitationRange = CitationRange.InvalidRange();
+        private CitationRange CitationRange = CitationRange.InvalidRange();
         public CitationTypes CitationType = CitationTypes.Invalid;
         public LabelTypes LabelType = LabelTypes.Short;
         public bool Navigating = false;
@@ -38,6 +38,20 @@ namespace Myriad.Library
             CitationRange = new CitationRange(book, chapter, verse);
             CitationType = CitationTypes.Text;
         }
+
+        public int Start => CitationRange.StartID.ID;
+        public int End => CitationRange.EndID.ID;
+        public KeyID EndID => CitationRange.EndID;
+        public int Book => CitationRange.Book;
+        public int FirstChapter => CitationRange.FirstChapter;
+        public int FirstVerse => CitationRange.FirstVerse;
+        public int LastChapter => CitationRange.LastChapter;
+        public int LastVerse => CitationRange.LastVerse;
+        public string Word => CitationRange.Word;
+        public bool IsOneVerse => CitationRange.IsOneVerse;
+        public bool OneChapter => CitationRange.OneChapter;
+        public bool WordIndexIsDeferred => CitationRange.WordIndexIsDeferred;
+
         public static Citation InvalidCitation
         {
             get
@@ -161,6 +175,19 @@ namespace Myriad.Library
                 CitationType = CitationTypes.Chapter;
                 return;
             }
+        }
+        internal void SetFirstVerse(int verse)
+        {
+            CitationRange.SetFirstVerse(verse);
+        }
+
+        public void SetWordIndex(int index)
+        {
+            CitationRange.SetWordIndex(index);
+        }
+        public void SetLastWordIndex(int index)
+        {
+            CitationRange.SetLastWordIndex(index);
         }
     }
 }
