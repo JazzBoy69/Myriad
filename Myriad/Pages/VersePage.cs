@@ -162,7 +162,7 @@ namespace Myriad.Pages
         {
             var originalWordReader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadOriginalWords),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+                citation.Start, citation.CitationRange.EndID.ID);
             List<(string text, int start, int end)> originalWords =
                 await originalWordReader.GetData<string, int, int>();
             originalWordReader.Close();
@@ -466,7 +466,7 @@ namespace Myriad.Pages
                 editURL + HTMLTags.StartQuery+
                 queryKeyStart +
                 Symbol.equal);
-            await writer.Append(citation.CitationRange.StartID.ID);
+            await writer.Append(citation.Start);
             await writer.Append(HTMLTags.Ampersand +
                 queryKeyEnd +
                 Symbol.equal);

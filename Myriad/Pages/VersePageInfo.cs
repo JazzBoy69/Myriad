@@ -257,7 +257,7 @@ namespace Myriad.Formatter
         private void ReadSearchWords(CitationRange citationRange)
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadVerseWords),
-                citationRange.StartID.ID, citationRange.EndID.ID);
+                Start, citationRange.EndID.ID);
             words = reader.GetClassData<VerseWord>();
             reader.Close();
         }

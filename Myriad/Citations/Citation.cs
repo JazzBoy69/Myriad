@@ -45,12 +45,15 @@ namespace Myriad.Library
         public int Book => CitationRange.Book;
         public int FirstChapter => CitationRange.FirstChapter;
         public int FirstVerse => CitationRange.FirstVerse;
+        public int FirstWordIndex => CitationRange.FirstWordIndex;
         public int LastChapter => CitationRange.LastChapter;
         public int LastVerse => CitationRange.LastVerse;
+        public int LastWordIndex => CitationRange.LastWordIndex;
         public string Word => CitationRange.Word;
         public bool IsOneVerse => CitationRange.IsOneVerse;
         public bool OneChapter => CitationRange.OneChapter;
         public bool WordIndexIsDeferred => CitationRange.WordIndexIsDeferred;
+        public bool Valid => CitationRange.Valid;
 
         public static Citation InvalidCitation
         {
@@ -188,6 +191,10 @@ namespace Myriad.Library
         public void SetLastWordIndex(int index)
         {
             CitationRange.SetLastWordIndex(index);
+        }
+        public bool Contains(int id)
+        {
+            return CitationRange.Contains(id);
         }
     }
 }

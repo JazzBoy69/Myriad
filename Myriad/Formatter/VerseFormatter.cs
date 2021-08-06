@@ -33,7 +33,7 @@ namespace Myriad.Formatter
         private static async Task WriteRubyText(HTMLWriter writer, VersePage page)
         {
             await StartRubySection(writer, page);
-            page.info.keywords = await DataRepository.RangeKeywords(page.citation.CitationRange.StartID.ID, 
+            page.info.keywords = await DataRepository.RangeKeywords(page.citation.Start, 
                 page.citation.CitationRange.EndID.ID);
             if (page.info.keywords != null)
             {

@@ -159,7 +159,7 @@ namespace Myriad.Pages
                 -1, -1, -1, -1);
             for (int index = Ordinals.first; index < citationsToDelete.Count; index++)
             {
-                reader.SetParameter(paragraph.ID, paragraph.ParagraphIndex, citationsToDelete[index].CitationRange.StartID.ID,
+                reader.SetParameter(paragraph.ID, paragraph.ParagraphIndex, citationsToDelete[index].Start,
                     citationsToDelete[index].CitationRange.EndID.ID);
                 List<int> ids = reader.GetData<int>();
                 if (ids.Count > Number.nothing)
@@ -219,7 +219,7 @@ namespace Myriad.Pages
 
         private static async Task DeleteRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToDelete)
         {
-            List<CrossReference> linksToDelete =
+            var linksToDelete =
                             CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedArticleLinks),
                 linksToDelete);
@@ -227,7 +227,7 @@ namespace Myriad.Pages
 
         private static async Task AddRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToAdd)
         {
-            List<CrossReference> linksToAdd =
+            var linksToAdd =
                             CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
                 linksToAdd);
@@ -296,11 +296,11 @@ namespace Myriad.Pages
             var oldCitations = await ReadCrossReferences(paragraph.ID, paragraph.ParagraphIndex);
             (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
                 await CompareCitationLists(citations, oldCitations);
-            List<CrossReference> linksToAdd =
+            var linksToAdd =
                 CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 linksToAdd);
-            List<CrossReference> linksToDelete =
+            var linksToDelete =
                 CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
                 linksToDelete);
@@ -324,7 +324,7 @@ namespace Myriad.Pages
                 if ((token == "[|") || (token == "|-") || (token == "||")) citations = new List<Citation>();
             }
             var tags = parser.Tags;
-            List<CrossReference> crossReferencesToAdd =
+            var crossReferencesToAdd =
                 CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
                 crossReferencesToAdd);
@@ -332,7 +332,7 @@ namespace Myriad.Pages
         internal async static Task DeleteCommentParagraph(int ID, int index)
         {
             var oldCitations = await ReadCrossReferences(ID, index);
-            List<CrossReference> linksToDelete =
+            var linksToDelete =
                  CitationConverter.ToCrossReferences(oldCitations, ID, index);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
                 linksToDelete);
@@ -354,7 +354,7 @@ namespace Myriad.Pages
                     citations = new List<Citation>();
             }
             var tags = parser.Tags;
-            List<CrossReference> crossReferencesToAdd =
+            var crossReferencesToAdd =
                 CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
             await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
                 crossReferencesToAdd);

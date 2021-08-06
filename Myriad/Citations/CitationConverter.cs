@@ -165,13 +165,13 @@ namespace Myriad.Parser
             return newCitation;
         }
 
-        internal static List<CrossReference> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
+        internal static List<(int ArticleID, int ParagraphIndex, int StartID, int EndID)> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
         {
-            List<CrossReference> result = new List<CrossReference>();
+            var result = new List<(int ArticleID, int ParagraphIndex, int StartID, int EndID)>();
             for (int index = Ordinals.first; index < citations.Count; index++)
             {
                 Citation citation = citations[index];
-                result.Add(new CrossReference(ID, paragraphIndex, citations[index].Start,
+                result.Add((ID, paragraphIndex, citations[index].Start,
                     citations[index].End));
             }
             return result;

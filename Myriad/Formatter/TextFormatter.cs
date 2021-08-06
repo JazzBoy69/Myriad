@@ -156,8 +156,8 @@ namespace Myriad.Parser
 
         private async Task EndSectionHighlight(Keyword lastKeyword, Citation targetCitation)
         {
-            if (targetCitation.CitationRange.Contains(lastKeyword.ID) &&
-                (targetCitation.CitationRange.EndID.ID > lastKeyword.ID))
+            if (targetCitation.Contains(lastKeyword.ID) &&
+                (targetCitation.End > lastKeyword.ID))
             {
                 await writer.Append(HTMLTags.EndMark);
             }
@@ -165,7 +165,7 @@ namespace Myriad.Parser
 
         private async Task EndHighlight(Keyword keyword, Citation targetCitation)
         {
-            if (keyword.ID == targetCitation.CitationRange.EndID.ID)
+            if (keyword.ID == targetCitation.End)
             {
                 await writer.Append(HTMLTags.EndMark);
             }
@@ -173,18 +173,18 @@ namespace Myriad.Parser
 
         private async Task StartReadingViewHighlighting(Keyword keyword, Citation citation, Citation targetCitation)
         {
-            if ((targetCitation.CitationRange.StartID.ID == keyword.ID) ||
+            if ((targetCitation.Start == keyword.ID) ||
                 ((paragraphIndex == Ordinals.first) &&
-                (targetCitation.CitationRange.StartID.ID < keyword.ID) &&
-                (targetCitation.CitationRange.EndID.ID >= keyword.ID)))
+                (targetCitation.Start < keyword.ID) &&
+                (targetCitation.End >= keyword.ID)))
             {
                 await AppendReadingViewHighlightFormatting();
             }
         }
         private async Task StartReadingViewHighlighting(Citation citation, Citation targetCitation)
         {
-            if ((targetCitation.CitationRange.StartID.ID < citation.CitationRange.StartID.ID) &&
-                (targetCitation.CitationRange.EndID.ID >= citation.CitationRange.StartID.ID))
+            if ((targetCitation.Start < citation.Start) &&
+                (targetCitation.End >= citation.Start))
             {
                 await AppendReadingViewHighlightFormatting();
             }
@@ -206,7 +206,7 @@ namespace Myriad.Parser
         {
             targetCitation = await CitationConverter.ResolveCitation(targetCitation);
             citation = await CitationConverter.ResolveCitation(citation);
-            if (citation.Equals(targetCitation) || !targetCitation.CitationRange.Valid)
+            if (citation.Equals(targetCitation) || !targetCitation.Valid)
             {
                 await AppendKeywords(keywords, citation);
                 return;
@@ -230,10 +230,10 @@ namespace Myriad.Parser
 
         private async Task StartHighlighting(Keyword keyword, Citation citation, Citation targetCitation)
         {
-            if ((targetCitation.CitationRange.StartID.ID == keyword.ID) ||
+            if ((targetCitation.Start == keyword.ID) ||
                 ((paragraphIndex == Ordinals.first) &&
-                (targetCitation.CitationRange.StartID.ID < keyword.ID) &&
-                (targetCitation.CitationRange.EndID.ID > keyword.ID)))
+                (targetCitation.Start < keyword.ID) &&
+                (targetCitation.End > keyword.ID)))
             {
                 await AppendHighlightFormatting();
             }
@@ -290,7 +290,7 @@ namespace Myriad.Parser
                     HTMLClasses.poetic1 :
                     HTMLClasses.poetic2);
                 await writer.Append(HTMLTags.CloseQuoteEndTag);
-                if (targetCitation.CitationRange.Contains(keywords[index + 1].ID))
+                if (targetCitation.Contains(keywords[index + 1].ID))
                 {
                     await writer.Append(HTMLTags.StartMark);
                 }
@@ -515,16 +515,16 @@ namespace Myriad.Parser
         private Citation GetCurrentVerse(Keyword keyword, Citation citation)
         {
             Citation thisVerse = new Citation(keyword.Book, keyword.Chapter, keyword.Verse);
-            if (citation.CitationRange.FirstVerse == thisVerse.CitationRange.FirstVerse)
+            if (citation.FirstVerse == thisVerse.FirstVerse)
             {
-                if (citation.CitationRange.FirstWordIndex > Ordinals.first)
+                if (citation.FirstWordIndex > Ordinals.first)
                 {
-                    thisVerse.CitationRange.SetFirstWordIndex(citation.CitationRange.FirstWordIndex);
+                    thisVerse.SetFirstWordIndex(citation.FirstWordIndex);
                 }
             }
-            if (citation.CitationRange.LastVerse == thisVerse.CitationRange.LastVerse)
+            if (citation.LastVerse == thisVerse.LastVerse)
             {
-                thisVerse.CitationRange.SetLastWordIndex(citation.CitationRange.LastWordIndex);
+                thisVerse.SetLastWordIndex(citation.LastWordIndex);
             }
             return thisVerse;
         }
@@ -557,9 +557,9 @@ namespace Myriad.Parser
             await writer.Append(HTMLClasses.hidden + " " + HTMLClasses.active + " "+ HTMLClasses.rangeData);
             await writer.Append(HTMLTags.CloseQuote);
             await writer.Append(HTMLClasses.dataStart);
-            await writer.Append(citation.CitationRange.StartID.ID);
+            await writer.Append(citation.Start);
             await writer.Append(HTMLClasses.dataEnd);
-            await writer.Append(citation.CitationRange.EndID.ID);
+            await writer.Append(citation.End);
             await writer.Append(HTMLTags.EndTag);
             await writer.Append(HTMLTags.EndDiv);
         }
