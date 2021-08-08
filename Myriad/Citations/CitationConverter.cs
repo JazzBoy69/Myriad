@@ -133,38 +133,38 @@ namespace Myriad.Parser
             await writer.Append(citation.LastVerse);
 
         }
+        /*
 
+                public static async Task<List<Citation>> ResolveCitations(List<Citation> citations)
+                {
+                    List<Citation> result = new List<Citation>();
+                    for (int index = Ordinals.first; index < citations.Count; index++)
+                    {   
+                        result.Add(await ResolveCitation(citations[index]));
+                    }
+                    return result;
+                }
 
-        public static async Task<List<Citation>> ResolveCitations(List<Citation> citations)
-        {
-            List<Citation> result = new List<Citation>();
-            for (int index = Ordinals.first; index < citations.Count; index++)
-            {   
-                result.Add(await ResolveCitation(citations[index]));
-            }
-            return result;
-        }
-
-        public async static Task<Citation> ResolveCitation(Citation citation)
-        {
-            Citation newCitation = citation.Copy();
-            if (citation.WordIndexIsDeferred)
-            {
-                newCitation.SetWordIndex(
-                    await ReadDeferredWord(citation.Word,
-                    citation.Start,
-                    citation.End)
-                    );
-            }
-            if (citation.EndID.WordIndex == KeyID.MaxWordIndex)
-            {
-                newCitation.SetLastWordIndex(
-                    await ReadLastWordIndex(citation.Book, citation.LastChapter,
-                    citation.LastVerse));
-            }
-            return newCitation;
-        }
-
+                public async static Task<Citation> ResolveCitation(Citation citation)
+                {
+                    Citation newCitation = citation.Copy();
+                    if (citation.WordIndexIsDeferred)
+                    {
+                        newCitation.SetWordIndex(
+                            await ReadDeferredWord(citation.Word,
+                            citation.Start,
+                            citation.End)
+                            );
+                    }
+                    if (citation.EndID.WordIndex == KeyID.MaxWordIndex)
+                    {
+                        newCitation.SetLastWordIndex(
+                            await ReadLastWordIndex(citation.Book, citation.LastChapter,
+                            citation.LastVerse));
+                    }
+                    return newCitation;
+                }
+        */
         internal static List<(int StartID, int EndID, int ArticleID, int ParagraphIndex)> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
         {
             var result = new List<(int StartID, int EndID, int ArticleID, int ParagraphIndex)>();
@@ -176,7 +176,7 @@ namespace Myriad.Parser
             return result;
         }
 
-        internal static async Task<int> ReadLastWordIndex(int book, int chapter, int verse)
+    /*    internal static async Task<int> ReadLastWordIndex(int book, int chapter, int verse)
         {
             var reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLastWordIndex),
                 book, chapter, verse);
@@ -193,7 +193,7 @@ namespace Myriad.Parser
             int result = await reader.GetDatum<int>();
             reader.Close();
             return result;
-        }
+        }*/
         public static async Task AppendLink(HTMLWriter writer, Citation citation)
         {
             await PageFormatter.StartCitationLink(writer, citation);

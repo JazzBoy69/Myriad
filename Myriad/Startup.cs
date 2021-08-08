@@ -202,8 +202,8 @@ namespace Myriad
                 {
                     query = new QueryCollection(new Dictionary<string, StringValues>()
                     {
-                        { "start", citations[Ordinals.first].CitationRange.StartID.ToString() },
-                        {"end", citations[Ordinals.first].CitationRange.EndID.ToString() },
+                        { "start", citations[Ordinals.first].Start.ToString() },
+                        {"end", citations[Ordinals.first].End.ToString() },
                         {"navigating", "true" }
                     });
                 }
@@ -211,8 +211,8 @@ namespace Myriad
                 {
                     query = new QueryCollection(new Dictionary<string, StringValues>()
                     {
-                        { "start", citations[Ordinals.first].CitationRange.StartID.ToString() },
-                        {"end", citations[Ordinals.first].CitationRange.EndID.ToString() }
+                        { "start", citations[Ordinals.first].Start.ToString() },
+                        {"end", citations[Ordinals.first].End.ToString() }
                     });
                 }
             }
