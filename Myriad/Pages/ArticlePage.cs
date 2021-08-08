@@ -142,7 +142,7 @@ namespace Myriad.Pages
             {
                 for (int i = newParagraphs.Count; i < paragraphs.Count; i++)
                 {
-                    await EditParagraph.DeleteArticleParagraph(pageInfo.ID, i);
+                    await DataRepository.DeleteGlossaryParagraph(pageInfo.ID, i);
                 }
             }
             await AddEditPageData(writer);
@@ -233,7 +233,6 @@ namespace Myriad.Pages
                 await writer.Append(paragraphs[i]);
                 await writer.Append(HTMLTags.EndParagraph);
             }
-            await EditParagraph.CheckDefinitionSearchesForParagraphIndices(id);
         }
 
         private async Task AddEditPageData(HTMLWriter writer)

@@ -109,8 +109,8 @@ namespace Myriad.Pages
                 int id = await GetOriginalWordCommentID(originalWords[index].start, originalWords[index].end, linkReader);
                 if (newComment == "")
                 {
-                    await EditParagraph.DeleteCommentParagraph(id, Ordinals.first);
-                                await DataWriterProvider.Write<int>(
+                    await DataRepository.DeleteCommentParagraph(ID, index);
+                    await DataWriterProvider.Write<int>(
                     SqlServerInfo.GetCommand(DataOperation.DeleteCommentLink),
                         id);
                     continue;

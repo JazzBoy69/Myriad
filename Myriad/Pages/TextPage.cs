@@ -126,8 +126,11 @@ namespace Myriad.Pages
             var textFormatter = new TextSectionFormatter(writer);
             textFormatter.SetHeading(newParagraphs[Ordinals.first]);
             ArticleParagraph heading = new ArticleParagraph(id, Ordinals.first, newParagraphs[Ordinals.first]);
-            if (newParagraphs[Ordinals.first] != paragraphs[Ordinals.first]) 
-                await EditParagraph.WriteParagraphToDatabase(heading);
+            if (newParagraphs[Ordinals.first] != paragraphs[Ordinals.first])
+            {
+                await DataRepository.DeleteCommentParagraph(id, Ordinals.first);
+                await DataRepository.WriteCommentParagraph(id, Ordinals.first, newParagraphs[Ordinals.first]);
+            }
             TextSections textSection = new TextSections();
             textSection.navigating = true;
             textSection.sourceCitation = citation;
@@ -150,7 +153,7 @@ namespace Myriad.Pages
             if (newParagraphs.Count < paragraphs.Count)
             {
                 for (int i = newParagraphs.Count; i < paragraphs.Count; i++)
-                    await EditParagraph.DeleteCommentParagraph(id, i);
+                    await DataRepository.DeleteCommentParagraph(id, i);
             }
 
             await textFormatter.EndCommentSection();

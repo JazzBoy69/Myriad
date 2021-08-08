@@ -28,6 +28,11 @@ namespace Myriad.Parser
                 {ParagraphType.Chrono, DataRepository.CommentChapterParagraph }
         };
 
+        public async Task<string> Text()
+        {
+            return await readMethods[type](ID, index);
+        }
+
         public ParagraphInfo()
         {
             type = ParagraphType.Undefined;

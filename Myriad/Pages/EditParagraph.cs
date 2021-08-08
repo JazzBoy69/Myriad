@@ -29,16 +29,7 @@ namespace Myriad.Pages
         internal static async Task GetPlainText(HttpContext context)
         {
             ParagraphInfo info = new ParagraphInfo(context);
-            await SendPlainTextParagraph(info, context.Response);
-            if (info.type == ParagraphType.Article) await CheckDefinitionSearchesForParagraphIndices(info.ID);
-        }
-
-        private static async Task SendPlainTextParagraph(ParagraphInfo info, HttpResponse response)
-        {
-            var reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(info.ReadOperation), 
-                info.ID, info.index);
-            await response.WriteAsync(await reader.GetDatum<string>());
-            reader.Close();
+            await context.Response.WriteAsync(await info.Text());      
         }
 
         internal static async Task SetText(HttpContext context)
@@ -52,7 +43,9 @@ namespace Myriad.Pages
         }
         public static async Task UpdateArticleParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
-            await UpdateArticleParagraphInDatabase(paragraph);
+            await DataRepository.DeleteGlossaryParagraph(paragraph.ID, paragraph.ParagraphIndex);
+            await DataRepository.WriteGlossaryParagraph(paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
+           
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
             if (paragraph.Text.Length > 1)
@@ -62,112 +55,8 @@ namespace Myriad.Pages
                     citations = new List<Citation>();
             }
             await AddDefinitionSearches(paragraph, citations);
-            var oldCitations = await ReadRelatedArticleLinks(paragraph.ID, paragraph.ParagraphIndex);
-            (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
-                await CompareCitationLists(citations, oldCitations);
-            await AddRelatedArticles(paragraph, citationsToAdd);
-            await DeleteRelatedArticles(paragraph, citationsToDelete);
-            await UpdateRelatedTags(parser.Tags, paragraph);
-        }
-
-        internal static async Task CheckDefinitionSearchesForParagraphIndices(int articleID)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchesInArticle),
-                articleID);
-            List<(int start, int end, int paragraphIndex)> searches = await reader.GetData<int, int, int>();
-            reader.Close();
-            if ((searches.Count == Number.nothing) || (searches[Ordinals.first].paragraphIndex > -1)) return;
-            MarkupParser parser = new MarkupParser(Writer.New());
-            List<string> paragraphs = await DataRepository.Article(articleID);
-            searches = await AddParagraphIndicesToSearches(searches, parser, paragraphs);
-            await UpdateDefinitionSearches(articleID, searches);
-        }
-
-        internal static async Task DeleteArticleParagraph(int id, int index)
-        {
-            var citationsToDelete = await ReadRelatedArticleLinks(id, index);
-            ArticleParagraph paragraph = new ArticleParagraph(id, index, "");
-            await DeleteRelatedArticles(paragraph, citationsToDelete);
-            await DeleteDefinitionSearches(paragraph, citationsToDelete);
-            await UpdateRelatedTags(new List<string>(), paragraph);
-            await DataWriterProvider.Write<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.DeleteArticleParagraph),
-                id,index);
-        }
-
-        private static async Task UpdateDefinitionSearches(int articleID, 
-            List<(int start, int end, int paragraphIndex)> searches)
-        {
-            for (int index = Ordinals.first; index < searches.Count; index++)
-            {
-                    if (searches[index].paragraphIndex != -1)
-                    {
-                        await AddParagraphIndexToDefinitionSearch(articleID,
-                            searches[index].paragraphIndex,
-                            (searches[index].start, searches[index].end));
-                    }
-            }
-        }
-
-        private static async Task<List<(int start, int end, int paragraphIndex)>> AddParagraphIndicesToSearches(
-            List<(int start, int end, int paragraphIndex)> searches, MarkupParser parser, List<string> paragraphs)
-        {
-            for (int index = Ordinals.second; index < paragraphs.Count; index++)
-            {
-                await parser.ParseParagraph(paragraphs[index], index);
-                var citations = parser.Citations;
-                for (int searchIndex = Ordinals.first; searchIndex < searches.Count; searchIndex++)
-                {
-                    if (searches[searchIndex].paragraphIndex > -1) continue;
-                    for (int citationIndex = Ordinals.first; citationIndex < citations.Count; citationIndex++)
-                    {
-                        if (citations[citationIndex].CitationRange.Contains(searches[searchIndex].start))
-                        {
-                            searches[searchIndex] = (searches[searchIndex].start, searches[searchIndex].end, index);
-                        }
-                    }
-                }
-            }
-            return searches;
-        }
-
-        private static Dictionary<(int, int), List<int>> CreateSearchTable(List<(int start, int end, int paragraphIndex)> searches)
-        {
-            var searchTable = new Dictionary<(int, int), List<int>>();
-            for (int index = Ordinals.first; index < searches.Count; index++)
-            {
-                (int, int) key = (searches[index].start, searches[index].end);
-                if (searchTable.ContainsKey(key))
-                    searchTable[key].Add(searches[index].paragraphIndex);
-                else
-                    searchTable.Add(key, new List<int>() { searches[index].paragraphIndex });
-            }
-            return searchTable;
-        }
-
-        private static async Task AddParagraphIndexToDefinitionSearch(int articleID, int paragraphIndex, 
-            (int start, int end) range)
-        {
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.AddParagraphIndexToDefinitionSearch),
-                articleID, paragraphIndex, range.start, range.end);
-        }
-
-        private static async Task DeleteDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToDelete)
-        {
-            var reader = new DataReaderProvider<int, int, int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchIDs),
-                -1, -1, -1, -1);
-            for (int index = Ordinals.first; index < citationsToDelete.Count; index++)
-            {
-                reader.SetParameter(paragraph.ID, paragraph.ParagraphIndex, citationsToDelete[index].Start,
-                    citationsToDelete[index].CitationRange.EndID.ID);
-                List<int> ids = reader.GetData<int>();
-                if (ids.Count > Number.nothing)
-                {
-                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteDefinitionSearch), ids);
-                }
-            }
-            reader.Close();
+            await AddRelatedArticles(paragraph, citations);
+            await AddRelatedTags(parser.Tags, paragraph);
         }
 
         internal static async Task AddDefinitionSearches(ArticleParagraph paragraph, List<Citation> citationsToAdd)
@@ -175,7 +64,7 @@ namespace Myriad.Pages
             List<string> synonyms = await DataRepository.Synonyms(paragraph.ID);
             for (int index = Ordinals.first; index < citationsToAdd.Count; index++)
             {
-                List<SearchWord> searchWords = ReadSearchWords(synonyms, citationsToAdd[index].CitationRange);
+                List<SearchWord> searchWords = await DataRepository.SearchWords(synonyms, citationsToAdd[index].Start, citationsToAdd[index].End);
                 await WriteDefinitionSearches(paragraph, searchWords);
             }
         }
@@ -186,106 +75,39 @@ namespace Myriad.Pages
             List<DefinitionSearch> definitionSearches = new List<DefinitionSearch>();
             for (int index = Ordinals.first; index < searchWords.Count; index++)
             {
-                definitionSearches.Add(new DefinitionSearch(searchWords[index], paragraph.ID, paragraph.ParagraphIndex));
+                var search = new DefinitionSearch();
+                search.SetData(searchWords[index], paragraph.ID, paragraph.ParagraphIndex);
+                definitionSearches.Add(search);
             }
-            await DataWriterProvider.WriteDataObjects(
-                SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch), definitionSearches);
+            await DataRepository.WriteDefinitionSearches(definitionSearches);
         }
-
-        private static List<SearchWord> ReadSearchWords(List<string> synonyms, CitationRange citationRange)
-        {
-            var reader = new DataReaderProvider<string, int, int>(SqlServerInfo.GetCommand(DataOperation.ReadSearchWords),
-                "", citationRange.StartID.ID, citationRange.EndID.ID); 
-            var searchWords = new List<SearchWord>();
-            for (int index = Ordinals.first; index < synonyms.Count; index++)
-            {
-                reader.SetParameter(synonyms[index]);
-                searchWords.AddRange(reader.GetClassData<SearchWord>());
-            }
-            reader.Close();
-            return searchWords;
-        }
-
-        private static async Task UpdateRelatedTags(List<string> tags, ArticleParagraph paragraph)
+        private static async Task AddRelatedTags(List<string> tags, ArticleParagraph paragraph)
         {
             List<int> relatedIDs = await GetRelatedIDs(tags);
-            List<int> oldRelatedIDs = ReadExistingRelatedIDs(paragraph);
-            (List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToAdd, List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToDelete) = CompareIDLists(relatedIDs, oldRelatedIDs, paragraph);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
-                tagsToAdd);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedTags),
-                tagsToDelete);
-        }
-
-        private static async Task DeleteRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToDelete)
-        {
-            var linksToDelete =
-                            CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteRelatedArticleLinks),
-                linksToDelete);
+            await DataRepository.WriteRelatedTags(paragraph.ID, paragraph.ParagraphIndex, relatedIDs);
         }
 
         private static async Task AddRelatedArticles(ArticleParagraph paragraph, List<Citation> citationsToAdd)
         {
             var linksToAdd =
                             CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
-                linksToAdd);
-        }
-
-        private static async Task UpdateArticleParagraphInDatabase(ArticleParagraph paragraph)
-        {
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.UpdateArticleParagraph),
-                paragraph);
-        }
-
-        private static (List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToAdd, List<(int ArticleID, int ParagraphIndex, int RelatedID)> tagsToDelete) CompareIDLists(List<int> newIDs, List<int> oldIDs, ArticleParagraph paragraph)
-        {
-            var tagsToAdd = new List<(int ArticleID, int ParagraphIndex, int RelatedID)>();
-            for (int index = Ordinals.first; index < newIDs.Count; index++)
-            {
-                if (!oldIDs.Contains(newIDs[index]))
-                {
-                    tagsToAdd.Add((paragraph.ID, paragraph.ParagraphIndex, newIDs[index]));
-                }
-            }
-            var tagsToDelete = new List<(int ArticleID, int ParagraphIndex, int RelatedID)>();
-            for (int index = Ordinals.first; index < oldIDs.Count; index++)
-            {
-                if (!newIDs.Contains(oldIDs[index]))
-                {
-                    tagsToDelete.Add((paragraph.ID, paragraph.ParagraphIndex, oldIDs[index]));
-                }
-            }
-            return (tagsToAdd, tagsToDelete);
-        }
-
-        private static List<int> ReadExistingRelatedIDs(ArticleParagraph paragraph)
-        {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadExistingRelatedIDs),
-                paragraph.ID, paragraph.ParagraphIndex);
-            var result = reader.GetData<int>();
-            reader.Close();
-            return result;
-        }
+            await DataRepository.WriteRelatedArticles(linksToAdd);
+        } 
 
         private static async Task<List<int>> GetRelatedIDs(List<string> tags)
         {
-            var reader = new StoredProcedureProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadArticleID),
-                "");
             List<int> result = new List<int>();
             for (int index = Ordinals.first; index < tags.Count; index++)
             {
-                reader.SetParameter(tags[index]);
-                result.Add(await reader.GetDatum<int>());
+                result.Add(await DataRepository.ArticleID(tags[index])); //todo search for identifier and synonyms also
             }
-            reader.Close();
             return result;
         }
 
         public static async Task UpdateCommentParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
-            await WriteParagraphToDatabase(paragraph);
+            await DataRepository.DeleteCommentParagraph(paragraph.ID, paragraph.ParagraphIndex);
+            await DataRepository.WriteCommentParagraph(paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
             if (paragraph.Text.Length > 1)
@@ -293,29 +115,15 @@ namespace Myriad.Pages
                 string token = paragraph.Text.Substring(Ordinals.first, 2);
                 if ((token == "[|") || (token == "|-") || (token == "||")) citations = new List<Citation>();
             }
-            var oldCitations = await ReadCrossReferences(paragraph.ID, paragraph.ParagraphIndex);
-            (List<Citation> citationsToAdd, List<Citation> citationsToDelete) =
-                await CompareCitationLists(citations, oldCitations);
             var linksToAdd =
-                CitationConverter.ToCrossReferences(citationsToAdd, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
-                linksToAdd);
-            var linksToDelete =
-                CitationConverter.ToCrossReferences(citationsToDelete, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
-                linksToDelete);
+                CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
+            await DataRepository.WriteCrossReferences(linksToAdd);
         }
 
-        public static async Task WriteParagraphToDatabase(ArticleParagraph paragraph)
-        {
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.UpdateCommentParagraph),
-                            paragraph);
-        }
 
         internal async static Task AddCommentParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateCommentParagraph),
-                paragraph);
+            await DataRepository.WriteCommentParagraph(paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
             if (paragraph.Text.Length > 1)
@@ -326,25 +134,12 @@ namespace Myriad.Pages
             var tags = parser.Tags;
             var crossReferencesToAdd =
                 CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateCrossReferences),
-                crossReferencesToAdd);
-        }
-        internal async static Task DeleteCommentParagraph(int ID, int index)
-        {
-            var oldCitations = await ReadCrossReferences(ID, index);
-            var linksToDelete =
-                 CitationConverter.ToCrossReferences(oldCitations, ID, index);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.DeleteCrossReferences),
-                linksToDelete);
-            await DataWriterProvider.Write<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.DeleteCommentParagraph),
-                ID, index);
+            await DataRepository.WriteCrossReferences(crossReferencesToAdd);
         }
 
         internal async static Task AddArticleParagraph(PageParser parser, ArticleParagraph paragraph)
         {
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateArticleParagraph),
-                paragraph);
+            await DataRepository.WriteGlossaryParagraph(paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
             await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
             var citations = await CitationConverter.ResolveCitations(parser.Citations);
             if (paragraph.Text.Length > 1)
@@ -356,8 +151,7 @@ namespace Myriad.Pages
             var tags = parser.Tags;
             var crossReferencesToAdd =
                 CitationConverter.ToCrossReferences(citations, paragraph.ID, paragraph.ParagraphIndex);
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedArticleLinks),
-                crossReferencesToAdd);
+            await DataRepository.WriteRelatedArticles(crossReferencesToAdd);
             await AddDefinitionSearches(paragraph, citations);
             List<int> relatedIDs = await GetRelatedIDs(parser.Tags);
             var tagsToAdd = new List<(int ArticleID, int ParagraphIndex, int RelatedID)>();
@@ -365,98 +159,19 @@ namespace Myriad.Pages
             {
                 tagsToAdd.Add((paragraph.ID, paragraph.ParagraphIndex, relatedIDs[index]));
             }
-            await DataWriterProvider.WriteDataObjects(SqlServerInfo.GetCommand(DataOperation.CreateRelatedTags),
-                tagsToAdd);
-        }
-        private static async Task<List<Citation>> ReadCrossReferences(int ID, int paragraphIndex)
-        {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadCrossReferences),
-               ID, paragraphIndex);
-            var citationRanges = await reader.GetData<int, int>();
-            reader.Close();
-            List<Citation> citations = new List<Citation>();
-            for (int index = Ordinals.first; index < citationRanges.Count; index++)
-            {
-                citations.Add(new Citation(citationRanges[index].Item1,
-                    citationRanges[index].Item2) { CitationType = CitationTypes.Text });
-            }
-            return citations;
-        }
-        private static async Task<List<Citation>> ReadRelatedArticleLinks(int ID, int paragraphIndex)
-        {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadRelatedArticleLinks),
-               ID, paragraphIndex);
-            var citationRanges = await reader.GetData<int, int>();
-            reader.Close();
-            List<Citation> citations = new List<Citation>();
-            for (int index = Ordinals.first; index < citationRanges.Count; index++)
-            {
-                citations.Add(new Citation(citationRanges[index].Item1,
-                    citationRanges[index].Item2)
-                { CitationType = CitationTypes.Text });
-            }
-            return citations;
-        }
-
-        public static async Task<(List<Citation> citationsToAdd, List<Citation> citationsToDelete)> 
-            CompareCitationLists(List<Citation> newCitations, List<Citation> oldCitations)
-        {
-            List<Citation> commonCitations = new List<Citation>();
-            List<Citation> citationsToAdd = new List<Citation>();
-
-            for (int index = Ordinals.first; index < newCitations.Count; index++)
-            {
-                bool found = false;
-                if (newCitations[index].CitationRange.EndID.WordIndex == KeyID.MaxWordIndex)
-                {
-                    newCitations[index].CitationRange.SetLastWordIndex(
-                        await CitationConverter.ReadLastWordIndex(newCitations[index].CitationRange.Book,
-                        newCitations[index].CitationRange.LastChapter, newCitations[index].CitationRange.LastVerse));
-                }
-                for (int otherIndex = Ordinals.first; otherIndex < oldCitations.Count; otherIndex++)
-                {
-                    if (oldCitations[otherIndex].Equals(newCitations[index]))
-                    {
-                        commonCitations.Add(newCitations[index]);
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) citationsToAdd.Add(newCitations[index]);
-            }
-
-            List<Citation> citationsToDelete = new List<Citation>();
-            if (oldCitations.Count != commonCitations.Count)
-            {
-                for (int index = Ordinals.first; index < oldCitations.Count; index++)
-                {
-                    bool found = false;
-                    for (int otherIndex = Ordinals.first; otherIndex < commonCitations.Count; otherIndex++)
-                    {
-                        if (oldCitations[index].Equals(commonCitations[otherIndex]))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) citationsToDelete.Add(oldCitations[index]);
-                }
-            }
-            return (citationsToAdd, citationsToDelete);
+            await DataRepository.WriteRelatedTags(tagsToAdd);
         }
 
         public static async Task UpdateNavigationParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.UpdateNavigationParagraph),
-                paragraph);
-            await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
+            await DataRepository.DeleteNavigationParagraph(paragraph.ID, paragraph.ParagraphIndex);
+            await DataRepository.WriteNavigationParagraph(paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
         }
 
         public static async Task UpdateChronoParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.UpdateChronoParagraph),
-                paragraph);
-            await parser.ParseParagraph(paragraph.Text, paragraph.ParagraphIndex);
+            await DataRepository.DeleteCommentChapterParagraph(paragraph.ID, paragraph.ParagraphIndex);
+            await DataRepository.WriteCommentChapterParagraph(paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
         }
     }
 }
