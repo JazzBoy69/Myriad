@@ -56,8 +56,8 @@ namespace Myriad.Pages
                 return;
             }
 
-            citation.CitationRange.Set(citation.CitationRange.Book, citation.CitationRange.FirstChapter,
-                citation.CitationRange.FirstVerse);
+            citation = new Citation(citation.Book, citation.FirstChapter,
+                citation.FirstVerse);
             await VerseFormatter.Format(this, writer);
             await AddPageTitleData(writer);
             await AddPageHistory(writer);
@@ -74,16 +74,14 @@ namespace Myriad.Pages
             string[] originalParagraphs = originalText.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries);
             string[] newParagraphs = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries);
             if (originalParagraphs.Length == newParagraphs.Length)
-                await WriteCommentsToDatabase(originalWords, originalParagraphs, newParagraphs);
+                await WriteOriginalWordCommentsToDatabase(originalWords, originalParagraphs, newParagraphs);
             await RenderBody(writer);
         }
 
-        private async Task WriteCommentsToDatabase(List<(string text, int start, int end)> originalWords, 
+        private async Task WriteOriginalWordCommentsToDatabase(List<(string text, int start, int end)> originalWords, 
             string[] originalParagraphs, string[] newParagraphs)
         {
             MarkupParser parser = new MarkupParser(Writer.New());
-            var linkReader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadOriginalWordCommentLink),
-               -1, -1);
             for (int index = Ordinals.first; index < originalWords.Count; index++)
             {
                 if (originalParagraphs[index] == newParagraphs[index]) continue;
@@ -97,37 +95,23 @@ namespace Myriad.Pages
                 if (originalComment == newComment) continue;
                 if (originalComment == "")
                 {
-                    int newID = await GetNewCommentID();
+                    int newID = await DataRepository.GetNewOriginalWordCommentID();
                     parser.SetParagraphInfo(ParagraphType.Comment, newID);
                     ArticleParagraph newParagraph = new ArticleParagraph(newID, Ordinals.first, newComment);
                     newParagraph.OriginalWord = 1;
-                    await EditParagraph.AddCommentParagraph(parser, newParagraph);
-                    await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.CreateCommentLink),
-                        newID, originalWords[index].start, originalWords[index].end, 1);
+                    await DataRepository.WriteOriginalWordComment((originalWords[index].start, originalWords[index].end),
+                        newID, newComment);
                     continue;
                 }
-                int id = await GetOriginalWordCommentID(originalWords[index].start, originalWords[index].end, linkReader);
+                int id = await DataRepository.OriginalWordCommentID(originalWords[index].start, originalWords[index].end);
+                await DataRepository.DeleteOriginalWordComment(id);
                 if (newComment == "")
                 {
-                    await DataRepository.DeleteCommentParagraph(ID, index);
-                    await DataWriterProvider.Write<int>(
-                    SqlServerInfo.GetCommand(DataOperation.DeleteCommentLink),
-                        id);
                     continue;
                 }
-                ArticleParagraph paragraph = new ArticleParagraph(id, Ordinals.first, newComment);
-                parser.SetParagraphInfo(ParagraphType.Comment, id);
-                await EditParagraph.UpdateCommentParagraph(parser, paragraph);
+                await DataRepository.WriteOriginalWordComment((originalWords[index].start, originalWords[index].end),
+                    id, newComment);
             }
-            linkReader.Close();
-        }
-
-        private async Task<int> GetNewCommentID()
-        {
-            var reader = new DataReaderProvider(SqlServerInfo.GetCommand(DataOperation.ReadMaxCommentID));
-            int id = await reader.GetDatum<int>();
-            reader.Close();
-            return id + 1;
         }
 
         internal async Task WriteOriginalWordComments(HTMLWriter writer)
@@ -162,7 +146,7 @@ namespace Myriad.Pages
         {
             var originalWordReader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadOriginalWords),
-                citation.Start, citation.CitationRange.EndID.ID);
+                citation.Start, citation.End);
             List<(string text, int start, int end)> originalWords =
                 await originalWordReader.GetData<string, int, int>();
             originalWordReader.Close();
@@ -381,9 +365,9 @@ namespace Myriad.Pages
 
         public override Task SetupNextPage()
         {
-            int v = citation.CitationRange.FirstVerse + 1;
-            int c = citation.CitationRange.FirstChapter;
-            int b = citation.CitationRange.Book;
+            int v = citation.FirstVerse + 1;
+            int c = citation.FirstChapter;
+            int b = citation.Book;
             if (v > Bible.Chapters[b][c])
             {
                 c++;
@@ -407,9 +391,9 @@ namespace Myriad.Pages
 
         public override Task SetupPrecedingPage()
         {
-            int v = citation.CitationRange.FirstVerse - 1;
-            int c = citation.CitationRange.FirstChapter;
-            int b = citation.CitationRange.Book;
+            int v = citation.FirstVerse - 1;
+            int c = citation.FirstChapter;
+            int b = citation.Book;
             if (v < 1) c--;
             if (c < 1)
             {
@@ -470,7 +454,7 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.Ampersand +
                 queryKeyEnd +
                 Symbol.equal);
-            await writer.Append(citation.CitationRange.EndID.ID);
+            await writer.Append(citation.End);
             await writer.Append(HTMLTags.EndDiv);
         }
 
