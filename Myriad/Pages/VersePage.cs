@@ -95,7 +95,7 @@ namespace Myriad.Pages
                 if (originalComment == newComment) continue;
                 if (originalComment == "")
                 {
-                    int newID = await DataRepository.GetNewOriginalWordCommentID();
+                    int newID = await DataRepository.NewOriginalWordCommentID();
                     parser.SetParagraphInfo(ParagraphType.Comment, newID);
                     ArticleParagraph newParagraph = new ArticleParagraph(newID, Ordinals.first, newComment);
                     newParagraph.OriginalWord = 1;
