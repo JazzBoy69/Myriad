@@ -38,7 +38,7 @@ namespace Myriad.Library
             CitationRange = new CitationRange(book, chapter, verse);
             CitationType = CitationTypes.Text;
         }
-
+        public (int, int) Key => (Start, End);
         public int Start => CitationRange.StartID.ID;
         public int End => CitationRange.EndID.ID;
         public KeyID EndID => CitationRange.EndID;

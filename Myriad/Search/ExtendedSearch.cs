@@ -34,10 +34,10 @@ namespace Myriad.Search
             for (int i = Ordinals.first; i < ranges.Count; i++)
             {
                 Citation citation = new Citation(ranges[i].Item1, ranges[i].Item2);
-                await citation.CitationRange.ResolveLastWordIndex();
-                (int, int) key = citation.CitationRange.Key;
+                await citation.ResolveLastWordIndex();
+                (int, int) key = citation.Key;
                 if (PresentIn(keys, key)) continue;
-                keys.Add(citation.CitationRange.Key);
+                keys.Add(citation.Key);
                 result.Add(citation);
             }
             return result;
@@ -148,8 +148,8 @@ namespace Myriad.Search
             var results = new List<List<ExtendedSearchRange>>();
             for (int i = Ordinals.first; i < citations.Count; i++)
             {
-                var definitionSearches = ReadDefinitionSearches(evaluator.PhraseDefinitions, citations[i].CitationRange.Key);
-                results.Add(SplitRange(evaluator, citations[i].CitationRange.Key, definitionSearches));
+                var definitionSearches = ReadDefinitionSearches(evaluator.PhraseDefinitions, citations[i].Key);
+                results.Add(SplitRange(evaluator, citations[i].Key, definitionSearches));
             }
             return results;
         }
