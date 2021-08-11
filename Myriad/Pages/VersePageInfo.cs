@@ -66,12 +66,12 @@ namespace Myriad.Formatter
                     continue;
                 }
                 usedReferences.Add(reference.Key);
-                if ((reference.StartID < citationRange.StartID.ID) ||
-                    (reference.EndID > citationRange.EndID.ID))
+                if ((reference.Start < citationRange.StartID.ID) ||
+                    (reference.End > citationRange.EndID.ID))
                 //reference starts at a preceeding verse
                 {
                     List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.ArticleID);
-                    if (reference.StartID < citationRange.StartID.ID)
+                    if (reference.Start < citationRange.StartID.ID)
                     {
                         // add to See Also
                         if (links.Count > 0)
@@ -102,8 +102,8 @@ namespace Myriad.Formatter
                 }
                 int bottom = Ordinals.first;
                 int top = Phrases.Count - 1;
-                if ((reference.StartID == citationRange.StartID.ID) &&
-                    (reference.EndID == citationRange.EndID.ID))
+                if ((reference.Start == citationRange.StartID.ID) &&
+                    (reference.End == citationRange.EndID.ID))
                 {
                     bottom = -1;
                     top = -1;
@@ -113,18 +113,18 @@ namespace Myriad.Formatter
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (Phrases[mid].End < reference.StartID)
+                    if (Phrases[mid].End < reference.Start)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
                     }
-                    if (Phrases[mid].Start > reference.EndID)
+                    if (Phrases[mid].Start > reference.End)
                     {
                         if (top == mid) top--; else top = mid;
                         continue;
                     }
-                    if ((reference.StartID >= Phrases[mid].Start) &&
-                        (reference.EndID <= Phrases[mid].End))
+                    if ((reference.Start >= Phrases[mid].Start) &&
+                        (reference.End <= Phrases[mid].End))
                     {
                         phraseIndex = mid;
                         AddOriginalWordCrossReference(reference, mid);
@@ -132,8 +132,8 @@ namespace Myriad.Formatter
                     break;
                 }
                 if (((phraseIndex == -1) && (bottom>-1) && (bottom < Phrases.Count)) &&
-                    (((reference.StartID >= Phrases[bottom].Start) &&
-                        (reference.EndID <= Phrases[bottom].End))))
+                    (((reference.Start >= Phrases[bottom].Start) &&
+                        (reference.End <= Phrases[bottom].End))))
                 {
                     AddOriginalWordCrossReference(reference, bottom);
                     phraseIndex = bottom;
@@ -145,7 +145,7 @@ namespace Myriad.Formatter
                     if (links.Count > 0)
                     {
                         AddToAdditionalCrossReferences(reference, links.First(),
-                            (reference.StartID < citationRange.StartID.ID));
+                            (reference.Start < citationRange.StartID.ID));
                     }
                 }
             }
@@ -165,9 +165,9 @@ namespace Myriad.Formatter
                     continue;
                 }
                 usedReferences.Add(reference.Key);
-                if (OriginalWordsInRange(reference.StartID, reference.EndID).Length == Number.nothing) continue;
-                if ((reference.StartID < citationRange.StartID.ID) ||
-                    (reference.EndID > citationRange.EndID.ID))
+                if (OriginalWordsInRange(reference.Start, reference.End).Length == Number.nothing) continue;
+                if ((reference.Start < citationRange.StartID.ID) ||
+                    (reference.End > citationRange.EndID.ID))
                 {
                     continue;
                 }
@@ -177,18 +177,18 @@ namespace Myriad.Formatter
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (Phrases[mid].End < reference.StartID)
+                    if (Phrases[mid].End < reference.Start)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
                     }
-                    if (Phrases[mid].Start > reference.EndID)
+                    if (Phrases[mid].Start > reference.End)
                     {
                         if (top == mid) top--; else top = mid;
                         continue;
                     }
-                    if ((reference.StartID >= Phrases[mid].Start) &&
-                        (reference.EndID <= Phrases[mid].End))
+                    if ((reference.Start >= Phrases[mid].Start) &&
+                        (reference.End <= Phrases[mid].End))
                     {
                         phraseIndex = mid;
                         AddOriginalWordComment(reference, mid);
@@ -197,8 +197,8 @@ namespace Myriad.Formatter
                     break;
                 }
                 if (((phraseIndex == -1) && (bottom < Phrases.Count)) &&
-                    (((reference.StartID >= Phrases[bottom].Start) &&
-                        (reference.EndID <= Phrases[bottom].End))))
+                    (((reference.Start >= Phrases[bottom].Start) &&
+                        (reference.End <= Phrases[bottom].End))))
                 {
                     AddOriginalWordComment(reference, bottom);
                     phraseIndex = bottom;
@@ -257,7 +257,7 @@ namespace Myriad.Formatter
         private void ReadSearchWords(CitationRange citationRange)
         {
             var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadVerseWords),
-                Start, citationRange.EndID.ID);
+                citationRange.StartID.ID, citationRange.EndID.ID);
             words = reader.GetClassData<VerseWord>();
             reader.Close();
         }
@@ -357,11 +357,11 @@ namespace Myriad.Formatter
                 {
                     continue;
                 }
-                if (((relatedArticles[i].EndID- relatedArticles[i].StartID)<10) && (relatedArticles[i].StartID >= citationRange.StartID.ID) && 
-                    (relatedArticles[i].EndID <= citationRange.EndID.ID) &&
-                        ((relatedArticles[i].StartID != citationRange.StartID.ID) || (relatedArticles[i].EndID != citationRange.EndID.ID)))
+                if (((relatedArticles[i].End- relatedArticles[i].Start)<10) && (relatedArticles[i].Start >= citationRange.StartID.ID) && 
+                    (relatedArticles[i].End <= citationRange.EndID.ID) &&
+                        ((relatedArticles[i].Start != citationRange.StartID.ID) || (relatedArticles[i].End != citationRange.EndID.ID)))
                 { // Add an article reference to a single phrase in verse to definition searches
-                    await ArrangeDefinitionSearch((relatedArticles[i].StartID, relatedArticles[i].EndID, relatedArticles[i].ArticleID));
+                    await ArrangeDefinitionSearch((relatedArticles[i].Start, relatedArticles[i].End, relatedArticles[i].ArticleID));
                     continue;
                 }
             }
@@ -449,7 +449,7 @@ namespace Myriad.Formatter
                 }
                 usedArticles.Add(relatedArticles[index].Key);
 
-                if (relatedArticles[index].StartID < citationRange.StartID.ID)
+                if (relatedArticles[index].Start < citationRange.StartID.ID)
                 {
                     await AddToAdditionalArticles(index, true);
                 }
