@@ -175,7 +175,7 @@ namespace Myriad.Pages
         private static async Task UpdateInflections(List<MatrixWord> newInflections, int id)
         {
             (int sentenceID, int sentenceWordIndex) = await ReadSentenceIndex(id);
-            List<MatrixWord> oldInflections = ReadMatrixWords(id).OrderBy(i => i.Text).ToList();
+            List<MatrixWord> oldInflections = await DataRepository.MatrixWords(id);
             int existingIndex = Ordinals.first;
             int index = Ordinals.first;
             while (index < newInflections.Count)
@@ -318,7 +318,7 @@ namespace Myriad.Pages
             for (int id = start; id<= end; id++)
             {
                 if (id > start) await writer.Append(' ');
-                string words = GetMatrixWordsString(id);
+                string words = await GetMatrixWordsString(id);
                 if (words.Length > Number.nothing)
                 {
                     await writer.Append('{');
@@ -330,9 +330,9 @@ namespace Myriad.Pages
             }
         }
 
-        private string GetMatrixWordsString(int id)
+        private async Task<string> GetMatrixWordsString(int id)
         {
-            List<MatrixWord> words = ReadMatrixWords(id);
+            List<MatrixWord> words = await DataRepository.MatrixWords(id);
             StringBuilder result = new StringBuilder();
             for (int index = Ordinals.first; index < words.Count; index++)
             {
@@ -340,15 +340,6 @@ namespace Myriad.Pages
                 result.Append(words[index].ToString());
             }
             return result.ToString();
-        }
-
-        private static List<MatrixWord> ReadMatrixWords(int id)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadMatrixWords),
-                id);
-            var words = reader.GetClassData<MatrixWord>();
-            reader.Close();
-            return words;
         }
 
 
