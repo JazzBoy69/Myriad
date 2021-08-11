@@ -9,6 +9,7 @@ using Feliciana.ResponseWriter;
 using Myriad.Parser;
 using Myriad.Library;
 using Myriad.CitationHandlers;
+using Myriad.Data;
 
 namespace Myriad.Tests
 {
@@ -108,15 +109,12 @@ namespace Myriad.Tests
             await CitationConverter.ToString(citations, writer);
             string citationText = writer.Response();
             Assert.AreEqual(testResult, citationText);
-            Assert.AreEqual("dedicated", citations[Ordinals.first].CitationRange.Word);
-            Assert.IsTrue(citations[Ordinals.first].CitationRange.WordIndexIsDeferred);
+            Assert.AreEqual("dedicated", citations[Ordinals.first].Word);
+            Assert.IsTrue(citations[Ordinals.first].WordIndexIsDeferred);
             Citation citation = citations[Ordinals.first].Copy();
-            citation.CitationRange.SetWordIndex(
-                await CitationConverter.ReadDeferredWord(citation.CitationRange.Word,
-                citation.CitationRange.StartID.ID,
-                citation.CitationRange.EndID.ID)
-                );
-            Assert.AreEqual(16, citation.CitationRange.FirstWordIndex);
+            citation.SetWordIndex(await DataRepository.TextWordIndex(citation.Start,
+                citation.End, citation.Word));
+            Assert.AreEqual(16, citation.FirstWordIndex);
         }
     }
 }

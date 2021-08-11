@@ -175,16 +175,6 @@ namespace Myriad.Parser
             }
             return result;
         }
-
-        public static async Task<int> ReadDeferredWord(string indexWord, int start, int end)
-        {
-            var reader = new DataReaderProvider<string, int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadWordIndex),
-                indexWord, start, end);
-            int result = await reader.GetDatum<int>();
-            reader.Close();
-            return result;
-        }
         public static async Task AppendLink(HTMLWriter writer, Citation citation)
         {
             await PageFormatter.StartCitationLink(writer, citation);

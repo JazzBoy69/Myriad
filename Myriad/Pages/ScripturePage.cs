@@ -9,6 +9,7 @@ using Myriad.Parser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System.Text;
+using Myriad.Data;
 
 namespace Myriad.Pages
 {
@@ -51,13 +52,10 @@ namespace Myriad.Pages
             if (!int.TryParse(query[queryKeyTGEnd], out int end)) end = Result.notfound;
             targetCitation = new Citation(start, end);
 
-            if (citation.CitationRange.WordIndexIsDeferred)
+            if (citation.WordIndexIsDeferred)
             {
-                citation.CitationRange.SetWordIndex(
-                    await CitationConverter.ReadDeferredWord(query[queryKeyWord].ToString(), 
-                    citation.CitationRange.StartID.ID,
-                    citation.CitationRange.EndID.ID)
-                    );
+                citation.SetWordIndex(await DataRepository.TextWordIndex(citation.Start,
+                    citation.End, citation.Word));
             }
         }
 
@@ -65,21 +63,21 @@ namespace Myriad.Pages
         protected abstract CitationTypes GetCitationType();
         public override bool IsValid()
         {
-            return (citation != null) && (citation.CitationRange.Valid);
+            return (citation != null) && (citation.Valid);
         }
 
         public override string GetQueryInfo()
         {
             StringBuilder info = new StringBuilder(HTMLTags.StartQuery + queryKeyStart + Symbol.equal);
-            info.Append(citation.CitationRange.StartID);
+            info.Append(citation.Start);
             info.Append(HTMLTags.Ampersand + queryKeyEnd + Symbol.equal);
-            info.Append(citation.CitationRange.EndID);
-            if ((targetCitation != null) && (targetCitation.CitationRange.Valid))
+            info.Append(citation.End);
+            if ((targetCitation != null) && (targetCitation.Valid))
             {
                 info.Append(HTMLTags.Ampersand + queryKeyTGStart + Symbol.equal);
-                info.Append(targetCitation.CitationRange.StartID);
+                info.Append(targetCitation.Start);
                 info.Append(HTMLTags.Ampersand + queryKeyTGEnd + Symbol.equal);
-                info.Append(targetCitation.CitationRange.EndID);
+                info.Append(targetCitation.End);
             }
             return (navigating) ?
                 info.Append(HTMLTags.Ampersand + queryKeyNavigating + "=true").ToString() :
