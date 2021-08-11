@@ -176,15 +176,6 @@ namespace Myriad.Parser
             return result;
         }
 
-    /*    internal static async Task<int> ReadLastWordIndex(int book, int chapter, int verse)
-        {
-            var reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLastWordIndex),
-                book, chapter, verse);
-            int result = await reader.GetDatum<int>();
-            reader.Close();
-            return result;
-        }
-
         public static async Task<int> ReadDeferredWord(string indexWord, int start, int end)
         {
             var reader = new DataReaderProvider<string, int, int>(
@@ -193,7 +184,7 @@ namespace Myriad.Parser
             int result = await reader.GetDatum<int>();
             reader.Close();
             return result;
-        }*/
+        }
         public static async Task AppendLink(HTMLWriter writer, Citation citation)
         {
             await PageFormatter.StartCitationLink(writer, citation);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Feliciana.Library;
 using Myriad.Parser;
+using Myriad.Data;
 
 namespace Myriad.Library
 {
@@ -272,7 +273,7 @@ namespace Myriad.Library
 
         public async Task ResolveLastWordIndex()
         {
-            SetLastWordIndex(await CitationConverter.ReadLastWordIndex(EndID.Book, EndID.Chapter, EndID.Verse));
+            SetLastWordIndex(await DataRepository.MaxWordIndex(EndID.ID));
         }
         public string Word
         {
