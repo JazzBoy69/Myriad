@@ -143,12 +143,12 @@ namespace Myriad.Search
             query.Append(")");
         }
 
-        internal static List<List<ExtendedSearchRange>> GetResults(SearchEvaluator evaluator, List<Citation> citations)
+        internal static async Task<List<List<ExtendedSearchRange>>> GetResults(SearchEvaluator evaluator, List<Citation> citations)
         {
             var results = new List<List<ExtendedSearchRange>>();
             for (int i = Ordinals.first; i < citations.Count; i++)
             {
-                var definitionSearches = ReadDefinitionSearches(evaluator.PhraseDefinitions, citations[i].Key);
+                var definitionSearches = await DataRepository.ExtendedDefinitionSearches(evaluator.PhraseDefinitions, citations[i].Start, citations[i].End);
                 results.Add(SplitRange(evaluator, citations[i].Key, definitionSearches));
             }
             return results;
@@ -175,24 +175,6 @@ namespace Myriad.Search
                 searchRange.AddDefinitionSearch(definitionSearches[i]);
             }
             result.Add(searchRange);
-            return result;
-        }
-
-        private static List<ExtendedSearchArticle> ReadDefinitionSearches(List<List<int>> phraseDefinitions, (int, int) range)
-        {
-            var result = new List<ExtendedSearchArticle>();
-            var reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(DataOperation.ReadExtendedDefinitionSearch),
-                -1, -1, -1);
-            for (int i = Ordinals.first; i < phraseDefinitions.Count; i++)
-            {
-                for (int j = Ordinals.first; j < phraseDefinitions[i].Count; j++)
-                {
-                    reader.SetParameter(phraseDefinitions[i][j], range.Item1, range.Item2);
-                    ExtendedSearchArticle article = reader.GetClassDatum<ExtendedSearchArticle>();
-                    if (article != null) result.Add(article);
-                }
-            }
-            reader.Close();
             return result;
         }
 
