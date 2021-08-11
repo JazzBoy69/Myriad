@@ -67,7 +67,7 @@ namespace Myriad.Pages
 
         internal async Task UpdateOriginalWordComments(HTMLWriter writer, string text)
         {
-            var originalWords = await ReadOriginalWords();
+            var originalWords = await DataRepository.OriginalWords(citation.Start, citation.End);
             var plainTextWriter = Writer.New();
             await WriteOriginalWordCommentPlainText(plainTextWriter, originalWords);
             string originalText = plainTextWriter.Response();
@@ -116,7 +116,7 @@ namespace Myriad.Pages
 
         internal async Task WriteOriginalWordComments(HTMLWriter writer)
         {
-            List<(string text, int start, int end)> originalWords = await ReadOriginalWords();
+            List<(string text, int start, int end)> originalWords = await DataRepository.OriginalWords(citation.Start, citation.End);
             await WriteOriginalWordCommentPlainText(writer, originalWords);
         }
 
@@ -140,17 +140,6 @@ namespace Myriad.Pages
                 if (comment != null) await writer.Append(comment);
                 await writer.Append(Symbol.lineFeed);
             }
-        }
-
-        private async Task<List<(string text, int start, int end)>> ReadOriginalWords()
-        {
-            var originalWordReader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadOriginalWords),
-                citation.Start, citation.End);
-            List<(string text, int start, int end)> originalWords =
-                await originalWordReader.GetData<string, int, int>();
-            originalWordReader.Close();
-            return originalWords;
         }
 
         internal async Task UpdateMatrix(HTMLWriter writer, IQueryCollection query, string text)
