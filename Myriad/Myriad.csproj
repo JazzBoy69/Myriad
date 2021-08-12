@@ -17,8 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Bible.cs" Link="Library\References\Bible.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataObjects.cs" Link="Data\References\DataObjects.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\DataProvider.cs" Link="Data\References\DataProvider.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataRepository.cs" Link="Data\References\DataRepository.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\IDataRepository.cs" Link="Data\References\IDataRepository.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\SQLDataProvider.cs" Link="Data\References\SQLDataProvider.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\SQLRepository.cs" Link="Data\References\SQLRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,6 +59,7 @@
 
   <ItemGroup>
     <Folder Include="Data\References\" />
+    <Folder Include="Library\References\" />
   </ItemGroup>
 
 </Project>
