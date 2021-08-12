@@ -55,27 +55,26 @@ namespace Myriad.Formatter
         private async Task ArrangeCrossReferences(CitationRange citationRange)
         {
             var crossreferences = await DataRepository.CrossReferencesInRange(citationRange.StartID.ID, citationRange.EndID.ID);
-            reader.Close();
             for (int index = Ordinals.first; index<crossreferences.Count; index++)
             {
                 var reference = crossreferences[index];
-                if (usedReferences.Contains(reference.Key))
+                if (usedReferences.Contains((reference.commentid, reference.paragraphindex)))
                 {
                     continue;
                 }
-                usedReferences.Add(reference.Key);
+                usedReferences.Add((reference.commentid, reference.paragraphindex));
                 if ((reference.start < citationRange.StartID.ID) ||
                     (reference.last > citationRange.EndID.ID))
                 //reference starts at a preceeding verse
                 {
-                    List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.ArticleID);
+                    List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.commentid);
                     if (reference.start < citationRange.StartID.ID)
                     {
                         // add to See Also
                         if (links.Count > 0)
                         {
                             if (AdditionalCrossReferences.ContainsKey(links.First()))
-                                AdditionalCrossReferences[links.First()].Add((reference.ArticleID,
+                                AdditionalCrossReferences[links.First()].Add((reference.commentid,
                                     reference.paragraphindex, true));
                             else
                                 AdditionalCrossReferences.Add(links.First(),
@@ -142,7 +141,7 @@ namespace Myriad.Formatter
                     List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.ArticleID);
                     if (links.Count > 0)
                     {
-                        AddToAdditionalCrossReferences(reference, links.First(),
+                        AddToAdditionalCrossReferences(reference.commentid, reference.paragraphindex, links.First(),
                             (reference.start < citationRange.StartID.ID));
                     }
                 }
@@ -232,24 +231,24 @@ namespace Myriad.Formatter
             return sb.ToString();
         }
 
-        private void AddOriginalWordCrossReference((int start, int last, int commentid, int paragraphindex) rangeAndParagraph, int index)
+        private void AddOriginalWordCrossReference((int start, int last, int commentid, int paragraphindex) reference, int index)
         {
             if (OriginalWordCrossReferences.ContainsKey(index))
-                OriginalWordCrossReferences[index].Add(rangeAndParagraph.Key);
+                OriginalWordCrossReferences[index].Add((reference.commentid, reference.paragraphindex));
             else
                 OriginalWordCrossReferences.Add(index, new List<(int articleID, int paragraphIndex)>() {
-                    rangeAndParagraph.Key
+                    (reference.commentid, reference.paragraphindex)
                 });
         }
-        private void AddToAdditionalCrossReferences(RangeAndParagraph reference, (int start, int end) range, bool show)
+        private void AddToAdditionalCrossReferences(int articleid, int paragraphindex, (int start, int end) range, bool show)
         {
             if (AdditionalCrossReferences.ContainsKey(range))
                 AdditionalCrossReferences[range].Add(
-                    (reference.ArticleID, reference.ParagraphIndex, show));
+                    (articleid, paragraphindex, show));
             else
                 AdditionalCrossReferences.Add(range,
                     new List<(int articleID, int paragraphIndex, bool suppressed)>() {
-                                    (reference.ArticleID, reference.ParagraphIndex, false)});
+                                    (articleid, paragraphindex, false)});
         }
 
         private void ReadSearchWords(CitationRange citationRange)
