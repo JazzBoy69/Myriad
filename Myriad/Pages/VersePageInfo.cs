@@ -54,9 +54,7 @@ namespace Myriad.Formatter
 
         private async Task ArrangeCrossReferences(CitationRange citationRange)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadVerseCrossReferences),
-                citationRange.StartID.ID, citationRange.EndID.ID);
-            List<RangeAndParagraph> crossreferences = reader.GetClassData<RangeAndParagraph>();
+            var crossreferences = await DataRepository.CrossReferencesInRange(citationRange.StartID.ID, citationRange.EndID.ID);
             reader.Close();
             for (int index = Ordinals.first; index<crossreferences.Count; index++)
             {
@@ -66,23 +64,23 @@ namespace Myriad.Formatter
                     continue;
                 }
                 usedReferences.Add(reference.Key);
-                if ((reference.Start < citationRange.StartID.ID) ||
-                    (reference.End > citationRange.EndID.ID))
+                if ((reference.start < citationRange.StartID.ID) ||
+                    (reference.last > citationRange.EndID.ID))
                 //reference starts at a preceeding verse
                 {
                     List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.ArticleID);
-                    if (reference.Start < citationRange.StartID.ID)
+                    if (reference.start < citationRange.StartID.ID)
                     {
                         // add to See Also
                         if (links.Count > 0)
                         {
                             if (AdditionalCrossReferences.ContainsKey(links.First()))
                                 AdditionalCrossReferences[links.First()].Add((reference.ArticleID,
-                                    reference.ParagraphIndex, true));
+                                    reference.paragraphindex, true));
                             else
                                 AdditionalCrossReferences.Add(links.First(),
                                     new List<(int articleID, int paragraphIndex, bool suppressed)>() {
-                                            (reference.ArticleID, reference.ParagraphIndex, true)});
+                                            (reference.commentid, reference.paragraphindex, true)});
                         }
                     }
                     else
@@ -90,20 +88,20 @@ namespace Myriad.Formatter
                         if (links.Count > 0)
                         {
                             if (AdditionalCrossReferences.ContainsKey(links.First()))
-                                AdditionalCrossReferences[links.First()].Add((reference.ArticleID,
-                                    reference.ParagraphIndex, false));
+                                AdditionalCrossReferences[links.First()].Add((reference.commentid,
+                                    reference.paragraphindex, false));
                             else
                                 AdditionalCrossReferences.Add(links.First(),
                                     new List<(int articleID, int paragraphIndex, bool suppressed)>() {
-                                            (reference.ArticleID, reference.ParagraphIndex, false)});
+                                            (reference.commentid, reference.paragraphindex, false)});
                         }
                     }
                     continue;
                 }
                 int bottom = Ordinals.first;
                 int top = Phrases.Count - 1;
-                if ((reference.Start == citationRange.StartID.ID) &&
-                    (reference.End == citationRange.EndID.ID))
+                if ((reference.start == citationRange.StartID.ID) &&
+                    (reference.last == citationRange.EndID.ID))
                 {
                     bottom = -1;
                     top = -1;
@@ -113,18 +111,18 @@ namespace Myriad.Formatter
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (Phrases[mid].End < reference.Start)
+                    if (Phrases[mid].End < reference.start)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
                     }
-                    if (Phrases[mid].Start > reference.End)
+                    if (Phrases[mid].Start > reference.last)
                     {
                         if (top == mid) top--; else top = mid;
                         continue;
                     }
-                    if ((reference.Start >= Phrases[mid].Start) &&
-                        (reference.End <= Phrases[mid].End))
+                    if ((reference.start >= Phrases[mid].Start) &&
+                        (reference.last <= Phrases[mid].End))
                     {
                         phraseIndex = mid;
                         AddOriginalWordCrossReference(reference, mid);
@@ -132,8 +130,8 @@ namespace Myriad.Formatter
                     break;
                 }
                 if (((phraseIndex == -1) && (bottom>-1) && (bottom < Phrases.Count)) &&
-                    (((reference.Start >= Phrases[bottom].Start) &&
-                        (reference.End <= Phrases[bottom].End))))
+                    (((reference.start >= Phrases[bottom].Start) &&
+                        (reference.last <= Phrases[bottom].End))))
                 {
                     AddOriginalWordCrossReference(reference, bottom);
                     phraseIndex = bottom;
@@ -145,7 +143,7 @@ namespace Myriad.Formatter
                     if (links.Count > 0)
                     {
                         AddToAdditionalCrossReferences(reference, links.First(),
-                            (reference.Start < citationRange.StartID.ID));
+                            (reference.start < citationRange.StartID.ID));
                     }
                 }
             }
@@ -234,7 +232,7 @@ namespace Myriad.Formatter
             return sb.ToString();
         }
 
-        private void AddOriginalWordCrossReference(RangeAndParagraph rangeAndParagraph, int index)
+        private void AddOriginalWordCrossReference((int start, int last, int commentid, int paragraphindex) rangeAndParagraph, int index)
         {
             if (OriginalWordCrossReferences.ContainsKey(index))
                 OriginalWordCrossReferences[index].Add(rangeAndParagraph.Key);
