@@ -6,9 +6,6 @@ using Feliciana.ResponseWriter;
 using Myriad.Library;
 using Myriad.CitationHandlers;
 using Myriad.Data;
-using Myriad.Pages;
-using System;
-using Feliciana.Data;
 
 namespace Myriad.Parser
 {
@@ -133,7 +130,6 @@ namespace Myriad.Parser
             await writer.Append(citation.LastVerse);
 
         }
-        /*
 
                 public static async Task<List<Citation>> ResolveCitations(List<Citation> citations)
                 {
@@ -151,20 +147,22 @@ namespace Myriad.Parser
                     if (citation.WordIndexIsDeferred)
                     {
                         newCitation.SetWordIndex(
-                            await ReadDeferredWord(citation.Word,
+                            await DataRepository.TextWordIndex(
                             citation.Start,
-                            citation.End)
+                            citation.End,
+                            citation.Word)
                             );
                     }
                     if (citation.EndID.WordIndex == KeyID.MaxWordIndex)
                     {
                         newCitation.SetLastWordIndex(
-                            await ReadLastWordIndex(citation.Book, citation.LastChapter,
-                            citation.LastVerse));
+                            await DataRepository.LastWordIndex(
+                                KeyID.VerseID(citation.Book, 
+                                citation.LastChapter,
+                                citation.LastVerse)));
                     }
                     return newCitation;
                 }
-        */
         internal static List<(int StartID, int EndID, int ArticleID, int ParagraphIndex)> ToCrossReferences(List<Citation> citations, int ID, int paragraphIndex)
         {
             var result = new List<(int StartID, int EndID, int ArticleID, int ParagraphIndex)>();
