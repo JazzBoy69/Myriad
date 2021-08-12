@@ -43,7 +43,7 @@ namespace Myriad.Formatter
         public async Task LoadInfo(CitationRange citationRange)
         {
             await citationRange.ResolveLastWordIndex();
-            ReadSearchWords(citationRange);
+            words = await DataRepository.VerseWords(citationRange.StartID.ID, citationRange.EndID.ID);
             FindPhrases(citationRange);
             await ArrangeRelatedArticles(citationRange);
             await ArrangeDefinitionSearches(citationRange);
@@ -110,7 +110,7 @@ namespace Myriad.Formatter
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (Phrases[mid].End < reference.start)
+                    if (Phrases[mid].Last < reference.start)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
@@ -121,7 +121,7 @@ namespace Myriad.Formatter
                         continue;
                     }
                     if ((reference.start >= Phrases[mid].Start) &&
-                        (reference.last <= Phrases[mid].End))
+                        (reference.last <= Phrases[mid].Last))
                     {
                         phraseIndex = mid;
                         AddOriginalWordCrossReference(reference, mid);
@@ -130,7 +130,7 @@ namespace Myriad.Formatter
                 }
                 if (((phraseIndex == -1) && (bottom>-1) && (bottom < Phrases.Count)) &&
                     (((reference.start >= Phrases[bottom].Start) &&
-                        (reference.last <= Phrases[bottom].End))))
+                        (reference.last <= Phrases[bottom].Last))))
                 {
                     AddOriginalWordCrossReference(reference, bottom);
                     phraseIndex = bottom;
@@ -166,7 +166,7 @@ namespace Myriad.Formatter
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (Phrases[mid].End < reference.start)
+                    if (Phrases[mid].Last < reference.start)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
@@ -177,7 +177,7 @@ namespace Myriad.Formatter
                         continue;
                     }
                     if ((reference.start >= Phrases[mid].Start) &&
-                        (reference.last <= Phrases[mid].End))
+                        (reference.last <= Phrases[mid].Last))
                     {
                         phraseIndex = mid;
                         AddOriginalWordComment(reference.id, mid);
@@ -186,7 +186,7 @@ namespace Myriad.Formatter
                 }
                 if (((phraseIndex == -1) && (bottom < Phrases.Count)) &&
                     (((reference.start >= Phrases[bottom].Start) &&
-                        (reference.last <= Phrases[bottom].End))))
+                        (reference.last <= Phrases[bottom].Last))))
                 {
                     AddOriginalWordComment(reference.id, bottom);
                     phraseIndex = bottom;
@@ -207,7 +207,7 @@ namespace Myriad.Formatter
         {
             var originalWordsInPhrase = (from w in OriginalWords
                                                         where w.Start >= start &&
-                                                        w.End <= end
+                                                        w.Last <= end
                                                         select w.Text).ToList();
             int count = originalWordsInPhrase.Count();
             if (count == 0) return "";
@@ -240,14 +240,6 @@ namespace Myriad.Formatter
                                     (articleid, paragraphindex, false)});
         }
 
-        private void ReadSearchWords(CitationRange citationRange)
-        {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadVerseWords),
-                citationRange.StartID.ID, citationRange.EndID.ID);
-            words = reader.GetClassData<VerseWord>();
-            reader.Close();
-        }
-
         private void FindPhrases(CitationRange citationRange)
         {
             OriginalWords = from w in words
@@ -261,16 +253,16 @@ namespace Myriad.Formatter
                 var word = words[index];
 
                 if ((lastPhrase.Weight == originalWordWeight) && 
-                    (word.Start < lastPhrase.End) && 
+                    (word.Start < lastPhrase.Last) && 
                     (word.Start > lastPhrase.Start) &&
                     (word.Weight == originalWordWeight))
                 {
                     if (Ellipses.ContainsKey(lastPhrase.Start))
                     {
-                        Ellipses[lastPhrase.Start].ExtendTo(word.End);
+                        Ellipses[lastPhrase.Start].ExtendTo(word.Last);
                     }
                     else
-                        Ellipses.Add(lastPhrase.Start, new CitationRange(word.Start, word.End));
+                        Ellipses.Add(lastPhrase.Start, new CitationRange(word.Start, word.Last));
                     Phrases.Add(word);
                     continue;
                 }
@@ -279,25 +271,25 @@ namespace Myriad.Formatter
                     continue;
                 }
                 var origwords = from w in OriginalWords
-                                where w.End >= word.Start &&
-                                w.Start <= word.End
+                                where w.Last >= word.Start &&
+                                w.Start <= word.Last
                                 select w;
                 if (origwords.Any())
                 {
                     word.SetStart(Math.Min(word.Start, origwords.Min(w => w.Start)));
-                    word.SetEnd(Math.Max(word.End, origwords.Max(w => w.End)));
+                    word.SetEnd(Math.Max(word.Last, origwords.Max(w => w.Last)));
                 }
                 Phrases.Add(word);
-                if (word.End - word.Start > 0)
+                if (word.Last - word.Start > 0)
                 {
                     var owords = from w in OriginalWords
                                  where w.Start == word.Start &&
-                                 w.End == word.End
+                                 w.Last == word.Last
                                  select w;
                     if (owords.Any())
                         lastPhrase = owords.First();
                 }
-                start = word.End + 1;
+                start = word.Last + 1;
             }
         }
         private async Task ArrangeDefinitionSearches(CitationRange citationRange)
@@ -361,7 +353,7 @@ namespace Myriad.Formatter
             while (bottom <= top)
             {
                 int mid = (top - bottom) / 2 + bottom;
-                if (Phrases[mid].End < item.start)
+                if (Phrases[mid].Last < item.start)
                 {
                     if (bottom == mid) bottom++; else bottom = mid;
                     continue;
