@@ -65,7 +65,7 @@ ScrollToTop();
             //todo edit page
             if (string.IsNullOrEmpty(name)) name = defaultName;
             ID = await GetPageID();
-            paragraphs = GetPageParagraphs();
+            paragraphs = await GetPageParagraphs();
             parser = new PageParser(writer);
             parser.SetParagraphInfo(ParagraphType.Navigation, ID);
             await Parse();
@@ -112,30 +112,20 @@ ScrollToTop();
 
         private async Task<int> GetPageID()
         {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadNavigationID), name);
-            int result = await reader.GetDatum<int>();
-            reader.Close();
-            return result;
+            int id = await DataRepository.NavigationID(name);
+            return id;
         }
 
-        public List<string> GetPageParagraphs()
+        public async Task<List<string>> GetPageParagraphs()
         {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadNavigationPage), name);
-            var results = reader.GetData<string>();
-            reader.Close();
-            return results;
+            var paragraphs = await DataRepository.NavigationParagraphs(ID);
+            return paragraphs;
         }
 
         internal override async Task WriteTitle(HTMLWriter writer)
         {
-            var command = SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle);
-            var reader = new DataReaderProvider<string>(command, name);
-            string title = await reader.GetDatum<string>();
+            string title = await DataRepository.NavigationHeading(name);
             await writer.Append(title);
-            reader.Close();
-            command.Connection.Close();
         }
 
         protected override string PageScripts()
@@ -161,12 +151,9 @@ ScrollToTop();
             await writer.Append(HTMLTags.Class);
             await writer.Append(HTMLClasses.visible);
             await writer.Append(HTMLTags.CloseQuoteEndTag);
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadNavigationTitle), "");
             for (int index = Ordinals.first; index < mainHeadingIndex; index++)
             {
-                reader.SetParameter(paragraphs[index]);
-                string title = await reader.GetDatum<string>();
+                string title = await DataRepository.NavigationHeading(paragraphs[index]);
                 if (string.IsNullOrEmpty(title)) title = paragraphs[index];
                 await writer.Append(HTMLTags.StartListItem +
                     HTMLTags.EndTag +
@@ -180,11 +167,11 @@ ScrollToTop();
                         HTMLTags.StartQuery +
                         ScripturePage.queryKeyStart +
                         Symbol.equal);
-                    await writer.Append(chapterCitation.CitationRange.StartID.ID);
+                    await writer.Append(chapterCitation.Start);
                     await writer.Append(HTMLTags.Ampersand +
                         ScripturePage.queryKeyEnd +
                         Symbol.equal);
-                    await writer.Append(chapterCitation.CitationRange.EndID.ID);
+                    await writer.Append(chapterCitation.End);
                     await writer.Append(HTMLTags.Ampersand +
                         ScripturePage.queryKeyNavigating +
                         Symbol.equal +
@@ -214,7 +201,6 @@ ScrollToTop();
                 await writer.Append(HTMLTags.EndAnchor +
                     HTMLTags.EndListItem);
             }
-            reader.Close();
             await writer.Append(HTMLTags.EndList);
         }
 
@@ -223,9 +209,9 @@ ScrollToTop();
             return HTMLTags.StartQuery + queryKeyName + name.Replace(" ", "_");
         }
 
-        public override Task LoadTOCInfo(HttpContext context)
+        public async override Task LoadTOCInfo(HttpContext context)
         {
-            paragraphs = GetPageParagraphs();
+            paragraphs = await GetPageParagraphs();
             for (int index = Ordinals.first; index < paragraphs.Count; index++)
             {
                 if ((paragraphs[index].Length > Number.nothing) &&
@@ -235,7 +221,6 @@ ScrollToTop();
                     break;
                 }
             }
-            return Task.CompletedTask;
         }
 
         public override async Task SetupNextPage()
@@ -243,11 +228,11 @@ ScrollToTop();
             string newName = await ReadNextPageName(name);
             if (newName.Contains("=="))
             {
-                string parent = await ReadParentPageName(name);
+                int parent = await ReadParentPageID(name);
                 string uncle = await ReadNextPageName(parent);
                 if (uncle.Contains("=="))
                 {
-                    string grandparent = await ReadParentPageName(parent);
+                    int grandparent = await ReadParentPageID(parent);
                     string greatuncle = await ReadNextPageName(grandparent);
                     string cousin = await ReadFirstIndexParagraph(greatuncle);
                     newName = await ReadFirstIndexParagraph(cousin);
@@ -265,14 +250,13 @@ ScrollToTop();
                 newName.Replace("_", " ");
         }
 
-        private async Task<string> ReadParentPageName(string currentName)
+        private async Task<int> ReadParentPageID(string currentName)
         {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadParentNavigationName),
-                currentName);
-            string newName = await reader.GetDatum<string>();
-            reader.Close();
-            return newName;
+            return await DataRepository.NavigationParent(currentName);
+        }
+        private async Task<int> ReadParentPageID(int currentID)
+        {
+            return await DataRepository.NavigationParent(currentID);
         }
 
         private async Task<string> ReadFirstIndexParagraph(string indexName)
