@@ -17,7 +17,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\FelicianaHTML\FelicianaHTML\HTMLTags.cs" Link="Library\References\HTMLTags.cs" />
+    <Compile Include="..\..\FelicianaHTML\FelicianaHTML\ImageElement.cs" Link="Library\References\ImageElement.cs" />
     <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Bible.cs" Link="Library\References\Bible.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\EnglishDictionary.cs" Link="Library\References\EnglishDictionary.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\KeyID.cs" Link="Library\References\KeyID.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Number.cs" Link="Library\References\Number.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Numbers.cs" Link="Library\References\Numbers.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Ordinals.cs" Link="Library\References\Ordinals.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\ReadonlyStringRange.cs" Link="Library\References\ReadonlyStringRange.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Result.cs" Link="Library\References\Result.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\StringRange.cs" Link="Library\References\StringRange.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Symbol.cs" Link="Library\References\Symbol.cs" />
+    <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Symbols.cs" Link="Library\References\Symbols.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataObjects.cs" Link="Data\References\DataObjects.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataProvider.cs" Link="Data\References\DataProvider.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataRepository.cs" Link="Data\References\DataRepository.cs" />
@@ -37,15 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="FelicianaData">
-      <HintPath>..\..\FelicianaData\FelicianaData\bin\Release\netcoreapp3.1\FelicianaData.dll</HintPath>
-    </Reference>
-    <Reference Include="FelicianaHTML">
-      <HintPath>..\..\FelicianaHTML\FelicianaHTML\bin\Release\netcoreapp3.1\FelicianaHTML.dll</HintPath>
-    </Reference>
-    <Reference Include="FelicianaLibrary">
-      <HintPath>..\..\FelicianaLibrary\FelicianaLibrary\bin\Release\netcoreapp3.1\FelicianaLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="ResponseWriter">
       <HintPath>..\..\ResponseWriter\ResponseWriter\bin\Release\netcoreapp3.1\ResponseWriter.dll</HintPath>
     </Reference>

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Feliciana.Library;
 using Myriad.Library;
 using Myriad.Data;
-using Feliciana.Data;
 
 namespace Myriad.Search
 {

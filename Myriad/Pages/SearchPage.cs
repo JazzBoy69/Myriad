@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Feliciana.Library;
-using Feliciana.Data;
 using Feliciana.ResponseWriter;
 using Feliciana.HTML;
 using Myriad.Library;
@@ -109,7 +108,7 @@ namespace Myriad.Pages
             KeyID endID = (startChapter == Result.error) ?
                 new KeyID(startBook,
                     Bible.Chapters[startBook].Length - 1,
-                    Bible.Chapters[startBook][Bible.Chapters[startBook].Length - 1],
+                    Bible.Chapters[startBook][^1],
                     KeyID.MaxWordIndex) :
                 new KeyID(startBook,
                     startChapter,

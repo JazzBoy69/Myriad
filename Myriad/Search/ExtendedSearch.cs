@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Feliciana.Data;
 using Feliciana.Library;
 using Feliciana.ResponseWriter;
 using Feliciana.HTML;
@@ -24,11 +23,13 @@ namespace Myriad.Search
                 if (phraseDefinitions[i].Count > Number.nothing) definitionCount++;
             }
             if (definitionCount < 2) return new List<Citation>();
-            var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(
-                GenerateCommonRangeQuery(phraseDefinitions, searchRange)));
-            var ranges = await reader.GetData<int, int>();
-            ranges = ranges.OrderByDescending(r => r.Item2 - r.Item1).ToList();
-            reader.Close();
+            List<(int start, int last)> ranges =
+                await DataRepository.GetRangesInCommon(
+                    phraseDefinitions, 
+                    searchRange.StartID.ID, 
+                    searchRange.EndID.ID
+                );
+            ranges = ranges.OrderByDescending(r => r.last - r.start).ToList();
             var keys = new List<(int, int)>();
             var result = new List<Citation>();
             for (int i = Ordinals.first; i < ranges.Count; i++)
@@ -51,7 +52,7 @@ namespace Myriad.Search
             }
             return false;
         }
-
+        //todo move to MyriadData
         private static string GenerateCommonRangeQuery(List<List<int>> phraseDefinitions, CitationRange searchRange)
         {
             StringBuilder query = new StringBuilder("select distinct maxstart=(SELECT MAX(x) FROM (VALUES ");
