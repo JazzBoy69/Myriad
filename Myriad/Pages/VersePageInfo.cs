@@ -15,7 +15,7 @@ namespace Myriad.Formatter
         public const ushort originalWordWeight = 200;
         public List<Keyword> keywords;
         List<VerseWord> words;
-        List<RangeAndParagraph> relatedArticles;
+        List<(int start, int last, int id, int index)> relatedArticles;
         List<(int commentID, int paragraphIndex)> usedReferences = new List<(int articleID, int paragraphIndex)>();
         readonly List<(int articleID, int paragraphIndex)> usedArticles = new List<(int articleID, int paragraphIndex)>();
 
@@ -294,7 +294,7 @@ namespace Myriad.Formatter
         }
         private async Task ArrangeDefinitionSearches(CitationRange citationRange)
         {
-            var definitionSearches = await ReadDefinitionSearchesInVerse(citationRange.StartID.ID, citationRange.EndID.ID);
+            var definitionSearches = await DataRepository.DefinitionSearchesInRange(citationRange.StartID.ID, citationRange.EndID.ID);
             var used = new List<(int start, int end, int id)>();
             for (int index = Ordinals.first; index < definitionSearches.Count; index++) 
             {
@@ -305,41 +305,21 @@ namespace Myriad.Formatter
                 await ArrangeDefinitionSearch(definitionSearches[index]);
             }
         }
-        private static async Task<List<(int start, int end, int id)>> ReadDefinitionSearchesInVerse(int start, int end)
-        {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchesInVerse),
-                start, end);
-            List<(int start, int end, int id)> definitionsearches = await reader.GetData<int, int, int>();
-            reader.Close();
-            return definitionsearches;
-        }
-
-        internal static async Task<List<(int start, int end, int id)>> ReadDefinitionSearches(int start)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearches),
-                start);
-            List<(int start, int end, int id)> definitionsearches = await reader.GetData<int, int, int>();
-            reader.Close();
-            return definitionsearches;
-        }
 
         private async Task ArrangeRelatedArticles(CitationRange citationRange)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadRelatedArticles),
-                citationRange.StartID.ID, citationRange.EndID.ID);
-            relatedArticles = reader.GetClassData<RangeAndParagraph>();
-            reader.Close();
+            relatedArticles = await DataRepository.RelatedArticles(citationRange.StartID.ID, citationRange.EndID.ID);
             for (int i=Ordinals.first; i<relatedArticles.Count; i++)
             {
-                if (usedArticles.Contains(relatedArticles[i].Key))
+                if (usedArticles.Contains((relatedArticles[i].id, relatedArticles[i].index)))
                 {
                     continue;
                 }
-                if (((relatedArticles[i].End- relatedArticles[i].Start)<10) && (relatedArticles[i].Start >= citationRange.StartID.ID) && 
-                    (relatedArticles[i].End <= citationRange.EndID.ID) &&
-                        ((relatedArticles[i].Start != citationRange.StartID.ID) || (relatedArticles[i].End != citationRange.EndID.ID)))
+                if (((relatedArticles[i].last- relatedArticles[i].start)<10) && (relatedArticles[i].start >= citationRange.StartID.ID) && 
+                    (relatedArticles[i].last <= citationRange.EndID.ID) &&
+                        ((relatedArticles[i].start != citationRange.StartID.ID) || (relatedArticles[i].last != citationRange.EndID.ID)))
                 { // Add an article reference to a single phrase in verse to definition searches
-                    await ArrangeDefinitionSearch((relatedArticles[i].Start, relatedArticles[i].End, relatedArticles[i].ArticleID));
+                    await ArrangeDefinitionSearch((relatedArticles[i].start, relatedArticles[i].last, relatedArticles[i].id));
                     continue;
                 }
             }
@@ -386,9 +366,9 @@ namespace Myriad.Formatter
             //Add related article
             List<(int articleID, int paragraphIndex)> result = new List<(int articleID, int paragraphIndex)>();
             var articleParagraphs = (from paragraph in relatedArticles
-                                                  where paragraph.ArticleID == commentInfo.articleID
-                                                  orderby paragraph.ParagraphIndex
-                                                  select paragraph.ParagraphIndex).Distinct().ToList();
+                                                  where paragraph.id == commentInfo.articleID
+                                                  orderby paragraph.index
+                                                  select paragraph.index).Distinct().ToList();
             List<int> newParagraphs = new List<int>();
             for (int i=Ordinals.first; i<articleParagraphs.Count; i++)
             {
@@ -420,46 +400,47 @@ namespace Myriad.Formatter
             int index = Ordinals.first;
             while (index < relatedArticles.Count)
             {
-                if (usedArticles.Contains(relatedArticles[index].Key))
+                if (usedArticles.Contains((relatedArticles[index].id, relatedArticles[index].index)))
                 {
                     index++;
                     continue;
                 }
-                usedArticles.Add(relatedArticles[index].Key);
+                usedArticles.Add((relatedArticles[index].id, relatedArticles[index].index));
 
-                if (relatedArticles[index].Start < citationRange.StartID.ID)
+                if (relatedArticles[index].start < citationRange.StartID.ID)
                 {
                     await AddToAdditionalArticles(index, true);
                 }
                 else
                 {
-                    await AddToAdditionalArticles(index, await DefinitionSearchExistsInRange(relatedArticles[index].Range,
-                       relatedArticles[index].ArticleID));
+                    await AddToAdditionalArticles(index, 
+                        await DefinitionSearchExistsInRange(
+                            relatedArticles[index].start, 
+                            relatedArticles[index].last,
+                            relatedArticles[index].id)
+                    );
                 }
                 index++;
             }
         }
 
-        private async Task<bool> DefinitionSearchExistsInRange((int start, int end) range, int articleID)
+        private async Task<bool> DefinitionSearchExistsInRange(int start, int last, int articleID)
         {
-            var reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(DataOperation.DefinitionSearchesInRange),
-                range.start, range.end, articleID);
-            List<(int start, int end)> ranges = await reader.GetData<int, int>();
-            reader.Close();
+            List<(int start, int end)> ranges = await DataRepository.DefinitionSearchesInRange(start, last, articleID);
             return ranges.Count > Number.nothing;
         }
 
         private async Task AddToAdditionalArticles(int index, bool show)
         {
-            string title = await ArticleTitle(relatedArticles[index].ArticleID);
+            string title = await ArticleTitle(relatedArticles[index].id);
             if (AdditionalArticleIDs.ContainsKey(title))
-                AdditionalArticles[title].Add((relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex,
+                AdditionalArticles[title].Add((relatedArticles[index].id, relatedArticles[index].index,
                     show));
             else
             {
                 AdditionalArticles.Add(title, new List<(int articleID, int paragraphIndex, bool suppressed)>() {
-                            (relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex, show)});
-                AdditionalArticleIDs.Add(title, relatedArticles[index].ArticleID);
+                            (relatedArticles[index].id, relatedArticles[index].index, show)});
+                AdditionalArticleIDs.Add(title, relatedArticles[index].id);
             }
         }
 
