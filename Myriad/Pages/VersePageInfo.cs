@@ -38,7 +38,7 @@ namespace Myriad.Formatter
         }
 
         public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordCrossReferences { get; } = new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
-        public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordComments { get; } = new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
+        public Dictionary<int, int> OriginalWordComments { get; } = new Dictionary<int, int>();
         public SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>> AdditionalArticles { get; } = new SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>>();
         public async Task LoadInfo(CitationRange citationRange)
         {
@@ -48,7 +48,7 @@ namespace Myriad.Formatter
             await ArrangeRelatedArticles(citationRange);
             await ArrangeDefinitionSearches(citationRange);
             await ArrangeCrossReferences(citationRange);
-            ArrangeOriginalWordComments(citationRange);
+            await ArrangeOriginalWordComments(citationRange);
             await ArrangeAdditionalRelatedArticles(citationRange);
         }
 
@@ -138,7 +138,7 @@ namespace Myriad.Formatter
                 if (phraseIndex == -1)
                 {
                     //if suppressing and not first verse in cross reference add to "See also"
-                    List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.ArticleID);
+                    List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.commentid);
                     if (links.Count > 0)
                     {
                         AddToAdditionalCrossReferences(reference.commentid, reference.paragraphindex, links.First(),
@@ -148,23 +148,15 @@ namespace Myriad.Formatter
             }
         }
 
-        private void ArrangeOriginalWordComments(CitationRange citationRange)
+        private async Task ArrangeOriginalWordComments(CitationRange citationRange)
         {
-            var reader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadLinkedParagraphs),
-                citationRange.StartID.ID, citationRange.EndID.ID); 
-            List<RangeAndParagraph> linkedParagraphs = reader.GetClassData<RangeAndParagraph>();
-            reader.Close();
-            for (int index = Ordinals.first; index<linkedParagraphs.Count; index++)
+            var originalWordComments = await DataRepository.OriginalWordComments(citationRange.StartID.ID, citationRange.EndID.ID);
+            for (int index = Ordinals.first; index< originalWordComments.Count; index++)
             {
-                var reference = linkedParagraphs[index];
-                if (usedReferences.Contains(reference.Key))
-                {
-                    continue;
-                }
-                usedReferences.Add(reference.Key);
-                if (OriginalWordsInRange(reference.Start, reference.End).Length == Number.nothing) continue;
-                if ((reference.Start < citationRange.StartID.ID) ||
-                    (reference.End > citationRange.EndID.ID))
+                var reference = originalWordComments[index];
+                if (OriginalWordsInRange(reference.start, reference.last).Length == Number.nothing) continue;
+                if ((reference.start < citationRange.StartID.ID) ||
+                    (reference.last > citationRange.EndID.ID))
                 {
                     continue;
                 }
@@ -174,44 +166,41 @@ namespace Myriad.Formatter
                 while (bottom != top)
                 {
                     int mid = (top - bottom) / 2 + bottom;
-                    if (Phrases[mid].End < reference.Start)
+                    if (Phrases[mid].End < reference.start)
                     {
                         if (bottom == mid) bottom++; else bottom = mid;
                         continue;
                     }
-                    if (Phrases[mid].Start > reference.End)
+                    if (Phrases[mid].Start > reference.last)
                     {
                         if (top == mid) top--; else top = mid;
                         continue;
                     }
-                    if ((reference.Start >= Phrases[mid].Start) &&
-                        (reference.End <= Phrases[mid].End))
+                    if ((reference.start >= Phrases[mid].Start) &&
+                        (reference.last <= Phrases[mid].End))
                     {
                         phraseIndex = mid;
-                        AddOriginalWordComment(reference, mid);
-                        usedReferences.Add(reference.Key);
+                        AddOriginalWordComment(reference.id, mid);
                     }
                     break;
                 }
                 if (((phraseIndex == -1) && (bottom < Phrases.Count)) &&
-                    (((reference.Start >= Phrases[bottom].Start) &&
-                        (reference.End <= Phrases[bottom].End))))
+                    (((reference.start >= Phrases[bottom].Start) &&
+                        (reference.last <= Phrases[bottom].End))))
                 {
-                    AddOriginalWordComment(reference, bottom);
+                    AddOriginalWordComment(reference.id, bottom);
                     phraseIndex = bottom;
                 }
             }
         }
 
-        private void AddOriginalWordComment(RangeAndParagraph rangeAndParagraph, int index)
+        private void AddOriginalWordComment(int id, int index)
         {
             if (OriginalWordComments.ContainsKey(index))
             {
-                OriginalWordComments[index].Add(rangeAndParagraph.Key);
                 return;
             }
-            OriginalWordComments.Add(index, new List<(int articleID, int paragraphIndex)>()
-                { rangeAndParagraph.Key });
+            OriginalWordComments.Add(index, id);
         }
 
         public string OriginalWordsInRange(int start, int end)
