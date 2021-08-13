@@ -49,16 +49,16 @@ namespace Myriad.Pages
                 info.Append(HTMLTags.StartQuery + queryKeyID + Symbol.equal);
                 info.Append(id);
             }
-            if ((highlightCitation != null) && (highlightCitation.CitationRange.Valid))
+            if ((highlightCitation != null) && (highlightCitation.Valid))
             {
                 if (id > Result.nothing) 
                     info.Append(HTMLTags.Ampersand);
                 else
                     info.Append(HTMLTags.StartQuery);
                 info.Append(queryKeyTGStart + Symbol.equal);
-                info.Append(highlightCitation.CitationRange.StartID);
+                info.Append(highlightCitation.Start);
                 info.Append(HTMLTags.Ampersand + queryKeyTGEnd + Symbol.equal);
-                info.Append(highlightCitation.CitationRange.EndID);
+                info.Append(highlightCitation.End);
             }
             return (navigating) ?
                 info.Append(HTMLTags.Ampersand + queryKeyNavigating + "=true").ToString() :
@@ -82,7 +82,7 @@ namespace Myriad.Pages
 
         public override bool IsValid()
         {
-            return (id > Number.nothing) || ((highlightCitation != null) && highlightCitation.CitationRange.Valid);
+            return (id > Number.nothing) || ((highlightCitation != null) && highlightCitation.Valid);
         }
 
         public override async Task LoadQueryInfo(IQueryCollection query)
@@ -114,7 +114,7 @@ namespace Myriad.Pages
         {
             var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
-                citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
+                citation.Start, citation.End);
             var results = reader.GetData<int>();
             reader.Close();
             return results;

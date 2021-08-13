@@ -225,23 +225,23 @@ ScrollToTop();
 
         public override async Task SetupNextPage()
         {
-            string newName = await ReadNextPageName(name);
+            string newName = await DataRepository.NextNavigation(name);
             if (newName.Contains("=="))
             {
                 int parent = await ReadParentPageID(name);
-                string uncle = await ReadNextPageName(parent);
+                string uncle = await DataRepository.NextNavigation(parent);
                 if (uncle.Contains("=="))
                 {
                     int grandparent = await ReadParentPageID(parent);
-                    string greatuncle = await ReadNextPageName(grandparent);
-                    string cousin = await ReadFirstIndexParagraph(greatuncle);
-                    newName = await ReadFirstIndexParagraph(cousin);
+                    string greatuncle = await DataRepository.NextNavigation(grandparent);
+                    string cousin = await DataRepository.FirstNavigationParagraph(greatuncle);
+                    newName = await DataRepository.FirstNavigationParagraph(cousin);
                     if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = cousin;
                     if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = greatuncle;
                 }
                 else
                 {
-                    newName = await ReadFirstIndexParagraph(uncle);
+                    newName = await DataRepository.FirstNavigationParagraph(uncle);
                     if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = uncle;
                 }
             }
@@ -259,40 +259,22 @@ ScrollToTop();
             return await DataRepository.NavigationParent(currentID);
         }
 
-        private async Task<string> ReadFirstIndexParagraph(string indexName)
-        {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadFirstIndexParagraph),
-                indexName);
-            string newName = await reader.GetDatum<string>();
-            reader.Close();
-            return newName;
-        }
-
-        private async Task<string> ReadNextPageName(string currentName)
-        {
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadNextNavigationName),
-                currentName);
-            string newName = await reader.GetDatum<string>();
-            reader.Close();
-            return newName;
-        }
-
         public override async Task SetupPrecedingPage()
         {
-            int currentIndex = await ReadParagraphIndex(name);
+            int currentIndex = await DataRepository.NavigationParagraphIndex(name);
             string newName;
             if (currentIndex == Ordinals.first)
             {
-                string parent = await ReadParentPageName(name);
-                int parentIndex = await ReadParagraphIndex(parent);
+                int parent = await ReadParentPageID(name);
+                string parentName = await DataRepository.NavigationName(parent);
+                int parentIndex = await DataRepository.NavigationParagraphIndex(parentName);
                 if (parentIndex == Ordinals.first)
                 {
-                    string grandparent = await ReadParentPageName(parent);
-                    int grandparentIndex = await ReadParagraphIndex(grandparent);
-                    string greatgrandparent = await ReadParentPageName(grandparent);
-                    string greatuncle = await ReadPrecedingPageName(greatgrandparent, grandparentIndex);
+                    int grandparent = await ReadParentPageID(parent);
+                    string grandparentName = await DataRepository.NavigationName(grandparent);
+                    int grandparentIndex = await DataRepository.NavigationParagraphIndex(grandparentName);
+                    int greatgrandparent = await ReadParentPageID(grandparent);
+                    string greatuncle = await DataRepository.NavigationParagraph(greatgrandparent, grandparentIndex - 1);
                     string cousin = await ReadLastChild(greatuncle);
                     newName = await ReadLastChild(cousin);
                     if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = cousin;
@@ -300,16 +282,16 @@ ScrollToTop();
                 }
                 else
                 {
-                    string grandparent = await ReadParentPageName(parent);
-                    string uncle = await ReadPrecedingPageName(grandparent, parentIndex);
+                    int grandparent = await ReadParentPageID(parent);
+                    string uncle = await DataRepository.NavigationParagraph(grandparent, parentIndex - 1);
                     newName = await ReadLastChild(uncle);
                     if (string.IsNullOrEmpty(newName) || (newName.Contains('#'))) newName = uncle;
                 }
             }
             else
             {
-                string parent = await ReadParentPageName(name);
-                newName = await ReadPrecedingPageName(parent, currentIndex);
+                int parent = await ReadParentPageID(name);
+                newName = await DataRepository.NavigationParagraph(parent, currentIndex - 1);
             }
             name = (string.IsNullOrEmpty(newName)) ?
                 name :
@@ -317,39 +299,18 @@ ScrollToTop();
 
         }
 
-        private async Task<string> ReadPrecedingPageName(string indexName, int paragraphIndex)
+        private async Task<string> ReadLastChild(string name)
         {
-            var reader = new DataReaderProvider<string, int>(SqlServerInfo.GetCommand(DataOperation.ReadNavigationParagraphUsingName),
-                indexName, paragraphIndex-1);
-            string newName = await reader.GetDatum<string>();
-            reader.Close();
-            return newName;
-        }
-
-        private async Task<int> ReadParagraphIndex(string indexName)
-        {
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadNavigationParagraphIndex),
-                indexName);
-            int index = await reader.GetDatum<int>();
-            reader.Close();
-            return index;
-        }
-
-        private async Task<string> ReadLastChild(string indexName)
-        {
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadNavigationHeadingIndex),
-                indexName);
-            int index = await reader.GetDatum<int>();
-            reader.Close();
-            return await ReadPrecedingPageName(indexName, index);
+            int index = await DataRepository.NavigationHeadingIndex(name);
+            return await DataRepository.NavigationParagraph(name, index - 1);
         }
 
         public override async Task SetupParentPage()
         {
-            string newName = await ReadParentPageName(name);
-            name = (string.IsNullOrEmpty(newName)) ?
+            int id = await ReadParentPageID(name);
+            name = (id == 0) ?
                 name :
-                newName.Replace("_", " ");
+                (await DataRepository.NavigationName(id)).Replace("_", " ");
         }
 
         public override async Task HandleEditRequest(HttpContext context)
@@ -361,7 +322,7 @@ ScrollToTop();
         private async Task WritePlainText(HTMLWriter writer, IQueryCollection query)
         {
             name = query[requestNameQuery];
-            var paragraphs = GetPageParagraphs();
+            var paragraphs = await GetPageParagraphs();
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
                 await writer.Append(paragraphs[i]);
@@ -373,7 +334,7 @@ ScrollToTop();
         {
             context.Request.Form.TryGetValue("text", out var text);
             name = context.Request.Query[requestNameQuery];
-            var existingParagraphs = GetPageParagraphs();
+            var existingParagraphs = await GetPageParagraphs();
             string textString = text.ToString().Trim();
             int id = await GetPageID();
             var newParagraphs = textString.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -389,30 +350,20 @@ ScrollToTop();
             }
             for (int i = newParagraphs.Count; i < existingParagraphs.Count; i++)
             {
-                await DeleteParagraph(i);
+                await DataRepository.DeleteNavigationParagraph(id, i);
             }
             await RenderBody(Writer.New(context.Response));
         }
 
         private async Task AddParagraph(string paragraph, int index, int id)
         {
-            await DataWriterProvider.Write<string, int, string, int>(
-                SqlServerInfo.GetCommand(DataOperation.CreateNavigationParagraph),
-                name, index, paragraph, id);
+            await DataRepository.WriteNavigationParagraph(name, id, index, paragraph);
         }
 
         private async Task UpdateParagraph(string paragraph, int index, int id)
         {
-            await DataWriterProvider.Write<int, int, string>(
-                SqlServerInfo.GetCommand(DataOperation.UpdateNavigationParagraph),
-                id, index, paragraph);
-        }
-
-        private async Task DeleteParagraph(int index)
-        {
-            await DataWriterProvider.Write<string, int>(
-                SqlServerInfo.GetCommand(DataOperation.DeleteNavigationParagraph),
-                name, index);
+            await DataRepository.DeleteNavigationParagraph(id, index);
+            await DataRepository.WriteNavigationParagraph(name, id, index, paragraph);
         }
     }
 }
