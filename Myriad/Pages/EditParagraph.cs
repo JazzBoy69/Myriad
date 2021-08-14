@@ -163,8 +163,9 @@ namespace Myriad.Pages
 
         public static async Task UpdateNavigationParagraph(MarkupParser parser, ArticleParagraph paragraph)
         {
+            string name = await DataRepository.NavigationName(paragraph.ID);
             await DataRepository.DeleteNavigationParagraph(paragraph.ID, paragraph.ParagraphIndex);
-            await DataRepository.WriteNavigationParagraph(paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
+            await DataRepository.WriteNavigationParagraph(name, paragraph.ID, paragraph.ParagraphIndex, paragraph.Text);
         }
 
         public static async Task UpdateChronoParagraph(MarkupParser parser, ArticleParagraph paragraph)
