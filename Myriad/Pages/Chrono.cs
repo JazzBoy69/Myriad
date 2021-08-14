@@ -101,24 +101,11 @@ namespace Myriad.Pages
         }
         internal static async Task<int> GetIDFromCitation(Citation citation)
         {
-            var commentIDs = GetCommentIDs(citation);
+            var commentIDs = await DataRepository.CommentIDsInRange(citation.Start, citation.End);
             if (commentIDs.Count < 1) return Number.nothing;
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadChronoChapterID),
-                commentIDs[Ordinals.first]);
-            int chapterID = await reader.GetDatum<int>();
-            reader.Close();
-            return chapterID;
+            return await DataRepository.CommentChapterID(commentIDs[Ordinals.first]);
         }
 
-        private static List<int> GetCommentIDs(Citation citation)
-        {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
-                citation.Start, citation.End);
-            var results = reader.GetData<int>();
-            reader.Close();
-            return results;
-        }
         public override async Task LoadTOCInfo(HttpContext context)
         {
             await LoadQueryInfo(context.Request.Query);
@@ -127,7 +114,7 @@ namespace Myriad.Pages
         public override async Task RenderBody(HTMLWriter writer)
         {
             this.writer = writer;
-            Initialize();
+            await Initialize();
             await Timeline.Write(writer, id);
             await writer.Append(HTMLTags.StartMainHeader);
             await WriteTitle(writer);
@@ -139,11 +126,11 @@ namespace Myriad.Pages
             await AddTOCButton(writer);
             await AddPagination(writer);
         }
-        private void Initialize()
+        private async Task Initialize()
         {
             parser = new PageParser(writer);
-            commentIDs = GetCommentIDs();
-            GetArticleParagraphs();
+            commentIDs = await DataRepository.CommentsInChapter(id);
+            await GetArticleParagraphs();
             textSections.navigating = navigating;
             textSections.sourceCitation = highlightCitation;
             textSections.highlightCitation = highlightCitation;
@@ -168,29 +155,22 @@ namespace Myriad.Pages
             }
             await writer.Append(HTMLTags.EndDiv);
         }
-        private void GetArticleParagraphs()
+        private async Task GetArticleParagraphs()
         {
             if (id == Number.nothing)
             {
                 articleParagraphs = new List<string>();
                 return;
             }
-            var paragraphReader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadChronoArticle),
-                id);
-            var paragraphs = paragraphReader.GetData<string>();
+            var paragraphs = await DataRepository.CommentChapterParagraphs(id);
             articleParagraphs = new List<string>();
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
                 if (!string.IsNullOrWhiteSpace(paragraphs[i])) articleParagraphs.Add(paragraphs[i]);
-            paragraphReader.Close();
         }
         public override async Task SetupNextPage()
         {
-            var reader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadNextChrono),
-                id);
-            int newID = await reader.GetDatum<int>();
+            int newID = await DataRepository.NextCommentChapter(id);
             id = (newID > Number.nothing) ? newID : id;
-            reader.Close();
         }
 
         public override Task SetupParentPage()
@@ -200,17 +180,13 @@ namespace Myriad.Pages
 
         public override async Task SetupPrecedingPage()
         {
-            var reader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadPrecedingChrono),
-                id);
-            int newID = await reader.GetDatum<int>();
+            int newID = await DataRepository.PrecedingCommentChapter(id);
             id = (newID > Number.nothing) ? newID : id;
-            reader.Close();
         }
 
         public override async Task WriteTOC(HTMLWriter writer)
         {
-            var ids = GetCommentIDs();
+            var ids = await DataRepository.CommentsInChapter(id);
             if (ids.Count < 2) return;
             await writer.Append(HTMLTags.StartList);
             await writer.Append(HTMLTags.ID);
@@ -218,10 +194,6 @@ namespace Myriad.Pages
             await writer.Append(HTMLTags.Class);
             await writer.Append(HTMLClasses.visible);
             await writer.Append(HTMLTags.CloseQuoteEndTag);
-            var reader = new StoredProcedureProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadCommentTitle),
-                -1);
-
             for (int index = Ordinals.first; index < ids.Count; index++)
             {
                 await writer.Append(HTMLTags.StartListItem);
@@ -233,24 +205,12 @@ namespace Myriad.Pages
                 await writer.Append(HTMLTags.OnClick);
                 await writer.Append(JavaScriptFunctions.HandleTOCClick);
                 await writer.Append(HTMLTags.EndTag);
-                reader.SetParameter(ids[index]);
-                string heading = await reader.GetDatum<string>();
+                string heading = await DataRepository.CommentHeading(ids[index]);
                 await writer.Append(heading.Replace("==", ""));
                 await writer.Append(HTMLTags.EndAnchor);
                 await writer.Append(HTMLTags.EndListItem);
             }
             await writer.Append(HTMLTags.EndList);
-            reader.Close();
-        }
-
-        private List<int> GetCommentIDs()
-        {
-            if (id == Number.nothing) return new List<int>();
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadChronoIDs),
-                id);
-            var result = reader.GetData<int>();
-            reader.Close();
-            return result;
         }
 
         protected override string PageScripts()
@@ -260,10 +220,7 @@ namespace Myriad.Pages
 
         internal override async Task WriteTitle(HTMLWriter writer)
         {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadChronoTitle),
-                id);
-            string title = await reader.GetDatum<string>();
-            reader.Close();
+            string title = await DataRepository.CommentChapterHeading(id);
             await writer.Append(title);
         }
     }
