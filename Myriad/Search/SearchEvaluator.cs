@@ -79,18 +79,11 @@ namespace Myriad.Search
             //2) Load Definition searches
             if (usedDefinitions.Count > Number.nothing)
             {
-                var definitionQuery = new StringBuilder(definitionSelector);
-                AppendORSelection(definitionQuery, usedDefinitions.Distinct().ToList(), "id =");
-                if ((pageInfo.CitationRange != null) && (pageInfo.CitationRange.Valid))
-                {
-                    definitionQuery.Append(" and (start>=");
-                    definitionQuery.Append(pageInfo.CitationRange.StartID);
-                    definitionQuery.Append(" and last<=");
-                    definitionQuery.Append(pageInfo.CitationRange.EndID);
-                    definitionQuery.Append(") ");
-                }
+                usedDefinitions = usedDefinitions.Distinct().ToList();
                 definitionSearchesInSentences =
-                    await ReadDefinitionSearches(definitionQuery.ToString());
+                    ((pageInfo.CitationRange != null) && (pageInfo.CitationRange.Valid))
+                    ? await DefinitionSearches(usedDefinitions, pageInfo.CitationRange.StartID.ID, pageInfo.CitationRange.EndID.ID)
+                    : await DefinitionSearches(usedDefinitions);
             }
             IEnumerable<KeyValuePair<int, int>> filteredSentences;
             if (pageInfo.IDList != null)
@@ -581,19 +574,35 @@ namespace Myriad.Search
                                 s => Math.Max(s.Value, type));
             return newSentences;
         }
-        private static async Task<Dictionary<(int, int), int>> ReadDefinitionSearches(string query)
+        private static async Task<Dictionary<(int, int), int>> DefinitionSearches(List<int> ids, int start, int last)
         {
-            var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(query));
-            List<(int sentence, int wordindex, int id)> preliminaryResults = 
-                await reader.reader.GetData<int, int, int>();
-            reader.Close();
-            var results = new Dictionary<(int, int), int>();
-            for (int index = Ordinals.first; index < preliminaryResults.Count; index++)
+            List<(int sentence, int wordindex, int id)> preliminaryResults = new List<(int sentence, int wordindex, int id)>();
+            for (int index = Ordinals.first; index < ids.Count; index++)
             {
-                (int, int) key = (preliminaryResults[index].sentence, 
-                    preliminaryResults[index].wordindex);
+                preliminaryResults.AddRange(
+                    await DataRepository.SentencesWithDefinitionSearch(ids[index], start, last));
+            }
+            return DistinctSentences(preliminaryResults);
+        }
+        private static async Task<Dictionary<(int, int), int>> DefinitionSearches(List<int> ids)
+        {
+            List<(int sentence, int wordindex, int id)> preliminaryResults = new List<(int sentence, int wordindex, int id)>();
+            for (int index = Ordinals.first; index < ids.Count; index++)
+            {
+                preliminaryResults.AddRange(
+                    await DataRepository.SentencesWithDefinitionSearch(ids[index]));
+            }
+            return DistinctSentences(preliminaryResults);
+        }
+        private static Dictionary<(int, int), int> DistinctSentences(List<(int sentence, int wordindex, int id)> sentences)
+        {
+            var results = new Dictionary<(int, int), int>();
+            for (int index = Ordinals.first; index < sentences.Count; index++)
+            {
+                (int, int) key = (sentences[index].sentence,
+                    sentences[index].wordindex);
                 if (results.ContainsKey(key)) continue;
-                results.Add(key, preliminaryResults[index].id);
+                results.Add(key, sentences[index].id);
             }
             return results;
         }

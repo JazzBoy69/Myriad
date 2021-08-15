@@ -224,17 +224,14 @@ namespace Myriad.Pages
             int id = await reader.GetDatum<int>();
             reader.Close();
             if (id > Number.nothing) return;
-            var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(DataOperation.ReadRelatedArticles),
-                matrixWord.Start, matrixWord.End);
-            var relatedArticles = relatedReader.GetClassData<RangeAndParagraph>();
-            relatedReader.Close();
+            var relatedArticles = await DataRepository.RelatedArticles(matrixWord.Start, matrixWord.End);
             for (int index = Ordinals.first; index < relatedArticles.Count; index++)
             {
-                List<string> synonyms = await DataRepository.Synonyms(relatedArticles[index].ArticleID);
+                List<string> synonyms = await DataRepository.Synonyms(relatedArticles[index].id);
                 if (synonyms.Contains(matrixWord.Text))
                 {
                     DefinitionSearch searchword = new DefinitionSearch(matrixWord, 
-                        relatedArticles[index].ArticleID, relatedArticles[index].ParagraphIndex, sentenceID, wordIndex);
+                        relatedArticles[index].id, relatedArticles[index].paragraphindex, sentenceID, wordIndex);
                     await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch),
                         searchword);
                 }
