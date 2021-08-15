@@ -535,50 +535,34 @@ namespace Myriad.Search
             builder.Append(") ");
         }
 
-        internal void EvaluateSynonyms(List<string> phrases)
+        internal async Task EvaluateSynonyms(List<string> phrases)
         {
             for (int i=Ordinals.first; i<phrases.Count; i++)
             {
                 if (EnglishDictionary.IsCommonWord(phrases[i])) continue;
                 var roots = Inflections.HardRootsOf(phrases[i]);
                 //get definition ids for phrase
-                List<int> definitionIDs = GetDefinitionIDs(roots);
-                phraseDefinitions.Add(definitionIDs);
-                //get synonyms for phrase
-                var thisPhraseSynonyms = (definitionIDs.Count == 0) ? 
-                    roots : 
-                    GetSynonyms(definitionIDs, phrases[i]);
-                synonyms.Add(thisPhraseSynonyms);
-                usedDefinitions.AddRange(definitionIDs);
+                for (int j = Ordinals.first; j < roots.Count; j++)
+                {
+                    var definitionIDs = await DataRepository.ArticleIDsFromSynonym(roots[j]);
+                    phraseDefinitions.Add(definitionIDs);
+                    //get synonyms for phrase
+                    var thisPhraseSynonyms = (definitionIDs.Count == 0) ?
+                        roots :
+                        await GetSynonyms(definitionIDs, phrases[i]);
+                    synonyms.Add(thisPhraseSynonyms);
+                    usedDefinitions.AddRange(definitionIDs);
+                }
             }
         }
 
-        public static List<string> GetSynonyms(List<int> definitionIDs, string root)
+        public static async Task<List<string>> GetSynonyms(List<int> definitionIDs, string root)
         {
-            var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadSynonyms),
-                -1, "");
             var results = new List<string>();
             for (int index = Ordinals.first; index < definitionIDs.Count; index++)
             {
-                reader.SetParameter(definitionIDs[index], root);
-                results.AddRange(reader.GetData<string>());
+                results.AddRange(await DataRepository.SynonymsExcept(definitionIDs[index], root));
             }
-            reader.Close();
-            return results;
-        }
-
-        private static List<int> GetDefinitionIDs(List<string> roots)
-        {
-            var results = new List<int>();
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(
-                DataOperation.ReadDefinitionIDs),
-                "");
-            for (int index = Ordinals.first; index < roots.Count; index++)
-            {
-                reader.SetParameter(roots[index]);
-                results.AddRange(reader.GetData<int>());
-            }
-            reader.Close();
             return results;
         }
 

@@ -245,6 +245,7 @@ namespace Myriad.Pages
         {
             var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchID),
                 matrixWord.Start, matrixWord.Text);
+            
             int id = await reader.GetDatum<int>();
             reader.Close();
             if (id == Number.nothing) return;

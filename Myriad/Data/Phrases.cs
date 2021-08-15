@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Feliciana.Library;
-using Feliciana.Data;
 
 namespace Myriad.Data
 {
@@ -84,18 +83,18 @@ namespace Myriad.Data
             return found;
         }
 
-        internal static List<string> RootsOf(string words)
+        internal static async Task<List<string>> RootsOf(string word)
         {
-            List<string> result = Inflections.ReadRootFromDB(words);
+            List<string> result = await DataRepository.RootsOf(word);
             if (result.Count > 0) return result;
-            result = Inflections.EnglishRootsOf(words);
+            result = await Inflections.EnglishRootsOf(word);
             if (result.Count > 0) return result;
             StringBuilder phrase = new StringBuilder();
-            string[] wordList = words.Split(new char[] { ' ', '_' });
+            string[] wordList = word.Split(new char[] { ' ', '_' });
             for (int i=Ordinals.first; i<wordList.Length; i++)
             {
                 if (i > Ordinals.first) phrase.Append(' ');
-                var roots = Inflections.EnglishRootsOf(wordList[i]);
+                var roots = await DataRepository.RootsOf(wordList[i]);
                 string root = (roots.Contains(wordList[i])) ? wordList[i] : roots[Ordinals.first];
                 phrase.Append(root);
             }
