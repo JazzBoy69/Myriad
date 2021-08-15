@@ -9,7 +9,7 @@ namespace Myriad.Data
 {
     public class Phrases
     {
-        internal static List<string> GetPhrases(List<string> words) 
+        internal static async Task<List<string>> GetPhrases(List<string> words) 
         {
             var result = new List<string>();
             if (words.Count == 1)
@@ -19,26 +19,26 @@ namespace Myriad.Data
             }
             for (int index = Ordinals.first; index < words.Count; index++)
             {
-                string possibility = GetMatchingPhrase(words, index);
+                string possibility = await GetMatchingPhrase(words, index);
                 index += possibility.Count(c => c == ' ');
                 result.Add(possibility);
             }
             return result;
         }
 
-        private static string GetMatchingPhrase(List<string> words, int index)
+        private static async Task<string> GetMatchingPhrase(List<string> words, int index)
         {
             var possibilities = PhrasesThatStartWith(words[index]);
-            string possibility = EvaluatePossibilities(words, index, possibilities);
+            string possibility = await EvaluatePossibilities(words, index, possibilities);
             return possibility;
         }
 
-        private static string EvaluatePossibilities(List<string> words, int index, List<string> possibilities)
+        private static async Task<string> EvaluatePossibilities(List<string> words, int index, List<string> possibilities)
         {
             if (!possibilities.Any()) return words[index];
             for (int i = Ordinals.first; i<possibilities.Count; i++)
             {
-                if (PhraseMatches(words, index, possibilities[i]))
+                if (await PhraseMatches(words, index, possibilities[i]))
                 {
                     return possibilities[i];
                 }
@@ -46,7 +46,7 @@ namespace Myriad.Data
             return words[index];
         }
 
-        internal static bool PhraseMatches(List<string> words, int index, string testPhrase)
+        internal static async Task<bool> PhraseMatches(List<string> words, int index, string testPhrase)
         {
             string[] testWords = testPhrase.Split(new char[] { ' ' });
             if ((index + testWords.Length) > words.Count) return false;
@@ -60,18 +60,18 @@ namespace Myriad.Data
             testIndex = Ordinals.first;
             while (testIndex < testWords.Length)
             {
-                var testWordRoots = Inflections.RootsOf(testWords[testIndex]);
-                if (!RootsMatch(testWordRoots, words[index + testIndex])) return false;
+                var testWordRoots = await Inflections.RootsOf(testWords[testIndex]);
+                if (!await RootsMatch(testWordRoots, words[index + testIndex])) return false;
                 testIndex++;
             }
             return true; 
         }
 
-        private static bool RootsMatch(List<string> testRoots, string word)
+        private static async Task<bool> RootsMatch(List<string> testRoots, string word)
         {
             if (testRoots.Contains(word)) return true;
             bool found = false;
-            var offsetRoots = Inflections.RootsOf(word).Distinct().ToList();
+            var offsetRoots = (await Inflections.RootsOf(word)).Distinct().ToList();
             for (int i = Ordinals.first; i<offsetRoots.Count; i++)
             {
                 if (testRoots.Contains(offsetRoots[i]))
@@ -100,19 +100,14 @@ namespace Myriad.Data
             }
             return new List<string>() { phrase.ToString() };
         }
-        internal static List<string> PhrasesThatStartWith(string word)
+        internal static async Task<List<string>> PhrasesThatStartWith(string word)
         {
-            var roots = Inflections.HardRootsOf(word);
-            var reader = new DataReaderProvider<string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadPhrases),
-                word);
-            var phrases = reader.GetData<string>();
+            var roots = await Inflections.HardRootsOf(word);
+            var phrases = await DataRepository.PhrasesThatStartWith(word);
             for (int i = Ordinals.first; i < roots.Count; i++)
             {
-                reader.SetParameter(roots[i]);
-                phrases.AddRange(reader.GetData<string>());
+                phrases.AddRange(await DataRepository.PhrasesThatStartWith(roots[i]));
             }
-            reader.Close();
             return phrases.Distinct().ToList();
         }
 
