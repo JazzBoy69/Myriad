@@ -28,7 +28,7 @@ namespace Myriad.Data
 
         private static async Task<string> GetMatchingPhrase(List<string> words, int index)
         {
-            var possibilities = PhrasesThatStartWith(words[index]);
+            var possibilities = await PhrasesThatStartWith(words[index]);
             string possibility = await EvaluatePossibilities(words, index, possibilities);
             return possibility;
         }
@@ -113,63 +113,25 @@ namespace Myriad.Data
 
         internal static async Task Add(string firstWord, string phrase)
         {
-            var reader = new DataReaderProvider<string>(SqlServerInfo.GetCommand(DataOperation.ReadPhrase),
-                phrase);
-            int id = await reader.GetDatum<int>();
-            reader.Close();
-            if (id > Number.nothing) return;
-            await DataWriterProvider.Write<string, string, int>(SqlServerInfo.GetCommand(DataOperation.CreatePhrase),
-                firstWord, phrase, phrase.Count(c => c==' ')+1);
+            if (await DataRepository.PhraseExists(phrase)) return;
+            await DataRepository.WritePhrase(firstWord, phrase);
             await CreateSearchWordPhrase(phrase);
         }
 
         private static async Task CreateSearchWordPhrase(string phrase)
         {
-            List<string> words = phrase.Split(Symbols.spaceArray, StringSplitOptions.RemoveEmptyEntries).ToList();
-            int length = words.Count - 1;
-            StringBuilder query = PhraseQuery(words);
-            var reader = new DataReaderProvider(SqlServerInfo.CreateCommandFromQuery(query.ToString()));
-            List<(int start, int sentenceID, int wordIndex)> searchResults = await reader.GetData<int, int, int>();
+            int length = phrase.Count(c => c == ' ');
+            List<(int start, int sentenceID, int wordIndex)> searchResults = await DataRepository.PhraseSearch(phrase);
             for (int i = Ordinals.first; i < searchResults.Count; i++)
             {
                 await AddSearchPhrase(phrase, searchResults[i], length);
             }
         }
 
-        private static StringBuilder PhraseQuery(List<string> words)
-        {
-            StringBuilder query = new StringBuilder(
-            @"select sw0.start, sw0.sentence, sw0.wordindex from searchwords as sw0");
-            for (int i = Ordinals.second; i < words.Count; i++)
-            {
-                query.Append(" join searchwords as sw");
-                query.Append(i);
-                query.Append(" on sw0.start+");
-                query.Append(i);
-                query.Append("= sw");
-                query.Append(i);
-                query.Append(".start");
-            }
-            query.Append(" where ");
-            for (int i = Ordinals.first; i < words.Count; i++)
-            {
-                if (i > Ordinals.first) query.Append(" and ");
-                query.Append("sw");
-                query.Append(i);
-                query.Append(".text='");
-                query.Append(words[i]);
-                query.Append("'");
-            }
-
-            return query;
-        }
-
         private static async Task AddSearchPhrase(string phrase, (int start, int sentenceID, int wordIndex) searchResult, int length)
         {
-            SearchResult searchword = new SearchResult(searchResult.sentenceID, searchResult.wordIndex, phrase,
-                0, 500, searchResult.start, searchResult.start + length, 0);
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
-                searchword);
+            SearchWord searchword = new SearchWord(phrase, searchResult.start, searchResult.start + length - 1, searchResult.sentenceID, searchResult.wordIndex, 500, 0);
+            await DataRepository.WriteSearchWord(searchword);
         }
         internal static async Task Add(string phrase)
         {
