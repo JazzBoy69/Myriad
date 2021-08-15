@@ -39,8 +39,11 @@
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataProvider.cs" Link="Data\References\DataProvider.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataRepository.cs" Link="Data\References\DataRepository.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\IDataRepository.cs" Link="Data\References\IDataRepository.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\SearchSentence.cs" Link="Data\References\SearchSentence.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\SQLDataProvider.cs" Link="Data\References\SQLDataProvider.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\SQLRepository.cs" Link="Data\References\SQLRepository.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\WordPosition.cs" Link="Data\References\WordPosition.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\WordReference.cs" Link="Data\References\WordReference.cs" />
   </ItemGroup>
 
   <ItemGroup>
