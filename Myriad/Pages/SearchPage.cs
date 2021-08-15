@@ -146,11 +146,11 @@ namespace Myriad.Pages
         public async override Task RenderBody(HTMLWriter writer)
         {
             await SaveQuery(writer);
-            var phrases = Phrases.GetPhrases(pageInfo.QueryWords);
+            var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
             if (phrases.Count > Number.nothing)
             {
                 var searchEvaluator = new SearchEvaluator();
-                searchEvaluator.EvaluateSynonyms(phrases);
+                await searchEvaluator.EvaluateSynonyms(phrases);
                 var results = new List<SearchSentence>();
                 results.AddRange(await searchEvaluator.Search(phrases, pageInfo, false));
                 pageInfo.SetResults(results);
@@ -164,11 +164,11 @@ namespace Myriad.Pages
 
         public async Task WriteSynonymResults(HTMLWriter writer)
         {
-            var phrases = Phrases.GetPhrases(pageInfo.QueryWords);
+            var phrases = await Phrases.GetPhrases(pageInfo.QueryWords);
             if (phrases.Count > Number.nothing)
             {
                 var searchEvaluator = new SearchEvaluator();
-                searchEvaluator.EvaluateSynonyms(phrases);
+                await searchEvaluator.EvaluateSynonyms(phrases);
                 var results = await searchEvaluator.Search(phrases, pageInfo, true);
                 pageInfo.SetResults(results);
                 pageInfo.SetUsedDefinitions(searchEvaluator.UsedDefinitions);
