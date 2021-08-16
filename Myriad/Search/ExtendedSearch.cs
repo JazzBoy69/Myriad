@@ -18,17 +18,24 @@ namespace Myriad.Search
         public static async Task<List<Citation>> EvaluatePhraseDefinitions(List<List<int>> phraseDefinitions, CitationRange searchRange)
         {
             int definitionCount = Number.nothing;
+            var definitionsToEvaluate = new List<List<int>>();
             for (int i = Ordinals.first; i < phraseDefinitions.Count; i++)
             {
-                if (phraseDefinitions[i].Count > Number.nothing) definitionCount++;
+                if (phraseDefinitions[i].Count > Number.nothing)
+                {
+                    definitionCount++;
+                    definitionsToEvaluate.Add(phraseDefinitions[i]);
+                }
             }
             if (definitionCount < 2) return new List<Citation>();
-            List<(int start, int last)> ranges =
-                await DataRepository.GetRangesInCommon(
-                    phraseDefinitions, 
-                    searchRange.StartID.ID, 
+            List<(int start, int last)> ranges = (searchRange.Valid) ?
+                await DataRepository.CommonRanges(
+                    definitionsToEvaluate,
+                    searchRange.StartID.ID,
                     searchRange.EndID.ID
-                );
+                ) :
+                await DataRepository.CommonRanges(
+                    definitionsToEvaluate);
             ranges = ranges.OrderByDescending(r => r.last - r.start).ToList();
             var keys = new List<(int, int)>();
             var result = new List<Citation>();
