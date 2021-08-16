@@ -9,7 +9,6 @@ namespace Myriad.Search
         readonly int start;
         readonly int end;
         readonly List<ExtendedSearchArticle> definitionSearches = new List<ExtendedSearchArticle>();
-        readonly List<SearchResult> searchResults = new List<SearchResult>();
         internal int Start => start;
         internal int End => end;
 
@@ -23,11 +22,6 @@ namespace Myriad.Search
         internal void AddDefinitionSearch(ExtendedSearchArticle extendedSearchArticle)
         {
             definitionSearches.Add(extendedSearchArticle);
-        }
-
-        internal void AddSearchResult(SearchResult searchResult)
-        {
-            searchResults.Add(searchResult);
         }
 
         internal ExtendedSearchRange Copy()

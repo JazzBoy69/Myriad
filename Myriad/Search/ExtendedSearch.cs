@@ -36,13 +36,11 @@ namespace Myriad.Search
                 ) :
                 await DataRepository.CommonRanges(
                     definitionsToEvaluate);
-            ranges = ranges.OrderByDescending(r => r.last - r.start).ToList();
             var keys = new List<(int, int)>();
             var result = new List<Citation>();
             for (int i = Ordinals.first; i < ranges.Count; i++)
             {
                 Citation citation = new Citation(ranges[i].Item1, ranges[i].Item2);
-                await citation.ResolveLastWordIndex();
                 (int, int) key = citation.Key;
                 if (PresentIn(keys, key)) continue;
                 keys.Add(citation.Key);
