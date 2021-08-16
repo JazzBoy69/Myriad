@@ -19,6 +19,8 @@
   <ItemGroup>
     <Compile Include="..\..\FelicianaData\FelicianaData\DataObject.cs" Link="Data\References\DataObject.cs" />
     <Compile Include="..\..\FelicianaData\FelicianaData\DataWriter.cs" Link="Data\References\DataWriter.cs" />
+    <Compile Include="..\..\FelicianaData\FelicianaData\FelicianaReader.cs" Link="Data\References\FelicianaReader.cs" />
+    <Compile Include="..\..\FelicianaData\FelicianaData\FelicianaWriter.cs" Link="Data\References\FelicianaWriter.cs" />
     <Compile Include="..\..\FelicianaData\FelicianaData\SqlReader.cs" Link="Data\References\SqlReader.cs" />
     <Compile Include="..\..\FelicianaHTML\FelicianaHTML\HTMLTags.cs" Link="Library\References\HTMLTags.cs" />
     <Compile Include="..\..\FelicianaHTML\FelicianaHTML\ImageElement.cs" Link="Library\References\ImageElement.cs" />
