@@ -40,8 +40,10 @@ namespace Myriad.Search
                 {
                     string root = EnglishDictionary.CommonInflection(phrases[index]);
                     commonWords.Add(root);
-                    List<SearchResult> results = ReadSearchResults(
-                        CommonWordQuery(phrases[index], queryIndex, pageInfo.CitationRange));
+                    List<SearchResult> results =
+                        ((pageInfo.CitationRange != null) && (pageInfo.CitationRange.Valid))
+                        ? await DataRepository.OccurencesOfCommonWord(phrases[index], queryIndex, pageInfo.CitationRange.StartID.ID, pageInfo.CitationRange.EndID.ID)
+                        : await DataRepository.OccurencesOfCommonWord(phrases[index], queryIndex);                 
                     if (results.Count > Number.nothing)
                     {
                         searchResults.AddRange(results);
@@ -426,26 +428,6 @@ namespace Myriad.Search
             }
             return query.ToString();
         }
-
-        private static string CommonWordQuery(string word, int queryIndex, CitationRange searchRange)
-        {
-            var query = new StringBuilder(
-                "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
-            query.Append(queryIndex);
-            query.Append(", sw.substitute, RTrim(sw.text) from searchwords as sw where weight>10 and sw.text='");
-            query.Append(word);
-            query.Append("'");
-            if ((searchRange != null) && (searchRange.Valid))
-            {
-                query.Append(" and (sw.start>=");
-                query.Append(searchRange.StartID);
-                query.Append(" and sw.last<=");
-                query.Append(searchRange.EndID);
-                query.Append(") ");
-            }
-            return query.ToString();
-        }
-
         private static string PhraseQuery(string phrase, int queryIndex, CitationRange searchRange)
         {
             var query = new StringBuilder(
