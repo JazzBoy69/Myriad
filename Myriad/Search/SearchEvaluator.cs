@@ -137,22 +137,23 @@ namespace Myriad.Search
                  select sentence).ToList();
             if (!isSynonymQuery && EnglishDictionary.ContainsCommonWords(pageInfo.QueryWords))
             {
-                filteredOrSentences.InsertRange(Ordinals.first, ExactPhraseSearch(pageInfo, pageInfo.CitationRange));
+                filteredOrSentences.InsertRange(Ordinals.first, await ExactPhraseSearch(pageInfo, pageInfo.CitationRange));
             }
             return filteredOrSentences;
         }
 
-        internal List<SearchSentence> ExactPhraseSearch(SearchPageInfo pageInfo, CitationRange searchRange)
+        internal async Task<List<SearchSentence>> ExactPhraseSearch(SearchPageInfo pageInfo, CitationRange searchRange)
         {
-            if (pageInfo.QueryWords.Count < 2) return new List<SearchSentence>();
-            var results = ReadSearchResults(ExactPhraseQuery(pageInfo, searchRange));
+            int length = pageInfo.QueryWords.Count;
+            if (length < 2) return new List<SearchSentence>();
+            var results = await DataRepository.PhraseSearch(pageInfo.QueryWords);
             List<SearchSentence> sentences = new List<SearchSentence>();
             for (int i = Ordinals.first; i < results.Count; i++)
             {
-                SearchSentence sentence = new SearchSentence(results[i].SentenceID, results[i].Length);
-                for (int j = Ordinals.first; j < results[i].Length; j++)
+                SearchSentence sentence = new SearchSentence(results[i].sentenceID, length);
+                for (int j = Ordinals.first; j < length; j++)
                 {
-                    var result = new SearchResult(results[i].SentenceID, results[i].WordIndex+j, 1, j);
+                    var result = new SearchResult(results[i].sentenceID, results[i].wordIndex+j, 1, j);
                     if ((definitionSearchesInSentences != null) &&
                         (definitionSearchesInSentences.ContainsKey(result.Key)))
                         result.SetArticleID(definitionSearchesInSentences[result.Key]);
@@ -388,45 +389,6 @@ namespace Myriad.Search
             var result = new List<string>() { word };
             result.AddRange(await Inflections.RootsOf(word));
             return result.Distinct().ToList();
-        }
-
-        private static string ExactPhraseQuery(SearchPageInfo pageInfo, CitationRange searchRange)
-        {
-            var query = new StringBuilder(
-                            "select sw0.sentence, sw0.wordindex, sw");
-            query.Append(pageInfo.QueryWords.Count - 1);
-            query.Append(".last-sw0.start+1, 0, sw0.substitute, '");
-            query.Append(pageInfo.Query);
-            query.Append("' from searchwords as sw0 ");
-            for (int i = Ordinals.second; i < pageInfo.QueryWords.Count; i++)
-            {
-                query.Append(" join searchwords as sw");
-                query.Append(i);
-                query.Append(" on sw");
-                query.Append(i);
-                query.Append(".start=sw");
-                query.Append(i - 1);
-                query.Append(".last+1 ");
-            }
-            query.Append("where ");
-            for (int i = Ordinals.first; i < pageInfo.QueryWords.Count; i++)
-            {
-                if (i > Ordinals.first) query.Append(" and ");
-                query.Append("sw");
-                query.Append(i);
-                query.Append(".text='");
-                query.Append(pageInfo.QueryWords[i]);
-                query.Append("'");
-            }
-            if ((searchRange != null) && (searchRange.Valid))
-            {
-                query.Append(" and (sw0.start>=");
-                query.Append(searchRange.StartID);
-                query.Append(" and sw0.last<=");
-                query.Append(searchRange.EndID);
-                query.Append(") ");
-            }
-            return query.ToString();
         }
         private static string PhraseQuery(string phrase, int queryIndex, CitationRange searchRange)
         {
