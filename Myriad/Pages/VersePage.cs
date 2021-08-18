@@ -172,7 +172,7 @@ namespace Myriad.Pages
 
         private static async Task UpdateInflections(List<MatrixWord> newInflections, int id)
         {
-            (int sentenceID, int sentenceWordIndex) = await ReadSentenceIndex(id);
+            (int sentenceID, int sentenceWordIndex) = await DataRepository.SentenceWordIndex(id);
             List<MatrixWord> oldInflections = await DataRepository.MatrixWords(id);
             int existingIndex = Ordinals.first;
             int index = Ordinals.first;
@@ -273,16 +273,6 @@ namespace Myriad.Pages
             await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
                 searchword);
         }
-
-        private static async Task<(int sentenceID, int sentenceWordIndex)> ReadSentenceIndex(int id)
-        {
-            var reader = new DataReaderProvider<int>(SqlServerInfo.GetCommand(DataOperation.ReadSentenceIndex),
-                id);
-            (int sentenceID, int wordIndex) = await reader.GetDatum<int, int>();
-            reader.Close();
-            return (sentenceID, wordIndex);
-        }
-
         private async Task<List<MatrixWord>> DecodeMatrixString(string matrixString, int id)
         {
             string[] inflections = matrixString.Split(Symbols.spaceArray);
