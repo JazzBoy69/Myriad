@@ -60,7 +60,7 @@ namespace Myriad.Search
                     Dictionary<int, int> synSentences = null;
                     if (isSynonymQuery && (synonyms[queryIndex].Count > 0))
                     {
-                        var synResults =
+                        var synResults = await
                             ReadPhrasesResults(queryIndex, synonyms, pageInfo.CitationRange);
                         searchResults.AddRange(synResults);
                         synSentences = AddResultsToSentences(sentences, synResults, 3);
@@ -337,7 +337,7 @@ namespace Myriad.Search
             if (!phrase.Contains(' ')) return results;
             string query = await PhraseWordQuery(phrase, queryIndex, searchRange);
             if (string.IsNullOrEmpty(query)) return results;
-            results.AddRange(ReadSearchResults(query));
+            results.AddRange(await DataRepository.WordSearchResults(phrase, queryIndex, searchRange));
             return results;
         }
 
@@ -408,23 +408,10 @@ namespace Myriad.Search
             return query.ToString();
         }
 
-        private static List<ISearchResult> ReadPhrasesResults(int queryIndex,
+        private static async Task<List<ISearchResult>> ReadPhrasesResults(int queryIndex,
                 List<List<string>> synonyms, CitationRange searchRange)
         {
-            var synQuery = new StringBuilder(
-            "select sw.sentence, sw.wordindex, sw.last-sw.start+1, ");
-            synQuery.Append(queryIndex);
-            synQuery.Append(", sw.substitute, RTrim(sw.text) from searchwords as sw where ");
-            AppendORSelection(synQuery, synonyms[queryIndex], "sw.text");
-            if ((searchRange != null) && (searchRange.Valid))
-            {
-                synQuery.Append(" and (sw.start>=");
-                synQuery.Append(searchRange.StartID);
-                synQuery.Append(" and sw.last<=");
-                synQuery.Append(searchRange.EndID);
-                synQuery.Append(") ");
-            }
-            return ReadSearchResults(synQuery.ToString());
+            return (await DataRepository.SearchResults(synonyms[queryIndex], queryIndex, searchRange)).ToList<ISearchResult>();
         }
 
         private static void AppendORSelection(StringBuilder builder, List<string> list,
