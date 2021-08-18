@@ -37,6 +37,7 @@
     <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\StringRange.cs" Link="Library\References\StringRange.cs" />
     <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Symbol.cs" Link="Library\References\Symbol.cs" />
     <Compile Include="..\..\FelicianaLibrary\FelicianaLibrary\Symbols.cs" Link="Library\References\Symbols.cs" />
+    <Compile Include="..\..\MyriadData\DataClasses\Data\CitationRange.cs" Link="Data\References\CitationRange.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataObjects.cs" Link="Data\References\DataObjects.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataProvider.cs" Link="Data\References\DataProvider.cs" />
     <Compile Include="..\..\MyriadData\DataClasses\Data\DataRepository.cs" Link="Data\References\DataRepository.cs" />

@@ -5,7 +5,7 @@ using Feliciana.Library;
 using Myriad.Parser;
 using Myriad.Data;
 
-namespace Myriad.Library
+namespace Myriad.Deprecated
 {
     //move to Citation library
     public class CitationRange

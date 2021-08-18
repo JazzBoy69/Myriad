@@ -14,8 +14,8 @@ namespace Myriad.Search
         List<int> usedDefinitions = new List<int>();
         List<List<string>> synonyms = new List<List<string>>();
         List<List<int>> phraseDefinitions = new List<List<int>>();
-        List<SearchResult> filteredResults;
-        List<SearchResult> searchResults;
+        List<ISearchResult> filteredResults;
+        List<ISearchResult> searchResults;
         Dictionary<int, int> sentences = null;
         List<string> commonWords = new List<string>();
         Dictionary<(int, int), int> definitionSearchesInSentences = new Dictionary<(int, int), int>();
@@ -26,12 +26,12 @@ namespace Myriad.Search
         internal List<List<int>> PhraseDefinitions => phraseDefinitions;
         public List<int> UsedDefinitions => usedDefinitions;
 
-        internal List<SearchResult> SearchResults => searchResults;
+        internal List<ISearchResult> SearchResults => searchResults;
 
         internal async Task<List<SearchSentence>> Search(List<string> phrases, 
             SearchPageInfo pageInfo, bool isSynonymQuery)
         {
-            searchResults = new List<SearchResult>();
+            searchResults = new List<ISearchResult>();
             int queryIndex = Ordinals.first;
 
             for (int index = Ordinals.first; index < phrases.Count; index++)
@@ -40,7 +40,7 @@ namespace Myriad.Search
                 {
                     string root = EnglishDictionary.CommonInflection(phrases[index]);
                     commonWords.Add(root);
-                    List<SearchResult> results =
+                    List<ISearchResult> results =
                         ((pageInfo.CitationRange != null) && (pageInfo.CitationRange.Valid))
                         ? await DataRepository.OccurencesOfCommonWord(phrases[index], queryIndex, pageInfo.CitationRange.StartID.ID, pageInfo.CitationRange.EndID.ID)
                         : await DataRepository.OccurencesOfCommonWord(phrases[index], queryIndex);                 
@@ -53,7 +53,7 @@ namespace Myriad.Search
                 }
                 else
                 {
-                    List<SearchResult> results = await 
+                    List<ISearchResult> results = await 
                         ReadPhraseResults(phrases[index], queryIndex, pageInfo.CitationRange);
                     searchResults.AddRange(results);
                     var phraseSentences = AddResultsToSentences(sentences, results, 1);
@@ -109,7 +109,7 @@ namespace Myriad.Search
 
             filteredResults = (from sentence in filteredSentences
                                    join result in searchResults
-                                   on sentence.Key equals result.SentenceID
+                                   on sentence.Key equals result.SentenceID()
                                    orderby sentence.Key
                                    select result).ToList();
             List<SearchSentence> filteredOrSentences = 
@@ -155,8 +155,8 @@ namespace Myriad.Search
                 {
                     var result = new SearchResult(results[i].sentenceID, results[i].wordIndex+j, 1, j);
                     if ((definitionSearchesInSentences != null) &&
-                        (definitionSearchesInSentences.ContainsKey(result.Key)))
-                        result.SetArticleID(definitionSearchesInSentences[result.Key]);
+                        (definitionSearchesInSentences.ContainsKey(result.Key())))
+                        result.SetArticleID(definitionSearchesInSentences[result.Key()]);
                     sentence.Add(result);
                 }
                 sentence.SetScore(1);
@@ -174,9 +174,9 @@ namespace Myriad.Search
             for (int i=Ordinals.first; i<results.Count; i++)
             {
                 if ((definitionSearchesInSentences != null) &&
-                    (definitionSearchesInSentences.ContainsKey(results[i].Key)))
-                    results[i].SetArticleID(definitionSearchesInSentences[results[i].Key]);
-                SearchSentence sentence = new SearchSentence(results[i].SentenceID, count);
+                    (definitionSearchesInSentences.ContainsKey(results[i].Key())))
+                    results[i].SetArticleID(definitionSearchesInSentences[results[i].Key()]);
+                SearchSentence sentence = new SearchSentence(results[i].SentenceID(), count);
                 sentence.Add(results[i]);
                 sentence.SetScore(1);
                 sentence.SetType(0);
@@ -193,11 +193,11 @@ namespace Myriad.Search
             for (int i=Ordinals.first; i<filteredResults.Count; i++)
             {
                 if ((definitionSearchesInSentences != null) &&
-                    (definitionSearchesInSentences.ContainsKey(filteredResults[i].Key)))
-                    filteredResults[i].SetArticleID(definitionSearchesInSentences[filteredResults[i].Key]);
-                if (filteredResults[i].SentenceID != lastSentence)
+                    (definitionSearchesInSentences.ContainsKey(filteredResults[i].Key())))
+                    filteredResults[i].SetArticleID(definitionSearchesInSentences[filteredResults[i].Key()]);
+                if (filteredResults[i].SentenceID() != lastSentence)
                 {
-                    lastSentence = filteredResults[i].SentenceID;
+                    lastSentence = filteredResults[i].SentenceID();
                     if (currentSentence != null)
                     {
                         int score = CalculateDistance(currentSentence, filterDistance);
@@ -214,9 +214,9 @@ namespace Myriad.Search
                         orSentences.Add(currentSentence);
                     }
                     currentSentence = new SearchSentence(
-                        filteredResults[i].SentenceID,
+                        filteredResults[i].SentenceID(),
                         wordCount,
-                        sentences[filteredResults[i].SentenceID]);
+                        sentences[filteredResults[i].SentenceID()]);
                 }
                 currentSentence.Add(filteredResults[i]);
             }
@@ -246,7 +246,7 @@ namespace Myriad.Search
                 int score = 25;
                 for (int i = Ordinals.first; i < sentence.Words.Count; i++)
                 {
-                    if (sentence.Words[i].ArticleID > Number.nothing) score -= 5;
+                    if (sentence.Words[i].ArticleID() > Number.nothing) score -= 5;
                 }
                 score -= sentence.Words.Count;
                 return score;
@@ -330,13 +330,12 @@ namespace Myriad.Search
                 " and last<=", searchRange.EndID, ") ");
         }
 
-        private static async Task<List<SearchResult>> ReadPhraseResults(string phrase, int queryIndex, 
+        private static async Task<List<ISearchResult>> ReadPhraseResults(string phrase, int queryIndex, 
             CitationRange searchRange)
         {
-            string query = PhraseQuery(phrase, queryIndex, searchRange);
-            var results = DataRepository.sea ReadSearchResults(query);
+            var results = await DataRepository.SearchResults(phrase, queryIndex, searchRange);
             if (!phrase.Contains(' ')) return results;
-            query = await PhraseWordQuery(phrase, queryIndex, searchRange);
+            string query = await PhraseWordQuery(phrase, queryIndex, searchRange);
             if (string.IsNullOrEmpty(query)) return results;
             results.AddRange(ReadSearchResults(query));
             return results;
@@ -409,7 +408,7 @@ namespace Myriad.Search
             return query.ToString();
         }
 
-        private static List<SearchResult> ReadPhrasesResults(int queryIndex,
+        private static List<ISearchResult> ReadPhrasesResults(int queryIndex,
                 List<List<string>> synonyms, CitationRange searchRange)
         {
             var synQuery = new StringBuilder(
@@ -483,16 +482,16 @@ namespace Myriad.Search
             return results;
         }
 
-        private static Dictionary<int, int> AddResultsToSentences(Dictionary<int, int> sentences, List<SearchResult> results, int type)
+        private static Dictionary<int, int> AddResultsToSentences(Dictionary<int, int> sentences, List<ISearchResult> results, int type)
         {
             Dictionary<int, int> newSentences = (sentences == null) ?
-                results.Select(result => result.SentenceID).Distinct()
+                results.Select(result => result.SentenceID()).Distinct()
                 .ToDictionary(
                     r => r,
                     r => type) :
                 (from result in results
                  join sentence in sentences
-                         on result.SentenceID equals sentence.Key
+                         on result.SentenceID() equals sentence.Key
                  select sentence).Distinct().ToDictionary(
                                 s => s.Key,
                                 s => Math.Max(s.Value, type));
