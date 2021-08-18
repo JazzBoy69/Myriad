@@ -334,7 +334,7 @@ namespace Myriad.Search
             CitationRange searchRange)
         {
             string query = PhraseQuery(phrase, queryIndex, searchRange);
-            var results = ReadSearchResults(query);
+            var results = DataRepository.sea ReadSearchResults(query);
             if (!phrase.Contains(' ')) return results;
             query = await PhraseWordQuery(phrase, queryIndex, searchRange);
             if (string.IsNullOrEmpty(query)) return results;
