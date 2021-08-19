@@ -219,11 +219,8 @@ namespace Myriad.Pages
 
         private static async Task AddDefinitionSearch(MatrixWord matrixWord, int sentenceID, int wordIndex)
         {
-            var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchID),
-                matrixWord.Start, matrixWord.Text);
-            int id = await reader.GetDatum<int>();
-            reader.Close();
-            if (id > Number.nothing) return;
+            bool wordExists = await DataRepository.SearchWordExists(matrixWord.Start, matrixWord.Text);
+            if (wordExists) return;
             var relatedArticles = await DataRepository.RelatedArticles(matrixWord.Start, matrixWord.End);
             for (int index = Ordinals.first; index < relatedArticles.Count; index++)
             {
