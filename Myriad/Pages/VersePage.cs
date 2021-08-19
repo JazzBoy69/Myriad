@@ -178,9 +178,10 @@ namespace Myriad.Pages
             int index = Ordinals.first;
             while (index < newInflections.Count)
             {
+                await DataRepository.DeleteDefinitionSearches(newInflections[index].Start);
+                await AddDefinitionSearch(newInflections[index], sentenceID, sentenceWordIndex);
                 if (existingIndex >= oldInflections.Count)
                 {
-                    await AddDefinitionSearch(newInflections[index], sentenceID, sentenceWordIndex);
                     await AddMatrixWord(newInflections[index], sentenceID, sentenceWordIndex);
                     index++;
                     continue;
@@ -205,14 +206,13 @@ namespace Myriad.Pages
                     index++;
                     continue;
                 }
-                await DeleteDefinitionSearches(oldInflections[existingIndex]);
-                await DeleteMatrixWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
+                await DataRepository.DeleteSearchWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
                 existingIndex++;
             }
             while (existingIndex < oldInflections.Count)
             {
-                await DeleteDefinitionSearches(oldInflections[existingIndex]);
-                await DeleteMatrixWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
+                await DataRepository.DeleteDefinitionSearches(oldInflections[existingIndex].Start);
+                await DataRepository.DeleteSearchWord(oldInflections[existingIndex].Text, sentenceID, sentenceWordIndex);
                 existingIndex++;
             }
         }
@@ -233,23 +233,6 @@ namespace Myriad.Pages
                     await DataRepository.WriteDefinitionSearch(searchword);
                 }
             }
-        }
-
-        private static async Task DeleteDefinitionSearches(MatrixWord matrixWord)
-        {
-            var reader = new DataReaderProvider<int, string>(SqlServerInfo.GetCommand(DataOperation.ReadDefinitionSearchID),
-                matrixWord.Start, matrixWord.Text);
-            
-            int id = await reader.GetDatum<int>();
-            reader.Close();
-            if (id == Number.nothing) return;
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteDefinitionSearch), id);
-        }
-
-        private static async Task DeleteMatrixWord(string text, int sentenceID, int wordIndex)
-        {
-            await DataWriterProvider.Write(SqlServerInfo.GetCommand(DataOperation.DeleteMatrixWord),
-                sentenceID, wordIndex, text);
         }
 
         private static async Task UpdateMatrixWord(string originalWord, MatrixWord newMatrixWord, int sentenceID, int wordIndex)
