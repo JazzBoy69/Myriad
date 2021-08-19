@@ -227,10 +227,10 @@ namespace Myriad.Pages
                 List<string> synonyms = await DataRepository.Synonyms(relatedArticles[index].id);
                 if (synonyms.Contains(matrixWord.Text))
                 {
+                    int synIndex = await DataRepository.SynIndex(relatedArticles[index].id, matrixWord.Text);
                     DefinitionSearch searchword = new DefinitionSearch(matrixWord, 
-                        relatedArticles[index].id, relatedArticles[index].paragraphindex, sentenceID, wordIndex);
-                    await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateDefinitionSearch),
-                        searchword);
+                        relatedArticles[index].id, relatedArticles[index].paragraphindex, sentenceID, wordIndex, synIndex);
+                    await DataRepository.WriteDefinitionSearch(searchword);
                 }
             }
         }
