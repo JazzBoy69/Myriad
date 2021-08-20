@@ -65,7 +65,7 @@ namespace Myriad.Pages
             parser = new PageParser(writer);
             if ((targetCitation != null) && (targetCitation.Valid))
             {
-                parser.SetTargetRange(targetCitation.citationRange);
+                parser.SetTargetRange(targetCitation);
             }
             await AddMainHeading(writer);
             var paragraphIndices = await DataRepository.ParagraphsThatContainRange(pageInfo.ID,
@@ -160,7 +160,7 @@ namespace Myriad.Pages
                     newSynonyms.Add(synonyms[i].Replace('_', ' '));
                     continue;
                 }
-                newSynonyms.Add(Inflections.RootsOf(synonyms[i]).First());
+                newSynonyms.Add((await Inflections.RootsOf(synonyms[i])).First());
             }
             int identifierIndex = GetIdentifierIndex(newSynonyms);
             if (identifierIndex != Result.notfound)
@@ -317,7 +317,7 @@ namespace Myriad.Pages
                 return id;
             }
             queryTitle = queryTitle.Replace('_', ' ');
-            string title = Inflections.RootsOf(queryTitle).First();
+            string title = (await Inflections.RootsOf(queryTitle)).First();
             id = await DataRepository.ArticleID(title);
             if (id > 0) return id;
             id = await DataRepository.ArticleIDFromSynonym(queryTitle);

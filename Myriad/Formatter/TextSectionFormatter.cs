@@ -348,7 +348,7 @@ namespace Myriad.Formatter
         private async Task AddComment(TextSections textSections)
         {
             await StartCommentSection(textSections);
-            if (textSections.highlightCitation != null) Parser.SetTargetRange(textSections.highlightCitation.CitationRange);
+            if (textSections.highlightCitation != null) Parser.SetTargetRange(textSections.highlightCitation);
             for (int i = Ordinals.second; i < paragraphs.Count; i++)
             {
                 await Parser.ParseParagraph(paragraphs[i], i);

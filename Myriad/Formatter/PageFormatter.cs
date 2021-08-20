@@ -407,7 +407,7 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndTag);
         }
 
-        internal static async Task StartCitationAnchor(HTMLWriter writer, Citation citation, CitationRange target)
+        internal static async Task StartCitationAnchor(HTMLWriter writer, Citation citation, Citation target)
         {
             await writer.Append(HTMLTags.StartAnchor);
             if ((target != null) &&
