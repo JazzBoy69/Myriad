@@ -317,11 +317,11 @@ namespace Myriad.CitationHandlers
             {
                 if (verse.First.Chapter == Result.notfound)
                 {
-                    verse.First.Chapter = results[Ordinals.last].CitationRange.LastChapter;
+                    verse.First.Chapter = results[Ordinals.last].LastChapter;
                 }
                 if (verse.First.Book == Result.notfound)
                 {
-                    verse.First.Book = results[Ordinals.last].CitationRange.Book;
+                    verse.First.Book = results[Ordinals.last].Book;
                 }
             }
             if (count == KeyID.DeferredWordIndex)
@@ -330,8 +330,8 @@ namespace Myriad.CitationHandlers
                     verse.First.Verse, currentWord);
                 KeyID end = new KeyID(verse.First.Book, verse.First.Chapter,
                     verse.First.Verse, KeyID.DeferredWordIndex);
+                citation = new Citation(start, end);
                 citation.CitationType = CitationTypes.Verse;
-                citation.CitationRange = new CitationRange(start, end);
                 return;
             }
             if ((token == '-') && (lastToken == ',') && (verse.Second.Chapter == Result.notfound))
@@ -381,8 +381,8 @@ namespace Myriad.CitationHandlers
                 }
                 citation.Set(verse.First, verse.Second);
             }
-            currentBook = citation.CitationRange.Book;
-            currentChapter = citation.CitationRange.LastChapter;
+            currentBook = citation.Book;
+            currentChapter = citation.LastChapter;
             if ((token == '!') && (citation.CitationType == CitationTypes.Text))
                 citation.CitationType = CitationTypes.Verse;
             if (stashVerse != Result.notfound)
@@ -422,7 +422,7 @@ namespace Myriad.CitationHandlers
             }
             pointer++;
             var newCitation = citation.Copy();
-            if (newCitation.CitationRange.Valid)
+            if (newCitation.Valid)
                 results.Add(newCitation);
             citation = new Citation();
             citation.Label.MoveStartTo(pointer);

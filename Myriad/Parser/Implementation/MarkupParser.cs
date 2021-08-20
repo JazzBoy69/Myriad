@@ -8,6 +8,7 @@ using Feliciana.ResponseWriter;
 using Myriad.Library;
 using Myriad.CitationHandlers;
 using Myriad.Parser.Helpers;
+using Myriad.Data;
 
 namespace Myriad.Parser
 {
@@ -46,9 +47,9 @@ namespace Myriad.Parser
             formatter = new PageFormatter(writer);
             citationHandler = new CitationHandler2();
         }
-        public void SetTargetRange(CitationRange targetRange)
+        public void SetTargetRange(Citation target)
         {
-            formatter.SetTargetRange(targetRange);
+            formatter.SetTargetRange(target);
         }
         public void HideDetails()
         {

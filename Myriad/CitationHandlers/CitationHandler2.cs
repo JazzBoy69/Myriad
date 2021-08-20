@@ -382,8 +382,8 @@ namespace Myriad.CitationHandlers
                 scriptureReference[Ordinals.first, (int)Modes.verse],
                 KeyID.DeferredWordIndex);
             Citation citation = new Citation();
+            citation = new Citation(start, end);
             citation.CitationType = CitationTypes.Verse;
-            citation.CitationRange = new CitationRange(start, end);
             citation.Label = new StringRange(labelStart, position-1);
             labelStart = position + 1;
             results.Add(citation);

@@ -1,5 +1,6 @@
 ﻿using System;
 using Feliciana.Library;
+using Myriad.Data;
 
 namespace Myriad.Library
 {
@@ -13,11 +14,11 @@ namespace Myriad.Library
         public StringRange Label = new StringRange();
         public StringRange LeadingSymbols = new StringRange();
         public StringRange TrailingSymbols = new StringRange();
-        private CitationRange CitationRange = CitationRange.InvalidRange();
+        private CitationRange citationrange = CitationRange.InvalidRange();
         public CitationTypes CitationType = CitationTypes.Invalid;
         public LabelTypes LabelType = LabelTypes.Short;
         public bool Navigating = false;
-        public CitationRange citationRange => CitationRange;
+        public CitationRange CitationRange => citationrange;
         public Citation()
         {
             DisplayLabel.Invalidate();
@@ -25,17 +26,17 @@ namespace Myriad.Library
 
         public Citation(int start, int end)
         {
-            CitationRange = new CitationRange(start, end);
+            citationrange = new CitationRange(start, end);
         }
 
         public Citation(KeyID start, KeyID end)
         {
-            CitationRange = new CitationRange(start, end);
+            citationrange = new CitationRange(start, end);
         }
 
         public Citation(int book, int chapter, int verse)
         {
-            CitationRange = new CitationRange(book, chapter, verse);
+            citationrange = new CitationRange(book, chapter, verse);
             CitationType = CitationTypes.Text;
         }
         public (int, int) Key => (Start, End);
@@ -92,7 +93,7 @@ namespace Myriad.Library
             Citation newCitation = new Citation
             {
                 Label = new StringRange(Label.Start, Label.End),
-                CitationRange = new CitationRange(CitationRange.StartID,
+                citationrange = new CitationRange(CitationRange.StartID,
                 CitationRange.EndID),
                 CitationType = CitationType,
                 LeadingSymbols = new StringRange(LeadingSymbols.Start, LeadingSymbols.End),
@@ -200,6 +201,10 @@ namespace Myriad.Library
         public bool Contains(int id)
         {
             return CitationRange.Contains(id);
+        }
+        public bool Contains((int start, int end) key)
+        {
+            return CitationRange.Contains(key);
         }
     }
 }

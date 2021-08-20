@@ -1,4 +1,5 @@
-﻿namespace Myriad.Library
+﻿using Feliciana.Library;
+namespace Myriad.Library
 {
     public class TextReference
     {

@@ -39,21 +39,21 @@ namespace Myriad.Formatter
         public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordCrossReferences { get; } = new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
         public Dictionary<int, int> OriginalWordComments { get; } = new Dictionary<int, int>();
         public SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>> AdditionalArticles { get; } = new SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>>();
-        public async Task LoadInfo(CitationRange citationRange)
+        public async Task LoadInfo(Citation citation)
         {
-            await citationRange.ResolveLastWordIndex();
-            words = await DataRepository.VerseWords(citationRange.StartID.ID, citationRange.EndID.ID);
-            FindPhrases(citationRange);
-            await ArrangeRelatedArticles(citationRange);
-            await ArrangeDefinitionSearches(citationRange);
-            await ArrangeCrossReferences(citationRange);
-            await ArrangeOriginalWordComments(citationRange);
-            await ArrangeAdditionalRelatedArticles(citationRange);
+            await citation.ResolveLastWordIndex();
+            words = await DataRepository.VerseWords(citation.Start, citation.End);
+            FindPhrases(citation);
+            await ArrangeRelatedArticles(citation);
+            await ArrangeDefinitionSearches(citation);
+            await ArrangeCrossReferences(citation);
+            await ArrangeOriginalWordComments(citation);
+            await ArrangeAdditionalRelatedArticles(citation);
         }
 
-        private async Task ArrangeCrossReferences(CitationRange citationRange)
+        private async Task ArrangeCrossReferences(Citation citation)
         {
-            var crossreferences = await DataRepository.CrossReferencesInRange(citationRange.StartID.ID, citationRange.EndID.ID);
+            var crossreferences = await DataRepository.CrossReferencesInRange(citation.Start, citation.End);
             for (int index = Ordinals.first; index<crossreferences.Count; index++)
             {
                 var reference = crossreferences[index];
@@ -62,12 +62,12 @@ namespace Myriad.Formatter
                     continue;
                 }
                 usedReferences.Add((reference.commentid, reference.paragraphindex));
-                if ((reference.start < citationRange.StartID.ID) ||
-                    (reference.last > citationRange.EndID.ID))
+                if ((reference.start < citation.Start) ||
+                    (reference.last > citation.End))
                 //reference starts at a preceeding verse
                 {
                     List<(int start, int end)> links = await TextSectionFormatter.ReadLinks(reference.commentid);
-                    if (reference.start < citationRange.StartID.ID)
+                    if (reference.start < citation.Start)
                     {
                         // add to See Also
                         if (links.Count > 0)
@@ -98,8 +98,8 @@ namespace Myriad.Formatter
                 }
                 int bottom = Ordinals.first;
                 int top = Phrases.Count - 1;
-                if ((reference.start == citationRange.StartID.ID) &&
-                    (reference.last == citationRange.EndID.ID))
+                if ((reference.start == citation.Start) &&
+                    (reference.last == citation.EndID.ID))
                 {
                     bottom = -1;
                     top = -1;
@@ -141,21 +141,21 @@ namespace Myriad.Formatter
                     if (links.Count > 0)
                     {
                         AddToAdditionalCrossReferences(reference.commentid, reference.paragraphindex, links.First(),
-                            (reference.start < citationRange.StartID.ID));
+                            (reference.start < citation.Start));
                     }
                 }
             }
         }
 
-        private async Task ArrangeOriginalWordComments(CitationRange citationRange)
+        private async Task ArrangeOriginalWordComments(Citation citation)
         {
-            var originalWordComments = await DataRepository.OriginalWordComments(citationRange.StartID.ID, citationRange.EndID.ID);
+            var originalWordComments = await DataRepository.OriginalWordComments(citation.Start, citation.End);
             for (int index = Ordinals.first; index< originalWordComments.Count; index++)
             {
                 var reference = originalWordComments[index];
                 if (OriginalWordsInRange(reference.start, reference.last).Length == Number.nothing) continue;
-                if ((reference.start < citationRange.StartID.ID) ||
-                    (reference.last > citationRange.EndID.ID))
+                if ((reference.start < citation.Start) ||
+                    (reference.last > citation.End))
                 {
                     continue;
                 }
@@ -239,12 +239,12 @@ namespace Myriad.Formatter
                                     (articleid, paragraphindex, false)});
         }
 
-        private void FindPhrases(CitationRange citationRange)
+        private void FindPhrases(Citation citation)
         {
             OriginalWords = from w in words
                             where w.Weight == originalWordWeight
                             select w;
-            int start = citationRange.StartID.ID;
+            int start = citation.Start;
 
             var lastPhrase = new VerseWord();
             for (int index = Ordinals.first; index < words.Count; index++)
@@ -291,9 +291,9 @@ namespace Myriad.Formatter
                 start = word.Last + 1;
             }
         }
-        private async Task ArrangeDefinitionSearches(CitationRange citationRange)
+        private async Task ArrangeDefinitionSearches(Citation citation)
         {
-            var definitionSearches = await DataRepository.DefinitionSearchesInRange(citationRange.StartID.ID, citationRange.EndID.ID);
+            var definitionSearches = await DataRepository.DefinitionSearchesInRange(citation.Start, citation.End);
             var used = new List<(int start, int end, int id)>();
             for (int index = Ordinals.first; index < definitionSearches.Count; index++) 
             {
@@ -305,18 +305,18 @@ namespace Myriad.Formatter
             }
         }
 
-        private async Task ArrangeRelatedArticles(CitationRange citationRange)
+        private async Task ArrangeRelatedArticles(Citation citation)
         {
-            relatedArticles = await DataRepository.RelatedArticles(citationRange.StartID.ID, citationRange.EndID.ID);
+            relatedArticles = await DataRepository.RelatedArticles(citation.Start, citation.End);
             for (int i=Ordinals.first; i<relatedArticles.Count; i++)
             {
                 if (usedArticles.Contains((relatedArticles[i].id, relatedArticles[i].index)))
                 {
                     continue;
                 }
-                if (((relatedArticles[i].last- relatedArticles[i].start)<10) && (relatedArticles[i].start >= citationRange.StartID.ID) && 
-                    (relatedArticles[i].last <= citationRange.EndID.ID) &&
-                        ((relatedArticles[i].start != citationRange.StartID.ID) || (relatedArticles[i].last != citationRange.EndID.ID)))
+                if (((relatedArticles[i].last- relatedArticles[i].start)<10) && (relatedArticles[i].start >= citation.Start) && 
+                    (relatedArticles[i].last <= citation.End) &&
+                        ((relatedArticles[i].start != citation.Start) || (relatedArticles[i].last != citation.End)))
                 { // Add an article reference to a single phrase in verse to definition searches
                     await ArrangeDefinitionSearch((relatedArticles[i].start, relatedArticles[i].last, relatedArticles[i].id));
                     continue;
@@ -343,7 +343,7 @@ namespace Myriad.Formatter
                     continue;
                 }
                 if ((Ellipses.ContainsKey(Phrases[mid].Start)) &&
-                    (Ellipses[Phrases[mid].Start].Contains(new CitationRange(item.start, item.end))))
+                    (Ellipses[Phrases[mid].Start].Contains((item.start, item.end))))
                 {
                     if (bottom == mid) bottom++; else bottom = mid;
                     continue;
@@ -393,7 +393,7 @@ namespace Myriad.Formatter
             }
         }
 
-        private async Task ArrangeAdditionalRelatedArticles(CitationRange citationRange)
+        private async Task ArrangeAdditionalRelatedArticles(Citation citation)
         {
             //Loop through Related Articles to add unused articles to Additional References or "See also"
             int index = Ordinals.first;
@@ -406,7 +406,7 @@ namespace Myriad.Formatter
                 }
                 usedArticles.Add((relatedArticles[index].id, relatedArticles[index].index));
 
-                if (relatedArticles[index].start < citationRange.StartID.ID)
+                if (relatedArticles[index].start < citation.Start)
                 {
                     await AddToAdditionalArticles(index, true);
                 }

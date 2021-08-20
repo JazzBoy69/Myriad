@@ -27,7 +27,7 @@ namespace Myriad.Formatter
         }
         private static async Task ArrangePhraseComments(VersePage page)
         {
-            await page.info.LoadInfo(page.citation.citationRange);
+            await page.info.LoadInfo(page.citation);
         }
 
         private static async Task WriteRubyText(HTMLWriter writer, VersePage page)
@@ -99,7 +99,7 @@ namespace Myriad.Formatter
             bool first = true;
             PageParser parser = new PageParser(writer);
             parser.HideDetails();
-            parser.SetTargetRange(page.citation.citationRange);
+            parser.SetTargetRange(page.citation);
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);
          
@@ -222,7 +222,7 @@ namespace Myriad.Formatter
             }
             List<(string text, (int start, int end) range)> originalWordsInPhrase = (from w in info.OriginalWords
                                                                                 where w.Start <= phrase.Range.end &&
-                                                                                w.End >= phrase.Range.start
+                                                                                w.Last >= phrase.Range.start
                                                                                 select (w.Text, w.Range)).ToList();
             int count = originalWordsInPhrase.Count();
             if (count == 0) return;
@@ -288,7 +288,7 @@ namespace Myriad.Formatter
 
         internal static async Task WriteTagAnchor(HTMLWriter writer, string label, int articleID, Citation citation)
         {
-            await PageFormatter.WriteTagAnchor(writer, label, articleID, citation.citationRange);
+            await PageFormatter.WriteTagAnchor(writer, label, articleID, citation);
         }
         private static async Task WritePhraseArticles(HTMLWriter writer, VersePage page, int index, bool needFullLabel, int usedIndex)
         {
@@ -297,7 +297,7 @@ namespace Myriad.Formatter
             {
                 PageParser parser = new PageParser(writer);
                 parser.HideDetails();
-                parser.SetTargetRange(page.citation.citationRange);
+                parser.SetTargetRange(page.citation);
                 parser.SetStartHTML("");
                 parser.SetEndHTML(HTMLTags.EndParagraph);
                 for (int i = Ordinals.first; i < page.info.PhraseArticles[index].Count; i++)
@@ -350,7 +350,7 @@ namespace Myriad.Formatter
         {
             PageParser parser = new PageParser(writer);
             parser.HideDetails();
-            parser.SetTargetRange(page.citation.citationRange);
+            parser.SetTargetRange(page.citation);
             bool needFullLabel = true;
             await WriteFullOriginalWordLabel(writer, page.info, index);
             await writer.Append(": ");
@@ -377,7 +377,7 @@ namespace Myriad.Formatter
         private static async Task<bool> WriteOriginalWordCrossreferences(HTMLWriter writer, VersePage page, int index, bool needFullLabel)
         {
             PageParser parser = new PageParser(writer);
-            parser.SetTargetRange(page.citation.citationRange);
+            parser.SetTargetRange(page.citation);
             parser.HideDetails();
             for (int i = Ordinals.first; i < page.info.OriginalWordCrossReferences[index].Count; i++)
             {
@@ -411,7 +411,7 @@ namespace Myriad.Formatter
 
             var originalWordsInPhrase = (from w in info.OriginalWords
                                          where w.Start >= phraseRange.start &&
-                                         w.End <= phraseRange.end
+                                         w.Last <= phraseRange.end
                                          select w.Text).ToList();
             int count = originalWordsInPhrase.Count();
             await writer.Append(HTMLTags.StartParagraphWithClass +
@@ -452,7 +452,7 @@ namespace Myriad.Formatter
 
             List<(string text, (int start, int end) range)> originalWordsInPhrase = (from w in info.OriginalWords
                                                                                 where w.Start >= phraseRange.start &&
-                                                                                w.End <= phraseRange.end
+                                                                                w.Last <= phraseRange.end
                                                                                 select (w.Text, w.Range)).ToList();
             int count = originalWordsInPhrase.Count();
             await writer.Append(HTMLTags.StartParagraphWithClass +
@@ -490,12 +490,12 @@ namespace Myriad.Formatter
             if ((range.end - range.start) > 8) return (needFullLabel, Result.notfound);
             int resultIndex = Result.notfound;
             string offsetLabel = ReadRangeText(range, page.info).Trim();
-            List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
+            List<string> offsetRoots = await Inflections.RootsOf(offsetLabel);
             string offsetRoot = ((offsetRoots.Count > Number.nothing) && (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
                 offsetRoots[Ordinals.first] :
                 offsetLabel;
             PageParser parser = new PageParser(writer);
-            parser.SetTargetRange(page.citation.citationRange);
+            parser.SetTargetRange(page.citation);
             parser.HideDetails();
             parser.SetStartHTML("");
             parser.SetEndHTML(HTMLTags.EndParagraph);
@@ -572,7 +572,7 @@ namespace Myriad.Formatter
             string label = ReadRangeText(phraseRange, page.info);
             label = label.Trim();
             List<string> synonyms = await DataRepository.Synonyms(articleID);
-            List<string> roots = Inflections.RootsOf(label);
+            List<string> roots = await Inflections.RootsOf(label);
             string root = ((roots.Count > Number.nothing) && (!string.IsNullOrEmpty(roots[Ordinals.first]))) ?
                 roots[Ordinals.first] :
                 label;
@@ -586,7 +586,7 @@ namespace Myriad.Formatter
                 if (!wordRange.Equals(phraseRange))
                 {
                     string offsetLabel = (await SearchPhrase(wordRange)).Replace('_', ' ').TrimEnd();
-                    List<string> offsetRoots = Inflections.RootsOf(offsetLabel);
+                    List<string> offsetRoots = await Inflections.RootsOf(offsetLabel);
                     string offsetRoot = ((offsetRoots.Count > Number.nothing) &&
                         (!string.IsNullOrEmpty(offsetRoots[Ordinals.first]))) ?
                         offsetRoots[Ordinals.first].Replace('_', ' ') :

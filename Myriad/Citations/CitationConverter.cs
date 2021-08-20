@@ -187,19 +187,19 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndAnchor);
         }
 
-        public static async Task AppendLinks(HTMLWriter writer, List<Citation> citations, CitationRange targetRange)
+        public static async Task AppendLinks(HTMLWriter writer, List<Citation> citations, Citation target)
         {
             for (var i = Ordinals.first; i < citations.Count; i++)
             {
                 if (i == Ordinals.first)
                 {
-                    await PageFormatter.StartCitationAnchor(writer, citations[i], targetRange);
+                    await PageFormatter.StartCitationAnchor(writer, citations[i], target);
                     await Append(writer, citations[i]);
                     await writer.Append(HTMLTags.EndAnchor);
                     continue;
                 }
                 await AppendConnectingPunctuation(writer, citations[i - 1], citations[i]);
-                await PageFormatter.StartCitationAnchor(writer, citations[i], targetRange);
+                await PageFormatter.StartCitationAnchor(writer, citations[i], target);
                 await AppendNext(writer, citations[i - 1], citations[i]);
                 await writer.Append(HTMLTags.EndAnchor);
             }

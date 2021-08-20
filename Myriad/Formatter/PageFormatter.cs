@@ -8,12 +8,13 @@ using Myriad.Pages;
 using Myriad.Library;
 using Myriad.Parser.Helpers;
 using Myriad.Formatter;
+using Myriad.Data;
 
 namespace Myriad.Parser
 {
     public class PageFormatter
     {
-        CitationRange targetRange;
+        Citation target;
         readonly HTMLWriter writer;
 
         public string Result { get { return writer.Response(); } }
@@ -93,9 +94,9 @@ namespace Myriad.Parser
                 +HTMLTags.EndDiv);
         }
 
-        internal void SetTargetRange(CitationRange targetRange)
+        internal void SetTargetRange(Citation target)
         {
-            this.targetRange = targetRange;
+            this.target = target;
         }
 
         internal async Task StartComments()
@@ -105,7 +106,7 @@ namespace Myriad.Parser
                 HTMLTags.CloseQuoteEndTag);
         }
 
-        internal static async Task WriteTagAnchor(HTMLWriter writer, string label, string tag, CitationRange targetRange)
+        internal static async Task WriteTagAnchor(HTMLWriter writer, string label, string tag, Citation target)
         {
             await writer.Append(HTMLTags.StartAnchor +
                 HTMLTags.HREF +
@@ -114,16 +115,16 @@ namespace Myriad.Parser
                 ArticlePage.queryKeyTitle +
                 Symbol.equal);
             await writer.Append(tag);
-            if ((targetRange != null) && targetRange.Valid)
+            if ((target != null) && target.Valid)
             {
                 await writer.Append(HTMLTags.Ampersand +
                     ScripturePage.queryKeyTGStart +
                     Symbol.equal);
-                await writer.Append(targetRange.StartID.ID);
+                await writer.Append(target.Start);
                 await writer.Append(HTMLTags.Ampersand +
                     ScripturePage.queryKeyTGEnd +
                     Symbol.equal);
-                await writer.Append(targetRange.EndID.ID);
+                await writer.Append(target.EndID.ID);
             }
             await AppendPartialPageLoad(writer);
             await AppendHandleLink(writer);
@@ -148,7 +149,7 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.EndAnchor);
         }
 
-        internal static async Task WriteTagAnchor(HTMLWriter writer, string label, int articleID, CitationRange targetRange)
+        internal static async Task WriteTagAnchor(HTMLWriter writer, string label, int articleID, Citation target)
         {
             await writer.Append(HTMLTags.StartAnchor +
                 HTMLTags.HREF +
@@ -160,11 +161,11 @@ namespace Myriad.Parser
             await writer.Append(HTMLTags.Ampersand +
                 ScripturePage.queryKeyTGStart +
                 Symbol.equal);
-            await writer.Append(targetRange.StartID.ID);
+            await writer.Append(target.Start);
             await writer.Append(HTMLTags.Ampersand +
                 ScripturePage.queryKeyTGEnd +
                 Symbol.equal);
-            await writer.Append(targetRange.EndID.ID);
+            await writer.Append(target.EndID.ID);
             await AppendPartialPageLoad(writer);
             await AppendHandleLink(writer);
             await writer.Append(HTMLTags.EndTag);
@@ -322,14 +323,14 @@ namespace Myriad.Parser
 
         internal async Task AppendTargetRange()
         {
-            if (targetRange != null)
+            if (target != null)
             {
                 await writer.Append(HTMLTags.Ampersand +
                 ScripturePage.queryKeyTGStart+Symbol.equal);
-                await writer.Append(targetRange.StartID.ID);
+                await writer.Append(target.Start);
                 await writer.Append(HTMLTags.Ampersand);
                 await writer.Append(ScripturePage.queryKeyTGEnd+Symbol.equal);
-                await writer.Append(targetRange.EndID.ID);
+                await writer.Append(target.End);
             }
         }
 
@@ -355,9 +356,9 @@ namespace Myriad.Parser
 
         public async Task AppendCitations(IParagraph paragraph, List<Citation> citations)
         {
-            if ((targetRange != null) && targetRange.Valid)
+            if ((target != null) && target.Valid)
             {
-                await CitationConverter.AppendLinks(writer, citations, targetRange);
+                await CitationConverter.AppendLinks(writer, citations, target);
             }
             else
             {
@@ -388,9 +389,9 @@ namespace Myriad.Parser
         internal async Task StartCitationAnchor(HTMLWriter writer, Citation citation)
         {
             await writer.Append(HTMLTags.StartAnchor);
-            if ((targetRange != null) &&
-                (targetRange.Contains(citation.CitationRange) ||
-                citation.CitationRange.Contains(targetRange)))
+            if ((target != null) &&
+                (target.Contains(citation.Key) ||
+                citation.Contains(target.Key)))
             {
                 await writer.Append(HTMLTags.Class +
                     HTMLClasses.target +
@@ -410,8 +411,8 @@ namespace Myriad.Parser
         {
             await writer.Append(HTMLTags.StartAnchor);
             if ((target != null) &&
-                (target.Contains(citation.CitationRange) ||
-                citation.CitationRange.Contains(target)))
+                (target.Contains(citation.Key) ||
+                citation.Contains(target.Key)))
             {
                 await writer.Append(HTMLTags.Class +
                     HTMLClasses.target +
@@ -485,13 +486,13 @@ namespace Myriad.Parser
         internal static async Task AppendQuery(HTMLWriter writer, Citation citation)
         {
             await writer.Append("start=");
-            await writer.Append(citation.CitationRange.StartID.ID);
+            await writer.Append(citation.Start);
             await writer.Append("&end=");
-            await writer.Append(citation.CitationRange.EndID.ID);
-            if (citation.CitationRange.WordIndexIsDeferred)
+            await writer.Append(citation.End);
+            if (citation.WordIndexIsDeferred)
             {
                 await writer.Append("&word=");
-                await writer.Append(citation.CitationRange.Word);
+                await writer.Append(citation.Word);
             }
             if ((citation.CitationType == CitationTypes.Chapter) || citation.Navigating)
             {
@@ -501,20 +502,20 @@ namespace Myriad.Parser
         internal static async Task AppendQuery(HTMLWriter writer, Citation citation, Citation targetCitation)
         {
             await writer.Append(ScripturePage.queryKeyStart+Symbol.equal);
-            await writer.Append(citation.CitationRange.StartID.ID);
+            await writer.Append(citation.Start);
             await writer.Append(HTMLTags.Ampersand+ScripturePage.queryKeyEnd+Symbol.equal);
-            await writer.Append(citation.CitationRange.EndID.ID);
-            if (citation.CitationRange.WordIndexIsDeferred)
+            await writer.Append(citation.End);
+            if (citation.WordIndexIsDeferred)
             {
                 await writer.Append(HTMLTags.Ampersand+ScripturePage.queryKeyWord+Symbol.equal);
-                await writer.Append(citation.CitationRange.Word);
+                await writer.Append(citation.Word);
             }
             if (targetCitation != null)
             {
                 await writer.Append(HTMLTags.Ampersand + ScripturePage.queryKeyTGStart + Symbol.equal);
-                await writer.Append(targetCitation.CitationRange.StartID.ID);
+                await writer.Append(targetCitation.Start);
                 await writer.Append(HTMLTags.Ampersand + ScripturePage.queryKeyTGEnd + Symbol.equal);
-                await writer.Append(targetCitation.CitationRange.EndID.ID);
+                await writer.Append(targetCitation.End);
             }
             if ((citation.CitationType == CitationTypes.Chapter) || citation.Navigating)
             {

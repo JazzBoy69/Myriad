@@ -336,8 +336,8 @@ namespace Myriad.Formatter
             for (int i = Ordinals.first; i < idRanges.Count; i++)
             {
                 Citation range = new Citation(idRanges[i].start, idRanges[i].end);
-                if ((range.CitationRange.Contains(textSections.sourceCitation.CitationRange)) ||
-                  (textSections.sourceCitation.CitationRange.Contains(range.CitationRange)) ||
+                if ((range.Contains(textSections.sourceCitation.Key)) ||
+                  (textSections.sourceCitation.Contains(range.Key)) ||
                   ((range.CitationRange.Book == textSections.sourceCitation.CitationRange.Book) &&
                   (range.CitationRange.FirstChapter == textSections.sourceCitation.CitationRange.FirstChapter)))
                     return i;
