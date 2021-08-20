@@ -237,21 +237,19 @@ namespace Myriad.Pages
 
         private static async Task UpdateMatrixWord(string originalWord, MatrixWord newMatrixWord, int sentenceID, int wordIndex)
         {
-            var reader = new DataReaderProvider<int, int, string>(
-                SqlServerInfo.GetCommand(DataOperation.ReadSearchWordID),
-                sentenceID, wordIndex, originalWord);
-            int id = await reader.GetDatum<int>();
-            reader.Close();
-            await DataWriterProvider.Write<int, int, int, int>(
-                SqlServerInfo.GetCommand(DataOperation.UpdateMatrixWord),
-                id, newMatrixWord.Weight, newMatrixWord.End, (newMatrixWord.Substitute) ? 1 : 0);
+            await DataRepository.DeleteSearchWord(originalWord, sentenceID, wordIndex);
+            var searchWord = new SearchWord(
+                originalWord, newMatrixWord.Start, newMatrixWord.End, sentenceID, 
+                wordIndex, newMatrixWord.Weight, newMatrixWord.Substitute ? 1 : 0);
+            await DataRepository.WriteSearchWord(searchWord);
         }
 
         private static async Task AddMatrixWord(MatrixWord matrixWord, int sentenceID, int wordIndex)
         {
-            SearchResult searchword = new SearchResult(matrixWord, sentenceID, wordIndex);
-            await DataWriterProvider.WriteDataObject(SqlServerInfo.GetCommand(DataOperation.CreateMatrixWord),
-                searchword);
+            var searchWord = new SearchWord(
+                matrixWord.Text, matrixWord.Start, matrixWord.End, sentenceID,
+                wordIndex, matrixWord.Weight, matrixWord.Substitute ? 1 : 0);
+            await DataRepository.WriteSearchWord(searchWord);
         }
         private async Task<List<MatrixWord>> DecodeMatrixString(string matrixString, int id)
         {
