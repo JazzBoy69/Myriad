@@ -37,7 +37,7 @@ namespace Myriad.Formatter
         }
 
         public Dictionary<int, List<(int articleID, int paragraphIndex)>> OriginalWordCrossReferences { get; } = new Dictionary<int, List<(int articleID, int paragraphIndex)>>();
-        public Dictionary<int, int> OriginalWordComments { get; } = new Dictionary<int, int>();
+        public Dictionary<int, (int id, string text)> OriginalWordComments { get; } = new Dictionary<int, (int id, string text)>();
         public SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>> AdditionalArticles { get; } = new SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>>();
         public async Task LoadInfo(Citation citation)
         {
@@ -179,7 +179,7 @@ namespace Myriad.Formatter
                         (reference.last <= Phrases[mid].Last))
                     {
                         phraseIndex = mid;
-                        AddOriginalWordComment(reference.id, mid);
+                        AddOriginalWordComment(reference.id, reference.text, mid);
                     }
                     break;
                 }
@@ -187,19 +187,19 @@ namespace Myriad.Formatter
                     (((reference.start >= Phrases[bottom].Start) &&
                         (reference.last <= Phrases[bottom].Last))))
                 {
-                    AddOriginalWordComment(reference.id, bottom);
+                    AddOriginalWordComment(reference.id, reference.text, bottom);
                     phraseIndex = bottom;
                 }
             }
         }
 
-        private void AddOriginalWordComment(int id, int index)
+        private void AddOriginalWordComment(int id, string text, int index)
         {
             if (OriginalWordComments.ContainsKey(index))
             {
                 return;
             }
-            OriginalWordComments.Add(index, id);
+            OriginalWordComments.Add(index, (id, text));
         }
 
         public string OriginalWordsInRange(int start, int end)

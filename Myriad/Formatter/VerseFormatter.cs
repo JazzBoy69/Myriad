@@ -351,27 +351,13 @@ namespace Myriad.Formatter
             PageParser parser = new PageParser(writer);
             parser.HideDetails();
             parser.SetTargetRange(page.citation);
-            bool needFullLabel = true;
             await WriteFullOriginalWordLabel(writer, page.info, index);
             await writer.Append(": ");
-            for (int i = Ordinals.first; i < page.info.OriginalWordComments.Count; i++)
-            {
-                parser.SetParagraphInfo(ParagraphType.Comment, page.info.OriginalWordComments[index]);
-                List<string> paragraphs = TextSectionFormatter.ReadParagraphs(
-                    page.info.OriginalWordComments[index]);
-                parser.SetStartHTML("");
-                parser.SetEndHTML(HTMLTags.EndParagraph);
-                for (int paragraphIndex = Ordinals.first; paragraphIndex < paragraphs.Count; paragraphIndex++)
-                {
-                    if (paragraphIndex == Ordinals.second)
-                        parser.SetStartHTML(HTMLTags.StartParagraphWithClass +
-                            HTMLClasses.comment +
-                            HTMLTags.CloseQuoteEndTag);
-                    await parser.ParseParagraph(paragraphs[paragraphIndex], paragraphIndex);
-                }
-                needFullLabel = false;
-            }
-            return needFullLabel;
+            parser.SetParagraphInfo(ParagraphType.Comment, page.info.OriginalWordComments[index].id);
+            parser.SetStartHTML("");
+            parser.SetEndHTML(HTMLTags.EndParagraph);
+            await parser.ParseParagraph(page.info.OriginalWordComments[index].text, Ordinals.first);
+            return false;
         }
 
         private static async Task<bool> WriteOriginalWordCrossreferences(HTMLWriter writer, VersePage page, int index, bool needFullLabel)
