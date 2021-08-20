@@ -354,11 +354,11 @@ namespace Myriad.Formatter
             bool needFullLabel = true;
             await WriteFullOriginalWordLabel(writer, page.info, index);
             await writer.Append(": ");
-            for (int i = Ordinals.first; i < page.info.OriginalWordComments[index].Count; i++)
+            for (int i = Ordinals.first; i < page.info.OriginalWordComments.Count; i++)
             {
-                parser.SetParagraphInfo(ParagraphType.Comment, page.info.OriginalWordComments[index][i].articleID);
+                parser.SetParagraphInfo(ParagraphType.Comment, page.info.OriginalWordComments[index]);
                 List<string> paragraphs = TextSectionFormatter.ReadParagraphs(
-                    page.info.OriginalWordComments[index][i].articleID);
+                    page.info.OriginalWordComments[index]);
                 parser.SetStartHTML("");
                 parser.SetEndHTML(HTMLTags.EndParagraph);
                 for (int paragraphIndex = Ordinals.first; paragraphIndex < paragraphs.Count; paragraphIndex++)
