@@ -373,48 +373,48 @@ namespace Myriad.Search
             List<int> endLinks = new List<int>();
             for (int i=Ordinals.first; i<searchSentence.Words.Count; i++)
             {
-                int start = searchSentence.Words[i].WordIndex - 4;
+                int start = searchSentence.Words[i].WordIndex() - 4;
                 if (start < 0) start = Ordinals.first;
                 if (startID == -1) startID = sentenceKeywords[start].ID;
-                int end = searchSentence.Words[i].WordIndex + searchSentence.Words[i].Length + 3;
+                int end = searchSentence.Words[i].WordIndex() + searchSentence.Words[i].Length() + 3;
                 if (end >= searchresultwords.Count) end = searchresultwords.Count - 1;
                 endID = sentenceKeywords[end].ID;
-                int highlight = searchSentence.Words[i].WordIndex + searchSentence.Words[i].Length - 1;
+                int highlight = searchSentence.Words[i].WordIndex() + searchSentence.Words[i].Length() - 1;
                 if (highlight >= searchresultwords.Count) highlight = searchresultwords.Count - 1;
-                if (searchSentence.Words[i].ArticleID != -1)
+                if (searchSentence.Words[i].ArticleID() != -1)
                 {
-                    highlight = await ReadDefinitionSearchLength(sentenceID, searchSentence.Words[i].WordIndex,
-                        searchSentence.Words[i].ArticleID);
-                    if (links.ContainsKey(searchSentence.Words[i].WordIndex))
+                    highlight = await ReadDefinitionSearchLength(sentenceID, searchSentence.Words[i].WordIndex(),
+                        searchSentence.Words[i].ArticleID());
+                    if (links.ContainsKey(searchSentence.Words[i].WordIndex()))
                     {
-                        if (highlight > links[searchSentence.Words[i].WordIndex].Item2)
+                        if (highlight > links[searchSentence.Words[i].WordIndex()].Item2)
                         {
-                            endLinks.Remove(links[searchSentence.Words[i].WordIndex].Item2);
-                            links[searchSentence.Words[i].WordIndex] = (searchSentence.Words[i].ArticleID, highlight);
+                            endLinks.Remove(links[searchSentence.Words[i].WordIndex()].Item2);
+                            links[searchSentence.Words[i].WordIndex()] = (searchSentence.Words[i].ArticleID(), highlight);
                             endLinks.Add(highlight);
                         }
                     }
                     else
                     {
-                        links.Add(searchSentence.Words[i].WordIndex, (searchSentence.Words[i].ArticleID, highlight));
+                        links.Add(searchSentence.Words[i].WordIndex(), (searchSentence.Words[i].ArticleID(), highlight));
                         endLinks.Add(highlight);
                     }
                 }
-                if (searchSentence.Words[i].Substitute)
+                if (searchSentence.Words[i].Substitute())
                 {
-                    searchSentence.Words[i].Length = await ReadSubtituteLength(sentenceID, searchSentence.Words[i].WordIndex);
-                    if (searchSentence.Words[i].Length > 1) searchresultwords[searchSentence.Words[i].WordIndex].Length = 
-                            searchSentence.Words[i].Length;
-                    highlight = searchSentence.Words[i].WordIndex;
-                    if (searchresultwords[searchSentence.Words[i].WordIndex].IsMainText)
-                        searchresultwords[searchSentence.Words[i].WordIndex].SubstituteText = searchSentence.Words[i].Text;
+                    searchSentence.Words[i].Length = await ReadSubtituteLength(sentenceID, searchSentence.Words[i].WordIndex());
+                    if (searchSentence.Words[i].Length() > 1) searchresultwords[searchSentence.Words[i].WordIndex()].Length = 
+                            searchSentence.Words[i].Length();
+                    highlight = searchSentence.Words[i].WordIndex();
+                    if (searchresultwords[searchSentence.Words[i].WordIndex()].IsMainText)
+                        searchresultwords[searchSentence.Words[i].WordIndex()].SubstituteText = searchSentence.Words[i].Text;
                     else
-                        searchresultwords[searchSentence.Words[i].WordIndex].SubstituteText = 
-                            searchSentence.Words[i].Text.Replace('[', '(').Replace(']', ')');
-                    if (searchSentence.Words[i].Length > 1)
+                        searchresultwords[searchSentence.Words[i].WordIndex()].SubstituteText = 
+                            searchSentence.Words[i].Text().Replace('[', '(').Replace(']', ')');
+                    if (searchSentence.Words[i].Length() > 1)
                     {
-                        int wordIndex = searchSentence.Words[i].WordIndex + 1;
-                        while ((wordIndex < searchSentence.Words[i].WordIndex + searchSentence.Words[i].Length) && 
+                        int wordIndex = searchSentence.Words[i].WordIndex() + 1;
+                        while ((wordIndex < searchSentence.Words[i].WordIndex() + searchSentence.Words[i].Length()) && 
                             (wordIndex < searchresultwords.Count))
                         {
                             searchresultwords[wordIndex].Erased = true;
@@ -423,9 +423,9 @@ namespace Myriad.Search
                     }
                 }
                 int index = start;
-                while (index < searchSentence.Words[i].WordIndex)
+                while (index < searchSentence.Words[i].WordIndex())
                 {
-                    if (searchSentence.Words[i].WordIndex >= searchresultwords.Count) break;
+                    if (searchSentence.Words[i].WordIndex() >= searchresultwords.Count) break;
                     searchresultwords[index].Used = true;
                     index++;
                 }
@@ -482,7 +482,7 @@ namespace Myriad.Search
                     await writer.Append(HTMLTags.StartBold);
                     bold = true;
                 }
-                await writer.Append(sentenceKeywords[idx].LeadingSymbolString);
+                await writer.Append(sentenceKeywords[idx].LeadingSymbols);
                 if (links.ContainsKey(idx))
                 {
                     await AppendSearchArticle(writer, startID, endID, links[idx].Item1);
@@ -508,7 +508,7 @@ namespace Myriad.Search
                     await writer.Append(HTMLTags.EndAnchor);
                     link = false;
                 }
-                await writer.Append(sentenceKeywords[idx].TrailingSymbolString);
+                await writer.Append(sentenceKeywords[idx].TrailingSymbols);
                 if (!link && ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted)))
                     await writer.Append(HTMLTags.EndBold);
             }
@@ -581,9 +581,7 @@ namespace Myriad.Search
         {
             if (keyword.IsCapitalized)
             {
-                await writer.Append(keyword.Text.Slice(Ordinals.first, 1).ToString().ToUpperInvariant());
-                string text = keyword.Text.Slice(Ordinals.second).ToString().Replace('`', '’');
-                text = text.Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
+                string text = keyword.CapitalizedText.Replace('`', '’').Replace("΄", HTMLClasses.startExtraInfo + "΄" + HTMLTags.EndSpan).Replace("·", HTMLClasses.startExtraInfo + "·" + HTMLTags.EndSpan);
                 await writer.Append(text);
             }
             else

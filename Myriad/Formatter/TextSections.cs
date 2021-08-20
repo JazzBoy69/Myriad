@@ -62,7 +62,7 @@ namespace Myriad.Formatter
         {
             var reader = new StoredProcedureProvider<int, int>(
                 SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
-                sourceCitation.CitationRange.StartID.ID, sourceCitation.CitationRange.EndID.ID);
+                sourceCitation.Start, sourceCitation.End);
             var results = reader.GetData<int>();
             reader.Close();
         }
