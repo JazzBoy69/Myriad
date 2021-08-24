@@ -57,14 +57,5 @@ namespace Myriad.Formatter
             TextSectionFormatter textSectionFormatter = new TextSectionFormatter(writer);
             await textSectionFormatter.AddTextSection(this, Ordinals.first);
         }
-
-        internal void GetCommentIDs()
-        {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadCommentIDs),
-                sourceCitation.Start, sourceCitation.End);
-            var results = reader.GetData<int>();
-            reader.Close();
-        }
     }
 }

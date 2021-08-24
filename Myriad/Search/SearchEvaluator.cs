@@ -109,7 +109,7 @@ namespace Myriad.Search
 
             filteredResults = (from sentence in filteredSentences
                                    join result in searchResults
-                                   on sentence.Key equals result.SentenceID()
+                                   on sentence.Key equals result.SentenceID
                                    orderby sentence.Key
                                    select result).ToList();
             List<SearchSentence> filteredOrSentences = 
@@ -155,8 +155,8 @@ namespace Myriad.Search
                 {
                     var result = new SearchResult(results[i].sentenceID, results[i].wordIndex+j, 1, j);
                     if ((definitionSearchesInSentences != null) &&
-                        (definitionSearchesInSentences.ContainsKey(result.Key())))
-                        result.SetArticleID(definitionSearchesInSentences[result.Key()]);
+                        (definitionSearchesInSentences.ContainsKey(result.Key)))
+                        result.ArticleID = definitionSearchesInSentences[result.Key];
                     sentence.Add(result);
                 }
                 sentence.SetScore(1);
@@ -174,9 +174,9 @@ namespace Myriad.Search
             for (int i=Ordinals.first; i<results.Count; i++)
             {
                 if ((definitionSearchesInSentences != null) &&
-                    (definitionSearchesInSentences.ContainsKey(results[i].Key())))
-                    results[i].SetArticleID(definitionSearchesInSentences[results[i].Key()]);
-                SearchSentence sentence = new SearchSentence(results[i].SentenceID(), count);
+                    (definitionSearchesInSentences.ContainsKey(results[i].Key)))
+                    results[i].ArticleID = definitionSearchesInSentences[results[i].Key];
+                SearchSentence sentence = new SearchSentence(results[i].SentenceID, count);
                 sentence.Add(results[i]);
                 sentence.SetScore(1);
                 sentence.SetType(0);
@@ -193,11 +193,11 @@ namespace Myriad.Search
             for (int i=Ordinals.first; i<filteredResults.Count; i++)
             {
                 if ((definitionSearchesInSentences != null) &&
-                    (definitionSearchesInSentences.ContainsKey(filteredResults[i].Key())))
-                    filteredResults[i].SetArticleID(definitionSearchesInSentences[filteredResults[i].Key()]);
-                if (filteredResults[i].SentenceID() != lastSentence)
+                    (definitionSearchesInSentences.ContainsKey(filteredResults[i].Key)))
+                    filteredResults[i].ArticleID = definitionSearchesInSentences[filteredResults[i].Key];
+                if (filteredResults[i].SentenceID != lastSentence)
                 {
-                    lastSentence = filteredResults[i].SentenceID();
+                    lastSentence = filteredResults[i].SentenceID;
                     if (currentSentence != null)
                     {
                         int score = CalculateDistance(currentSentence, filterDistance);
@@ -214,9 +214,9 @@ namespace Myriad.Search
                         orSentences.Add(currentSentence);
                     }
                     currentSentence = new SearchSentence(
-                        filteredResults[i].SentenceID(),
+                        filteredResults[i].SentenceID,
                         wordCount,
-                        sentences[filteredResults[i].SentenceID()]);
+                        sentences[filteredResults[i].SentenceID]);
                 }
                 currentSentence.Add(filteredResults[i]);
             }
@@ -246,7 +246,7 @@ namespace Myriad.Search
                 int score = 25;
                 for (int i = Ordinals.first; i < sentence.Words.Count; i++)
                 {
-                    if (sentence.Words[i].ArticleID() > Number.nothing) score -= 5;
+                    if (sentence.Words[i].ArticleID > Number.nothing) score -= 5;
                 }
                 score -= sentence.Words.Count;
                 return score;
@@ -472,13 +472,13 @@ namespace Myriad.Search
         private static Dictionary<int, int> AddResultsToSentences(Dictionary<int, int> sentences, List<ISearchResult> results, int type)
         {
             Dictionary<int, int> newSentences = (sentences == null) ?
-                results.Select(result => result.SentenceID()).Distinct()
+                results.Select(result => result.SentenceID).Distinct()
                 .ToDictionary(
                     r => r,
                     r => type) :
                 (from result in results
                  join sentence in sentences
-                         on result.SentenceID() equals sentence.Key
+                         on result.SentenceID equals sentence.Key
                  select sentence).Distinct().ToDictionary(
                                 s => s.Key,
                                 s => Math.Max(s.Value, type));

@@ -20,7 +20,6 @@ namespace Myriad.Formatter
                 HTMLClasses.paragraphText +
                 HTMLTags.CloseQuoteEndTag);
             List<(int start, int end)> paragraphRanges = await DataRepository.ParagraphRanges(textSections.sourceCitation.Start, textSections.sourceCitation.End);
-            textSections.GetCommentIDs();
             for (int paragraphIndex = Ordinals.first; paragraphIndex<paragraphRanges.Count; paragraphIndex++)
             {
                 await writer.Append(HTMLTags.StartSectionWithClass +
@@ -44,7 +43,7 @@ namespace Myriad.Formatter
             List<string> paragraphs = new List<string>();
             for (int i = Ordinals.first; i < ids.Count; i++)
             {
-                paragraphs.AddRange(TextSectionFormatter.ReadParagraphs(ids[i]));
+                paragraphs.AddRange(await TextSectionFormatter.ReadParagraphs(ids[i]));
             }
             FigureFormatter figureFormatter = new FigureFormatter(writer);
             await figureFormatter.GroupPictures(paragraphs);
