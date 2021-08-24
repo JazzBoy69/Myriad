@@ -50,7 +50,7 @@ namespace Myriad.Search
         internal async static Task WriteDefinitionsBlock(HTMLWriter writer, SearchPageInfo pageInfo)
         {
             int mainDefinition = (pageInfo.UsedDefinitions.Count > Number.nothing) ?
-                IdentifyMainDefinition(pageInfo) :
+                await IdentifyMainDefinition(pageInfo) :
                 Result.error;
             await StartDefinitionsTitles(writer);
             int itemCount = Ordinals.first;
@@ -76,7 +76,7 @@ namespace Myriad.Search
                     {
                         if (pageInfo.UsedDefinitions[i] == id) continue;
                         parser.SetParagraphInfo(ParagraphType.Article, id);
-                        List<int> relatedParagraphIndices = GetRelatedParagraphIndices(id, pageInfo.UsedDefinitions[i]);
+                        List<int> relatedParagraphIndices = await GetRelatedParagraphIndices(id, pageInfo.UsedDefinitions[i]);
                         for (int j=Ordinals.first; j<relatedParagraphIndices.Count; j++)
                         {
                             (int id, int index) key = (id, relatedParagraphIndices[j]);
@@ -175,13 +175,9 @@ namespace Myriad.Search
             await writer.Append("</p>");
         }
 
-        private static List<int> GetRelatedParagraphIndices(int id, int otherID)
+        private static async Task<List<int>> GetRelatedParagraphIndices(int id, int otherID)
         {
-            var relatedReader = new DataReaderProvider<int, int>(SqlServerInfo.GetCommand(
-                            DataOperation.ReadRelatedParagraphIndex), id, otherID);
-            List<int> paragraphs = relatedReader.GetData<int>();
-            relatedReader.Close();
-            return paragraphs;
+            return await DataRepository.RelatedParagraphIndices(id, otherID);
         }
 
         private static async Task WriteDefinition(HTMLWriter writer, MarkupParser parser, int id, string definition)
@@ -194,13 +190,7 @@ namespace Myriad.Search
 
         private static async Task<string> GetArticleParagraph(int id, int index)
         {
-            var reader = new StoredProcedureProvider<int, int>(
-                    SqlServerInfo.GetCommand(DataOperation.ReadArticleParagraph),
-                    id, index);
-
-            string definition = await reader.GetDatum<string>();
-            reader.Close();
-            return definition;
+            return await DataRepository.GlossaryParagraph(id, index);
         }
 
         private static async Task StartDefinitionTab(HTMLWriter writer, bool setActive, int itemCount)
@@ -229,17 +219,13 @@ namespace Myriad.Search
             await writer.Append(HTMLTags.CloseQuoteEndTag);
         }
 
-        private static int IdentifyMainDefinition(SearchPageInfo pageInfo)
+        private static async Task<int> IdentifyMainDefinition(SearchPageInfo pageInfo)
         {
             int mainDefinition = Result.notfound;
             int lowestIndex = 10000;
-            var synonymReader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadSynonymsFromID),
-                -1);
             for (int i=Ordinals.first; i<pageInfo.UsedDefinitions.Count; i++)
             {
-                synonymReader.SetParameter(pageInfo.UsedDefinitions[i]);
-                List<string> synonyms = synonymReader.GetData<string>();
+                List<string> synonyms = await DataRepository.Synonyms(pageInfo.UsedDefinitions[i]); 
                 if (synonyms.Count == 0) continue;
                 for (int synIndex = Ordinals.first; synIndex < synonyms.Count; synIndex++)
                 {
@@ -254,7 +240,6 @@ namespace Myriad.Search
                     }
                 }
             }
-            synonymReader.Close();
             return mainDefinition;
         }
 
@@ -358,11 +343,7 @@ namespace Myriad.Search
             int endID = -1;
             int sentenceID = searchSentence.SentenceID;
             if (sentenceID == Result.notfound) return;
-            var reader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadKeywordSentence),
-                sentenceID);
-            List<Keyword> sentenceKeywords = reader.GetClassData<Keyword>();
-            reader.Close();
+            List<Keyword> sentenceKeywords = await DataRepository.SentenceKeywords(sentenceID);
             List<SearchResultWord> searchresultwords = new List<SearchResultWord>();
             for (int index = Ordinals.first; index < sentenceKeywords.Count; index++)
             {
@@ -383,7 +364,7 @@ namespace Myriad.Search
                 if (highlight >= searchresultwords.Count) highlight = searchresultwords.Count - 1;
                 if (searchSentence.Words[i].ArticleID != -1)
                 {
-                    highlight = await ReadDefinitionSearchLength(sentenceID, searchSentence.Words[i].WordIndex,
+                    highlight = await DataRepository.LastDefinitionSearchWordIndex(sentenceID, searchSentence.Words[i].WordIndex,
                         searchSentence.Words[i].ArticleID);
                     if (links.ContainsKey(searchSentence.Words[i].WordIndex))
                     {
@@ -402,7 +383,7 @@ namespace Myriad.Search
                 }
                 if (searchSentence.Words[i].Substitute)
                 {
-                    searchSentence.Words[i].Length = await ReadSubtituteLength(sentenceID, searchSentence.Words[i].WordIndex);
+                    searchSentence.Words[i].Length = await DataRepository.SubstituteLength(sentenceID, searchSentence.Words[i].WordIndex);
                     if (searchSentence.Words[i].Length > 1) searchresultwords[searchSentence.Words[i].WordIndex].Length = 
                             searchSentence.Words[i].Length;
                     highlight = searchSentence.Words[i].WordIndex;
@@ -512,24 +493,6 @@ namespace Myriad.Search
                 if (!link && ((searchresultwords[idx].Highlight) || (searchresultwords[idx].Substituted)))
                     await writer.Append(HTMLTags.EndBold);
             }
-        }
-
-        private static async Task<int> ReadSubtituteLength(int sentenceID, int wordIndex)
-        {
-            StoredProcedureProvider<int, int> reader = new StoredProcedureProvider<int, int>(SqlServerInfo.GetCommand(
-                DataOperation.ReadSubstituteLength), sentenceID, wordIndex);
-            int result = await reader.GetDatum<int>();
-            reader.Close();
-            return result;
-        }
-
-        private static async Task<int> ReadDefinitionSearchLength(int sentenceID, int wordIndex, int articleID)
-        {
-            DataReaderProvider<int, int, int> reader = new DataReaderProvider<int, int, int>(SqlServerInfo.GetCommand(
-                DataOperation.ReadDefinitionSearchLength), sentenceID, wordIndex, articleID);
-            int result = await reader.GetDatum<int>();
-            reader.Close();
-            return result;
         }
 
         internal static async Task AppendSearchArticle(HTMLWriter writer, int startID, int endID, int id)
