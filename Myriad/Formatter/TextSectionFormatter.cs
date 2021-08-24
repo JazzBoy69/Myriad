@@ -33,7 +33,7 @@ namespace Myriad.Formatter
             List<(int start, int end)> idRanges = await ReadLinks(textSections.CommentIDs[sectionIndex]);
 
             Parser.SetParagraphInfo(ParagraphType.Comment, textSections.CommentIDs[sectionIndex]);
-            paragraphs = ReadParagraphs(textSections.CommentIDs[sectionIndex]);
+            paragraphs = await ReadParagraphs(textSections.CommentIDs[sectionIndex]);
             if (idRanges.Count > 1)
             {
                 await AppendTextHeader(textSections);
@@ -112,7 +112,7 @@ namespace Myriad.Formatter
                 "ExpandReadingViewText(event)");
             }
             await writer.Append(HTMLTags.EndTag);
-            List<Keyword> keywords = ReadKeywords(citation);
+            List<Keyword> keywords = await ReadKeywords(citation);
             formatter = new TextFormatter(writer);
             await formatter.AppendCitationData(citation);
             await writer.Append(HTMLTags.StartDivWithClass+
@@ -153,38 +153,23 @@ namespace Myriad.Formatter
 
         public static async Task<List<(int start, int end)>> ReadLinks(int commentID)
         {
-            var reader = new DataReaderProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadCommentLinks),
-                commentID);
-            List<(int start, int end)> results = await reader.GetData<int, int>();
-            reader.Close();
-            return results;
+            return await DataRepository.CommentLinks(commentID);
         }
-        public static List<Keyword> ReadKeywords(Citation citation)
+        public static async Task<List<Keyword>> ReadKeywords(Citation citation)
         {
-            return ReadKeywords(
+            return await ReadKeywords(
                 citation.CitationRange.StartID.ID, citation.CitationRange.EndID.ID);
         }
 
-        public static List<Keyword> ReadKeywords(int start, int end)
+        public static async Task<List<Keyword>> ReadKeywords(int start, int end)
         {
-            var reader = new StoredProcedureProvider<int, int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadKeywords),
-                start, end);
-            var result = reader.GetClassData<Keyword>();
-            reader.Close();
-            return result;
+            return await DataRepository.RangeKeywords(start, end);
         }
 
 
-        public static List<string> ReadParagraphs(int commentID)
+        public static async Task<List<string>> ReadParagraphs(int commentID)
         {
-            var reader = new StoredProcedureProvider<int>(
-                SqlServerInfo.GetCommand(DataOperation.ReadComment),
-                commentID);
-            var results = reader.GetData<string>();
-            reader.Close();
-            return results;
+            return await DataRepository.CommentParagraphs(commentID);
         }
 
         private async Task AddTextTabs(List<(int start, int end)> idRanges, int sectionIndex, TextSections textSections)
@@ -311,7 +296,7 @@ namespace Myriad.Formatter
                     "ExpandReadingViewText(event)");
                 }
                 await writer.Append(HTMLTags.EndTag);
-                List<Keyword> keywords = ReadKeywords(citation);
+                List<Keyword> keywords = await ReadKeywords(citation);
                 formatter = new TextFormatter(writer);
                 await writer.Append(HTMLTags.StartDivWithClass +
                     HTMLClasses.scriptureQuote +
