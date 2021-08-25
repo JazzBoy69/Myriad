@@ -27,7 +27,7 @@ namespace Myriad.Pages
 
         private static async Task WriteScriptureText(HTMLWriter writer, Citation citation)
         {
-            List<Keyword> keywords = TextSectionFormatter.ReadKeywords(citation);
+            List<Keyword> keywords = await TextSectionFormatter.ReadKeywords(citation);
             await writer.Append(HTMLTags.StartDivWithClass +
                 HTMLClasses.sidebarScripture +
                 HTMLTags.CloseQuoteEndTag);

@@ -204,7 +204,7 @@ namespace Myriad.Search
 
         private static async Task AppendResult(HTMLWriter writer, ExtendedSearchRange extendedSearchRange)
         {
-            List<Keyword> keywords = TextSectionFormatter.ReadKeywords(
+            List<Keyword> keywords = await TextSectionFormatter.ReadKeywords(
                 extendedSearchRange.Start, extendedSearchRange.End);
             int articleIndex = Ordinals.first;
             for (int i = Ordinals.first; i < keywords.Count; i++)

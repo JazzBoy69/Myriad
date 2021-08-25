@@ -61,11 +61,11 @@ namespace Myriad.Parser
         }
 
 
-        internal static async Task AppendChapterTitle(HTMLWriter writer, CitationRange citationRange)
+        internal static async Task AppendChapterTitle(HTMLWriter writer, Citation citation)
         {      
-            await writer.Append(Bible.AbbreviationsTitleCase[citationRange.Book]);
+            await writer.Append(Bible.AbbreviationsTitleCase[citation.Book]);
             await writer.Append("_");
-            await writer.Append(citationRange.FirstChapter);
+            await writer.Append(citation.FirstChapter);
         }
 
 

@@ -106,7 +106,7 @@ namespace Myriad.Pages
             if (!int.TryParse(query[queryKeyEnd], out int end)) end = Result.notfound;
             citation = new Citation(start, end);
             citation.CitationType = CitationTypes.Text;
-            var paragraphs = TextSectionFormatter.ReadParagraphs(id);
+            var paragraphs = await TextSectionFormatter.ReadParagraphs(id);
             var newParagraphs = text.Split(Symbols.linefeedArray, StringSplitOptions.RemoveEmptyEntries).ToList();
             var textFormatter = new TextSectionFormatter(writer);
             textFormatter.SetHeading(newParagraphs[Ordinals.first]);
@@ -154,7 +154,7 @@ namespace Myriad.Pages
         {
             string idString = query[queryKeyID];
             int id = Numbers.Convert(idString);
-            var paragraphs = TextSectionFormatter.ReadParagraphs(id);
+            var paragraphs = await TextSectionFormatter .ReadParagraphs(id);
             for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
                 await writer.Append(HTMLTags.StartParagraph);

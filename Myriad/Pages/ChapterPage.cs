@@ -84,7 +84,7 @@ namespace Myriad.Pages
                 HTMLTags.CloseQuoteEndTag +
                 editURL + HTMLTags.StartQuery +
                 ArticlePage.queryKeyTitle + Symbol.equal);
-            await CitationConverter.AppendChapterTitle(writer, citation.citationRange);
+            await CitationConverter.AppendChapterTitle(writer, citation);
             await writer.Append(HTMLTags.EndDiv);
         }
 

@@ -20,7 +20,7 @@ namespace Myriad.Parser
         public int index;
 
         static readonly Dictionary<ParagraphType, Func<int, int, Task<string>>> readMethods =
-        new Dictionary<ParagraphType, Func<int, int, Task>>()
+        new Dictionary<ParagraphType, Func<int, int, Task<string>>>()
         {
                 {ParagraphType.Article, DataRepository.GlossaryParagraph },
                 {ParagraphType.Comment, DataRepository.CommentParagraph },
