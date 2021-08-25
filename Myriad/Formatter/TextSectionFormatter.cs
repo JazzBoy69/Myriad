@@ -15,6 +15,7 @@ namespace Myriad.Formatter
     public class TextSectionFormatter
     {
         List<string> paragraphs;
+        string heading;
         readonly HTMLWriter writer;
         TextFormatter formatter;
         readonly FigureFormatter figureFormatter;
@@ -34,6 +35,7 @@ namespace Myriad.Formatter
 
             Parser.SetParagraphInfo(ParagraphType.Comment, textSections.CommentIDs[sectionIndex]);
             paragraphs = await ReadParagraphs(textSections.CommentIDs[sectionIndex]);
+            heading = await DataRepository.CommentHeading(textSections.CommentIDs[sectionIndex]);
             if (idRanges.Count > 1)
             {
                 await AppendTextHeader(textSections);
@@ -245,7 +247,7 @@ namespace Myriad.Formatter
                     HTMLTags.CloseQuoteEndTag +
                     HTMLTags.StartHeader);
             }
-            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
+            await writer.Append(heading[Ordinals.third..Ordinals.secondtolast]);
         }
 
         private async Task AddScriptureTextToTabs(List<(int start, int end)> idRanges, int sectionIndex, TextSections textSections)
@@ -334,7 +336,7 @@ namespace Myriad.Formatter
         {
             await StartCommentSection(textSections);
             if (textSections.highlightCitation != null) Parser.SetTargetRange(textSections.highlightCitation);
-            for (int i = Ordinals.second; i < paragraphs.Count; i++)
+            for (int i = Ordinals.first; i < paragraphs.Count; i++)
             {
                 await Parser.ParseParagraph(paragraphs[i], i);
             }
@@ -379,7 +381,7 @@ namespace Myriad.Formatter
                 "HandleCommentHeaderClicks()"+
                 HTMLTags.EndTag +
                 HTMLTags.StartHeader);
-            await writer.Append(paragraphs[Ordinals.first][Ordinals.third..Ordinals.nexttolast]);
+            await writer.Append(heading[Ordinals.third..Ordinals.secondtolast]);
             await writer.Append(HTMLTags.EndHeader +
                 HTMLTags.EndDiv);
         }

@@ -41,7 +41,7 @@ namespace Myriad.Pages
             {
                 if (!int.TryParse(query[queryKeyStart], out int start)) start = Result.notfound;
                 if (!int.TryParse(query[queryKeyEnd], out int end)) end = Result.notfound;
-                Citation citation = new Citation(start, end)
+                citation = new Citation(start, end)
                 {
                     CitationType = GetCitationType()
                 };
@@ -54,7 +54,7 @@ namespace Myriad.Pages
             if (citation.WordIndexIsDeferred)
             {
                 citation.SetWordIndex(await DataRepository.TextWordIndex(citation.Start,
-                    citation.End, citation.Word));
+                    citation.End, query[queryKeyWord]));
             }
         }
 
