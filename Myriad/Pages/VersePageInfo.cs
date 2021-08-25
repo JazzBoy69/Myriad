@@ -41,7 +41,7 @@ namespace Myriad.Formatter
         public SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>> AdditionalArticles { get; } = new SortedDictionary<string, List<(int articleID, int paragraphIndex, bool suppressed)>>();
         public async Task LoadInfo(Citation citation)
         {
-            await citation.ResolveLastWordIndex();
+            citation.SetLastWordIndex(await DataRepository.MaxWordIndex(citation.End));
             words = await DataRepository.VerseWords(citation.Start, citation.End);
             FindPhrases(citation);
             await ArrangeRelatedArticles(citation);
