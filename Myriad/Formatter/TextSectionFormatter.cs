@@ -85,7 +85,7 @@ namespace Myriad.Formatter
 
         internal void SetHeading(string paragraph)
         {
-            paragraphs = new List<string>() { paragraph };
+            heading = paragraph;
         }
 
         private async Task AppendFigures(TextSections textSections)
